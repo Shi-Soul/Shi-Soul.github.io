@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+gem "jekyll", "~> 4.2"
 group :jekyll_plugins do
     gem 'classifier-reborn'
     gem 'jekyll'
@@ -15,6 +16,7 @@ group :jekyll_plugins do
     gem 'jekyll-scholar'
     gem 'jekyll-sitemap'
     gem 'jekyll-tabs'
+    gem "jekyll-timeago", "~> 0.13.1"
     gem 'jekyll-toc'
     gem 'jekyll-twitter-plugin'
     gem 'jemoji'
