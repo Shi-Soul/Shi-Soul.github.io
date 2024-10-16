@@ -3,9 +3,9 @@
 # -----------------------------------------------------------------------------
 
 title: blank # the website title (if blank, full name will be used instead)
-first_name: Xie
+first_name: Weiji
 middle_name: 
-last_name: Weiji
+last_name: Xie
 email: 
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
   A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design.
@@ -314,8 +314,8 @@ display_categories: ["external-services"] # these categories will be displayed o
 # -----------------------------------------------------------------------------
 
 scholar:
-  last_name: [Weiji]
-  first_name: [Xie, X.]
+  last_name: [Xie]
+  first_name: [Weiji]
 
   style: apa
   locale: en

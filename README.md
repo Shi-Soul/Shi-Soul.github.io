@@ -1,4 +1,10 @@
 
+# 有用的内容
+
+- about
+- publications
+- cv
+
 
 # Local Deployment
 
