@@ -4,7 +4,7 @@
     - name: Full Name
       value: Weiji Xie (谢炜基)
     - name: Email
-      value: xieweiji249 [AT] sjtu.edu.cn
+      value: xieweiji249@sjtu.edu.cn
     - name: Languages
       value: Chinese, English
     - name: CV Updated Time
@@ -13,7 +13,7 @@
 - title: Education
   type: time_table
   contents:
-    - title: B.Eng.
+    - title: B.Eng. in Artificial Intelligence
       institution: Shanghai Jiao Tong University
       year: 2021.09 - PRESENT
       description:
@@ -52,7 +52,10 @@
 #         - Description 1.
 #         - Description 2.
 
-- title: Other Interests
-  type: list
+- title: Misc
+  type: map
   contents:
-    - <u>Hobbies:</u> Reading popular books about math, social science, etc.
+    - name: Services
+      value: Reviwer of TPAMI
+    - name: Hobbies
+      value: Reading popular books about math, social science, etc.

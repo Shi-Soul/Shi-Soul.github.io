@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-subtitle: 
+subtitle: <b>谢炜基</b>
 # <a href='#'>Affiliations</a>. Address. Contacts. Moto. Etc.
 
 profile:
@@ -25,4 +25,3 @@ I'm a undergraduate student majoring Artificial Intelligence at [Shanghai Jiao T
 
 My research interests include **Reinforcement Learning** and **Robotics**.
 
-This personal homepage is under active development. Most information of the default template haven't been cleaned up and please ignore them.
