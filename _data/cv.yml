@@ -8,7 +8,7 @@
     - name: Languages
       value: Chinese, English
     - name: CV Updated Time
-      value: 2024-10-17
+      value: 2025-02-28
 
 - title: Education
   type: time_table
@@ -22,6 +22,9 @@
 - title: Experience
   type: time_table
   contents:
+    - title: Research Intern
+      institution: Institute of Artificial Intelligence (TeleAI), China Telecom
+      year: 2024.10 - PRESENT
     - title: Research Intern
       institution: Yunqi Academy of Engineering
       year: 2024.06 - 2024.08
@@ -58,4 +61,4 @@
     - name: Services
       value: Reviwer of TPAMI
     - name: Hobbies
-      value: Reading popular books about math, social science, etc.
+      value: Reading popular books about math, social science, management, etc.
