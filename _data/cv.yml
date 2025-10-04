@@ -8,14 +8,17 @@
     - name: Languages
       value: Chinese, English
     - name: CV Updated Time
-      value: 2025-02-28
+      value: 2025-10-05
 
 - title: Education
   type: time_table
   contents:
+    - title: M.S. in Computer Science and Technology
+      institution: Shanghai Jiao Tong University
+      year: 2025.09 - PRESENT
     - title: B.Eng. in Artificial Intelligence
       institution: Shanghai Jiao Tong University
-      year: 2021.09 - PRESENT
+      year: 2021.09 - 2025.06
       description:
         - 'GPA: 4.03/4.30 | Rank: Top 5%'
 
@@ -43,17 +46,6 @@
         - Outstanding Youth League Members of Shanghai Jiao Tong University
         - Shanghai Jiao Tong University B-Class Excellent Scholarship
 
-# - title: Academic Interests
-#   type: nested_list
-#   contents:
-#     - title: Topic 1.
-#       items:
-#         - Description 1.
-#         - Description 2.
-#     - title: Topic 2.
-#       items:
-#         - Description 1.
-#         - Description 2.
 
 - title: Misc
   type: map
@@ -61,4 +53,4 @@
     - name: Services
       value: Reviwer of TPAMI
     - name: Hobbies
-      value: Reading popular books about math, social science, management, etc.
+      value: Reading books about math, philosophy, social science, etc. Playing badminton.
