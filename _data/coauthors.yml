@@ -1,7 +1,14 @@
-"adams":
-  - firstname: ["Edwin", "E.", "E. P.", "Edwin Plimpton"]
-    url: https://en.wikipedia.org/wiki/Edwin_Plimpton_Adams
+"bai":
+  - firstname: ["Chenjia", "C."]
+    url: https://baichenjia.github.io/
 
-"podolsky":
-  - firstname: ["Boris", "B.", "B. Y.", "Boris Yakovlevich"]
-    url: https://en.wikipedia.org/wiki/Boris_Podolsky
+"zhang":
+  - firstname: ["Weinan", "W."]
+    url: https://wnzhang.net
+
+wu:
+  - firstname: ["Peilin", "P."]
+    url: https://peilinwu.site/
+chen:
+  - firstname: ["Jingxiao", "J."]
+    url: https://timerchen.github.io/

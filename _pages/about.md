@@ -23,11 +23,7 @@ social: true # includes social icons at the bottom of the page
 
 <!-- I'm a undergraduate student majoring Artificial Intelligence at [Shanghai Jiao Tong university](https://www.sjtu.edu.cn/) enrolled in 2021. Now I'm a Research Intern at [Institute of Artificial Intelligence (TeleAI), China Telecom](http://www.chinatelecom.com.cn/), co-worked with [Dr. Chenjia Bai](https://baichenjia.github.io/). I'm also a member of [APEX Lab](https://apex.sjtu.edu.cn/), supervised by [Prof. Weinan Zhang](https://wnzhang.net/). -->
 
-I'm a Master's student in Computer Science at [Shanghai Jiao Tong University (SJTU)](https://www.sjtu.edu.cn/), where I am a member of the [APEX Lab](https://apex.sjtu.edu.cn/) supervised by [Prof. Weinan Zhang](https://wnzhang.net/).  
+I'm a Master's student in Computer Science at [Shanghai Jiao Tong University (SJTU)](https://www.sjtu.edu.cn/), where I am a member of the [APEX Lab](https://apex.sjtu.edu.cn/) supervised by [Prof. Weinan Zhang](https://wnzhang.net/). I am currently also a Research Intern at the [Institute of Artificial Intelligence (TeleAI), China Telecom](http://www.chinatelecom.com.cn/), working with [Dr. Chenjia Bai](https://baichenjia.github.io/). Previously, I completed my Bachelor's degree in Artificial Intelligence at [SJTU](https://www.sjtu.edu.cn/).
 
-I am currently also a Research Intern at the [Institute of Artificial Intelligence (TeleAI), China Telecom](http://www.chinatelecom.com.cn/), working with [Dr. Chenjia Bai](https://baichenjia.github.io/).  
-
-Previously, I completed my Bachelor's degree in Artificial Intelligence at [SJTU](https://www.sjtu.edu.cn/).
-
-My research interests include **Reinforcement Learning** and **Robotics**, recently working on **Humanoid Whole Body Control**.
+My research interests include **Reinforcement Learning** and **Robotics**, with a current focus on **Humanoid Whole Body Control**. Foundamentally, my vision is to build **General-Purpose Robots** that can do anything for human. 
 
