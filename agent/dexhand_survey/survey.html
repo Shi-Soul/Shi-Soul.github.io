@@ -18,30 +18,50 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <h1>灵巧手算法调研：给运控研究者的导读（A 部分：纯灵巧手 · B 部分：Agent × 灵巧手）</h1>
 <blockquote>
 <p>截至 <strong>2026-10-23</strong>。读者设定为熟悉腿足/人形运动控制（RL sim2real、MPC、WBC、动作重定向）的研究者。
-配套交互页面：<code>index.html</code>；收录 162 条论文与资源，其中 152 条 arXiv 编号和标题用官方 API 核验过。</p>
+配套交互页面：<code>index.html</code>；收录 424 条论文与资源，其中 412 条 arXiv 编号与标题用官方 API 核验。
+第二版（2026-10-23）以三份底表做全量比对后补全：2026 年灵巧手综述（arXiv 2605.13925）的参考文献、Awesome-Dexterous-Hands 清单、YanjieZe 的灵巧操作论文清单，再按方向补检索。</p>
 </blockquote>
 <hr />
 <h2>0. 一页结论</h2>
 <ol>
-<li><strong>主线仍是"仿真 RL + sim2real"，而且方法和运控几乎一一对应。</strong> 从 Dactyl（2018）到 DeXtreme、HORA，再到 DexNDM、ViserDex（2025–26），用的都是你熟悉的工具：域随机化、教师-学生特权蒸馏、RMA 式在线适应、执行器建模。2026 年的新变量有两个：
-   - <strong>触觉</strong>：快速触觉仿真，或者干脆绕开触觉仿真；
-   - <strong>执行器层面的建模</strong>：关节级神经动力学、电流到力矩的标定。</li>
-<li><strong>"重定向 + RL 跟踪"成了和人形全身控制同构的配方。</strong> ManipTrans、DexTrack、DexMachina、SPIDER、REGRIND 把人手-物体演示重定向到机器人手，再训练以物体为中心的跟踪策略。REGRIND 明确说自己就是把人形 WBC 的简单配方搬到了灵巧手上。</li>
-<li><strong>数据规模在快速上涨，但"运动学对、力不对"是核心瓶颈。</strong>
-   - 规模：EgoScale 用了 2 万多小时人类第一人称视频，Dex1B 有 10 亿条演示，DexGraspNet 3.0 有 1.7 亿个抓取；
-   - 2026 年的重定向开始保留接触结构与力：TopoRetarget、ReForce、Contact-Anchored Retargeting。</li>
-<li><strong>基于模型的方法没有退场。</strong> 采样 MPC（DROP、Primitive-Informed MPC、Global-MPPI）和接触感知优化（Contact Trust Region）不用训练、可解释，正在和 RL 分层结合：高层 RL 决定"碰哪里"，低层 MPC 决定"怎么推"。</li>
-<li><strong>VLA 开始覆盖高自由度手</strong>（GR-Dexter、XL-VLA、Dexora、EgoScale），但手指级的接触协调仍主要由 RL 训出的低层控制器或"基础控制器"承担（DexterityGen、TacBPM、ADEPT）。</li>
-<li><strong>Agent（LLM/VLM/编码 agent）在灵巧手上的价值集中在慢环和离线环</strong>：写奖励（Eureka 让仿真 Shadow 手转笔、Text2Touch）、生成仿真与数据（GenDexHand、DexAgent 3.5×、Gemini 4 Argon）、给出语义/功能抓取目标（OmniDexVLG、DextER）、编码 agent 自己搭环境训策略（Dexterous Astra 转笔、ASPIRE 真机魔方）。
-   - <strong>让大模型直接控手指仍然不行</strong>：Galbot 的实测显示 GPT-6 Astra 直接做手内操作时难以协调手指接触；
-   - <strong>把触觉作为上下文交给大模型却很有用</strong>：冻结的 GPT-6 Astra 在插孔任务上从 31% 提到 99%。</li>
+<li><strong>主线仍是"仿真 RL + sim2real"，方法和运控几乎一一对应。</strong> 从 DAPG、Dactyl 到 HORA、DeXtreme，再到 DexNDM、ViserDex，用的都是你熟悉的工具：域随机化、教师-学生蒸馏、RMA 式适应、执行器建模。2026 年的新变量是<strong>触觉</strong>和<strong>执行器层面的建模</strong>。</li>
+<li><strong>"重定向 + RL 跟踪"是与人形全身控制同构的配方。</strong> ManipTrans、DexTrack、DexMachina、SPIDER、REGRIND、CHORD 等把人手-物体演示重定向后训练以物体为中心的跟踪策略。REGRIND 明确说自己就是把人形 WBC 的配方搬到了灵巧手上。</li>
+<li>
+<p><strong>数据在快速扩张，瓶颈是"力不对"。</strong></p>
+<ul>
+<li>合成：Dex1B 有 10 亿条演示，DexGraspNet 3.0 有 1.7 亿个抓取；</li>
+<li>人类视频：EgoScale 用了 2 万多小时，GigaHands、HOT3D、OpenEgo、EgoVerse 等数据集也在涌现；</li>
+<li>遥操作硬件：力反馈手套与外骨骼大量出现。</li>
+</ul>
+<p>但运动学数据缺接触力和触觉，所以 2026 年的重定向开始保留接触结构与接触力（TopoRetarget、ReForce、Contact-Anchored、CHORD）。</p>
+</li>
+<li>
+<p><strong>真机 RL 在灵巧手上开始可用。</strong></p>
+<ul>
+<li>方法：HIL-SERL、RL-100、ResFiT、DexPIE、BORA、GR-RL；</li>
+<li>MPC 当脚手架效果显著：Allegro 手在线 RL 7 分钟达到 100%，20 分钟后转速超过 MPC 的 5 倍。</li>
+</ul>
+</li>
+<li><strong>基于模型的方法没有退场。</strong> 采样 MPC 与接触感知优化（Contact Trust Region、DROP、Jacta、免互补接触模型、Global-MPPI）不用训练、可解释，并与 RL 分层结合（高层 RL 选接触点，低层 MPC 推物体）。</li>
+<li><strong>触觉进入"基础模型 + 世界模型"阶段。</strong><ul>
+<li>表征：Sparsh、Sparsh-skin、Sparsh-X、AnyTouch、UniTouch；</li>
+<li>仿真：TacSL、UniVTAC、Tactile Genesis；</li>
+<li>世界模型：DexTacWAM、Dexterous Tactile World Model、TacWAM、ME-Dex 把触觉当作要预测的世界状态。</li>
+</ul>
+</li>
+<li><strong>VLA 覆盖了高自由度手</strong>（GR-Dexter、XL-VLA、Dexora、UniDex、EgoScale），但手指接触协调仍主要靠 RL 训出的低层控制器或"基础控制器"（DexterityGen、TacBPM、ADEPT），后训练（人在环、残差 RL）也必不可少。</li>
+<li><strong>Agent 留在慢环和离线环。</strong> 它能写奖励（Eureka、Text2Touch）、给参考轨迹（Scaffolding with VLMs）、生成仿真与数据（GenDexHand、DexAgent 3.5×）、给出语义抓取目标（OmniDexVLG、DextER、UniHM），还能让编码 agent 自己训策略（Dexterous Astra、ASPIRE）。<ul>
+<li>直接让大模型控手指仍然弱；</li>
+<li>但把触觉作为上下文交给它，插孔任务能从 31% 提到 99%。</li>
+</ul>
+</li>
 </ol>
 <hr />
 <h2>1. 运控视角：一张翻译表</h2>
 <table>
 <thead>
 <tr>
-<th>运控（腿足/人形）里熟悉的东西</th>
+<th>运控里熟悉的</th>
 <th>灵巧手里的对应物</th>
 <th>代表工作</th>
 </tr>
@@ -49,67 +69,152 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <tbody>
 <tr>
 <td>地面接触、步态、支撑相与摆动相</td>
-<td>物体接触与"指步态"（finger gaiting）：一部分手指稳住物体，另一部分换位</td>
-<td>HORA、FINGR、TacBPM</td>
+<td>物体接触与"指步态"：一部分手指稳住物体，另一部分换位</td>
+<td>HORA、FINGR、TacBPM、Non-Dropping Action Space</td>
 </tr>
 <tr>
 <td>大规模并行 PPO + 域随机化</td>
-<td>同样是主力；ADR 最早就出现在灵巧手上（OpenAI 魔方）</td>
-<td>Dactyl、Rubik's Cube、DeXtreme、DexPBT</td>
+<td>同样是主力；ADR 最早出现在灵巧手上</td>
+<td>Dactyl、OpenAI 魔方、DeXtreme、DexPBT、Isaac Gym</td>
 </tr>
 <tr>
 <td>RMA / 教师-学生特权蒸馏</td>
-<td>物体质量、摩擦、形状作特权信息，学生只用本体、触觉或视觉</td>
-<td>HORA、RotateIt、PTLD、ViserDex</td>
+<td>物体质量、摩擦、形状作为特权信息，学生只用本体、触觉或视觉</td>
+<td>HORA、RotateIt、PTLD、ViserDex、DextrAH-RGB</td>
 </tr>
 <tr>
 <td>执行器网络、系统辨识</td>
-<td>手的执行器（腱、减速器、电流-力矩）更难建模；关节级神经动力学、电流-力矩标定</td>
-<td>DexNDM、Force-Based Sim2Real、REGRIND</td>
+<td>腱、减速器、电流-力矩更难建模</td>
+<td>DexNDM、Force-Based Sim2Real、REGRIND、D-REX</td>
 </tr>
 <tr>
 <td>动作重定向 + 运动跟踪</td>
 <td>人手→机器人手重定向 + 以物体为中心的跟踪 RL</td>
-<td>ManipTrans、DexTrack、DexMachina、SPIDER、REGRIND</td>
+<td>ManipTrans、DexTrack、DexMachina、SPIDER、REGRIND、CHORD</td>
 </tr>
 <tr>
 <td>运动先验 / 潜在动作空间</td>
-<td>灵巧"基础控制器"、行为先验、预训练后再后训练</td>
-<td>DexterityGen、TacBPM、ADEPT、CoorDex</td>
+<td>灵巧"基础控制器"、行为先验、预训练再后训练</td>
+<td>DexterityGen、TacBPM、ADEPT、LAMP、CoorDex</td>
 </tr>
 <tr>
 <td>采样 MPC（MPPI、DIAL-MPC、MuJoCo MPC）</td>
-<td>接触丰富的手内 MPC，要处理接触的非光滑与模式组合</td>
-<td>DROP、Primitive-Informed MPC、Global-MPPI、Contact Trust Region</td>
+<td>接触丰富的手内 MPC，要处理非光滑与接触模式组合</td>
+<td>DROP、Jacta、Primitive-Informed MPC、Global-MPPI、Contact Trust Region</td>
+</tr>
+<tr>
+<td>人在环 / 安全的真机 RL</td>
+<td>灵巧手真机 RL，用干预、残差、MPC 脚手架降低风险</td>
+<td>HIL-SERL、MPC-Scaffolded RL、Intervention-Aware WM、DexPIE</td>
 </tr>
 <tr>
 <td>地形感知</td>
-<td>物体形状与位姿感知（深度、RGB、触觉），且手-物遮挡严重</td>
-<td>Visual Dexterity、ViserDex、DextrAH-RGB</td>
+<td>物体形状与位姿感知（深度、RGB、触觉），手-物遮挡严重</td>
+<td>Visual Dexterity、ViserDex、NeuralFeels、CordViP</td>
 </tr>
 <tr>
 <td>抗外扰</td>
-<td>防滑、抓握稳定、力调节</td>
-<td>Force-Based Sim2Real、WM-Craftnet</td>
+<td>防滑、抓握稳定、受力调节</td>
+<td>Force-Based Sim2Real、WM-Craftnet、Grasp to Act</td>
 </tr>
 <tr>
 <td>全身控制（WBC）</td>
 <td>手指 + 手腕 + 手臂 + 身体协调；人形边走边操作</td>
-<td>CoorDex、DexWeave、DextrAH-G</td>
+<td>CoorDex、DexWeave、HumanPlus、OmniH2O</td>
+</tr>
+<tr>
+<td>学到的动力学 / 世界模型</td>
+<td>灵巧世界模型（含触觉预测）</td>
+<td>PDDM、DexWM、DexTacWAM、Dexterous Tactile World Model</td>
 </tr>
 </tbody>
 </table>
-<p><strong>四个本质差异</strong>（也是灵巧手比腿足"难"的地方）：</p>
+<p><strong>四个本质差异</strong>：</p>
 <ol>
-<li><strong>被控对象不受驱动。</strong> 你要控制的是物体的状态，但物体没有执行器，只能通过间歇接触施力。这是一个欠驱动的混合系统，接触模式切换远比步态频繁、组合更多。</li>
-<li><strong>接触多且小。</strong> 力、尺寸、速度都小，摩擦、滑移、柔顺性的影响更大，仿真接触参数的误差相对更致命。</li>
-<li><strong>感知被遮挡。</strong> 物体常被手挡住，视觉位姿估计难；触觉因此关键，但触觉仿真又很难。</li>
-<li><strong>硬件不统一。</strong> 没有一个像"Unitree G1 之于人形"那样的统一平台：驱动有腱、连杆、直驱之分，自由度从 6 到 22 不等。所以跨本体表示成了独立的研究方向（OHRA、UHAS、XL-VLA）。</li>
+<li><strong>被控对象不受驱动。</strong> 要控制的是物体状态，但物体没有执行器，只能经由间歇接触施力：这是欠驱动的混合系统。</li>
+<li><strong>接触多且小。</strong> 摩擦、滑移、柔顺性影响更大，仿真接触参数的误差更致命。</li>
+<li><strong>感知被遮挡。</strong> 物体被手挡住，触觉因此关键，但难仿真。</li>
+<li><strong>硬件不统一。</strong> 自由度 6–22 不等，驱动方式各异，所以跨本体表示成了独立方向（OHRA、UHAS、XL-VLA、UniDexTok、DexFormer、GraspGraphNet）。</li>
 </ol>
-<p>泛化的对象也不同：腿足主要泛化地形，灵巧手主要泛化<strong>物体</strong>（形状、质量、摩擦、铰接结构）。</p>
+<p>泛化的对象也不同：腿足主要泛化地形，灵巧手主要泛化<strong>物体</strong>。</p>
+<hr />
+<h2>2. 配方速查：一份灵巧手 RL / 模仿的"默认清单"</h2>
+<p>以下是 2022–2026 年大量工作共享的做法，可以作为你搭第一个灵巧任务时的检查表。</p>
+<ul>
+<li>
+<p><strong>观测</strong>：</p>
+<ul>
+<li>本体：关节位置及若干帧历史、上一步动作；</li>
+<li>物体：位姿、点云或关键点（TriFinger 的工作发现关键点表示优于位置 + 四元数）；</li>
+<li>目标：目标位姿或旋转轴；</li>
+<li>触觉：二值接触、力或触觉潜变量。</li>
+</ul>
+<p>教师额外拿到特权信息：物体质量、摩擦、质心、形状参数、真实接触。</p>
+</li>
+<li>
+<p><strong>动作空间</strong>：最常见的是关节位置目标 + PD，常用增量形式加平滑。降维的选择有：</p>
+<ul>
+<li>PCA / 协同（eigengrasp）、操作原语（Primitive-Informed MPC）；</li>
+<li>潜在动作（XL-VLA、UniDexTok、TacBPM、LAMP）；</li>
+<li>规范化的跨手表示（OHRA、UHAS）；</li>
+<li>"不会掉物体"的动作空间（Non-Dropping Action Space）。</li>
+</ul>
+</li>
+<li><strong>奖励</strong>：<ul>
+<li>以物体为中心：位姿误差、沿目标轴的旋转速度、关键点距离；</li>
+<li>正则项：动作幅度与变化率、关节功或力矩、掉落惩罚；</li>
+<li>接近与接触奖励：接近物体、指定手指部位接触（DexPoint、DexMan、EaDex 用接触奖励，CHORD 用接触力旋量）；</li>
+<li>从人类视频算奖励：以物体轨迹为中心（HuDOR、Human2Sim2Robot），绕开人手与机器人手的形态差异；</li>
+<li>跟踪人类参考：物体轨迹 + 手部参考（ManipTrans、DexMachina、REGRIND）；</li>
+<li>由 LLM 生成（B 部分）。</li>
+</ul>
+</li>
+<li><strong>课程与探索</strong>：<ul>
+<li>目标难度课程（POISE 的自适应 6D 目标课程）、物体几何或场景密度课程（UniDexGrasp++、ClutterDexGrasp）；</li>
+<li>"虚拟物体控制器"逐渐撤除（DexMachina）；</li>
+<li>示范引导（DAPG、DemoGrasp、DemoFunGrasp）；</li>
+<li>规划器提供探索（Sampling-based Exploration、Jacta、MPC-Scaffolded RL）。</li>
+</ul>
+</li>
+<li><strong>域随机化</strong>：<ul>
+<li>物体：质量、摩擦、尺寸、质心；</li>
+<li>手：PD 增益、阻尼、关节摩擦；</li>
+<li>时序与噪声：动作延迟与噪声、观测噪声；</li>
+<li>手相对重力的姿态（AnyRotate 训练任意手姿态下的旋转）；</li>
+<li>视觉外观（ViserDex 在 3D 高斯泼溅空间里做）。</li>
+</ul>
+</li>
+<li><strong>执行器与真机差距</strong>：系统辨识、关节级动力学模型（DexNDM）、电流-力矩标定与执行器动力学建模（Force-Based Sim2Real）、可微 real-to-sim 参数辨识（D-REX）；用电机电流当"触觉"（Current as Touch）。</li>
+<li><strong>蒸馏</strong>：特权教师 → 学生（本体历史、视觉、触觉），常用 DAgger 式在线蒸馏；多个专家 → 一个通才或潜在先验（UniGraspTransformer、ClutterDexGrasp、TacBPM、CoorDex）；也可以保留为混合专家（DexReMoE）。</li>
+<li><strong>评测指标</strong>：<ul>
+<li>旋转：累计旋转角或角速度、掉落时间（TTF）；</li>
+<li>重定向：连续成功次数、误差阈值内的比例；</li>
+<li>抓取：提起并保持的成功率；</li>
+<li>长时程任务：分阶段成功率；</li>
+<li>真机：成功率 + 完成时间。</li>
+</ul>
+</li>
+<li><strong>常见坑</strong>：<ul>
+<li>仿真碰撞体和真实指垫形状、厚度不一致；</li>
+<li>连杆手的耦合关节在仿真里没建模；</li>
+<li>PD 增益与执行器饱和不一致；</li>
+<li>长时间运行后手指电机发热，特性随之漂移；</li>
+<li>仿真与真机的触觉接触事件对不上（Blind Dexterous Grasping 专门做了 Real2Sim 接触事件标定）；</li>
+<li>遮挡导致物体位姿抖动；</li>
+<li>训练物体集合过于规则。</li>
+</ul>
+</li>
+<li><strong>基础设施</strong>：<ul>
+<li>仿真：Isaac Gym / Isaac Lab、MuJoCo / MJX（MuJoCo Playground）、ManiSkill3、ComFree-Sim；</li>
+<li>触觉仿真：TacSL、UniVTAC、Tactile Genesis；</li>
+<li>手模型：MuJoCo Menagerie（含 Shadow、Allegro、LEAP）；</li>
+<li>重定向：dex-retargeting。</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h1>A 部分：不沾 Agent 的灵巧手</h1>
-<h2>A1. 硬件</h2>
+<h2>A1. 硬件与手部设计</h2>
 <table>
 <thead>
 <tr>
@@ -121,149 +226,183 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <tbody>
 <tr>
 <td>关节直驱 / 近端电机</td>
-<td>Allegro（16 DoF）、LEAP（16 DoF）、XHand（12 DoF）、Sharpa Wave（22 DoF，500 Hz）、Wuji Hand（20 DoF，FOC）</td>
-<td>建模相对直接，可用电流估力；关节多时手更重，散热需要处理</td>
+<td>Allegro（16 DoF）、LEAP（16 DoF）、XHand（12 DoF）、Sharpa Wave（22 DoF，500 Hz）、Wuji Hand（20 DoF，FOC）、MIDAS（开源低阻抗直驱、带触觉）、EyeSight Hand（准直驱 + 视触觉）</td>
+<td>建模相对直接，可用电流估力；手更重，要处理散热</td>
 </tr>
 <tr>
-<td>腱驱动（电机在前臂）</td>
-<td>Shadow Hand、ORCA（17 DoF，开源）、Tesla Optimus Gen 3（报道为 22 DoF）、MM-Hand（21 DoF）</td>
-<td>手轻、自由度高；但腱的摩擦、迟滞、耦合让 sim2real 更难</td>
+<td>腱驱动（电机在前臂或远端）</td>
+<td>Shadow Hand、ORCA（17 DoF，开源）、Tesla Optimus Gen 3（报道 22 DoF）、MM-Hand（21 DoF）、CRAFT（软硬混合柔顺）、Aero Hand Open（仿真就绪、开源）</td>
+<td>手轻、自由度高；腱的摩擦、迟滞、耦合让 sim2real 更难</td>
 </tr>
 <tr>
 <td>连杆驱动</td>
-<td>Inspire RH56 系列（中国人形常见标配）、DexLink（16 个执行器驱动 20 个关节，&lt;400 美元）</td>
-<td>结构可靠、成本低；耦合关节限制了可达姿态</td>
+<td>Inspire RH56（中国人形常见标配）、DexLink（16 个执行器驱动 20 个关节，&lt;400 美元）、SyLink（协同启发）</td>
+<td>可靠、成本低；耦合关节限制可达姿态</td>
 </tr>
 <tr>
 <td>软体 / 欠驱动</td>
-<td>Tactile SoftHand-A、CYJ Hand-0（SMA + 电机混合）</td>
-<td>被动顺应好；可控自由度少，建模难</td>
+<td>Tactile SoftHand-A、CYJ Hand-0（SMA + 电机）</td>
+<td>被动顺应好，可控自由度少</td>
+</tr>
+<tr>
+<td>面向数据的平台</td>
+<td>RAPID Hand（20 DoF + 全手感知 + 遥操作协同设计）、ByteDexter（20 DoF）、GR-Dexter 手（21 DoF）、DManus（大面积触觉）</td>
+<td>软硬一体，为采集与学习服务</td>
 </tr>
 </tbody>
 </table>
-<p><strong>选型时运控研究者应关注</strong>：是否反驱（backdrivable）、控制带宽、能否从电流估计力矩、触觉布局、能否自己维修，以及<strong>有没有可靠的 MuJoCo/URDF 资产</strong>——这直接决定 sim2real 的起点。2026 年的趋势是 20 DoF 以上 + 指尖触觉阵列，以及与人形整合（GR-Dexter 手、Sharpa Wave 进入 NVIDIA 参考人形套件、TESOLLO DG-5F-S 缩小减重）。</p>
+<p><strong>协同设计</strong>：House of Dextra（跨本体，学习任务相关的手形态与控制）、Function-based Co-Design（统一手掌、指运动学与指尖几何的参数空间）、指节长度比优化、软手协同优化（遗传算法 + 策略迁移，约 400 种设计）、用奖励模型设计软手，以及 Lang2Morph（用 LLM 生成手形态，见 B 部分）。</p>
+<p><strong>评测灵巧度</strong>：A Benchmark of Dexterity for Anthropomorphic Robotic Hands 主张用可测的表现来定义"灵巧度"。</p>
+<p><strong>选型要点</strong>：能否反驱、控制带宽、能否从电流估力矩、触觉布局、能否自己维修，以及<strong>有没有可靠的 MuJoCo / URDF 资产</strong>（MuJoCo Menagerie 收录了 Shadow、Allegro、LEAP 的模型）。</p>
 <h2>A2. 手内操作：RL 与 sim2real 主线</h2>
-<p><strong>里程碑</strong>：
-- <strong>Dactyl</strong> 与 <strong>魔方</strong>（OpenAI）：大规模域随机化、ADR、带记忆的策略；
-- <strong>General In-Hand Reorientation / Visual Dexterity</strong>（MIT）：教师-学生，单深度相机；
-- <strong>HORA</strong>：把腿足的 RMA 搬到手内旋转；
-- <strong>RotateIt / Rotating without Seeing / AnyRotate</strong>：触觉；
-- <strong>DeXtreme</strong>（Isaac Gym 并行 + 视觉位姿）、<strong>DexPBT</strong>（种群训练）；
-- 转笔经验总结、<strong>Twisting Lids Off</strong>（双手拧盖）。</p>
-<p><strong>2025–2026 的新进展，按运控视角归类</strong>：</p>
 <ul>
-<li><strong>执行器与动力学差距</strong>：</li>
-<li><strong>DexNDM</strong>（ICLR'26）用少量真机数据拟合每个关节的等效动力学（把耦合、驱动和物体影响都吸收进低维有效项），再修正仿真策略的动作；</li>
-<li><strong>Force-Based Sim2Real</strong> 做电流→力矩标定和执行器动力学建模，省掉力矩传感器；</li>
-<li><strong>REGRIND</strong> 靠"仔细的系统辨识"实现零样本上真机。</li>
+<li><strong>早期</strong>：<ul>
+<li>DeepMind 用 DRL 做抓取堆叠；</li>
+<li><strong>DAPG</strong> 用示范增强策略梯度；</li>
+<li><strong>PDDM</strong> 学深度动力学模型 + MPC；</li>
+<li>在低成本灵巧手上直接做真机深度 RL（Zhu 等，2018）；</li>
+<li><strong>TriFinger</strong> 从 Isaac Gym 迁移到远程真机，RRC 挑战赛冠军方案。</li>
 </ul>
-<p>这些和腿足的 actuator net、system ID 是同一类工作。
-- <strong>视觉 sim2real</strong>：<strong>ViserDex</strong>（RSS'26，ETH + NVIDIA）在 3D 高斯泼溅空间里做域随机化，单目 RGB 估计物体位姿，策略用课程 RL + 教师-学生。
-- <strong>先验与预训练</strong>：
-  - <strong>ADEPT</strong>：先预训练通用的"物体重摆"，再稳定地后训练到长时程任务；
-  - <strong>TacBPM</strong>：触觉条件的行为先验，下游用残差潜动作复用；
-  - <strong>DexterityGen</strong>：RL 原语 + 扩散生成，相当于"灵巧基础控制器"。</p>
-<p>这对应腿足里的运动先验（AMP/PULSE 一类）。
-- <strong>任务谱扩展</strong>：
-  - <strong>POISE</strong>：手内 6D 位姿到达；
-  - <strong>Mana / SimToolReal / Articulated Tools In-Hand</strong>：铰接工具与工具使用；
-  - <strong>FINGR</strong>：单手还原真实魔方；
-  - <strong>DexCompose</strong>：按手指分配"动作所有权"来组合策略。
-- <strong>跨本体</strong>：
-  - <strong>UHAS</strong>：球面形变动作空间 + 级联 IK；
-  - <strong>OHRA</strong>：统一的 22 DoF 规范 URDF。</p>
-<h2>A3. 抓取合成</h2>
-<ul>
-<li><strong>优化路线</strong>：可微力封闭（<strong>DexGraspNet</strong>，132 万个抓取）→ 双层优化 QP（<strong>BODex</strong>，单卡每秒 49 个以上，训练出的模型仿真成功率约 80%，DexGraspNet 约 40%）。</li>
-<li><strong>生成模型</strong>：UniDexGrasp / ++、DexGraspNet 2.0（杂乱场景）、<strong>DexGrasp Anything</strong>（物理约束进扩散，340 万个抓取）、<strong>Dex1B</strong>（10 亿条演示）。</li>
-<li><strong>闭环抓取策略的 sim2real</strong>：DextrAH-G（几何 fabrics 保证安全）、DextrAH-RGB（只用 RGB）、Get a Grip。</li>
-<li><strong>2026 年的新方向</strong>：</li>
-<li>跨手迁移：OHRA，3 指 LEAP 零样本 81.9%；</li>
-<li>人类偏好先验：HUGS；</li>
-<li>真实世界无人值守采集：AutoDex；</li>
-<li>用抓取数据预训练灵巧技能：From Grasps to Dexterity；</li>
-<li>只靠触觉的盲抓：Blind Dexterous Grasping。</li>
+</li>
+<li><strong>里程碑</strong>：<ul>
+<li><strong>Dactyl</strong>、<strong>魔方</strong>（OpenAI）；</li>
+<li>通用手内重定向、Visual Dexterity（MIT）；</li>
+<li><strong>HORA</strong>（RMA）、RotateIt、Rotating without Seeing、AnyRotate、DLR 纯触觉手内操作；</li>
+<li><strong>DeXtreme</strong>、DexPBT、DexPoint（点云 RL）；</li>
+<li>转笔经验总结、Twisting Lids Off。</li>
 </ul>
-<h2>A4. 触觉</h2>
-<ul>
-<li><strong>传感器</strong>：视触觉（DIGIT）、磁性皮肤（AnySkin）、电阻/电容阵列（Sharpa Wave 等商用手内置）。</li>
-<li><strong>触觉仿真</strong>：HydroShear（水弹性接触，含粘滑与剪切）、TacMap（穿透深度图统一仿真与真实）、ETac（数据驱动形变传播）、Tactile Genesis（多种触觉抽象统一接口，2 万并行环境）。</li>
-<li><strong>绕开触觉仿真</strong>：</li>
-<li><strong>PTLD</strong>：用真实世界的特权传感器采集触觉策略数据再蒸馏；</li>
-<li><strong>SBLR</strong>：仿真里用"预言者传感器"（点云 + 指尖力）训练，部署时对齐真实传感器的潜变量。</li>
-<li><strong>Real2Sim 标定</strong>：Blind Dexterous Grasping 让仿真里的触觉事件时序与真机对齐。</li>
-<li><strong>触觉进入世界模型</strong>：DexTacWAM 把触觉潜变量注入视频扩散世界模型，6 个任务平均 70.6 分，最强基线 38.0。</li>
-<li><strong>运控类比</strong>：触觉相当于"高维的足底接触传感器"，但仿真难度高一个量级。对你来说最省事的做法往往是 PTLD / SBLR 这种不依赖精确触觉仿真的路线。</li>
+</li>
+<li><strong>探索与结构</strong>：采样式探索、Koopman 算子、MyoDex（肌骨手先验）、通用人类先验（人类偏好）、RGMC 竞赛冠军方案（大范围精确抓内移动）、"不会掉物体"的动作空间、DexCompose（按手指分配"动作所有权"，组合已有策略）、物理仿真里学用筷子。</li>
+<li><strong>2025–2026 的新进展</strong>：<ul>
+<li><strong>执行器差距</strong>：DexNDM 关节级神经动力学、Force-Based Sim2Real（电流-力矩标定）、REGRIND 的系统辨识、Learning from Imperfect Sims（不完美仿真下学拧螺母、用螺丝刀）；</li>
+<li><strong>视觉</strong>：ViserDex 在 3D 高斯泼溅空间做域随机化；</li>
+<li><strong>先验与预训练</strong>：ADEPT、TacBPM、Play2Perfect（精密装配的玩耍预训练）、在仿真里预训练视觉灵巧；</li>
+<li><strong>任务谱</strong>：POISE 6D 到达、Mana / SimToolReal / 铰接工具（镊子、剪刀）、FINGR 真实魔方、UniCross（四种技能统一）、Dex4D（与任务无关的点跟踪策略）；</li>
+<li><strong>跨本体</strong>：UHAS、OHRA、DexFormer（历史条件 Transformer 在线推断手的形态）。</li>
 </ul>
-<h2>A5. 基于模型的接触控制</h2>
-<ul>
-<li><strong>准静态平滑 + 全局规划</strong>：Pang 等对接触动力学做局部平滑，再用 RRT 做全局规划；<strong>Contact Trust Region</strong>（IJRR）提出尊重接触单边性的信赖域，局部 MPC + 全局拼接，不靠并行也比 RL 和采样 MPC 省算力。</li>
-<li><strong>采样 MPC</strong>：Predictive Sampling（MuJoCo MPC）、<strong>DROP</strong>（在线采样规划完成手内方块重定向）、腱驱动手上的采样 MPC、<strong>Primitive-Informed MPC</strong>（低维操作原语偏置采样 + 关节残差）、<strong>Global-MPPI</strong>（核平方和全局探索 + 渐进非凸平滑）。</li>
-<li><strong>与学习结合</strong>：</li>
-<li>Hierarchical RL-MPC：高层 RL 选接触点和物体子目标，低层接触隐式 MPC 执行；</li>
-<li>"Should We Learn from Sampling-Based Planners?" 讨论了用规划器轨迹做模仿学习的利弊。</li>
-<li><strong>工具</strong>：MuJoCo Playground（MJX，含灵巧手任务）、ComFree-Sim（免互补约束的解析接触 GPU 引擎）。</li>
-<li><strong>给运控研究者</strong>：这是你最熟悉的工具链，和 DIAL-MPC、MPPI 同源。难点在于接触模式组合爆炸和梯度不可靠，原语化采样与接触感知信赖域是两条可行的缓解路线。</li>
+</li>
+<li><strong>人形双手视觉 sim2real</strong>：Lin 等给出一套配方——自动 real-to-sim 调参、接触与目标奖励、分治蒸馏、混合物体表征。</li>
 </ul>
-<h2>A6. 遥操作与重定向</h2>
+<h2>A3. 双手、动态与可变形物体</h2>
 <ul>
-<li><strong>视觉遥操作</strong>：DexPilot（经典重定向优化）、<strong>AnyTeleop</strong>（通用框架）、Bunny-VisionPro（Vision Pro，带触觉反馈）、OPEN TEACH（VR）。</li>
-<li><strong>穿戴式</strong>：DexCap（动捕手套）、<strong>DexUMI</strong>（外骨骼 + 视频里把人手修补成机器人手，平均 86%）、DexEXO（适配 140–217 mm 手长）、DexWild（野外低成本采集）。</li>
-<li><strong>重定向本身</strong>：</li>
-<li>目标项分析：Retargeting Objectives；</li>
-<li>免标定：AnyDexRT；</li>
-<li>拧转动作：DexTwist；</li>
-<li><strong>力感知重定向</strong>：ReForce，在运动学结果上预测残差以达到期望接触力。</li>
-<li><strong>共享自主</strong>：</li>
-<li>人类遥操作没有触觉反馈，很难直接操控精细接触，于是由学到的低层控制器来"补"接触执行：DexterityGen、TeleDexter、DexTeleop-0；</li>
-<li>另一种分工是人用 VR 管手臂、VLA 管手指：Shared-Autonomy DexGrasp-VLA。</li>
+<li><strong>动态</strong>：Dynamic Handover（双手抛接，多智能体 RL）、DyDexHandover（只用 RGB 的类人抛接）、DexCatch、<strong>Catch It!</strong>（移动底盘 + 12 DoF 手接空中物体）、Tele-Catch（共享自主接物）。</li>
+<li><strong>双手</strong>：Twisting Lids Off、BiDexHD（从人类示范自动构建双手任务）、BiCompoDiff（抓取-交接-重定向）、ManipTrans、DexMachina、ArtiGrasp。</li>
+<li><strong>可变形</strong>：DexDeform（可微物理 + 人类示范捏橡皮泥）、DexGarmentLab（衣物仿真与策略）、薄片抓取（多传感软手）、PP-Tac（触觉拾纸）、D3Grasp（可变形物体抓取）。</li>
+<li><strong>运控要点</strong>：动态任务最像腿足的跳跃、落地——接触时序和冲击是关键，多智能体 RL 常用来协调两只手。</li>
 </ul>
-<p>这和人形遥操作中用 RL 跟踪器兜底是同一思路。</p>
-<h2>A7. 从人类演示 / 视频到机器人</h2>
+<h2>A4. 抓取合成与抓取策略</h2>
 <ul>
-<li><strong>重定向 + 跟踪 RL</strong>（与人形运动模仿同构）：</li>
-<li><strong>DexTrack</strong>：通用神经跟踪控制器 + 数据飞轮；</li>
-<li><strong>ManipTrans</strong>：通用模仿器 + 交互残差；</li>
-<li><strong>DexMachina</strong>：强度衰减的虚拟物体控制器做课程；</li>
-<li><strong>SPIDER</strong>：物理感知采样重定向，覆盖 9 种本体；</li>
-<li><strong>Human2Sim2Robot</strong>：一段 RGB-D 视频 + 以物体为中心的奖励；</li>
-<li><strong>REGRIND</strong>：一段示范 + 残差 RL + 系统辨识。</li>
-<li><strong>保接触而非保关节</strong>：TopoRetarget（交互图 + 拉普拉斯形变）、Contact-Anchored Retargeting（迁移"哪个手指部位碰哪里、按什么顺序"）。</li>
-<li><strong>视频规模化</strong>：DexMV、VideoDex → Do as I Do、VideoManip、DexImit、DexMan、Dex-X（仿真补全触觉）、Gen2Dex（生成视频）。</li>
-<li><strong>第一人称大规模</strong>：</li>
-<li><strong>EgoScale</strong>：2 万多小时人类视频，发现数据规模与验证损失呈对数线性关系，且验证损失与真机表现强相关；</li>
-<li>Being-H0、EgoVLA。</li>
+<li><strong>优化路线</strong>：DexGraspNet（可微力封闭）→ BODex（双层 QP，单卡每秒 49 个以上）→ SpringGrasp（形状不确定下的柔顺抓取）。</li>
+<li><strong>生成模型</strong>：GenDexGrasp（接触图跨手）、UniDexGrasp / ++、DexDiffuser、GraspXL、GrainGrasp、DexGraspNet 2.0、DexGrasp Anything（340 万个抓取）、<strong>Dex1B</strong>（10 亿条）、CEDex（类人接触表示）、HUGS（人类偏好先验）、EvolvingGrasp（用成败反馈做偏好对齐）、DiffusionRL Grasp（RL 适配的数据训练抓取扩散策略）。</li>
+<li><strong>闭环策略与 sim2real</strong>：DextrAH-G、DextrAH-RGB、Get a Grip、UniGraspTransformer（专家蒸馏）、端到端图像 RL、DemoGrasp（一次示范）、DexTransfer。</li>
+<li><strong>功能性抓取</strong>：Dexterous Functional Grasping、拟人功能抓取、预抓取操作、FunGrasp、ScaleADFG、DemoFunGrasp、CoToGrasp、Grasp to Act（工具使用中的动态力）。</li>
+<li><strong>杂乱场景</strong>：ClutterDexGrasp、CADGrasp、RetrDex、OmniDex、"When Does Touch Matter?"（真机对照：力矩与触觉何时比视觉有用）。</li>
+<li><strong>跨本体与多物体</strong>：D(R,O) Grasp、跨本体抓取 RL、OHRA、EAGG、GraspGraphNet、MultiGrasp、MoDex（单手依次抓多个）。</li>
+<li><strong>触觉驱动执行</strong>：CoorGrasp（触觉 MPC 协调多指接触）、AdaDexGrasp、Blind Dexterous Grasping。</li>
+<li><strong>真实数据与预训练</strong>：RealDex、AutoDex（无人值守采集）、GraspVLA（十亿级合成动作预训练）、From Grasps to Dexterity。</li>
 </ul>
-<h2>A8. 灵巧 VLA 与基础模型</h2>
+<h2>A5. 触觉：传感、表征、仿真与 sim2real</h2>
 <ul>
-<li><strong>抓取型</strong>：DexGraspVLA（VLM 规划 + 扩散控制器，杂乱场景 90% 以上）、DexVLG（1.7 亿个语义部件抓取）。</li>
-<li><strong>通用型</strong>：</li>
-<li><strong>GR-Dexter</strong>（字节，21 DoF 手 + 双手遥操作 + 跨本体数据）；</li>
-<li><strong>XL-VLA</strong>（共享潜在动作空间，4 种手平均 72%，π0 为 32%）；</li>
-<li><strong>Dexora</strong>（开源双臂双手 VLA）；</li>
-<li>EgoScale、Being-H0、EgoVLA（人类视频预训练）；</li>
-<li><strong>DexTacWAM</strong>（视触觉世界-动作模型）。</li>
-<li><strong>产业</strong>：Figure Helix 02（全身单网络，借助指尖触觉与掌心相机分药片、推注射器）、NVIDIA GR00T 系列、Gemini Robotics（微调后折纸）。</li>
-<li><strong>难点</strong>：动作维度高（双手 40 维以上）、遮挡、真机数据贵。对应的三个解法是跨本体潜在动作、人类视频预训练、共享自主采数据。</li>
+<li><strong>传感器</strong>：DIGIT、DIGIT 360（多模态指尖）、AnySkin、DManus（全手大面积）、EyeSight Hand、FingerEye、VTAP。</li>
+<li><strong>表征（触觉基础模型）</strong>：T-Dex、Sparsh、Sparsh-skin（全手磁性皮肤）、Sparsh-X（图像、声音、运动、压力）、UniTouch、AnyTouch / AnyTouch 2、视触觉对比学习、以人为中心的触觉预训练、TouchWorld。</li>
+<li><strong>仿真</strong>：TacSL、HydroShear、TacMap、ETac、Tactile Genesis、UniVTAC。</li>
+<li><strong>绕开或对齐触觉仿真</strong>：PTLD（真实特权传感器）、SBLR（预言者传感器对齐）、Blind Grasping（Real2Sim 触觉标定）、Current as Touch（电机电流当触觉）。</li>
+<li><strong>感知</strong>：NeuralFeels（视觉 + 触觉神经场，在线估计物体形状与位姿）、PoseFusion、ViTaM-D。</li>
+<li><strong>策略</strong>：RotateIt、TacGNN（图网络从原始触觉估物体状态）、Robot Synesthesia、HATO（双手视触觉 + 低成本遥操作）、TAVI（视觉奖励驱动的触觉 RL）、3D-ViTac、预测力注意力的视触觉融合、TransDex（透明物体）、T-Rex（触觉反应式）、OmniVTLA、MoDE-VLA。</li>
+<li><strong>基准</strong>：TactiDex、Bench2Dex、HT-Bench。</li>
+<li><strong>运控要点</strong>：触觉相当于"高维的足底接触传感"，但仿真难度高一个量级。入门推荐不依赖精确触觉仿真的路线（PTLD、SBLR、电流当触觉）。</li>
 </ul>
-<h2>A9. 人形全身灵巧</h2>
+<h2>A6. 基于模型的接触控制</h2>
 <ul>
-<li><strong>CoorDex</strong>：身体与手分别训特权跟踪教师，蒸馏成潜在先验，再用协调残差 RL 实现"边走边操作"（G1 + 20 DoF Wuji 手）。</li>
-<li><strong>DexWeave</strong>：交互一致的身体 + 手重定向 + 全身策略。</li>
-<li><strong>HumDex</strong>：IMU 全身动捕 + 学习式手部重定向。</li>
-<li><strong>WholeBodyVLA</strong>：从无标签视频学潜在 VLA。</li>
-<li><strong>Handroid</strong>：同一个机身可重构为灵巧手或桌面人形。</li>
+<li><strong>准静态平滑与全局规划</strong>：Pang 等；<strong>Contact Trust Region</strong>；<strong>免互补约束的多接触建模</strong>（实时灵巧 MPC），以及同一思路的 GPU 引擎 ComFree-Sim。</li>
+<li><strong>采样 MPC / 规划</strong>：Predictive Sampling（MuJoCo MPC）、<strong>DROP</strong>、腱驱动手采样 MPC、Primitive-Informed MPC、Global-MPPI、<strong>Jacta</strong>（灵巧与全身操作的通用采样规划器，用来引导 RL）。</li>
+<li><strong>学到的模型</strong>：PDDM、Koopman、D-REX（可微 real-to-sim 参数辨识）。</li>
+<li><strong>反应式控制</strong>：Geometric Fabrics（DextrAH 的底层，可保证稳定）。</li>
+<li><strong>与学习结合</strong>：Hierarchical RL-MPC、MPC-Scaffolded Real RL；"Should We Learn from Sampling-Based Planners?" 讨论了用规划器轨迹做模仿的利弊。</li>
+<li><strong>给运控研究者</strong>：这是你最熟悉的工具链；难点是接触模式组合爆炸和梯度不可靠。</li>
 </ul>
-<p>这一块是运控研究者最容易切入的交叉点：把已有的人形 WBC 先验和灵巧手先验组合起来。</p>
-<h2>A10. 基准与数据集</h2>
+<h2>A7. 遥操作与数据采集硬件</h2>
 <ul>
-<li><strong>仿真基准</strong>：Bi-DexHands、DexArt、DexMachina 基准、<strong>DexVerse</strong>（100 个任务、6 种手）、MuJoCo Playground、BODex 的 MuJoCo 基准、DexCraft（铰接工具）。</li>
-<li><strong>人手数据集</strong>：DexYCB、ARCTIC、OakInk2。</li>
-<li><strong>合成抓取</strong>：DexGraspNet 系列、Dex1B。</li>
+<li><strong>视觉 / VR</strong>：DexPilot、DIME、Holo-Dex、单相机多用户手、Robotic Telekinesis、<strong>AnyTeleop</strong>、OPEN TEACH、<strong>Open-TeleVision</strong>、Bunny-VisionPro。</li>
+<li><strong>外骨骼与手套</strong>：ACE、Exo-ViHa、DOGlove（开源力反馈）、Glovity（力旋量反馈）、ACE-F、MILE（机械同构 + 视触觉）、CDF-Glove、MFE（力、压力、温度反馈）、DEX-Mouse、ART-Glove、光纤手套、DexEXO、RealDexUMI、ViHaTeleop（550 美元）、DexDirect、DEXOP（被动外骨骼"围操作"，采视觉 + 触觉的人类数据）。</li>
+<li><strong>把力带进示范</strong>：FACTR（力反馈遥操作 + 力感知课程）、DexForce（从示教中提取含力信息的动作）。</li>
+<li><strong>人手直接采集</strong>：DexCap、DexUMI、DexWild、ExoStart（传感外骨骼示范 + 仿真 RL）。</li>
+<li><strong>重定向方法</strong>：目标项分析、DexFlow、AnyDexRT（免标定）、DexTwist（拧转）、ReForce（力感知）、Smooth Operator（采样式实时重定向）、TypeTele（按操作类型）、ObjRetarget；工具库 dex-retargeting。</li>
+<li><strong>共享自主与人形</strong>：DexterityGen、TeleDexter、DexTeleop-0、DITTO-X、NestDex、Shared-Autonomy VLA、DexTele（双臂力控）、HumanPlus、OmniH2O、HOMIE、HumDex。</li>
+<li><strong>运控要点</strong>：与人形遥操作用 RL 跟踪器兜底同理——人给意图，学到的控制器负责动力学可行与接触执行。</li>
+</ul>
+<h2>A8. 从人类演示 / 视频到机器人</h2>
+<ul>
+<li><strong>跟踪式</strong>（与人形运动模仿同构）：DexTrack、ManipTrans、DexMachina、SPIDER、Human2Sim2Robot、<strong>REGRIND</strong>、<strong>CHORD</strong>（接触力旋量引导）、Object-Centric from Human Motion、One Demo Many Objects、示例轨迹 + 预抓取。</li>
+<li><strong>保接触重定向</strong>：TopoRetarget、Contact-Anchored Retargeting、C2Dex、ObjRetarget。</li>
+<li><strong>视频</strong>：<ul>
+<li>早期：DexMV、VideoDex、Human Grasp Affordance、ViViDex、HuDOR、CyberDemo；</li>
+<li>近期：Do as I Do、VideoManip、DexImit、DexMan、Dex-X、Gen2Dex、V2P-Manip、MimicFunc、ImMimic、LaST-HD、AdvDex、RoboTok、RoboEdit、HandEdit。</li>
+</ul>
+</li>
+<li><strong>大规模第一人称</strong>：<strong>EgoScale</strong>（对数线性规律）、Being-H0、EgoVLA、UniDex、HOP（手-物交互预训练）、EgoInfinity（网络规模数据引擎）。</li>
+</ul>
+<h2>A9. 人手-物体重建与数据</h2>
+<ul>
+<li><strong>数据集</strong>：FPHA、ContactPose、DexYCB、ARCTIC、OakInk / OakInk2、TACO、<strong>GigaHands</strong>（34 小时、1.83 亿帧）、HOT3D、HO-Cap、OpenEgo（1107 小时）、EgoVerse、HandX、RoboMIND（含灵巧手的机器人数据）。</li>
+<li><strong>重建</strong>：HOLD、G-HOP、WiLoR、Dyn-HaMR、HaWoR、EgoGrasp、WHOLE、ForeHOI、Follow My Hold、GraspHOI、AGILE（agentic 生成，可仿真的手-物重建）、DexterCap（低成本精细采集）。</li>
+<li><strong>生成</strong>：ManiDext、D-Grasp、ArtiGrasp、GraspXL。</li>
+<li><strong>综述</strong>：大模型时代的手-物交互（2026）。</li>
+<li><strong>运控要点</strong>：这些是"人类运动捕捉库"的手部版本，质量直接决定重定向与跟踪 RL 的上限。</li>
+</ul>
+<h2>A10. 模仿学习策略与灵巧 VLA</h2>
+<ul>
+<li><strong>3D 模仿策略</strong>：<strong>DP3</strong>、CordViP、Structural Action Transformer、手内视觉运动扩散（单手拧瓶盖）。</li>
+<li><strong>抓取型</strong>：DexGraspVLA、DexVLG、GraspVLA。</li>
+<li><strong>通用型</strong>：<ul>
+<li>双手与跨手：<strong>GR-Dexter</strong>、<strong>XL-VLA</strong>、Dexora、UniDex、UniDexTok、AdvDex；</li>
+<li>通用 VLA 的灵巧扩展：DexVLA；</li>
+<li>人类视频预训练：EgoScale、Being-H0、EgoVLA；</li>
+<li>触觉 VLA：MoDE-VLA、OmniVTLA、T-Rex、TouchWorld；</li>
+<li>实时化：LiMA（异步扩散把长时程想象接到实时控制）。</li>
+</ul>
+</li>
+<li><strong>产业</strong>：Figure Helix 02、NVIDIA GR00T、Gemini Robotics（微调后折纸）。</li>
+<li><strong>难点</strong>：动作维度高、遮挡、真机数据贵；解法是跨本体潜在动作、人类视频预训练、共享自主采数据，以及后训练（A11）。</li>
+</ul>
+<h2>A11. 真机 RL 与后训练</h2>
+<ul>
+<li><strong>框架</strong>：SERL、<strong>HIL-SERL</strong>（Science Robotics）、RL-100、ResFiT（残差离策略 RL 微调行为克隆策略）。</li>
+<li><strong>灵巧专项</strong>：<ul>
+<li>早期：Substep Guidance 自主真机 RL、DEFT；</li>
+<li>后训练与改进：HandelBot（真机弹钢琴）、DexPIE、LAMP（潜在运动先验约束探索）、BORA（离线 RL + 在线残差，真机灵巧 VLA）、GR-RL（把通用 VLA 训成长时程灵巧专家）；</li>
+<li><strong>MPC-Scaffolded Real RL</strong>（Allegro 7 分钟 100%）、Intervention-Aware WM（把人的干预当安全信号）。</li>
+</ul>
+</li>
+<li><strong>VLA 后训练</strong>：High-DoF VLA Post-Training（手部动作编解码 + SFT + DAgger + 真机残差 RL）、DexHiL、Hand-in-the-Loop（避免接管时手势跳变）、How to Peel with a Knife（人类偏好对齐）。</li>
+<li><strong>运控要点</strong>：灵巧手真机 RL 的关键是安全探索——人在环、残差、脚手架控制器，和你在真机腿足上做在线适应的思路一致。</li>
+</ul>
+<h2>A12. 灵巧世界模型</h2>
+<ul>
+<li><strong>从人类视频学</strong>：DexWM、Dexterous World Models、LD4WAM、Skel-WAM、P³-WAM。</li>
+<li><strong>触觉进入世界状态</strong>：DexTacWAM（6 个任务平均 70.6 分，最强基线 38.0）、Dexterous Tactile World Model（触觉手套信号）、TacWAM、ME-Dex 1.0（异构触觉对齐）。</li>
+<li><strong>控制与改进</strong>：Mask2Real-WM（掩码作 sim2real 桥）、Motus2（自我进化的灵巧世界模型）、WM-Craftnet（世界模型作循环上下文）、Intervention-Aware WM。</li>
+<li><strong>评测</strong>：H2R-Bench（人到机器人视频生成）。</li>
+</ul>
+<h2>A13. 人形全身灵巧</h2>
+<ul>
+<li>CoorDex（身体与手的潜在先验 + 协调残差 RL）、DexWeave、HumDex、WholeBodyVLA、Handroid；人形双手视觉 sim2real 配方（Lin 等）；HumanPlus、OmniH2O、HOMIE、Open-TeleVision。</li>
+<li>这是运控研究者最容易切入的交叉点：把已有的人形 WBC 先验与灵巧手先验组合起来。</li>
+</ul>
+<h2>A14. 基准、仿真与数据</h2>
+<ul>
+<li><strong>仿真基础设施</strong>：Isaac Gym、Isaac Lab、MuJoCo Playground、ManiSkill3、ComFree-Sim、MuJoCo Menagerie。</li>
+<li><strong>灵巧基准</strong>：<ul>
+<li>通用与跨本体：Bi-DexHands、DexArt、DexMachina、<strong>DexVerse</strong>（100 个任务、6 种手）、<strong>HandsOn</strong>（5 种臂、6 种手、1.8 万条示范）、<strong>BiDex-100</strong>（106 个双手任务）、DexJoCo；</li>
+<li>场景专项：LabDex（实验室）、DexGarmentLab、DexH2R（人到机器人交接）、DexCraft（铰接工具）；</li>
+<li>触觉：Bench2Dex、TactiDex、HT-Bench、UniVTAC；</li>
+<li>硬件：灵巧度基准。</li>
+</ul>
+</li>
 </ul>
 <hr />
 <h1>B 部分：Agent × 灵巧手</h1>
-<h2>B0. 先说结论：agent 在灵巧手上能做什么</h2>
+<h2>B0. 先说结论</h2>
 <table>
 <thead>
 <tr>
@@ -275,10 +414,10 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </thead>
 <tbody>
 <tr>
-<td>奖励与课程</td>
-<td>写奖励函数代码、迭代改进</td>
+<td>奖励、参考轨迹与课程</td>
+<td>写奖励代码、生成手-物关键点轨迹供 RL 跟踪</td>
 <td>较成熟，已上真机</td>
-<td>Eureka、Text2Touch、RF-Agent</td>
+<td>Eureka、Text2Touch、RF-Agent、Scaffolding with VLMs</td>
 </tr>
 <tr>
 <td>仿真参数 / 域随机化</td>
@@ -287,22 +426,22 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>DexSim2Real</td>
 </tr>
 <tr>
-<td>仿真环境与数据生成</td>
-<td>生成任务和场景，从人类视频重建并生成训练数据</td>
+<td>仿真、数据与设计生成</td>
+<td>生成任务和场景、从人类视频重建并生成数据、生成手的形态</td>
 <td>快速发展</td>
-<td>GenDexHand、DexAgent、EmbodiedSWE-Gen、Gemini 4 Argon</td>
+<td>GenDexHand、DexAgent、AGILE、EmbodiedSWE-Gen、Gemini 4 Argon、Lang2Morph</td>
 </tr>
 <tr>
 <td>语义 / 功能抓取目标</td>
-<td>理解"拿杯柄""按喷头"，给出接触与抓取类型</td>
+<td>理解任务语义，给出接触与抓取类型</td>
 <td>较成熟</td>
-<td>OmniDexVLG、DextER、BLaDA、AffordDexGrasp、DexVLG</td>
+<td>OmniDexVLG、DextER、BLaDA、AffordDexGrasp、SECOND-Grasp、UniHM</td>
 </tr>
 <tr>
 <td>高层规划 + 灵巧技能</td>
-<td>VLM 规划，调用抓取或手内技能，失败后恢复</td>
+<td>VLM 规划、3D 落地、调用技能、失败后恢复</td>
 <td>较成熟</td>
-<td>DexGraspVLA、RoboDexVLM、Being-0、AW-0</td>
+<td>DexGraspVLA、RoboDexVLM、ZeroDex、Being-0、Bi-VLA、AW-0</td>
 </tr>
 <tr>
 <td>编码 agent 自动训策略</td>
@@ -318,53 +457,57 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 </tbody>
 </table>
-<p><strong>一句话</strong>：agent 擅长自动化"奖励-环境-数据-调参-评估"这个慢循环，不擅长替代 30–500 Hz 的手指接触控制。</p>
-<h2>B1. LLM 写奖励 / 调仿真参数</h2>
+<p><strong>一句话</strong>：agent 擅长自动化"奖励-环境-数据-调参-评估"这个慢循环，不擅长替代高频的手指接触控制。</p>
+<h2>B1. LLM / VLM 写奖励、给参考轨迹、调仿真参数</h2>
 <ul>
-<li><strong>Eureka</strong>（2023）：GPT-4 写奖励代码并进化迭代，第一次让仿真里的 Shadow 手学会快速转笔。这是"LLM × 灵巧手"最常被引用的例子。</li>
-<li><strong>Text2Touch</strong>（CoRL'25）：把 LLM 奖励设计扩展到触觉。提示结构可处理 70 多个环境变量，多轴手内旋转在带视触觉的四指手上迁移到真机；奖励更短，表现却超过人工精调的版本。</li>
-<li><strong>RF-Agent</strong>（2026）：把奖励设计看成序列决策，用蒙特卡洛树搜索管理迭代，在 Bi-DexHands 等 17 个任务上测试。</li>
-<li><strong>DexSim2Real</strong>（2026）：VLM 当视觉真实感评判，闭环 CMA-ES 优化域随机化参数，真机平均成功率 78.2%。</li>
+<li><strong>Eureka</strong>：GPT-4 写奖励代码并进化迭代，第一次让仿真里的 Shadow 手学会快速转笔。</li>
+<li><strong>Text2Touch</strong>：LLM 设计含触觉的奖励，在多轴旋转上迁移到真机，比人工精调的奖励更好、也更短。</li>
+<li><strong>RF-Agent</strong>：用蒙特卡洛树搜索管理 LLM 的奖励迭代。</li>
+<li><strong>Scaffolding Dexterous Manipulation with VLMs</strong>（NeurIPS'25）：VLM 从语言和图像生成手与物体的关键点轨迹，残差 RL 在仿真中跟踪并迁移到真机。奖励来自"跟踪 VLM 给的轨迹"。</li>
+<li><strong>DexSim2Real</strong>：VLM 当视觉真实感评判，闭环 CMA-ES 优化域随机化参数，真机平均 78.2%。</li>
 </ul>
-<h2>B2. 生成式仿真与 agentic 数据管线</h2>
+<h2>B2. 生成式仿真、数据与设计</h2>
 <ul>
-<li><strong>GenDexHand</strong>：针对灵巧手的生成式仿真。VLM 反馈闭环调整物体位置和尺度，任务拆成子任务顺序 RL。</li>
-<li><strong>DexAgent</strong>（Stanford/Columbia，2026-09）：一段第一人称视频 + 任务描述，依次完成语义理解、按物体属性重建仿真、轨迹优化、生成数据。agent 在每个阶段从工具库选工具或自造新工具，由属性相关的校验器把关；11 个真机任务上成功率是基线的 3.5 倍，工具库越用越快。</li>
-<li><strong>EmbodiedSWE</strong>：编码 agent 解长达半小时的灵巧任务，再把一个解扩增成大量 VLA 训练轨迹。</li>
-<li><strong>Gemini 4 Argon for Robotics</strong>（2026-10）：把第一人称人类视频重定向到带 22 DoF 手的仿真人形（500 Hz），并能从视频或草图生成 MuJoCo 孪生。</li>
+<li><strong>GenDexHand</strong>：灵巧手的生成式仿真，VLM 反馈闭环调整物体位置与尺度。</li>
+<li><strong>DexAgent</strong>：一段第一人称视频 → 理解 → 按物体属性重建仿真 → 轨迹优化 → 数据生成。每一步有属性相关的校验器，工具库自我扩充；成功率是基线的 3.5 倍。</li>
+<li><strong>AGILE</strong>：用 agentic 生成从视频重建可仿真的手-物交互。</li>
+<li><strong>EmbodiedSWE</strong>：编码 agent 的解扩增成 VLA 训练数据。</li>
+<li><strong>Gemini 4 Argon</strong>：把第一人称视频重定向到带 22 DoF 手的仿真人形，并从视频或草图生成 MuJoCo 孪生。</li>
+<li><strong>Lang2Morph</strong>：用 LLM 从任务描述生成手的形态设计。</li>
 </ul>
 <h2>B3. VLM / LLM 语义与功能抓取</h2>
 <ul>
-<li>Multi-GraspLLM、AffordDexGrasp（可泛化的指导性可供性）、<strong>OmniDexVLG</strong>（多 agent 协作 + 检索增强 + 思维链推理抓取类型、接触语义和功能可供性）、<strong>DextER</strong>（先生成"哪个手指部位碰哪里"的接触 token，再出抓取）、BLaDA（3D 高斯场中定位功能部位）、双手可供性 VLM、AdaRoboVLG（可组合的基础模型先验 + 通用抓取策略）、DexVLG。</li>
-<li><strong>对运控研究者</strong>：这一层给出"目标接触与抓取类型"，相当于给你的控制器一个语义化的参考。下游仍需力封闭检查和闭环控制。</li>
+<li>Multi-GraspLLM、AffordDexGrasp、<strong>OmniDexVLG</strong>（多 agent 协作推理抓取类型、接触语义与可供性）、<strong>DextER</strong>（先生成接触 token 再出抓取）、BLaDA、双手可供性 VLM、AdaRoboVLG、DexVLG、SECOND-Grasp（语义接触引导）、<strong>UniHM</strong>（VLM + 统一手部 tokenizer 生成操作序列，再做物理优化，ICLR'26）。</li>
+<li>这一层给的是语义化的目标接触，下游仍需力封闭检查和闭环控制。</li>
 </ul>
 <h2>B4. VLM 规划 + 灵巧技能（分层）</h2>
 <ul>
-<li><strong>DexGraspVLA</strong>：VLM 规划 + 扩散低层控制器，把多样的语言和视觉输入转成领域不变表示。</li>
+<li><strong>DexGraspVLA</strong>：VLM 规划 + 扩散控制器，杂乱场景抓取 90% 以上。</li>
 <li><strong>RoboDexVLM</strong>：VLM 任务规划，带任务级恢复。</li>
-<li><strong>Being-0</strong>：人形 agent。基础模型做认知，Connector VLM 衔接行走与灵巧技能。</li>
-<li><strong>DexHandDiff</strong>：用 LLM 生成的交互引导扩散规划。</li>
-<li><strong>AW-0</strong>（2026-10）：代码、未来视频、动作三路联合生成，在 YAM 臂与灵巧手上实测。</li>
+<li><strong>ZeroDex</strong>：多视角 3D 落地的 VLM 推理，零样本长时程灵巧操作，优于微调后的 VLA 基线。</li>
+<li><strong>Being-0</strong>：人形 agent；<strong>Bi-VLA</strong>：语言转代码的双手家务。</li>
+<li><strong>DexHandDiff</strong>：LLM 交互引导的扩散规划。</li>
+<li><strong>AW-0</strong>：代码、视频、动作三路联合生成，在 YAM 臂与灵巧手上实测。</li>
+<li>分层接口（子目标、抓取类型、终止条件）的设计比规划器大小更重要。</li>
 </ul>
 <h2>B5. 编码 agent 与自我进化</h2>
 <ul>
-<li><strong>ASPIRE</strong>：编码 agent 持续写、修控制程序并沉淀技能库；在真机灵巧手上解魔方，效率随经验提升。</li>
-<li><strong>SEAR</strong>：三种 agent 模式（代码即策略、agent 即策略、自动研究），7 个前沿模型、330 个仿真 + 5 个真机任务，并设计了对照实验，区分"真学到了"还是"只是多试了几次"。</li>
-<li><strong>Embodied Playground</strong>：含需要推断状态并逐层转动的魔方、灵巧手版汉诺塔。</li>
-<li><strong>Dexterous Astra</strong>（2026-09，社区）：GPT-6 Astra 自己搭 Isaac Lab / MuJoCo 环境、写解法、训 PPO。Sharpa Wave 手转笔三圈，Wuji 手解出魔方三步；提示词与检查点公开。同一社区清单还记录了 Astra 自主跑约一天半、从建笔的网格到训好 PPO 转笔策略的案例。</li>
-<li><strong>对运控研究者</strong>：这条线本质上是 Eureka 的放大版。编码 agent 接管"写环境 → 写奖励 → 训练 → 看曲线 → 改"的循环，你负责可自动评估的任务定义和安全的真机流程。</li>
+<li><strong>ASPIRE</strong>：编码 agent 持续写、修控制程序并沉淀技能库，在真机灵巧手上解魔方。</li>
+<li><strong>SEAR</strong>：三种 agent 模式、7 个前沿模型、330 个仿真 + 5 个真机任务，并设计对照实验区分"真学到了"与"只是多试了几次"。</li>
+<li><strong>Embodied Playground</strong>：含灵巧手版魔方与汉诺塔。</li>
+<li><strong>Dexterous Astra</strong>：GPT-6 Astra 自己搭 Isaac Lab / MuJoCo 环境、写代码、训 PPO，Isaac Lab 中 Sharpa Wave 手转笔三圈，MuJoCo 中 Wuji 手拧出魔方的 U、F、L 三步。社区还记录了 Astra 自主运行约一天半、训出转笔策略的案例。</li>
+<li><strong>运控要点</strong>：这是 Eureka 的放大版。你负责可自动评估的任务定义与安全的真机流程，agent 接管"写环境 → 写奖励 → 训练 → 看曲线 → 改"。</li>
 </ul>
 <h2>B6. 前沿模型直接控手</h2>
 <ul>
-<li><strong>Galbot 的 GPT-6 Astra 系统评测</strong>：与学习策略混合控制时，DexJoCo 10 次试验成功 50%；直接控制手内操作时难以协调手指接触。</li>
-<li><strong>GPT-6-Astra Understands Touch</strong>：把专家示范总结成任务指导与触觉参考，冻结的 GPT-6 Astra 在 5 个 UniVTAC 任务上平均 93.8%，触觉让插孔任务从 31% 提到 99%。</li>
-<li><strong>TacTalent</strong>：19 个仿真视触觉任务，加触觉后平均成功率上升。</li>
-<li><strong>SenseNova 报告</strong>：在 12 个基准（含灵巧手）上，具身能力大体具备，实用性不足。</li>
-<li><strong>社区演示</strong>：仿真中零样本操控手指解魔方、抓苹果梗等，见 Awesome-Astra-Embodied-AI。</li>
-<li><strong>解读</strong>：大模型的强项是"理解接触信号、做纠正决策"，弱项是"高频协调多指"。这和第一份调研的结论一致：大模型留在慢环。</li>
+<li><strong>Galbot 评测</strong>：与学习策略混合控制，DexJoCo 10 次试验成功 50%；直接控制手内操作时难以协调手指接触。</li>
+<li><strong>GPT-6-Astra Understands Touch</strong>：5 个 UniVTAC 任务平均 93.8%，插孔任务从 31% 提到 99%。</li>
+<li><strong>TacTalent</strong>：加触觉后成功率上升。</li>
+<li><strong>SenseNova 报告</strong>：在含灵巧手的 12 个基准上，具身能力大体具备，实用性不足。</li>
+<li><strong>解读</strong>：大模型的强项是"理解接触信号、做纠正决策"，弱项是"高频协调多指"。</li>
 </ul>
 <hr />
-<h2>2. 时间线（精选）</h2>
+<h2>3. 时间线（精选）</h2>
 <table>
 <thead>
 <tr>
@@ -374,16 +517,28 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </thead>
 <tbody>
 <tr>
-<td>2018-08</td>
-<td>Dactyl：大规模域随机化 + RL，Shadow 手方块重定向 sim2real</td>
+<td>2017-09</td>
+<td>DAPG：示范增强的灵巧 RL</td>
 </tr>
 <tr>
-<td>2019-10</td>
-<td>OpenAI 单手魔方（ADR）；DexPilot 视觉遥操作</td>
+<td>2018-08/10</td>
+<td>Dactyl；低成本灵巧手真机 RL</td>
+</tr>
+<tr>
+<td>2019-09/10</td>
+<td>PDDM（学模型 + MPC）；OpenAI 魔方；DexPilot</td>
+</tr>
+<tr>
+<td>2021-08</td>
+<td>Isaac Gym；TriFinger sim2real</td>
 </tr>
 <tr>
 <td>2021-11</td>
 <td>通用手内重定向（教师-学生）</td>
+</tr>
+<tr>
+<td>2022-02/04</td>
+<td>Robotic Telekinesis；DIME；OakInk；DLR 纯触觉手内操作</td>
 </tr>
 <tr>
 <td>2022-06</td>
@@ -391,51 +546,55 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 <tr>
 <td>2022-10</td>
-<td>DexGraspNet；HORA（RMA 进入灵巧手）；DeXtreme</td>
+<td>DexGraspNet；HORA；DeXtreme；Holo-Dex；GenDexGrasp</td>
 </tr>
 <tr>
 <td>2022-11/12</td>
-<td>Visual Dexterity；VideoDex；Predictive Sampling</td>
+<td>Visual Dexterity；DexPoint；VideoDex；Predictive Sampling</td>
 </tr>
 <tr>
 <td>2023-03</td>
-<td>Rotating without Seeing；UniDexGrasp</td>
+<td>Rotating without Seeing；UniDexGrasp；T-Dex</td>
 </tr>
 <tr>
 <td>2023-05</td>
 <td>DexPBT；DexArt</td>
 </tr>
 <tr>
-<td>2023-07</td>
-<td>AnyTeleop</td>
-</tr>
-<tr>
-<td>2023-09</td>
-<td>LEAP Hand；RotateIt</td>
+<td>2023-07/09</td>
+<td>AnyTeleop；LEAP Hand；RotateIt；Dynamic Handover；MyoDex</td>
 </tr>
 <tr>
 <td>2023-10</td>
-<td><strong>Eureka：LLM 写奖励让仿真 Shadow 手转笔</strong>（B）</td>
+<td><strong>Eureka</strong>（B）；DexCatch</td>
+</tr>
+<tr>
+<td>2023-12</td>
+<td>NeuralFeels；Robot Synesthesia；Dexterous Functional Grasping</td>
 </tr>
 <tr>
 <td>2024-03</td>
-<td>DexCap；Twisting Lids Off；OPEN TEACH</td>
+<td>DexCap；DP3；Twisting Lids Off；OPEN TEACH</td>
 </tr>
 <tr>
 <td>2024-05/07</td>
-<td>AnyRotate；DextrAH-G；Bunny-VisionPro；转笔经验总结</td>
+<td>AnyRotate；DextrAH-G；Open-TeleVision；Bunny-VisionPro；转笔经验总结；HumanPlus</td>
 </tr>
 <tr>
-<td>2024-09/10</td>
-<td>DROP；AnySkin；DexGraspNet 2.0；DexMimicGen；Get a Grip</td>
+<td>2024-08/09</td>
+<td>Jacta；免互补接触建模；TacSL；DROP；AnySkin；Catch It!</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td>HIL-SERL；Sparsh；DexGraspNet 2.0；DexMimicGen；ManiSkill3</td>
 </tr>
 <tr>
 <td>2024-11/12</td>
-<td>DextrAH-RGB；腱驱动手采样 MPC；BODex；Multi-GraspLLM（B）</td>
+<td>DIGIT 360；DextrAH-RGB；BODex；GigaHands；Multi-GraspLLM（B）</td>
 </tr>
 <tr>
 <td>2025-02</td>
-<td>DexterityGen；DexTrack；DexGraspVLA；MuJoCo Playground</td>
+<td>DexterityGen；DexTrack；DexGraspVLA；MuJoCo Playground；人形双手视觉 sim2real；DOGlove</td>
 </tr>
 <tr>
 <td>2025-03</td>
@@ -443,102 +602,104 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 <tr>
 <td>2025-04/05</td>
-<td>Human2Sim2Robot；ORCA；Contact Trust Region；DexWild；DexUMI；DexMachina</td>
+<td>Human2Sim2Robot；ORCA；Contact Trust Region；DexWild；DexUMI；DexMachina；Sparsh-skin</td>
 </tr>
 <tr>
 <td>2025-06/07</td>
-<td>Dex1B；DexVLG（DexGraspNet 3.0）；Being-H0；EgoVLA</td>
+<td>Dex1B；ClutterDexGrasp；Scaffolding with VLMs（B）；DexVLG；Being-H0；EgoVLA；Sparsh-X</td>
 </tr>
 <tr>
 <td>2025-09/10</td>
-<td>Text2Touch（B）；DexNDM</td>
+<td>Text2Touch（B）；DEXOP；DemoGrasp；DexNDM；RL-100</td>
 </tr>
 <tr>
 <td>2025-11/12</td>
-<td>SPIDER；GenDexHand（B）；GR-Dexter；OmniDexVLG（B）</td>
+<td>SPIDER；GenDexHand（B）；GR-Dexter；GR-RL；DexWM；House of Dextra；OmniDexVLG（B）</td>
 </tr>
 <tr>
-<td>2026-01</td>
-<td>Force-Based Sim2Real；Hierarchical RL-MPC；DextER（B）；Figure Helix 02</td>
-</tr>
-<tr>
-<td>2026-02</td>
-<td>EgoScale；OHRA；SimToolReal；HydroShear；TacMap；RF-Agent（B）</td>
+<td>2026-01/02</td>
+<td>Force-Based Sim2Real；Hierarchical RL-MPC；EgoScale；OHRA；DexFormer；UniVTAC；UniHM（B）</td>
 </tr>
 <tr>
 <td>2026-03/04</td>
-<td>PTLD；XL-VLA；HumDex；ViserDex；ETac；BLaDA（B）</td>
+<td>PTLD；XL-VLA；UniDex；HumDex；ViserDex；D-REX；BLaDA（B）</td>
 </tr>
 <tr>
 <td>2026-05/06</td>
-<td>Dexora；DexSim2Real（B）；灵巧手综述；CoorDex；Tactile Genesis；Mana；AutoDex；Sharpa Wave 规格公布（CNX 报道）</td>
+<td>Dexora；DexJoCo；灵巧手综述；CoorDex；Tactile Genesis；DexPIE；CHORD；ZeroDex / ASPIRE（B）</td>
 </tr>
 <tr>
 <td>2026-07/08</td>
-<td>DexVerse；REGRIND；TeleDexter；HUGS；ASPIRE（B）；ADEPT；ReForce；SBLR</td>
+<td>DexVerse；REGRIND；TacWAM；Current as Touch；MIDAS Hand；ADEPT；SBLR；Motus2</td>
 </tr>
 <tr>
 <td>2026-09</td>
-<td>FINGR；DexTacWAM；TacBPM；POISE；DexWeave；Primitive-Informed MPC；DexAgent / EmbodiedSWE / Dexterous Astra / Galbot 评测（B）</td>
+<td>FINGR；MPC-Scaffolded Real RL；Dexterous Tactile World Model；DexTacWAM；DexAgent / EmbodiedSWE / Dexterous Astra（B）</td>
 </tr>
 <tr>
 <td>2026-10</td>
-<td>Gen2Dex；SEAR / AW-0 / GPT-6-Astra Touch / TacTalent / Gemini 4 Argon（B）</td>
+<td>HandsOn；BiDex-100；OmniDex；Gen2Dex；SEAR / AW-0 / GPT-6-Astra Touch / Gemini 4 Argon（B）</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2>3. 开放问题</h2>
+<h2>4. 开放问题</h2>
 <ol>
-<li><strong>力与接触的数据从哪来。</strong> 人类视频和遥操作都缺力和触觉；仿真补全（Dex-X）、力感知重定向（ReForce）、真实特权传感器（PTLD）是三条路，还没有收敛。</li>
-<li><strong>执行器与接触参数的 sim2real。</strong> 腱驱动、减速器回差、指尖材料让"关节级建模"成为必需，需要像腿足 actuator net 那样的标准流程。</li>
-<li><strong>触觉的标准化。</strong> 每种传感器都等于一台"新机器人"；SBLR、Tactile Genesis 尝试统一抽象。</li>
-<li><strong>跨本体。</strong> 6–22 DoF、不同驱动方式的手能否共享策略；规范 URDF、潜在动作空间是候选答案。</li>
-<li><strong>长时程与工具使用。</strong> 魔方、铰接工具、拧螺丝需要"保持一部分接触、同时改变另一部分接触"，策略组合（DexCompose）和接触规划仍是难点。</li>
-<li><strong>评测。</strong> 真机任务难复现；DexVerse、DexMachina 基准在推进，但缺乏像 RoboArena 那样的分布式真机评测。</li>
-<li><strong>Agent 的边界。</strong> 大模型能否在 10–100 Hz 的环里做触觉纠正？目前只在慢速、离散决策的任务上有效（插孔、纠正）。更现实的方向是让编码 agent 自动化训练与评估循环。</li>
+<li><strong>力与接触数据从哪来</strong>：仿真补全、力感知重定向、真实特权传感器、力反馈遥操作，四条路尚未收敛。</li>
+<li><strong>执行器与接触参数</strong>：需要像腿足 actuator net 那样的标准建模流程。</li>
+<li><strong>触觉标准化</strong>：每种传感器都像一台"新机器人"，触觉基础模型与统一仿真在尝试解决。</li>
+<li><strong>跨本体</strong>：规范 URDF、潜在动作、图表示是候选答案。</li>
+<li><strong>长时程、工具与可变形物体</strong>："保持一部分接触、同时改变另一部分接触"仍难。</li>
+<li><strong>真机 RL 的安全与效率</strong>：人在环、残差、MPC 脚手架是目前最有效的组合。</li>
+<li><strong>评测</strong>：仿真基准在快速增加（DexVerse、HandsOn、BiDex-100），但缺少分布式的真机评测。</li>
+<li><strong>Agent 的边界</strong>：大模型目前只在慢速、离散的接触决策上有效；更现实的是让编码 agent 自动化训练与评估循环。</li>
 </ol>
 <hr />
-<h2>4. 给运控研究者的上手路线</h2>
+<h2>5. 上手路线</h2>
 <ol>
-<li><strong>仿真起步</strong>：MuJoCo Playground（<code>pip install playground</code>，含灵巧手任务，单 GPU 几分钟训完），或 Isaac Lab 自带的手内重定向任务（ViserDex 的仓库就在它上面扩展）。先复现"方块重定向 + 教师-学生"。</li>
-<li><strong>把你的 sim2real 工具箱搬过来</strong>：执行器建模（参考 DexNDM、Force-Based Sim2Real）、RMA 式适应（HORA）、视觉位姿（ViserDex）。</li>
-<li><strong>硬件</strong>：入门选 LEAP Hand（低成本）或 ORCA（开源）；要做力控和触觉，看直驱 + 触觉的商用手（Sharpa Wave、Wuji 等），先确认 MuJoCo/URDF 资产和电流-力矩接口。</li>
-<li><strong>数据与模仿</strong>：AnyTeleop 或 Vision Pro 遥操作；"重定向 + 跟踪 RL"可从 DexMachina 或 ManipTrans 的配方入手，和你做人形运动模仿的流程几乎一样。</li>
-<li><strong>加入 agent</strong>：让编码 agent（Claude Code / Codex）照 Eureka、Text2Touch 的方式写奖励，或照 GenDexHand、DexAgent 的方式生成环境与数据；低层控制仍由你训练的策略或 MPC 负责。</li>
+<li><strong>仿真起步</strong>：MuJoCo Playground（<code>pip install playground</code>）或 Isaac Lab 自带的手内重定向任务（ViserDex 仓库在其上扩展）。先复现"方块重定向 + 教师-学生"。手模型可用 MuJoCo Menagerie。</li>
+<li><strong>搬 sim2real 工具箱</strong>：执行器建模（DexNDM、Force-Based Sim2Real）、RMA 式适应（HORA）、视觉位姿（ViserDex）、预训练先验（ADEPT）。</li>
+<li><strong>硬件</strong>：入门选 LEAP（低成本）或 ORCA、MIDAS、Aero Hand Open（开源）；要做力控与触觉，看直驱 + 触觉的商用手，并先确认 MuJoCo/URDF 资产与电流-力矩接口。</li>
+<li><strong>数据与模仿</strong>：AnyTeleop / Open-TeleVision / Vision Pro 遥操作，dex-retargeting 做重定向；"重定向 + 跟踪 RL"从 DexMachina、ManipTrans、REGRIND 入手。</li>
+<li><strong>真机后训练</strong>：HIL-SERL 式人在环 RL，或用你的 MPC 当脚手架（MPC-Scaffolded RL）。</li>
+<li><strong>加入 agent</strong>：编码 agent 写奖励与环境（Eureka、Text2Touch、GenDexHand、DexAgent），低层仍由你的策略或 MPC 负责。真机前务必有限位、急停与人工确认。</li>
 </ol>
 <hr />
-<h2>5. 推荐阅读路径</h2>
+<h2>6. 推荐阅读路径（运控研究者）</h2>
 <ol>
-<li>Dactyl → HORA（RMA 迁移）→ DeXtreme → DexNDM（执行器建模）</li>
-<li>ManipTrans / DexMachina / REGRIND（重定向 + 跟踪）</li>
-<li>DROP / Contact Trust Region / Hierarchical RL-MPC（MPC 视角）</li>
+<li>DAPG → Dactyl → HORA（RMA 迁移）→ DeXtreme → DexNDM（执行器建模）</li>
+<li>ManipTrans / DexMachina / REGRIND / CHORD（重定向 + 跟踪）</li>
+<li>DROP / Jacta / Contact Trust Region / Hierarchical RL-MPC（MPC 视角）</li>
+<li>HIL-SERL → MPC-Scaffolded Real RL（真机 RL）</li>
 <li>DexterityGen（基础控制器）→ CoorDex（人形全身）</li>
-<li>Force-Based Sim2Real / PTLD（触觉）</li>
+<li>NeuralFeels / Force-Based Sim2Real / PTLD / Sparsh-skin（触觉）</li>
 <li>EgoScale / XL-VLA / GR-Dexter（数据与 VLA）</li>
-<li>B 部分：Eureka → Text2Touch → DexAgent → GPT-6-Astra Understands Touch</li>
-<li>综述：<em>Towards Robotic Dexterous Hand Intelligence: A Survey</em>（2605.13925）</li>
+<li>DexWM / Dexterous Tactile World Model（世界模型）</li>
+<li>B 部分：Eureka → Text2Touch → Scaffolding with VLMs → DexAgent → GPT-6-Astra Understands Touch</li>
+<li>综述：<em>Towards Robotic Dexterous Hand Intelligence</em>（2605.13925）</li>
 </ol>
 <hr />
-<h2>6. 方法与可信度</h2>
+<h2>7. 方法与可信度</h2>
 <ul>
-<li>检索于 2026-10-23。arXiv 条目用 export.arxiv.org API 按编号核验标题与首发日期；"一句话"是根据摘要写的中文概括。</li>
-<li>硬件参数来自官方页面（Wuji）或媒体报道（Sharpa Wave，据 CNX）；Tesla Optimus 手部参数是二手信息。</li>
+<li>第二版做法：以 2026 年灵巧手综述（2605.13925）的参考文献、Awesome-Dexterous-Hands、YanjieZe 的灵巧操作清单为底表做全量比对，再按方向补检索。所有 arXiv 条目用 export.arxiv.org API 按编号核验标题与首发日期，未核验的编号会让构建失败。"一句话"根据摘要概括。</li>
+<li>不收录：纯平行夹爪工作、与灵巧手无关的通用 VLA 和点云分割等。非 arXiv 的经典（如 GelSight、早期接触不变优化）未单列。</li>
+<li>硬件参数来自官方页面或媒体报道；Tesla Optimus 手部参数为二手信息。</li>
 <li>不同论文的任务、硬件和成功率口径不同，数字不可横向比较；2026 年的大量工作仍是未经同行评审的预印本。</li>
 </ul>
 <h2>主要网页来源</h2>
 <ul>
-<li>硬件：<a href="https://www.cnx-software.com/2026/06/02/sharpa-wave-high-end-dexterous-robotic-hand-with-22-dof-high-sensitivity-dynamic-tactile-array/">Sharpa Wave（CNX Software）</a> · <a href="https://wuji.tech/en/hand">Wuji Hand</a> · <a href="https://humanoid.guide/tendon-driven-humanoid-hands/">腱驱动人形手（Humanoid.guide）</a> · <a href="https://www.axis3d.com/en/post/tesollo-showcases-vla-and-dexterous-manipulation-at-icra-2026-from-teleoperation-to-humanoid-roboti">TESOLLO @ ICRA 2026</a></li>
+<li>底表：<a href="https://arxiv.org/abs/2605.13925">灵巧手综述（arXiv 2605.13925）</a> · <a href="https://github.com/CyanHaze/Awesome-Dexterous-Hands">Awesome-Dexterous-Hands</a> · <a href="https://github.com/YanjieZe/Paper-List/blob/main/topics/dex_manipulation.md">YanjieZe/Paper-List（灵巧操作）</a></li>
+<li>硬件：<a href="https://www.cnx-software.com/2026/06/02/sharpa-wave-high-end-dexterous-robotic-hand-with-22-dof-high-sensitivity-dynamic-tactile-array/">Sharpa Wave（CNX Software）</a> · <a href="https://wuji.tech/en/hand">Wuji Hand</a> · <a href="https://humanoid.guide/tendon-driven-humanoid-hands/">腱驱动人形手（Humanoid.guide）</a> · <a href="https://www.axis3d.com/en/post/tesollo-showcases-vla-and-dexterous-manipulation-at-icra-2026-from-teleoperation-to-humanoid-roboti">TESOLLO @ ICRA 2026</a> · <a href="https://github.com/google-deepmind/mujoco_menagerie">MuJoCo Menagerie</a></li>
+<li>工具：<a href="https://github.com/dexsuite/dex-retargeting">dex-retargeting</a> · <a href="https://github.com/leggedrobotics/ViserDex">ViserDex</a></li>
 <li>Agent × 灵巧手：<a href="https://developers.googleblog.com/gemini-4-argon-for-robotics/">Gemini 4 Argon for Robotics</a> · <a href="https://github.com/jianglongye/dexterous-astra">Dexterous Astra</a> · <a href="https://tactalent.github.io/">TacTalent</a> · <a href="https://github.com/zjwzcx/Awesome-Astra-Embodied-AI">Awesome-Astra-Embodied-AI</a></li>
-<li>资源清单：<a href="https://github.com/CyanHaze/Awesome-Dexterous-Hands">Awesome-Dexterous-Hands</a></li>
 <li>产业：<a href="https://interestingengineering.com/ai-robotics/figure-helix02-upgrades-humanoid-robot-control">Figure Helix 02</a></li>
 </ul>
 <hr />
-<h2>附录 A：论文与资源总表（162 条，按主类别分组，组内按时间倒序）</h2>
+<h2>附录 A：论文与资源总表（424 条，按主类别分组，组内按时间倒序）</h2>
 <blockquote>
 <p>arXiv 条目的标题与日期由 export.arxiv.org API 校验；★ 为入门推荐。</p>
 </blockquote>
-<h3>A·硬件（12）</h3>
+<h3>A·硬件（22）</h3>
 <table>
 <thead>
 <tr>
@@ -556,16 +717,40 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>报道称手部 22 DoF + 腕部 3 DoF，执行器移到前臂、腱传动（工程师帖子与专利解读，二手信息）</td>
 </tr>
 <tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.28578">Aero Hand Open</a> <code>arXiv:2608.28578</code></td>
+<td></td>
+<td>仿真就绪的开源腱驱动手</td>
+</tr>
+<tr>
 <td>2026-07</td>
 <td><a href="https://arxiv.org/abs/2607.16187">Handroid</a> <code>arXiv:2607.16187</code></td>
 <td></td>
 <td>同一个 27 DoF 机电身体可重构为 20 DoF 灵巧手或桌面人形</td>
 </tr>
 <tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.15448">VTAP Gripper</a> <code>arXiv:2607.15448</code></td>
+<td></td>
+<td>带视触觉主动手掌与触觉阵列手指的手内操作夹持器</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.14487">MIDAS Hand</a> <code>arXiv:2607.14487</code></td>
+<td></td>
+<td>开源、低阻抗直驱、带触觉的人手尺寸灵巧手</td>
+</tr>
+<tr>
 <td>2026-06</td>
 <td><a href="https://arxiv.org/abs/2606.17418">DexLink Hand</a> <code>arXiv:2606.17418</code></td>
 <td></td>
 <td>连杆驱动：16 个执行器驱动 20 个关节，全部集成在人手大小的结构里，320 g，成本不到 400 美元</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.14250">SyLink Hand</a> <code>arXiv:2606.14250</code></td>
+<td></td>
+<td>借鉴手部协同的连杆驱动拟人手</td>
 </tr>
 <tr>
 <td>2026-06</td>
@@ -592,6 +777,18 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>21 DoF 远端腱驱动模块化手：电机移出手掌，集成关节角、触觉、电机侧反馈与掌内双目</td>
 </tr>
 <tr>
+<td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.09294">Dexterity Benchmark for Hands</a> <code>arXiv:2604.09294</code></td>
+<td></td>
+<td>以性能定义灵巧度的拟人手评测基准</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.12120">CRAFT Hand</a> <code>arXiv:2603.12120</code></td>
+<td></td>
+<td>软硬混合柔顺的腱驱动拟人手</td>
+</tr>
+<tr>
 <td>2025-12</td>
 <td>★ <a href="https://arxiv.org/abs/2512.24210">GR-Dexter</a> <code>arXiv:2512.24210</code></td>
 <td>ByteDance Seed</td>
@@ -604,10 +801,22 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>21 DoF，形状记忆合金 + 电机混合腱驱动的仿生手</td>
 </tr>
 <tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.07490">RAPID Hand</a> <code>arXiv:2506.07490</code></td>
+<td></td>
+<td>紧凑 20 DoF 手 + 全手感知 + 高自由度遥操作的软硬协同平台</td>
+</tr>
+<tr>
 <td>2025-04</td>
 <td><a href="https://arxiv.org/abs/2504.04259">ORCA Hand</a> <code>arXiv:2504.04259</code></td>
 <td>ETH Zurich</td>
 <td>开源 17 DoF 腱驱动手，集成触觉，8 小时内可装好，物料成本不到 2000 瑞士法郎</td>
+</tr>
+<tr>
+<td>2024-08</td>
+<td><a href="https://arxiv.org/abs/2408.06265">EyeSight Hand</a> <code>arXiv:2408.06265</code></td>
+<td></td>
+<td>集成视触觉、准直驱柔顺驱动的 7 DoF 手</td>
 </tr>
 <tr>
 <td>2024-06</td>
@@ -616,14 +825,26 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>3D 打印、高度欠驱动、带触觉的拟人软手（拮抗腱机构）</td>
 </tr>
 <tr>
+<td>2024</td>
+<td><a href="https://github.com/google-deepmind/mujoco_menagerie">MuJoCo Menagerie</a></td>
+<td>Google DeepMind</td>
+<td>官方维护的 MuJoCo 机器人模型库，含 Shadow、Allegro、LEAP 等手的模型</td>
+</tr>
+<tr>
 <td>2023-09</td>
 <td>★ <a href="https://arxiv.org/abs/2309.06440">LEAP Hand</a> <code>arXiv:2309.06440</code></td>
 <td>CMU</td>
 <td>低成本、易组装维修的 16 DoF 拟人手，专为机器人学习设计，是常用的 sim2real 平台</td>
 </tr>
+<tr>
+<td>2022-10</td>
+<td><a href="https://arxiv.org/abs/2210.15658">DManus (All the Feels)</a> <code>arXiv:2210.15658</code></td>
+<td></td>
+<td>全手大面积触觉的低成本模块化灵巧手</td>
+</tr>
 </tbody>
 </table>
-<h3>A·触觉（13）</h3>
+<h3>A·触觉（40）</h3>
 <table>
 <thead>
 <tr>
@@ -647,10 +868,40 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>触觉条件的行为先验：多尺度专家蒸馏成潜在控制器，下游策略用残差潜动作复用它，减少从关节空间重新探索</td>
 </tr>
 <tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.15726">Bench2Dex</a> <code>arXiv:2609.15726</code></td>
+<td></td>
+<td>跨多种手的视触觉双手灵巧基准</td>
+</tr>
+<tr>
 <td>2026-08</td>
 <td><a href="https://arxiv.org/abs/2608.15897">SBLR</a> <code>arXiv:2608.15897</code></td>
 <td></td>
 <td>用仿真原生的"预言者传感器"（点云 + 指尖力）训练策略，部署时把真实传感器的潜变量对齐过去，免去为每种传感器写仿真</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.09190">TactiDex</a> <code>arXiv:2607.09190</code></td>
+<td></td>
+<td>真实世界触觉引导的类人灵巧操作基准</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.07287">TouchWorld</a> <code>arXiv:2607.07287</code></td>
+<td></td>
+<td>预测与反应兼备的触觉基础模型</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.03529">Current as Touch</a> <code>arXiv:2607.03529</code></td>
+<td></td>
+<td>用电机电流当触觉，实现低成本手的柔顺灵巧操作</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.01067">Human-Centric Tactile Pretraining</a> <code>arXiv:2607.01067</code></td>
+<td></td>
+<td>以人为中心、可迁移的触觉预训练</td>
 </tr>
 <tr>
 <td>2026-06</td>
@@ -660,15 +911,33 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 <tr>
 <td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.19161">HT-Bench</a> <code>arXiv:2606.19161</code></td>
+<td></td>
+<td>第一人称视觉 + 全手触觉的表征学习基准</td>
+</tr>
+<tr>
+<td>2026-06</td>
 <td><a href="https://arxiv.org/abs/2606.11767">Blind Dexterous Grasping</a> <code>arXiv:2606.11767</code></td>
 <td></td>
 <td>只用稀疏触觉、不看图像的抓取：Real2Sim 触觉标定 + 版图感知编码器 + 扩散策略，零样本上真机</td>
 </tr>
 <tr>
 <td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.20689">FingerEye</a> <code>arXiv:2604.20689</code></td>
+<td></td>
+<td>双目 + 柔顺接触面的连续视触觉感知</td>
+</tr>
+<tr>
+<td>2026-04</td>
 <td><a href="https://arxiv.org/abs/2604.20295">ETac</a> <code>arXiv:2604.20295</code></td>
 <td></td>
 <td>轻量数据驱动的弹性体形变传播模型，精度接近 FEM，可支撑大规模触觉策略训练</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.13869">TransDex</a> <code>arXiv:2603.13869</code></td>
+<td></td>
+<td>点云重建预训练的视触觉策略，操作透明物体</td>
 </tr>
 <tr>
 <td>2026-03</td>
@@ -689,10 +958,70 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>用体积穿透深度图把仿真与真实视触觉信号统一到同一表示，兼顾保真度与大规模 RL 速度</td>
 </tr>
 <tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.10093">UniVTAC</a> <code>arXiv:2602.10093</code></td>
+<td></td>
+<td>视触觉数据生成、学习与评测的统一仿真平台</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.09617">AnyTouch 2</a> <code>arXiv:2602.09617</code></td>
+<td></td>
+<td>面向动态触觉的通用光学触觉表征</td>
+</tr>
+<tr>
 <td>2026-01</td>
 <td>★ <a href="https://arxiv.org/abs/2601.02778">Force-Based Sim2Real</a> <code>arXiv:2601.02778</code></td>
 <td></td>
 <td>稠密触觉 + 关节力矩的力控 sim2real：快速触觉仿真、电流到力矩标定（省掉力矩传感器）、执行器动力学建模</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.14754">Sparsh-X</a> <code>arXiv:2506.14754</code></td>
+<td>Meta</td>
+<td>图像、声音、运动、压力四模态触觉表征</td>
+</tr>
+<tr>
+<td>2025-05</td>
+<td><a href="https://arxiv.org/abs/2505.13982">Predictive Force Attention</a> <code>arXiv:2505.13982</code></td>
+<td></td>
+<td>按预测力分配视觉与触觉注意力的融合</td>
+</tr>
+<tr>
+<td>2025-05</td>
+<td><a href="https://arxiv.org/abs/2505.11420">Sparsh-skin</a> <code>arXiv:2505.11420</code></td>
+<td>Meta</td>
+<td>覆盖全手的磁性皮肤触觉自监督编码器</td>
+</tr>
+<tr>
+<td>2025-04</td>
+<td><a href="https://arxiv.org/abs/2504.16649">PP-Tac</a> <code>arXiv:2504.16649</code></td>
+<td></td>
+<td>触觉引导灵巧手拾取纸张</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.12191">AnyTouch</a> <code>arXiv:2502.12191</code></td>
+<td></td>
+<td>跨多种视触觉传感器的静态-动态统一表征</td>
+</tr>
+<tr>
+<td>2024-11</td>
+<td><a href="https://arxiv.org/abs/2411.02479">DIGIT 360</a> <code>arXiv:2411.02479</code></td>
+<td>Meta</td>
+<td>多模态人工指尖：高分辨率形变、振动、声音、温度等多种触觉信号</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.24090">Sparsh</a> <code>arXiv:2410.24090</code></td>
+<td>Meta</td>
+<td>视触觉传感器的自监督通用表征</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.24091">3D-ViTac</a> <code>arXiv:2410.24091</code></td>
+<td></td>
+<td>触觉点与视觉融合的双手精细操作</td>
 </tr>
 <tr>
 <td>2024-09</td>
@@ -707,6 +1036,60 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>即插即用的磁性触觉皮肤，可更换且信号一致</td>
 </tr>
 <tr>
+<td>2024-08</td>
+<td><a href="https://arxiv.org/abs/2408.06506">TacSL</a> <code>arXiv:2408.06506</code></td>
+<td>NVIDIA</td>
+<td>视触觉传感器仿真与学习库</td>
+</tr>
+<tr>
+<td>2024-01</td>
+<td><a href="https://arxiv.org/abs/2401.18084">UniTouch</a> <code>arXiv:2401.18084</code></td>
+<td></td>
+<td>把触觉与视觉、语言、声音对齐的统一表征</td>
+</tr>
+<tr>
+<td>2024-01</td>
+<td><a href="https://arxiv.org/abs/2401.12024">Visuo-Tactile Contrastive</a> <code>arXiv:2401.12024</code></td>
+<td></td>
+<td>自监督对比学习的视触觉表征</td>
+</tr>
+<tr>
+<td>2023-12</td>
+<td>★ <a href="https://arxiv.org/abs/2312.13469">NeuralFeels</a> <code>arXiv:2312.13469</code></td>
+<td>Meta 等</td>
+<td>视觉 + 触觉的神经场，手内操作时在线估计物体形状与位姿（Science Robotics）</td>
+</tr>
+<tr>
+<td>2023-12</td>
+<td><a href="https://arxiv.org/abs/2312.01853">Robot Synesthesia</a> <code>arXiv:2312.01853</code></td>
+<td>UCSD</td>
+<td>点云化的触觉表示，视触觉手内操作</td>
+</tr>
+<tr>
+<td>2023-09</td>
+<td><a href="https://arxiv.org/abs/2309.12300">See to Touch (TAVI)</a> <code>arXiv:2309.12300</code></td>
+<td>NYU</td>
+<td>视觉奖励驱动的触觉灵巧 RL</td>
+</tr>
+<tr>
+<td>2023-04</td>
+<td><a href="https://arxiv.org/abs/2304.04523">PoseFusion</a> <code>arXiv:2304.04523</code></td>
+<td></td>
+<td>融合视觉与触觉的手内物体位姿估计</td>
+</tr>
+<tr>
+<td>2023-04</td>
+<td><a href="https://arxiv.org/abs/2304.00736">TacGNN</a> <code>arXiv:2304.00736</code></td>
+<td></td>
+<td>图网络从原始触觉提取物体状态，盲手内操作</td>
+</tr>
+<tr>
+<td>2023-03</td>
+<td><a href="https://arxiv.org/abs/2303.12076">T-Dex</a> <code>arXiv:2303.12076</code></td>
+<td>NYU</td>
+<td>机器人玩耍数据自监督预训练触觉表征</td>
+</tr>
+<tr>
 <td>2020-05</td>
 <td><a href="https://arxiv.org/abs/2005.14679">DIGIT</a> <code>arXiv:2005.14679</code></td>
 <td>Meta AI</td>
@@ -714,7 +1097,7 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 </tbody>
 </table>
-<h3>A·手内操作 RL/sim2real（26）</h3>
+<h3>A·手内操作 RL/sim2real（57）</h3>
 <table>
 <thead>
 <tr>
@@ -744,10 +1127,28 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>把本体、深度、触觉的动作条件潜在动力学作为循环上下文，提升手内操作在扰动下的鲁棒性</td>
 </tr>
 <tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.01938">One Demo Many Objects</a> <code>arXiv:2609.01938</code></td>
+<td></td>
+<td>用局部接触几何把一次人类示范泛化到多种物体</td>
+</tr>
+<tr>
 <td>2026-08</td>
 <td><a href="https://arxiv.org/abs/2608.19182">ADEPT</a> <code>arXiv:2608.19182</code></td>
 <td></td>
 <td>大规模 RL 预训练通用的"物体重摆"策略，再稳定地后训练到长时程任务（视触觉输入）</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.15917">Pre-training Visual Dexterity in Sim</a> <code>arXiv:2608.15917</code></td>
+<td></td>
+<td>在仿真里做视觉灵巧预训练，提高真机微调的数据效率</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.28198">UniCross</a> <code>arXiv:2607.28198</code></td>
+<td></td>
+<td>统一抓取、搬运、手内旋转、手内平移四种技能的合成</td>
 </tr>
 <tr>
 <td>2026-07</td>
@@ -763,9 +1164,21 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 <tr>
 <td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.28196">Non-Dropping Action Space</a> <code>arXiv:2606.28196</code></td>
+<td></td>
+<td>设计"不会掉物体"的动作空间，让 RL 高效学稳定的抓内操作</td>
+</tr>
+<tr>
+<td>2026-06</td>
 <td><a href="https://arxiv.org/abs/2606.28323">DexCompose</a> <code>arXiv:2606.28323</code></td>
 <td></td>
 <td>按手指分配"动作所有权"的残差组合，复用两个已训练好的全手策略做多任务</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.26428">Play2Perfect</a> <code>arXiv:2606.26428</code></td>
+<td></td>
+<td>研究灵巧"玩耍"预训练中哪些因素对精密装配最重要</td>
 </tr>
 <tr>
 <td>2026-06</td>
@@ -786,6 +1199,24 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>程序生成大量工具形状，训练一个"把任意工具移到任意目标位姿"的 RL 策略，零样本做工具操作</td>
 </tr>
 <tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.15828">Dex4D</a> <code>arXiv:2602.15828</code></td>
+<td></td>
+<td>与任务无关的点跟踪策略，零样本完成多种灵巧任务</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.08278">DexFormer</a> <code>arXiv:2602.08278</code></td>
+<td></td>
+<td>历史条件 Transformer 在线推断形态，零样本跨手</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://arxiv.org/abs/2512.02011">Learning from Imperfect Sims</a> <code>arXiv:2512.02011</code></td>
+<td>UC Berkeley</td>
+<td>在不完美的接触与触觉仿真下学技能，真机拧螺母、用螺丝刀（ICRA'26）</td>
+</tr>
+<tr>
 <td>2025-10</td>
 <td>★ <a href="https://arxiv.org/abs/2510.08556">DexNDM</a> <code>arXiv:2510.08556</code></td>
 <td>Tsinghua/PKU/Galbot</td>
@@ -798,10 +1229,52 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>仿真训练的基础策略 + 真机示范学到的传感驱动修正，应对摩擦、静摩擦与回差</td>
 </tr>
 <tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.17350">DyDexHandover</a> <code>arXiv:2509.17350</code></td>
+<td>Xiaomi Robotics</td>
+<td>只用 RGB 的端到端多智能体 RL，双手类人抛接（仿真 99%）</td>
+</tr>
+<tr>
 <td>2025-08</td>
 <td><a href="https://arxiv.org/abs/2508.01695">DexReMoE</a> <code>arXiv:2508.01695</code></td>
 <td></td>
 <td>多个形状专家组成混合专家策略，泛化到复杂形状的重定向</td>
+</tr>
+<tr>
+<td>2025-07</td>
+<td><a href="https://arxiv.org/abs/2507.06822">Hierarchical RL Articulated Tools</a> <code>arXiv:2507.06822</code></td>
+<td></td>
+<td>分层目标条件 RL：操作镊子、剪刀等铰接工具</td>
+</tr>
+<tr>
+<td>2025-05</td>
+<td><a href="https://arxiv.org/abs/2505.11032">DexGarmentLab</a> <code>arXiv:2505.11032</code></td>
+<td>PKU</td>
+<td>灵巧手衣物操作仿真环境与可泛化策略</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td>★ <a href="https://arxiv.org/abs/2502.20396">Humanoid Dexterous Sim2Real</a> <code>arXiv:2502.20396</code></td>
+<td>UC Berkeley/NVIDIA</td>
+<td>人形双手视觉 sim2real 配方：自动 real-to-sim 调参、接触与目标奖励、分治蒸馏、混合物体表征</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.07472">RGMC In-Hand Champion</a> <code>arXiv:2502.07472</code></td>
+<td></td>
+<td>RGMC 竞赛冠军：稳定抓握下的大范围精确手内物体移动</td>
+</tr>
+<tr>
+<td>2024-11</td>
+<td><a href="https://arxiv.org/abs/2411.13952">Thin Deformable Soft Hand</a> <code>arXiv:2411.13952</code></td>
+<td></td>
+<td>多传感软手用无模型 RL 分离并抓取薄片</td>
+</tr>
+<tr>
+<td>2024-09</td>
+<td><a href="https://arxiv.org/abs/2409.10319">Catch It!</a> <code>arXiv:2409.10319</code></td>
+<td></td>
+<td>移动底盘 + 机械臂 + 12 DoF 手接住空中物体，真机只用板载感知</td>
 </tr>
 <tr>
 <td>2024-07</td>
@@ -822,10 +1295,28 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>双手拧瓶盖：简单的物体表征 + 大规模 sim2real RL</td>
 </tr>
 <tr>
+<td>2023-10</td>
+<td><a href="https://arxiv.org/abs/2310.08809">DexCatch</a> <code>arXiv:2310.08809</code></td>
+<td></td>
+<td>灵巧手接住任意物体的抛接学习框架（CoRL'24）</td>
+</tr>
+<tr>
 <td>2023-09</td>
 <td><a href="https://arxiv.org/abs/2309.09979">RotateIt</a> <code>arXiv:2309.09979</code></td>
 <td>UC Berkeley/Meta</td>
 <td>视觉 + 触觉的通用手内旋转，多模态特权信息蒸馏</td>
+</tr>
+<tr>
+<td>2023-09</td>
+<td><a href="https://arxiv.org/abs/2309.05655">Dynamic Handover</a> <code>arXiv:2309.05655</code></td>
+<td>UCSD</td>
+<td>双臂双手多智能体 RL 实现抛接</td>
+</tr>
+<tr>
+<td>2023-09</td>
+<td><a href="https://arxiv.org/abs/2309.03130">MyoDex</a> <code>arXiv:2309.03130</code></td>
+<td>Meta 等</td>
+<td>在肌骨手模型上学多任务先验，快速适配新的灵巧任务</td>
 </tr>
 <tr>
 <td>2023-05</td>
@@ -835,15 +1326,39 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 <tr>
 <td>2023-03</td>
+<td><a href="https://arxiv.org/abs/2304.03223">DexDeform</a> <code>arXiv:2304.03223</code></td>
+<td>MIT 等</td>
+<td>人类示范 + 可微物理，多指手操作橡皮泥</td>
+</tr>
+<tr>
+<td>2023-03</td>
+<td><a href="https://arxiv.org/abs/2303.13446">Koopman for Dexterity</a> <code>arXiv:2303.13446</code></td>
+<td>Georgia Tech</td>
+<td>用 Koopman 算子做灵巧技能学习，与深度方法对比计算量与可解释性</td>
+</tr>
+<tr>
+<td>2023-03</td>
 <td><a href="https://arxiv.org/abs/2303.10880">Rotating without Seeing</a> <code>arXiv:2303.10880</code></td>
 <td>UCSD</td>
 <td>只靠手上密集的二值触觉、不用视觉完成旋转</td>
+</tr>
+<tr>
+<td>2023-03</td>
+<td><a href="https://arxiv.org/abs/2303.03486">Sampling-based Exploration RL</a> <code>arXiv:2303.03486</code></td>
+<td>Columbia</td>
+<td>用采样式规划给 RL 提供探索，学会无支撑的手内操作</td>
 </tr>
 <tr>
 <td>2022-11</td>
 <td><a href="https://arxiv.org/abs/2211.11744">Visual Dexterity</a> <code>arXiv:2211.11744</code></td>
 <td>MIT</td>
 <td>只用一个深度相机，实时重定向新颖复杂形状的物体（Science Robotics）</td>
+</tr>
+<tr>
+<td>2022-11</td>
+<td><a href="https://arxiv.org/abs/2211.09423">DexPoint</a> <code>arXiv:2211.09423</code></td>
+<td>UCSD</td>
+<td>点云 RL：想象的手部点云 + 接触奖励，类别级 sim2real</td>
 </tr>
 <tr>
 <td>2022-10</td>
@@ -858,10 +1373,34 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>把腿足的快速运动适应（RMA）搬到手内旋转：只用本体感觉在线估计物体属性</td>
 </tr>
 <tr>
+<td>2022-09</td>
+<td><a href="https://arxiv.org/abs/2209.11221">Exemplar Trajectories + Pre-Grasps</a> <code>arXiv:2209.11221</code></td>
+<td></td>
+<td>用示例物体轨迹与预抓取学习通用灵巧操作</td>
+</tr>
+<tr>
 <td>2022-06</td>
 <td><a href="https://arxiv.org/abs/2206.08686">Bi-DexHands</a> <code>arXiv:2206.08686</code></td>
 <td>PKU</td>
 <td>双手灵巧操作的 RL 基准（Isaac Gym），后来 LLM 奖励设计的常用测试场</td>
+</tr>
+<tr>
+<td>2022-05</td>
+<td><a href="https://arxiv.org/abs/2205.14313">Chopsticks</a> <code>arXiv:2205.14313</code></td>
+<td></td>
+<td>物理仿真中学习以多种握法使用筷子搬运物体</td>
+</tr>
+<tr>
+<td>2022-05</td>
+<td><a href="https://arxiv.org/abs/2205.09683">RRC 2021 Winner</a> <code>arXiv:2205.09683</code></td>
+<td></td>
+<td>TriFinger 真机挑战赛冠军方案：简单奖励 + 知识迁移</td>
+</tr>
+<tr>
+<td>2022-04</td>
+<td><a href="https://arxiv.org/abs/2204.03698">Purely Tactile In-Hand (DLR)</a> <code>arXiv:2204.03698</code></td>
+<td>DLR</td>
+<td>力矩控制手只靠位置与力矩感知、掌心朝下转方块，持续力封闭</td>
 </tr>
 <tr>
 <td>2021-11</td>
@@ -870,10 +1409,28 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>教师-学生蒸馏，掌心朝下也能重定向大量新物体</td>
 </tr>
 <tr>
+<td>2021-08</td>
+<td><a href="https://arxiv.org/abs/2108.09779">TriFinger Sim2Real</a> <code>arXiv:2108.09779</code></td>
+<td>NVIDIA 等</td>
+<td>Isaac Gym 训练三指手 6DoF 方块操作并迁移到远程真机，强调关键点表征</td>
+</tr>
+<tr>
 <td>2019-10</td>
 <td>★ <a href="https://arxiv.org/abs/1910.07113">Rubik's Cube (OpenAI)</a> <code>arXiv:1910.07113</code></td>
 <td>OpenAI</td>
 <td>自动域随机化（ADR）+ 带记忆的策略，单手还原魔方</td>
+</tr>
+<tr>
+<td>2019-09</td>
+<td><a href="https://arxiv.org/abs/1909.11652">PDDM</a> <code>arXiv:1909.11652</code></td>
+<td>UC Berkeley</td>
+<td>学深度动力学模型 + MPC 做手内操作（含真机 Shadow 手转保定球）</td>
+</tr>
+<tr>
+<td>2018-10</td>
+<td><a href="https://arxiv.org/abs/1810.06045">Low-Cost Dexterous DRL</a> <code>arXiv:1810.06045</code></td>
+<td>UC Berkeley</td>
+<td>在低成本灵巧手上直接做真机深度 RL 的早期工作</td>
 </tr>
 <tr>
 <td>2018-08</td>
@@ -881,9 +1438,21 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>OpenAI</td>
 <td>Shadow 手在大规模域随机化的仿真里用 RL 学会方块重定向，零样本迁移到真机，是灵巧手 sim2real 的起点</td>
 </tr>
+<tr>
+<td>2017-09</td>
+<td>★ <a href="https://arxiv.org/abs/1709.10087">DAPG</a> <code>arXiv:1709.10087</code></td>
+<td>UW/UC Berkeley</td>
+<td>示范增强的策略梯度：24 DoF 手学开门、用锤子、手内重定向，灵巧 RL + 示范的经典</td>
+</tr>
+<tr>
+<td>2017-04</td>
+<td><a href="https://arxiv.org/abs/1704.03073">Data-efficient DRL for Dexterous</a> <code>arXiv:1704.03073</code></td>
+<td>Google DeepMind</td>
+<td>早期把深度 RL 用于抓取堆叠等灵巧任务，探讨数据效率</td>
+</tr>
 </tbody>
 </table>
-<h3>A·抓取合成（15）</h3>
+<h3>A·抓取合成（59）</h3>
 <table>
 <thead>
 <tr>
@@ -895,10 +1464,52 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </thead>
 <tbody>
 <tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.11194">OmniDex</a> <code>arXiv:2610.11194</code></td>
+<td></td>
+<td>扩大杂乱场景灵巧抓取的仿真数据规模</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.24068">When Does Touch Matter?</a> <code>arXiv:2609.24068</code></td>
+<td></td>
+<td>真机对照研究：杂乱抓取中腕/指力矩与指尖触觉何时比视觉更有用</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.19776">CoToGrasp</a> <code>arXiv:2608.19776</code></td>
+<td></td>
+<td>以接触拓扑为条件的功能性抓取合成</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.07600">AdaDexGrasp</a> <code>arXiv:2608.07600</code></td>
+<td></td>
+<td>3D 视触觉融合，接触后按触觉自适应调整抓取</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.21341">BiCompoDiff</a> <code>arXiv:2607.21341</code></td>
+<td></td>
+<td>组合扩散 + 能量优化做双手抓取-交接-重定向</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.11031">GraspGraphNet</a> <code>arXiv:2607.11031</code></td>
+<td></td>
+<td>以 URDF 运动学图表示每只手，生成可直接执行的跨手抓取</td>
+</tr>
+<tr>
 <td>2026-07</td>
 <td><a href="https://arxiv.org/abs/2607.04554">HUGS</a> <code>arXiv:2607.04554</code></td>
 <td></td>
 <td>学习人类抓取偏好先验来引导力封闭优化，统一从两指捏取到双手抱持的多种模式</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.03557">CoorGrasp</a> <code>arXiv:2607.03557</code></td>
+<td></td>
+<td>触觉驱动的 MPC 协调多指接触，执行不确定下的抓取</td>
 </tr>
 <tr>
 <td>2026-06</td>
@@ -913,16 +1524,106 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>无人值守的真实世界抓取数据采集：20 台相机感知、自动执行、自动标注成败、自动复位</td>
 </tr>
 <tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.18092">EAGG</a> <code>arXiv:2606.18092</code></td>
+<td></td>
+<td>几何感知图条件的跨末端执行器抓取生成</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.05407">MoDex</a> <code>arXiv:2606.05407</code></td>
+<td></td>
+<td>扩散策略单手依次抓多个物体而不放下已抓物体</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.13117">SECOND-Grasp</a> <code>arXiv:2605.13117</code></td>
+<td></td>
+<td>语义接触引导：同时满足物理稳定与语言指定的抓取</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.01151">D-REX</a> <code>arXiv:2603.01151</code></td>
+<td></td>
+<td>基于高斯泼溅的可微 real-to-sim-to-real 引擎，辨识物理参数学抓取</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.20466">Grasp to Act</a> <code>arXiv:2602.20466</code></td>
+<td></td>
+<td>面向工具使用中冲击、扭矩等动态力的灵巧抓取（RA-L'26）</td>
+</tr>
+<tr>
 <td>2026-02</td>
 <td><a href="https://arxiv.org/abs/2602.16712">OHRA (One Hand to Rule Them All)</a> <code>arXiv:2602.16712</code></td>
 <td>UNC</td>
 <td>统一的 22 DoF 规范 URDF + 参数空间，一个抓取策略跨多种手迁移；3 指 LEAP 零样本 81.9%（RSS'26）</td>
 </tr>
 <tr>
+<td>2026-01</td>
+<td><a href="https://arxiv.org/abs/2601.15039">CADGrasp</a> <code>arXiv:2601.15039</code></td>
+<td></td>
+<td>预测稀疏 IBS 的接触与碰撞感知两阶段杂乱场景抓取</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://arxiv.org/abs/2512.13380">DemoFunGrasp</a> <code>arXiv:2512.13380</code></td>
+<td></td>
+<td>编辑示范的 RL 实现通用功能抓取，零样本上真机</td>
+</tr>
+<tr>
+<td>2025-11</td>
+<td><a href="https://arxiv.org/abs/2511.09602">ScaleADFG</a> <code>arXiv:2511.09602</code></td>
+<td></td>
+<td>可扩展数据集上的可供性功能抓取</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.24661">CEDex</a> <code>arXiv:2509.24661</code></td>
+<td></td>
+<td>用类人接触表示大规模生成跨本体灵巧抓取</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.22149">DemoGrasp</a> <code>arXiv:2509.22149</code></td>
+<td></td>
+<td>从一次示范出发、编辑示范轨迹做 RL 的通用灵巧抓取</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.19892">D3Grasp</a> <code>arXiv:2509.19892</code></td>
+<td></td>
+<td>多模态感知引导的 RL，实现对通用与可变形物体的多样灵巧抓取</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.16434">End-to-end RL Grasping</a> <code>arXiv:2509.16434</code></td>
+<td>NVIDIA</td>
+<td>扩大基于图像的端到端 RL，改进手臂 + 手的灵巧抓取</td>
+</tr>
+<tr>
 <td>2025-06</td>
 <td>★ <a href="https://arxiv.org/abs/2506.17198">Dex1B</a> <code>arXiv:2506.17198</code></td>
 <td>UCSD</td>
 <td>生成模型产出 10 亿条抓取与铰接操作演示</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.14317">ClutterDexGrasp</a> <code>arXiv:2506.14317</code></td>
+<td>PKU</td>
+<td>杂乱场景：带密度课程的教师策略蒸馏成 3D 扩散学生，零样本上真机</td>
+</tr>
+<tr>
+<td>2025-05</td>
+<td><a href="https://arxiv.org/abs/2505.18876">DiffusionRL Grasp</a> <code>arXiv:2505.18876</code></td>
+<td></td>
+<td>用 RL 适配的大规模数据高效训练抓取扩散策略</td>
+</tr>
+<tr>
+<td>2025-05</td>
+<td><a href="https://arxiv.org/abs/2505.03233">GraspVLA</a> <code>arXiv:2505.03233</code></td>
+<td></td>
+<td>用十亿级合成动作数据预训练的抓取基础模型</td>
 </tr>
 <tr>
 <td>2025-03</td>
@@ -937,16 +1638,34 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>把物理约束写进扩散模型的训练与采样；新数据集含 340 万个抓取、1.5 万多个物体</td>
 </tr>
 <tr>
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.18423">RetrDex</a> <code>arXiv:2502.18423</code></td>
+<td></td>
+<td>用灵巧手高效地从杂乱堆中取出被埋物体</td>
+</tr>
+<tr>
 <td>2024-12</td>
 <td><a href="https://arxiv.org/abs/2412.16490">BODex</a> <code>arXiv:2412.16490</code></td>
 <td>PKU</td>
 <td>双层优化（下层为 QP）GPU 并行合成，单卡每秒 49 个以上；用它训练的模型仿真成功率约 80%，用 DexGraspNet 约 40%</td>
 </tr>
 <tr>
+<td>2024-12</td>
+<td><a href="https://arxiv.org/abs/2412.02699">UniGraspTransformer</a> <code>arXiv:2412.02699</code></td>
+<td></td>
+<td>简化的策略蒸馏：逐物体 RL 再蒸馏成通用 Transformer 抓取</td>
+</tr>
+<tr>
 <td>2024-11</td>
 <td><a href="https://arxiv.org/abs/2412.01791">DextrAH-RGB</a> <code>arXiv:2412.01791</code></td>
 <td>NVIDIA</td>
 <td>只用 RGB 的"抓任意物体"视觉运动策略（特权教师 → RGB 学生）</td>
+</tr>
+<tr>
+<td>2024-11</td>
+<td><a href="https://arxiv.org/abs/2411.16755">FunGrasp</a> <code>arXiv:2411.16755</code></td>
+<td></td>
+<td>面向多种灵巧手的功能性抓取（RA-L'25）</td>
 </tr>
 <tr>
 <td>2024-10</td>
@@ -956,9 +1675,27 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 <tr>
 <td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.23039">Neural Attention Field</a> <code>arXiv:2410.23039</code></td>
+<td></td>
+<td>3D 点相关性场，实现一次示范的灵巧抓取迁移</td>
+</tr>
+<tr>
+<td>2024-10</td>
 <td><a href="https://arxiv.org/abs/2410.23004">DexGraspNet 2.0</a> <code>arXiv:2410.23004</code></td>
 <td>PKU</td>
 <td>在大规模合成的杂乱场景中学习生成式抓取</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.02479">Cross-Embodiment Grasp RL</a> <code>arXiv:2410.02479</code></td>
+<td></td>
+<td>用 RL 学控制多种灵巧手的通用抓取策略</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.01702">D(R,O) Grasp</a> <code>arXiv:2410.01702</code></td>
+<td></td>
+<td>机器人-物体统一交互表示，跨本体灵巧抓取</td>
 </tr>
 <tr>
 <td>2024-07</td>
@@ -967,10 +1704,82 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>几何 fabrics 保证安全 + RL，像素到动作的手臂-手抓取</td>
 </tr>
 <tr>
+<td>2024-05</td>
+<td><a href="https://arxiv.org/abs/2405.09310">GrainGrasp</a> <code>arXiv:2405.09310</code></td>
+<td></td>
+<td>细粒度接触引导的灵巧抓取生成</td>
+</tr>
+<tr>
+<td>2024-04</td>
+<td><a href="https://arxiv.org/abs/2404.13532">SpringGrasp</a> <code>arXiv:2404.13532</code></td>
+<td>Stanford</td>
+<td>形状不确定下的柔顺抓取合成</td>
+</tr>
+<tr>
+<td>2024-03</td>
+<td><a href="https://arxiv.org/abs/2403.19649">GraspXL</a> <code>arXiv:2403.19649</code></td>
+<td>ETH</td>
+<td>大规模生成满足多种目标的抓取运动</td>
+</tr>
+<tr>
+<td>2024-02</td>
+<td><a href="https://arxiv.org/abs/2402.13853">RealDex</a> <code>arXiv:2402.13853</code></td>
+<td></td>
+<td>带人类行为模式的真实灵巧抓取数据集（遥操作同步）</td>
+</tr>
+<tr>
+<td>2024-02</td>
+<td><a href="https://arxiv.org/abs/2402.02989">DexDiffuser</a> <code>arXiv:2402.02989</code></td>
+<td>KTH</td>
+<td>扩散模型在部分点云上生成、评估、精修灵巧抓取</td>
+</tr>
+<tr>
+<td>2023-12</td>
+<td><a href="https://arxiv.org/abs/2312.02975">Dexterous Functional Grasping</a> <code>arXiv:2312.02975</code></td>
+<td>CMU</td>
+<td>功能抓取：抓工具并稳固施力</td>
+</tr>
+<tr>
+<td>2023-10</td>
+<td><a href="https://arxiv.org/abs/2310.15599">MultiGrasp</a> <code>arXiv:2310.15599</code></td>
+<td></td>
+<td>一只手同时抓多个物体的两阶段方法</td>
+</tr>
+<tr>
+<td>2023-10</td>
+<td><a href="https://arxiv.org/abs/2310.04517">DR for Grasp Datasets</a> <code>arXiv:2310.04517</code></td>
+<td></td>
+<td>为自动生成的抓取数据集做域随机化以便 sim2real</td>
+</tr>
+<tr>
+<td>2023-09</td>
+<td><a href="https://arxiv.org/abs/2309.06038">GraspGF</a> <code>arXiv:2309.06038</code></td>
+<td>PKU</td>
+<td>基于分数的抓取原语，辅助人类的灵巧抓取</td>
+</tr>
+<tr>
+<td>2023-09</td>
+<td><a href="https://arxiv.org/abs/2309.03891">ArtiGrasp</a> <code>arXiv:2309.03891</code></td>
+<td>ETH</td>
+<td>RL 合成双手抓取与铰接操作</td>
+</tr>
+<tr>
+<td>2023-07</td>
+<td><a href="https://arxiv.org/abs/2307.16752">Functional Pre-grasp</a> <code>arXiv:2307.16752</code></td>
+<td></td>
+<td>用 RL 学抓取前的预操作以达到类人功能抓取</td>
+</tr>
+<tr>
 <td>2023-04</td>
 <td><a href="https://arxiv.org/abs/2304.00464">UniDexGrasp++</a> <code>arXiv:2304.00464</code></td>
 <td>PKU</td>
 <td>几何感知课程 + 通才-专才迭代学习，提升抓取策略</td>
+</tr>
+<tr>
+<td>2023-03</td>
+<td><a href="https://arxiv.org/abs/2303.17808">Anthropomorphic Functional Grasping</a> <code>arXiv:2303.17808</code></td>
+<td></td>
+<td>少量示范下的拟人功能性工具抓取</td>
 </tr>
 <tr>
 <td>2023-03</td>
@@ -984,9 +1793,33 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>PKU</td>
 <td>用加速的可微力封闭估计合成 132 万个 ShadowHand 抓取（5355 个物体）</td>
 </tr>
+<tr>
+<td>2022-10</td>
+<td><a href="https://arxiv.org/abs/2210.00722">GenDexGrasp</a> <code>arXiv:2210.00722</code></td>
+<td></td>
+<td>接触图作为跨手的中间表示，快速生成多样抓取</td>
+</tr>
+<tr>
+<td>2022-09</td>
+<td><a href="https://arxiv.org/abs/2209.14284">DexTransfer</a> <code>arXiv:2209.14284</code></td>
+<td>NVIDIA</td>
+<td>少量人类示范 + 仿真扩增，真机多指灵巧抓取</td>
+</tr>
+<tr>
+<td>2022-07</td>
+<td><a href="https://arxiv.org/abs/2207.05053">CGF</a> <code>arXiv:2207.05053</code></td>
+<td>UCSD</td>
+<td>从人类示范学连续抓取函数（隐式函数 + CVAE）</td>
+</tr>
+<tr>
+<td>2021-12</td>
+<td><a href="https://arxiv.org/abs/2112.03028">D-Grasp</a> <code>arXiv:2112.03028</code></td>
+<td>ETH</td>
+<td>RL 合成物理合理的人手动态抓取与搬运</td>
+</tr>
 </tbody>
 </table>
-<h3>A·基于模型的接触控制（11）</h3>
+<h3>A·基于模型的接触控制（14）</h3>
 <table>
 <thead>
 <tr>
@@ -1052,6 +1885,18 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>在线采样规划 + 实时状态估计，完成手内方块重定向（ICRA'25）</td>
 </tr>
 <tr>
+<td>2024-08</td>
+<td>★ <a href="https://arxiv.org/abs/2408.07855">Complementarity-Free Contact</a> <code>arXiv:2408.07855</code></td>
+<td></td>
+<td>免互补约束的多接触建模与优化，实时灵巧 MPC</td>
+</tr>
+<tr>
+<td>2024-08</td>
+<td><a href="https://arxiv.org/abs/2408.01258">Jacta</a> <code>arXiv:2408.01258</code></td>
+<td>RAI Institute</td>
+<td>面向灵巧与全身操作的通用采样式规划器，规划结果用于引导 RL</td>
+</tr>
+<tr>
 <td>2022-12</td>
 <td><a href="https://arxiv.org/abs/2212.00541">Predictive Sampling</a> <code>arXiv:2212.00541</code></td>
 <td>Google DeepMind</td>
@@ -1063,9 +1908,15 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>MIT</td>
 <td>对准静态接触模型做局部平滑，配合 RRT 实现全局的接触丰富规划</td>
 </tr>
+<tr>
+<td>2021-09</td>
+<td><a href="https://arxiv.org/abs/2109.10443">Geometric Fabrics</a> <code>arXiv:2109.10443</code></td>
+<td>NVIDIA</td>
+<td>几何 fabrics：可保证稳定的反应式控制（DextrAH 的底层）</td>
+</tr>
 </tbody>
 </table>
-<h3>A·遥操作与重定向（17）</h3>
+<h3>A·遥操作与重定向（49）</h3>
 <table>
 <thead>
 <tr>
@@ -1077,10 +1928,40 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </thead>
 <tbody>
 <tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2610.00781">DITTO-X</a> <code>arXiv:2610.00781</code></td>
+<td></td>
+<td>正向与反向遥操作，服务灵巧操作与人工干预</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.24572">Fiber Optic Glove</a> <code>arXiv:2608.24572</code></td>
+<td></td>
+<td>多芯形状传感光纤手套，精确跟踪手部位姿</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.16572">ViHaTeleop</a> <code>arXiv:2608.16572</code></td>
+<td></td>
+<td>550 美元、0.7 kg 的视觉-振动触觉遥操作</td>
+</tr>
+<tr>
 <td>2026-08</td>
 <td><a href="https://arxiv.org/abs/2608.15560">ReForce</a> <code>arXiv:2608.15560</code></td>
 <td></td>
 <td>力感知重定向：在运动学结果上预测残差以达到期望接触力，支持在线遥操作与离线数据转换</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.13362">NestDex</a> <code>arXiv:2608.13362</code></td>
+<td></td>
+<td>副驾驶辅助遥操作的嵌套策略学习</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.27784">DexDirect</a> <code>arXiv:2607.27784</code></td>
+<td></td>
+<td>直接示教手臂 + 手的高效示范采集</td>
 </tr>
 <tr>
 <td>2026-07</td>
@@ -1095,10 +1976,34 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>免标定的重定向：自监督指尖对应 + 少量人工示例锚定 + 捏取接触分类器</td>
 </tr>
 <tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.07491">Smooth Operator</a> <code>arXiv:2607.07491</code></td>
+<td></td>
+<td>实时采样式运动学重定向，减少梯度法的抖动</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.05883">DexTele</a> <code>arXiv:2607.05883</code></td>
+<td></td>
+<td>双臂灵巧遥操作：运动重定向 + 自适应力控</td>
+</tr>
+<tr>
 <td>2026-06</td>
 <td><a href="https://arxiv.org/abs/2606.23431">DexTeleop-0</a> <code>arXiv:2606.23431</code></td>
 <td></td>
 <td>触觉驱动的实时优化把粗糙的人手意图转成力顺应的精细指令，双手共享自主</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.16370">ART-Glove</a> <code>arXiv:2606.16370</code></td>
+<td></td>
+<td>带 16 个刚性功能面的触觉手套，采集接触明确的示范</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.06033">RealDexUMI</a> <code>arXiv:2606.06033</code></td>
+<td></td>
+<td>可穿戴的灵巧通用操作接口</td>
 </tr>
 <tr>
 <td>2026-05</td>
@@ -1107,16 +2012,82 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>针对拧、转类动作的功能性"旋量重定向"，避免纯运动学模仿导致指尖打滑</td>
 </tr>
 <tr>
+<td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.15013">DEX-Mouse</a> <code>arXiv:2604.15013</code></td>
+<td></td>
+<td>低成本便携、带力反馈的通用灵巧数据采集接口</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.02820">MFE</a> <code>arXiv:2604.02820</code></td>
+<td></td>
+<td>力、压力、温度多模态反馈的手外骨骼</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.28427">Tele-Catch</a> <code>arXiv:2603.28427</code></td>
+<td></td>
+<td>共享自主的遥操作接住动态物体</td>
+</tr>
+<tr>
 <td>2026-03</td>
 <td><a href="https://arxiv.org/abs/2603.17323">DexEXO</a> <code>arXiv:2603.17323</code></td>
 <td></td>
 <td>以佩戴舒适为先的外骨骼：适配 140–217 mm 手长，被动手外观与机器人一致，可直接用腕部相机图像训练</td>
 </tr>
 <tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.05804">CDF-Glove</a> <code>arXiv:2603.05804</code></td>
+<td></td>
+<td>线驱动力反馈手套</td>
+</tr>
+<tr>
+<td>2025-11</td>
+<td><a href="https://arxiv.org/abs/2512.00324">MILE</a> <code>arXiv:2512.00324</code></td>
+<td></td>
+<td>机械同构外骨骼 + 视触觉机器人手的采集系统</td>
+</tr>
+<tr>
+<td>2025-11</td>
+<td><a href="https://arxiv.org/abs/2511.20887">ACE-F</a> <code>arXiv:2511.20887</code></td>
+<td></td>
+<td>可折叠、带力反馈、跨本体的灵巧遥操作系统</td>
+</tr>
+<tr>
 <td>2025-10</td>
 <td><a href="https://arxiv.org/abs/2511.00139">Shared-Autonomy DexGrasp-VLA</a> <code>arXiv:2511.00139</code></td>
 <td></td>
 <td>人用 VR 管手臂，自主 VLA 管手指（视觉 + 触觉），共享自主高效采集数据</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.09229">Glovity</a> <code>arXiv:2510.09229</code></td>
+<td></td>
+<td>空间力旋量反馈 + 触觉手套的低成本遥操作</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.04441">DEXOP</a> <code>arXiv:2509.04441</code></td>
+<td>MIT</td>
+<td>被动手外骨骼"围操作"，采视觉 + 触觉的人类数据</td>
+</tr>
+<tr>
+<td>2025-07</td>
+<td><a href="https://arxiv.org/abs/2507.03227">ByteDexter Teleop</a> <code>arXiv:2507.03227</code></td>
+<td>ByteDance</td>
+<td>20 DoF ByteDexter 手的人体运动重定向遥操作</td>
+</tr>
+<tr>
+<td>2025-07</td>
+<td><a href="https://arxiv.org/abs/2507.01857">TypeTele</a> <code>arXiv:2507.01857</code></td>
+<td></td>
+<td>按灵巧操作类型遥操作，发挥机器人手的结构优势</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.11775">ExoStart</a> <code>arXiv:2506.11775</code></td>
+<td>Google DeepMind</td>
+<td>传感外骨骼示范 + 仿真 RL 高效学灵巧技能</td>
 </tr>
 <tr>
 <td>2025-06</td>
@@ -1137,16 +2108,58 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>低成本移动设备让人用自己的手在野外大量采数据，与机器人数据共训</td>
 </tr>
 <tr>
+<td>2025-05</td>
+<td><a href="https://arxiv.org/abs/2505.01083">DexFlow</a> <code>arXiv:2505.01083</code></td>
+<td></td>
+<td>统一的灵巧手位姿重定向与交互数据转换</td>
+</tr>
+<tr>
+<td>2025-03</td>
+<td><a href="https://arxiv.org/abs/2503.01543">Exo-ViHa</a> <code>arXiv:2503.01543</code></td>
+<td></td>
+<td>3D 打印外骨骼 + 视觉与触觉反馈的第一人称采集</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.17432">FACTR</a> <code>arXiv:2502.17432</code></td>
+<td>CMU</td>
+<td>力反馈遥操作 + 力感知课程训练的接触策略</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.07730">DOGlove</a> <code>arXiv:2502.07730</code></td>
+<td></td>
+<td>低成本开源力反馈手套（RSS'25）</td>
+</tr>
+<tr>
 <td>2025-02</td>
 <td>★ <a href="https://arxiv.org/abs/2502.04307">DexterityGen</a> <code>arXiv:2502.04307</code></td>
 <td>UC Berkeley/Meta</td>
 <td>RL 预训练大规模灵巧运动原语，人只给粗指令，扩散模型生成安全精确的动作，相当于灵巧手的"基础控制器"</td>
 </tr>
 <tr>
+<td>2025-01</td>
+<td><a href="https://arxiv.org/abs/2501.10356">DexForce</a> <code>arXiv:2501.10356</code></td>
+<td>Stanford</td>
+<td>从示教中提取含力信息的动作，用于接触丰富的灵巧任务</td>
+</tr>
+<tr>
+<td>2024-08</td>
+<td><a href="https://arxiv.org/abs/2408.11805">ACE</a> <code>arXiv:2408.11805</code></td>
+<td>UCSD</td>
+<td>跨平台视觉外骨骼，低成本灵巧遥操作</td>
+</tr>
+<tr>
 <td>2024-07</td>
 <td><a href="https://arxiv.org/abs/2407.03162">Bunny-VisionPro</a> <code>arXiv:2407.03162</code></td>
 <td>UCSD</td>
 <td>用 Vision Pro 做实时双手灵巧遥操作，带触觉反馈，服务模仿学习</td>
+</tr>
+<tr>
+<td>2024-07</td>
+<td>★ <a href="https://arxiv.org/abs/2407.01512">Open-TeleVision</a> <code>arXiv:2407.01512</code></td>
+<td>UCSD/MIT</td>
+<td>沉浸式主动视觉反馈的遥操作，广泛用于人形双手数据采集</td>
 </tr>
 <tr>
 <td>2024-04</td>
@@ -1167,10 +2180,40 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>便携动捕手套 + 相机采集人手数据，配合人在环纠正学双手灵巧技能</td>
 </tr>
 <tr>
+<td>2024</td>
+<td><a href="https://github.com/dexsuite/dex-retargeting">dex-retargeting</a></td>
+<td>开源工具</td>
+<td>AnyTeleop 作者开源的人手→机器人手重定向库，支持多种灵巧手</td>
+</tr>
+<tr>
 <td>2023-07</td>
 <td>★ <a href="https://arxiv.org/abs/2307.04577">AnyTeleop</a> <code>arXiv:2307.04577</code></td>
 <td>UCSD/NVIDIA</td>
 <td>通用视觉遥操作框架，支持多种机械臂与灵巧手</td>
+</tr>
+<tr>
+<td>2022-10</td>
+<td><a href="https://arxiv.org/abs/2210.06463">Holo-Dex</a> <code>arXiv:2210.06463</code></td>
+<td>NYU</td>
+<td>混合现实头显遥操作灵巧手并模仿学习</td>
+</tr>
+<tr>
+<td>2022-04</td>
+<td><a href="https://arxiv.org/abs/2204.12490">From One Hand to Multiple Hands</a> <code>arXiv:2204.12490</code></td>
+<td>UCSD</td>
+<td>iPad 单相机遥操作，为每个用户定制仿真手</td>
+</tr>
+<tr>
+<td>2022-03</td>
+<td><a href="https://arxiv.org/abs/2203.13251">DIME</a> <code>arXiv:2203.13251</code></td>
+<td>NYU</td>
+<td>单目视觉遥操作 + 最近邻模仿的灵巧学习框架</td>
+</tr>
+<tr>
+<td>2022-02</td>
+<td><a href="https://arxiv.org/abs/2202.10448">Robotic Telekinesis</a> <code>arXiv:2202.10448</code></td>
+<td>CMU</td>
+<td>看 YouTube 学人手到机器人手的实时模仿</td>
 </tr>
 <tr>
 <td>2019-10</td>
@@ -1180,7 +2223,7 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 </tbody>
 </table>
-<h3>A·人类演示→机器人（17）</h3>
+<h3>A·人类演示→机器人（39）</h3>
 <table>
 <thead>
 <tr>
@@ -1210,10 +2253,70 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>把仿真当"触觉补全引擎"：从人类视频重建交互，在仿真里得到触觉监督，学视触觉策略</td>
 </tr>
 <tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.03199">RoboTok</a> <code>arXiv:2609.03199</code></td>
+<td></td>
+<td>以人类视频为查询检索互联网示范，训练灵巧策略</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.18948">RoboEdit</a> <code>arXiv:2608.18948</code></td>
+<td></td>
+<td>把人类操作视频编辑成动作一致的机器人视频</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.14028">AdvDex</a> <code>arXiv:2608.14028</code></td>
+<td></td>
+<td>关节对齐动作 + 对抗学习，从人类示范训练跨本体灵巧 VLA</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.12122">HandEdit</a> <code>arXiv:2608.12122</code></td>
+<td></td>
+<td>人手到机器人手的第一人称图像编辑基准</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.07045">C2Dex</a> <code>arXiv:2608.07045</code></td>
+<td></td>
+<td>单目视频接触一致的重建与重定向</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.03828">ObjRetarget</a> <code>arXiv:2607.03828</code></td>
+<td></td>
+<td>物体感知、多面体手模型的运动重定向</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.23685">LaST-HD</a> <code>arXiv:2606.23685</code></td>
+<td></td>
+<td>从可扩展的人类数据学习潜在物理推理</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2607.00033">CHORD</a> <code>arXiv:2607.00033</code></td>
+<td></td>
+<td>以物体为中心的接触力旋量引导 RL，从人类示范学长时程操作</td>
+</tr>
+<tr>
 <td>2026-06</td>
 <td><a href="https://arxiv.org/abs/2606.19333">Do as I Do</a> <code>arXiv:2606.19333</code></td>
 <td></td>
 <td>重建并重定向单目 RGB 的野外人类视频（第一或第三人称），生成可在真机执行的灵巧数据</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.17385">EgoInfinity</a> <code>arXiv:2606.17385</code></td>
+<td></td>
+<td>网络规模 4D 手-物交互数据引擎，任意视角重定向</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.16436">V2P-Manip</a> <code>arXiv:2606.16436</code></td>
+<td></td>
+<td>从单目人类视频学灵巧操作策略</td>
 </tr>
 <tr>
 <td>2026-06</td>
@@ -1246,6 +2349,12 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>不用穿戴设备：从 RGB 人类视频重建 3D 手-物轨迹，再重定向到机器人手</td>
 </tr>
 <tr>
+<td>2026-01</td>
+<td><a href="https://arxiv.org/abs/2601.09163">CEI</a> <code>arXiv:2601.09163</code></td>
+<td></td>
+<td>跨机械臂与末端（含灵巧手）的示范迁移接口</td>
+</tr>
+<tr>
 <td>2025-11</td>
 <td><a href="https://arxiv.org/abs/2511.09484">SPIDER</a> <code>arXiv:2511.09484</code></td>
 <td></td>
@@ -1256,6 +2365,18 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td><a href="https://arxiv.org/abs/2510.08475">DexMan</a> <code>arXiv:2510.08475</code></td>
 <td></td>
 <td>从第三人称人类视频（以及生成视频）学人形双手灵巧技能，用接触奖励应对噪声位姿</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.10952">ImMimic</a> <code>arXiv:2509.10952</code></td>
+<td></td>
+<td>人类视频 + 少量机器人示范的跨域共训（映射与插值）</td>
+</tr>
+<tr>
+<td>2025-08</td>
+<td><a href="https://arxiv.org/abs/2508.13534">MimicFunc</a> <code>arXiv:2508.13534</code></td>
+<td></td>
+<td>从一段人类视频按功能对应模仿工具操作</td>
 </tr>
 <tr>
 <td>2025-05</td>
@@ -1282,10 +2403,64 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>通用神经跟踪控制器：给定人类参考生成手部动作，用数据飞轮迭代增强（ICLR'25）</td>
 </tr>
 <tr>
+<td>2024-11</td>
+<td><a href="https://arxiv.org/abs/2411.04428">DexH2R (Task-oriented)</a> <code>arXiv:2411.04428</code></td>
+<td></td>
+<td>从人到机器人的任务导向灵巧操作</td>
+</tr>
+<tr>
+<td>2024-11</td>
+<td><a href="https://arxiv.org/abs/2411.04005">Object-Centric from Human Motion</a> <code>arXiv:2411.04005</code></td>
+<td></td>
+<td>分层策略：从人手运动数据学以物体为中心的灵巧操作</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.23289">HuDOR</a> <code>arXiv:2410.23289</code></td>
+<td>NYU</td>
+<td>以物体为中心的奖励，从人类视频训练多指手</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.02477">BiDexHD</a> <code>arXiv:2410.02477</code></td>
+<td></td>
+<td>从人类示范学多样的双手灵巧技能，自动构建任务</td>
+</tr>
+<tr>
+<td>2024-09</td>
+<td><a href="https://arxiv.org/abs/2409.08273">HOP (HOI Pretraining)</a> <code>arXiv:2409.08273</code></td>
+<td>UC Berkeley</td>
+<td>从人类视频做手-物交互预训练，再 RL/BC 微调</td>
+</tr>
+<tr>
+<td>2024-04</td>
+<td><a href="https://arxiv.org/abs/2404.15709">ViViDex</a> <code>arXiv:2404.15709</code></td>
+<td></td>
+<td>人类视频提参考轨迹 → RL 状态策略 → 蒸馏成视觉策略</td>
+</tr>
+<tr>
+<td>2024-02</td>
+<td><a href="https://arxiv.org/abs/2402.14795">CyberDemo</a> <code>arXiv:2402.14795</code></td>
+<td>UCSD</td>
+<td>在仿真中大量增广人类示范，再用于真机灵巧操作</td>
+</tr>
+<tr>
+<td>2023-04</td>
+<td><a href="https://arxiv.org/abs/2304.04602">Universal Human Prior</a> <code>arXiv:2304.04602</code></td>
+<td>PKU</td>
+<td>用人类偏好反馈学灵巧操作的类人先验（RLHF 思路）</td>
+</tr>
+<tr>
 <td>2022-12</td>
 <td><a href="https://arxiv.org/abs/2212.04498">VideoDex</a> <code>arXiv:2212.04498</code></td>
 <td>CMU</td>
 <td>从互联网视频学习灵巧先验</td>
+</tr>
+<tr>
+<td>2022-04</td>
+<td><a href="https://arxiv.org/abs/2204.02320">Human Grasp Affordance</a> <code>arXiv:2204.02320</code></td>
+<td>UCSD</td>
+<td>用大规模人类抓取可供性学可泛化的灵巧操作</td>
 </tr>
 <tr>
 <td>2021-08</td>
@@ -1295,7 +2470,7 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 </tbody>
 </table>
-<h3>A·数据规模化（1）</h3>
+<h3>A·数据规模化（2）</h3>
 <table>
 <thead>
 <tr>
@@ -1306,6 +2481,12 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2024-12</td>
+<td><a href="https://arxiv.org/abs/2412.13877">RoboMIND</a> <code>arXiv:2412.13877</code></td>
+<td></td>
+<td>多本体遥操作数据集（含灵巧手）</td>
+</tr>
 <tr>
 <td>2024-10</td>
 <td><a href="https://arxiv.org/abs/2410.24185">DexMimicGen</a> <code>arXiv:2410.24185</code></td>
@@ -1314,7 +2495,7 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 </tbody>
 </table>
-<h3>A·灵巧 VLA/基础模型（9）</h3>
+<h3>A·灵巧 VLA/基础模型（22）</h3>
 <table>
 <thead>
 <tr>
@@ -1326,10 +2507,34 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </thead>
 <tbody>
 <tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.28431">LiMA</a> <code>arXiv:2609.28431</code></td>
+<td></td>
+<td>异步扩散把长时程想象接到实时灵巧控制</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.17055">T-Rex</a> <code>arXiv:2606.17055</code></td>
+<td></td>
+<td>触觉反应式灵巧操作</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.10683">UniDexTok</a> <code>arXiv:2606.10683</code></td>
+<td></td>
+<td>跨手共享编码器与码本的灵巧手 tokenizer</td>
+</tr>
+<tr>
 <td>2026-05</td>
 <td><a href="https://arxiv.org/abs/2605.18722">Dexora</a> <code>arXiv:2605.18722</code></td>
 <td></td>
 <td>首个开源的双臂双手高自由度 VLA，外骨骼背包 + Vision Pro 混合遥操作采数据</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.22264">UniDex</a> <code>arXiv:2603.22264</code></td>
+<td></td>
+<td>大规模机器人中心数据 + 统一 VLA + 人类数据采集的通用灵巧控制套件</td>
 </tr>
 <tr>
 <td>2026-03</td>
@@ -1338,10 +2543,28 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>多种灵巧手共享潜在动作空间：4 种手 10 个任务平均 72%，π0 基线 32%</td>
 </tr>
 <tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.08122">MoDE-VLA</a> <code>arXiv:2603.08122</code></td>
+<td></td>
+<td>RL 增强遥操作 + 灵巧专家混合 VLA（力与触觉输入）</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.03960">Structural Action Transformer</a> <code>arXiv:2603.03960</code></td>
+<td></td>
+<td>结构化 3D 动作表示，跨本体高自由度手的模仿学习（CVPR'26）</td>
+</tr>
+<tr>
 <td>2026-01</td>
 <td><a href="https://interestingengineering.com/ai-robotics/figure-helix02-upgrades-humanoid-robot-control">Helix 02</a></td>
 <td>Figure</td>
 <td>一个网络控制全身；借助指尖触觉与掌心相机分药片、推注射器（公司演示）</td>
+</tr>
+<tr>
+<td>2025-08</td>
+<td><a href="https://arxiv.org/abs/2508.08706">OmniVTLA</a> <code>arXiv:2508.08706</code></td>
+<td></td>
+<td>语义对齐触觉的视觉-触觉-语言-动作模型</td>
 </tr>
 <tr>
 <td>2025-07</td>
@@ -1374,14 +2597,50 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>人形双系统基础模型，支持灵巧手；后续版本加强全身灵巧控制</td>
 </tr>
 <tr>
+<td>2025-03</td>
+<td><a href="https://arxiv.org/abs/2503.02587">In-Hand Visuomotor Diffusion</a> <code>arXiv:2503.02587</code></td>
+<td></td>
+<td>AR 遥操作 Allegro 采数据，扩散策略单手拧瓶盖</td>
+</tr>
+<tr>
 <td>2025-02</td>
 <td>★ <a href="https://arxiv.org/abs/2502.20900">DexGraspVLA</a> <code>arXiv:2502.20900</code></td>
 <td></td>
 <td>预训练 VLM 做高层规划 + 扩散低层控制器，杂乱场景中语言引导抓取成功率 90% 以上（AAAI'26）</td>
 </tr>
+<tr>
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.08449">CordViP</a> <code>arXiv:2502.08449</code></td>
+<td></td>
+<td>物体 6D 位姿 + 本体构造交互感知点云，提升真机灵巧扩散策略</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.05855">DexVLA</a> <code>arXiv:2502.05855</code></td>
+<td></td>
+<td>VLM + 可插拔扩散专家的通用 VLA（含灵巧手）</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.14022">Compliance + Controller Switching</a> <code>arXiv:2410.14022</code></td>
+<td></td>
+<td>物理柔顺 + 控制器切换实现语言条件多指操作</td>
+</tr>
+<tr>
+<td>2024-05</td>
+<td><a href="https://arxiv.org/abs/2405.06039">Bi-VLA</a> <code>arXiv:2405.06039</code></td>
+<td></td>
+<td>双手灵巧家务：语言转代码 + 视觉 + 动作生成</td>
+</tr>
+<tr>
+<td>2024-03</td>
+<td>★ <a href="https://arxiv.org/abs/2403.03954">DP3 (3D Diffusion Policy)</a> <code>arXiv:2403.03954</code></td>
+<td>Tsinghua 等</td>
+<td>3D 点云 + 扩散策略，灵巧任务常用基线（RSS'24）</td>
+</tr>
 </tbody>
 </table>
-<h3>A·人形全身灵巧（4）</h3>
+<h3>A·人形全身灵巧（7）</h3>
 <table>
 <thead>
 <tr>
@@ -1416,9 +2675,27 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td></td>
 <td>从无动作标签的第一人称视频学统一的潜在 VLA，做全身移动操作（ICLR'26）</td>
 </tr>
+<tr>
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.13013">HOMIE</a> <code>arXiv:2502.13013</code></td>
+<td></td>
+<td>同构外骨骼座舱，人形移动操作（含手）的遥操作</td>
+</tr>
+<tr>
+<td>2024-06</td>
+<td><a href="https://arxiv.org/abs/2406.10454">HumanPlus</a> <code>arXiv:2406.10454</code></td>
+<td>Stanford</td>
+<td>人形跟随人体（含双手）实时影子遥操作，再模仿学习自主技能</td>
+</tr>
+<tr>
+<td>2024-06</td>
+<td><a href="https://arxiv.org/abs/2406.08858">OmniH2O</a> <code>arXiv:2406.08858</code></td>
+<td>CMU</td>
+<td>通用的人到人形全身遥操作（含灵巧手）与学习</td>
+</tr>
 </tbody>
 </table>
-<h3>A·基准与数据集（5）</h3>
+<h3>A·真机 RL 与后训练（17）</h3>
 <table>
 <thead>
 <tr>
@@ -1430,10 +2707,458 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </thead>
 <tbody>
 <tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.19666">High-DoF VLA Post-Training</a> <code>arXiv:2609.19666</code></td>
+<td></td>
+<td>时序手部动作编解码 + SFT + DAgger + 真机残差 RL</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td>★ <a href="https://arxiv.org/abs/2609.14878">MPC-Scaffolded Real RL</a> <code>arXiv:2609.14878</code></td>
+<td></td>
+<td>采样 MPC 给真机 RL 搭脚手架：Allegro 7 分钟在线 RL 达 100%，转速为 MPC 的 5 倍以上</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.06009">Intervention-Aware WM</a> <code>arXiv:2609.06009</code></td>
+<td></td>
+<td>把人的干预当安全信号的世界模型 + 真机 RL</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.06323">LAMP</a> <code>arXiv:2607.06323</code></td>
+<td></td>
+<td>潜在运动先验引导的真机灵巧学习</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.09615">DexPIE</a> <code>arXiv:2606.09615</code></td>
+<td></td>
+<td>从真实经验中稳定地改进灵巧策略</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.30226">BORA</a> <code>arXiv:2605.30226</code></td>
+<td></td>
+<td>离线 RL + 在线残差适配，真机灵巧 VLA</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.15157">Hand-in-the-Loop</a> <code>arXiv:2605.15157</code></td>
+<td></td>
+<td>平滑融合人工纠正与策略动作，避免手势跳变</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.12243">HandelBot</a> <code>arXiv:2603.12243</code></td>
+<td></td>
+<td>快速适配灵巧策略，真机弹钢琴</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.09121">DexHiL</a> <code>arXiv:2603.09121</code></td>
+<td></td>
+<td>面向灵巧操作的人在环 VLA 后训练</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.03280">How to Peel with a Knife</a> <code>arXiv:2603.03280</code></td>
+<td></td>
+<td>用人类偏好对齐精细的削皮这类主观质量任务</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://arxiv.org/abs/2512.01801">GR-RL</a> <code>arXiv:2512.01801</code></td>
+<td>ByteDance Seed</td>
+<td>把通用 VLA 训成长时程灵巧精密任务的专家</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.14830">RL-100</a> <code>arXiv:2510.14830</code></td>
+<td></td>
+<td>扩散策略上的真机 RL 框架：模仿 → 离线 RL → 在线 RL</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.19301">ResFiT</a> <code>arXiv:2509.19301</code></td>
+<td></td>
+<td>离策略残差 RL 微调行为克隆策略（含高自由度双手人形）</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td>★ <a href="https://arxiv.org/abs/2410.21845">HIL-SERL</a> <code>arXiv:2410.21845</code></td>
+<td>UC Berkeley</td>
+<td>人在环真机 RL，精密与灵巧任务（Science Robotics）</td>
+</tr>
+<tr>
+<td>2024-01</td>
+<td><a href="https://arxiv.org/abs/2401.16013">SERL</a> <code>arXiv:2401.16013</code></td>
+<td>UC Berkeley</td>
+<td>样本高效的真机 RL 软件套件</td>
+</tr>
+<tr>
+<td>2023-10</td>
+<td><a href="https://arxiv.org/abs/2310.19797">DEFT</a> <code>arXiv:2310.19797</code></td>
+<td>CMU</td>
+<td>人类先验 + 真机微调，学软物体与长时程灵巧任务</td>
+</tr>
+<tr>
+<td>2022-12</td>
+<td><a href="https://arxiv.org/abs/2212.09902">Autonomous Real-World RL (Substep)</a> <code>arXiv:2212.09902</code></td>
+<td>UC Berkeley</td>
+<td>真机图像 RL：子步骤引导，自主复位学灵巧操作</td>
+</tr>
+</tbody>
+</table>
+<h3>A·灵巧世界模型（11）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.22363">P³-WAM</a> <code>arXiv:2610.22363</code></td>
+<td></td>
+<td>感知、预测、规划统一的第一人称灵巧世界-动作模型</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.34286">Dexterous Tactile World Model</a> <code>arXiv:2609.34286</code></td>
+<td></td>
+<td>触觉手套信号条件的第一人称视频世界模型</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.21514">Skel-WAM</a> <code>arXiv:2609.21514</code></td>
+<td></td>
+<td>手骨架条件的世界-动作模型，人到机器人迁移</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.21449">ME-Dex 1.0</a> <code>arXiv:2609.21449</code></td>
+<td></td>
+<td>把异构触觉纳入世界-动作模型（规范手模型对齐触觉区域）</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.30237">Motus2</a> <code>arXiv:2608.30237</code></td>
+<td></td>
+<td>自我进化的灵巧操作通用世界模型</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.22403">LD4WAM</a> <code>arXiv:2608.22403</code></td>
+<td></td>
+<td>从人类视频学潜在动力学用于世界-动作模型</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.13049">H2R-Bench</a> <code>arXiv:2608.13049</code></td>
+<td></td>
+<td>世界模型中人到机器人视频生成的基准</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.28391">TacWAM</a> <code>arXiv:2607.28391</code></td>
+<td></td>
+<td>力学感知触觉预测的世界-动作模型</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.04546">Mask2Real-WM</a> <code>arXiv:2607.04546</code></td>
+<td></td>
+<td>以分割掩码为桥的可控灵巧世界模型</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://arxiv.org/abs/2512.17907">Dexterous World Models</a> <code>arXiv:2512.17907</code></td>
+<td></td>
+<td>场景-动作条件的视频扩散，建模人手动作引起的场景变化</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://arxiv.org/abs/2512.13644">DexWM</a> <code>arXiv:2512.13644</code></td>
+<td>Meta 等</td>
+<td>从人类视频学灵巧手-物交互的世界模型</td>
+</tr>
+</tbody>
+</table>
+<h3>A·人手-物体重建与数据（24）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.28386">GraspHOI</a> <code>arXiv:2608.28386</code></td>
+<td></td>
+<td>单张图像的全身 + 手指级抓取 3D 重建</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.07607">EgoVerse</a> <code>arXiv:2604.07607</code></td>
+<td></td>
+<td>全球协作的第一人称人类数据平台</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.28766">HandX</a> <code>arXiv:2603.28766</code></td>
+<td></td>
+<td>扩大双手运动与交互生成的数据规模（CVPR'26）</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.22209">WHOLE</a> <code>arXiv:2602.22209</code></td>
+<td></td>
+<td>第一人称视频中世界坐标的手-物联合估计</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.06226">ForeHOI</a> <code>arXiv:2602.06226</code></td>
+<td></td>
+<td>日常手-物视频的前馈式物体 3D 重建</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.04672">AGILE</a> <code>arXiv:2602.04672</code></td>
+<td></td>
+<td>用 agentic 生成从视频重建可仿真的手-物交互</td>
+</tr>
+<tr>
+<td>2026-01</td>
+<td><a href="https://arxiv.org/abs/2601.05844">DexterCap</a> <code>arXiv:2601.05844</code></td>
+<td></td>
+<td>低成本自动化的手-物精细操作采集系统</td>
+</tr>
+<tr>
+<td>2026-01</td>
+<td><a href="https://arxiv.org/abs/2601.01050">EgoGrasp</a> <code>arXiv:2601.01050</code></td>
+<td></td>
+<td>第一人称视频的世界坐标手-物交互估计</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.05513">OpenEgo</a> <code>arXiv:2509.05513</code></td>
+<td></td>
+<td>1107 小时多模态第一人称灵巧操作数据集</td>
+</tr>
+<tr>
+<td>2025-08</td>
+<td><a href="https://arxiv.org/abs/2508.18213">Follow My Hold</a> <code>arXiv:2508.18213</code></td>
+<td></td>
+<td>以手-物交互为几何引导重建手持物体</td>
+</tr>
+<tr>
+<td>2025-01</td>
+<td><a href="https://arxiv.org/abs/2501.02973">HaWoR</a> <code>arXiv:2501.02973</code></td>
+<td></td>
+<td>第一人称视频的世界坐标手部运动重建</td>
+</tr>
+<tr>
+<td>2024-12</td>
+<td><a href="https://arxiv.org/abs/2412.12861">Dyn-HaMR</a> <code>arXiv:2412.12861</code></td>
+<td></td>
+<td>动态相机下的 4D 双手运动重建</td>
+</tr>
+<tr>
+<td>2024-12</td>
+<td><a href="https://arxiv.org/abs/2412.04244">GigaHands</a> <code>arXiv:2412.04244</code></td>
+<td>Brown</td>
+<td>34 小时、183M 帧的双手活动数据集</td>
+</tr>
+<tr>
+<td>2024-11</td>
+<td><a href="https://arxiv.org/abs/2411.19167">HOT3D</a> <code>arXiv:2411.19167</code></td>
+<td>Meta</td>
+<td>第一人称多视角手与物体 3D 跟踪数据集</td>
+</tr>
+<tr>
+<td>2024-11</td>
+<td><a href="https://arxiv.org/abs/2411.09572">ViTaM-D</a> <code>arXiv:2411.09572</code></td>
+<td></td>
+<td>视触觉动态手-物重建（分布式力感知接触表示）</td>
+</tr>
+<tr>
+<td>2024-09</td>
+<td><a href="https://arxiv.org/abs/2409.12259">WiLoR</a> <code>arXiv:2409.12259</code></td>
+<td></td>
+<td>野外端到端 3D 手部定位与重建</td>
+</tr>
+<tr>
+<td>2024-09</td>
+<td><a href="https://arxiv.org/abs/2409.09300">ManiDext</a> <code>arXiv:2409.09300</code></td>
+<td></td>
+<td>层次扩散生成随物体轨迹变化的手部操作</td>
+</tr>
+<tr>
+<td>2024-06</td>
+<td><a href="https://arxiv.org/abs/2406.06843">HO-Cap</a> <code>arXiv:2406.06843</code></td>
+<td>NVIDIA 等</td>
+<td>低成本手-物 3D 重建与位姿跟踪的采集系统与数据集</td>
+</tr>
+<tr>
+<td>2024-04</td>
+<td><a href="https://arxiv.org/abs/2404.12383">G-HOP</a> <code>arXiv:2404.12383</code></td>
+<td>CMU</td>
+<td>手-物交互的生成式先验，用于重建与抓取合成</td>
+</tr>
+<tr>
+<td>2024-01</td>
+<td><a href="https://arxiv.org/abs/2401.08399">TACO</a> <code>arXiv:2401.08399</code></td>
+<td></td>
+<td>双手工具-动作-物体数据集（CVPR'24）</td>
+</tr>
+<tr>
+<td>2023-11</td>
+<td><a href="https://arxiv.org/abs/2311.18448">HOLD</a> <code>arXiv:2311.18448</code></td>
+<td>ETH</td>
+<td>不需物体模板的视频手-物重建</td>
+</tr>
+<tr>
+<td>2022-03</td>
+<td><a href="https://arxiv.org/abs/2203.15709">OakInk</a> <code>arXiv:2203.15709</code></td>
+<td>SJTU</td>
+<td>手-物交互知识库：可供性 + 交互</td>
+</tr>
+<tr>
+<td>2020-07</td>
+<td><a href="https://arxiv.org/abs/2007.09545">ContactPose</a> <code>arXiv:2007.09545</code></td>
+<td>Georgia Tech</td>
+<td>带接触图与手位姿的抓取数据集</td>
+</tr>
+<tr>
+<td>2017-04</td>
+<td><a href="https://arxiv.org/abs/1704.02463">FPHA</a> <code>arXiv:1704.02463</code></td>
+<td></td>
+<td>第一人称手部动作 RGB-D 基准</td>
+</tr>
+</tbody>
+</table>
+<h3>A·手部设计与协同设计（7）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.27557">Function-based Co-Design</a> <code>arXiv:2604.27557</code></td>
+<td></td>
+<td>统一手掌、指运动学、指尖几何的参数化协同设计</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.20686">Phalanx Ratio Optimization</a> <code>arXiv:2604.20686</code></td>
+<td></td>
+<td>以潜在灵巧度优化指节长度比</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://arxiv.org/abs/2512.03743">House of Dextra</a> <code>arXiv:2512.03743</code></td>
+<td>UCSD 等</td>
+<td>跨本体协同设计：学习任务相关的手形态与控制策略</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.17086">Soft Hand Design via Reward Models</a> <code>arXiv:2510.17086</code></td>
+<td></td>
+<td>用奖励模型学习设计软手</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.18937">Lang2Morph</a> <code>arXiv:2509.18937</code></td>
+<td></td>
+<td>用大语言模型从任务描述生成灵巧手形态设计</td>
+</tr>
+<tr>
+<td>2024-03</td>
+<td><a href="https://arxiv.org/abs/2403.09933">Soft Hand Co-Optimization</a> <code>arXiv:2403.09933</code></td>
+<td></td>
+<td>遗传算法 + 策略迁移，协同优化约 400 种软手设计</td>
+</tr>
+<tr>
+<td>2023-11</td>
+<td><a href="https://arxiv.org/abs/2311.00754">Design and Use Tools</a> <code>arXiv:2311.00754</code></td>
+<td></td>
+<td>联合学习设计工具与使用工具的操作</td>
+</tr>
+</tbody>
+</table>
+<h3>A·基准与数据集（13）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.26765">HandsOn</a> <code>arXiv:2610.26765</code></td>
+<td></td>
+<td>5 种臂、6 种手、约 200 资产、1.8 万条示范的跨本体基准</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.25459">BiDex-100</a> <code>arXiv:2610.25459</code></td>
+<td></td>
+<td>106 个双手灵巧任务、8080 条示范的 MuJoCo 基准</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.18618">LabDex</a> <code>arXiv:2608.18618</code></td>
+<td></td>
+<td>实验室场景的分层灵巧操作基准</td>
+</tr>
+<tr>
 <td>2026-07</td>
 <td>★ <a href="https://arxiv.org/abs/2607.08751">DexVerse</a> <code>arXiv:2607.08751</code></td>
 <td></td>
 <td>100 个任务、3 种机械臂、6 种灵巧手的模块化多任务多本体基准</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.16257">DexJoCo</a> <code>arXiv:2605.16257</code></td>
+<td></td>
+<td>MuJoCo 上的任务导向灵巧操作基准与工具包</td>
+</tr>
+<tr>
+<td>2025-11</td>
+<td><a href="https://arxiv.org/abs/2511.04831">Isaac Lab</a> <code>arXiv:2511.04831</code></td>
+<td>NVIDIA</td>
+<td>Isaac Gym 的继任者，含执行器模型与灵巧任务</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.23152">DexH2R (Handover Benchmark)</a> <code>arXiv:2506.23152</code></td>
+<td></td>
+<td>人到机器人交接的动态灵巧抓取基准</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.00425">ManiSkill3</a> <code>arXiv:2410.00425</code></td>
+<td>UCSD 等</td>
+<td>GPU 并行的仿真与渲染框架，含灵巧手任务</td>
 </tr>
 <tr>
 <td>2024-03</td>
@@ -1454,6 +3179,12 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>双手与铰接物体交互的数据集</td>
 </tr>
 <tr>
+<td>2021-08</td>
+<td><a href="https://arxiv.org/abs/2108.10470">Isaac Gym</a> <code>arXiv:2108.10470</code></td>
+<td>NVIDIA</td>
+<td>GPU 物理 + 训练全在 GPU 上，大规模并行灵巧 RL 的基础设施</td>
+</tr>
+<tr>
 <td>2021-04</td>
 <td><a href="https://arxiv.org/abs/2104.04631">DexYCB</a> <code>arXiv:2104.04631</code></td>
 <td>NVIDIA</td>
@@ -1461,7 +3192,7 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 </tbody>
 </table>
-<h3>综述/资源（4）</h3>
+<h3>综述/资源（10）</h3>
 <table>
 <thead>
 <tr>
@@ -1473,10 +3204,22 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </thead>
 <tbody>
 <tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.28394">HOI Foundation Model Survey</a> <code>arXiv:2607.28394</code></td>
+<td></td>
+<td>大模型时代的手-物交互：重建、生成与具身迁移综述</td>
+</tr>
+<tr>
 <td>2026-05</td>
 <td>★ <a href="https://arxiv.org/abs/2605.13925">Dexterous Hand Intelligence Survey</a> <code>arXiv:2605.13925</code></td>
 <td></td>
 <td>从硬件、控制与学习方法、数据与评测、局限四个角度的灵巧手综述（2026-05）</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.22998">Deformable Manipulation Perspective</a> <code>arXiv:2602.22998</code></td>
+<td></td>
+<td>可变形物体操作的开放挑战观点文章</td>
 </tr>
 <tr>
 <td>2026</td>
@@ -1485,16 +3228,40 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>灵巧手论文、数据集、仿真器、硬件与开源资源清单</td>
 </tr>
 <tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.10903">Unified Manipulation Survey</a> <code>arXiv:2510.10903</code></td>
+<td></td>
+<td>机器人操作统一视角综述</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.13498">Contact-Rich IL Survey</a> <code>arXiv:2506.13498</code></td>
+<td></td>
+<td>接触丰富任务的模仿学习综述</td>
+</tr>
+<tr>
 <td>2025-05</td>
 <td><a href="https://arxiv.org/abs/2506.00098">Interactive IL Survey</a> <code>arXiv:2506.00098</code></td>
 <td>KIT</td>
 <td>灵巧操作的交互式模仿学习综述</td>
 </tr>
 <tr>
+<td>2025-04</td>
+<td><a href="https://arxiv.org/abs/2504.03515">Dexterous IL Survey</a> <code>arXiv:2504.03515</code></td>
+<td></td>
+<td>灵巧操作的模仿学习综述（2025）</td>
+</tr>
+<tr>
 <td>2024-01</td>
 <td><a href="https://arxiv.org/abs/2401.07915">In-Hand Manipulation Survey</a> <code>arXiv:2401.07915</code></td>
 <td></td>
 <td>基于学习的手内操作方法综述</td>
+</tr>
+<tr>
+<td>2022-07</td>
+<td><a href="https://arxiv.org/abs/2207.02556">Grasp Synthesis Review</a> <code>arXiv:2207.02556</code></td>
+<td></td>
+<td>深度学习抓取合成综述</td>
 </tr>
 </tbody>
 </table>
@@ -1566,7 +3333,7 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 </tbody>
 </table>
-<h3>B·VLM 语义/功能抓取（7）</h3>
+<h3>B·VLM 语义/功能抓取（8）</h3>
 <table>
 <thead>
 <tr>
@@ -1596,6 +3363,12 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td>把开放词汇指令解析成结构化约束，在 3D 高斯场里定位功能部位，零样本功能性灵巧抓取</td>
 </tr>
 <tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2603.00732">UniHM</a> <code>arXiv:2603.00732</code></td>
+<td></td>
+<td>VLM + 统一手部 tokenizer 按开放语言生成灵巧操作序列，再做物理优化（ICLR'26）</td>
+</tr>
+<tr>
 <td>2026-01</td>
 <td><a href="https://arxiv.org/abs/2601.16046">DextER</a> <code>arXiv:2601.16046</code></td>
 <td></td>
@@ -1621,7 +3394,7 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 </tr>
 </tbody>
 </table>
-<h3>B·VLM 规划+灵巧技能（4）</h3>
+<h3>B·VLM 规划+灵巧技能（6）</h3>
 <table>
 <thead>
 <tr>
@@ -1637,6 +3410,18 @@ th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;verti
 <td><a href="https://arxiv.org/abs/2610.30136">AW-0 (Agentic WAM)</a> <code>arXiv:2610.30136</code></td>
 <td></td>
 <td>代码、未来视频与动作三路联合生成：代码专家写参数化技能，视频与动作专家给出预测和电机指令；在 YAM 臂与灵巧手上实测</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.19340">ZeroDex</a> <code>arXiv:2606.19340</code></td>
+<td></td>
+<td>多视角 3D 落地的 VLM 推理，零样本长时程灵巧操作</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td>★ <a href="https://arxiv.org/abs/2506.19212">Scaffolding with VLMs</a> <code>arXiv:2506.19212</code></td>
+<td>Stanford 等</td>
+<td>VLM 从语言和图像生成手与物体的关键点轨迹，残差 RL 在仿真中跟踪，迁移到真机（NeurIPS'25）</td>
 </tr>
 <tr>
 <td>2025-03</td>
