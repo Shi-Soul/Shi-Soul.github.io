@@ -1,0 +1,3014 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>具身智能 / 机器人 × Agent 调研综述（长文版）</title>
+<style>
+:root{color-scheme:light dark;--ink:#0b0b0b;--ink2:#52514e;--page:#f9f9f7;--surface:#fcfcfb;--s2:#f0efec;--grid:#e1e0d9;--link:#1c5cab}
+@media (prefers-color-scheme:dark){:root{--ink:#f0efec;--ink2:#c3c2b7;--page:#0d0d0d;--surface:#1a1a19;--s2:#262624;--grid:#2c2c2a;--link:#86b6ef}}
+body{margin:0;background:var(--page);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;font-size:15px;line-height:1.7}
+main{max-width:980px;margin:0 auto;padding:28px 20px 60px}
+a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:30px;line-height:1.3}h2{margin-top:40px;padding-top:8px;border-top:1px solid var(--grid)}h3{margin-top:26px}
+blockquote{margin:0;padding:8px 14px;border-left:3px solid #2a78d6;background:var(--s2);border-radius:0 8px 8px 0;color:var(--ink2)}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;background:var(--s2);padding:1px 5px;border-radius:5px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0;display:block;overflow-x:auto}
+th,td{border-bottom:1px solid var(--grid);padding:7px 10px;text-align:left;vertical-align:top}th{background:var(--s2);white-space:nowrap}
+.back{font-size:14px}
+</style></head><body><main>
+<p class="back"><a href="./">← 返回交互式导读页</a></p>
+<h1>具身智能 / 机器人 × Agent（LLM · GPT · Claude · Gemini）调研综述</h1>
+<blockquote>
+<p>截至 <strong>2026-10-23</strong>。面向机器人方向的研究者，重点是 2025–2026 年的工作。
+配套交互页面：<code>index.html</code>（同目录，浏览器直接打开）。页面里有术语入门、技术栈图、时间线、图表，以及可检索的论文库。
+arXiv 编号与标题都用 export.arxiv.org API 逐条核验过；产业信息优先引用官方博客，二手来源会注明。</p>
+</blockquote>
+<hr />
+<h2>0. 一页结论（TL;DR）</h2>
+<ol>
+<li><strong>三次范式迁移。</strong>
+   - <strong>2022–2023</strong>：LLM 当"高层大脑"，负责选技能、写代码（SayCan、Code as Policies、VoxPoser），底层仍是传统控制或学习技能。
+   - <strong>2023–2025</strong>：端到端 VLA 成为主线（RT-2 → OpenVLA → π0/π0.5 → Gemini Robotics → GR00T），同时出现 System 2/System 1 分层（Hi Robot、Helix、Gemini Robotics 1.5）。
+   - <strong>2025–2026</strong>：进入"<strong>agentic robots / harness 工程</strong>"阶段。做法是把 Claude Code、Codex 这类编码 agent 的循环（工具调用、记忆、监控恢复、技能库、子 agent）整套搬到机器人上，VLA 退为 agent 可调用的一个工具。</li>
+<li><strong>2026 年最大的变化是"通用前沿模型直接上机器人"。</strong> GPT-6 Astra（2026-09）、Claude Opus 5/5.5、Gemini 4 Argon（2026-10）在没有机器人专用训练的情况下，通过写代码、调用工具或直接输出数值动作，就能完成相当一部分操作和导航任务：
+   - RoboDojo 42 个任务上，GPT-6 Astra 平均成功率 22.48%，超过全部 40 个公开策略；
+   - 用 Claude Code（Opus 5）的 OpenRUA 在 CaP-Bench 上达到 99%。</li>
+</ol>
+<p>但更难的通用基准仍然很低：
+   - RobotWorld 84 个任务里，最强模型只完成 19%；
+   - RoboQuest 上最好的 agent 只有 23%。
+3. <strong>短板一致，集中在三处。</strong>
+   - <strong>实时性与精细接触</strong>：Anthropic 估计实时直接控制需要约 83Hz，而推理只有 0.2–0.4Hz；
+   - <strong>可靠的物理状态验证</strong>；
+   - <strong>成本</strong>：一次 30 秒的步态控制要调用 250 次模型、每次约 40 秒，RoboDojo 50 个实例消耗 6–11 亿 token。</p>
+<p>结论是 LLM/agent 适合放在慢环（规划、编排、写代码、恢复），快环交给 VLA 和控制器。
+4. <strong>"Harness 决定上限"已有大量证据。</strong> 同一个模型换一种接口，成功率可以差几十个点：
+   - Show-Harness 把步长减半，零样本成功率从 60% 提到 82%；
+   - 只加执行引擎，ASPIRE 在 LIBERO-Pro 上从 14% 提到 62%；
+   - Physical Agency 让冻结的 VLA 在 LIBERO-PRO 上从 12.8% 提到 53.3%。</p>
+<p>2026-10 发布的综述 <em>Towards Agentic Robots</em>（arXiv 2610.20442）把这一方向系统化为 Model / Data / Environment / Harness 四域。
+5. <strong>编码 agent 正在自动化机器人研发本身。</strong>
+   - Anthropic Project Fetch 第二阶段：Claude Opus 4.7 独立给机器狗编程，比最快的人类团队快约 19 倍；
+   - ENPIRE：编码 agent 在真机上自动训练灵巧策略到 99%；
+   - ASPIRE、SimEX、GaP、RATs：自己写技能、修技能、在仿真里练习。</p>
+<p>反面证据同样重要：一项 123 轮的自改进实验发现，<strong>改进并不会自动累加</strong>，评估器和感知模块才是瓶颈。
+6. <strong>工业界的形态是"两层"。</strong> 一层是 ER/VLM 编排者，如 Gemini Robotics ER 2（Live API 流式编排、工具调用、多机协作）；另一层是 VLA 或 WAM 执行者，如 π0.7、Gemini Robotics 2、GR00T N1.7/N2（基于 DreamZero 的世界-动作模型）、Helix 02（新增 1kHz 的 System 0）。
+   - 模型正在 API 化：Gemini Robotics-ER API、Pi API beta（2026-10-13）、Rho-alpha 早期访问。
+   - 接口在标准化：MCP / ROS MCP Server、OpenClaw/ROSClaw、Anthropic 的 Model Hardware Standard（2026-08）。
+7. <strong>安全是真问题。</strong>
+   - RoboPAIR 证明 LLM 控制的机器人可以被越狱；
+   - 编码 agent 会撞上明令禁止触碰的障碍物（SafeHarness）；
+   - 不同模型提出越界动作的比率最多相差 4.8 倍（ROSClaw）。</p>
+<p>共识是安全闸门放在模型外部：白名单、限速、时序逻辑检查、人工确认。</p>
+<hr />
+<h2>1. 先对齐概念：机器人研究者需要知道的 Agent 知识</h2>
+<h3>1.1 一句话定义</h3>
+<p><strong>Agent = 模型（LLM/VLM）+ 循环（观察→思考→调用工具→看结果→再决定）+ 工具 + 记忆 + 外壳（harness）。</strong>
+如果把 VLA 看作"会看、会动的策略网络"，那 agent 就是<strong>任务层的闭环控制器</strong>。它的"动作"是函数调用和程序，"传感器"是工具返回值和图像，"控制周期"以秒计。</p>
+<h3>1.2 术语对照表</h3>
+<table>
+<thead>
+<tr>
+<th>Agent 术语</th>
+<th>含义</th>
+<th>机器人里的类比</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LLM / VLM / MLLM</td>
+<td>能读文本（和图像）的通用推理模型</td>
+<td>读过所有教科书和说明书、但没有身体的工程师</td>
+<td>GPT-6、Claude Opus 5.5、Gemini 4</td>
+</tr>
+<tr>
+<td>Agent loop</td>
+<td>观察→推理→行动→看反馈的循环（ReAct）</td>
+<td>任务层的 sense-plan-act 闭环</td>
+<td>Claude Code、Codex CLI、OpenClaw</td>
+</tr>
+<tr>
+<td>Tool / Function calling</td>
+<td>模型输出结构化调用（函数名 + 参数），由外部执行并返回结果</td>
+<td>ROS service / action 调用</td>
+<td><code>detect("cup")</code>、<code>move_to(pose)</code></td>
+</tr>
+<tr>
+<td>Harness（外壳/脚手架）</td>
+<td>包在模型外面的软件，决定模型能看到什么、能调用什么、怎样检查结果、怎样复用经验</td>
+<td>机器人软件栈：驱动、状态机、监控、日志</td>
+<td>Thea、ETA、RoboClaw、OpenRUA</td>
+</tr>
+<tr>
+<td>Context window</td>
+<td>模型一次能"看到"的全部输入</td>
+<td>工作内存；放不下就要压缩或检索</td>
+<td>长任务需要摘要和记忆</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>跨步骤、跨任务保存的信息</td>
+<td>地图、语义地图、场景图、失败日志</td>
+<td>ConceptGraphs、MessyMem、HiMe</td>
+</tr>
+<tr>
+<td>Skills / Skill library</td>
+<td>可复用的程序或说明文档</td>
+<td>运动基元库 / 行为库</td>
+<td>Voyager、ASPIRE、Uni-Skill</td>
+</tr>
+<tr>
+<td>Code as Policy</td>
+<td>由模型写程序组合感知与控制 API，程序本身就是策略</td>
+<td>工程师写的任务脚本</td>
+<td>Code as Policies、CaP-X</td>
+</tr>
+<tr>
+<td>Coding agent</td>
+<td>能在终端里读写代码、运行、测试、迭代的 agent</td>
+<td>自动化的机器人软件工程师 / 研究助理</td>
+<td>Claude Code、Codex</td>
+</tr>
+<tr>
+<td>MCP（Model Context Protocol）</td>
+<td>连接模型与外部工具/数据的开放协议</td>
+<td>类似 rosbridge 或驱动接口标准</td>
+<td>ROS MCP Server、RoboNeuron、MHS</td>
+</tr>
+<tr>
+<td>Reflection / Recovery</td>
+<td>失败后诊断原因、修改计划</td>
+<td>故障检测、隔离与恢复（FDIR）</td>
+<td>Inner Monologue、REFLECT、DoReMi</td>
+</tr>
+<tr>
+<td>In-context learning</td>
+<td>不更新权重，只靠提示里的示范学会新任务</td>
+<td>看几次示范当场调整，不重新训练</td>
+<td>RoboICL、GPT-Policy</td>
+</tr>
+<tr>
+<td>System 2 / 1 / 0</td>
+<td>慢思考规划 / 快速视觉运动策略 / 解析控制器</td>
+<td>任务规划器 / 学习策略 / IK·MPC·WBC</td>
+<td>Helix 02、GR00T、Gemini Robotics 1.5</td>
+</tr>
+<tr>
+<td>VLA</td>
+<td>把 VLM 微调成直接输出动作的策略</td>
+<td>语言条件的端到端视觉运动策略</td>
+<td>RT-2、OpenVLA、π0.5</td>
+</tr>
+<tr>
+<td>World model / WAM</td>
+<td>预测未来观测（以及动作）的模型</td>
+<td>可学习的动力学模型 / 神经仿真器</td>
+<td>Genie 3、Cosmos、DreamZero</td>
+</tr>
+<tr>
+<td>Subagent / Multi-agent</td>
+<td>主 agent 分派任务给子 agent，或多个 agent 协作</td>
+<td>分布式架构、多机器人协同</td>
+<td>RoCo、EMOS、EMERGE-Policy</td>
+</tr>
+<tr>
+<td>Post-training（SFT/RL）</td>
+<td>用监督微调或强化学习提升模型自身的 agent 能力</td>
+<td>策略微调</td>
+<td>AgenticRoboRL、CaP-RL</td>
+</tr>
+<tr>
+<td>Guardrail / Safety gate</td>
+<td>模型输出到达硬件前的检查</td>
+<td>安全 PLC、速度限幅、急停</td>
+<td>RoboGuard、ROSClaw、SafeGate</td>
+</tr>
+</tbody>
+</table>
+<h3>1.3 三类系统怎么选</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>端到端 VLA</th>
+<th>Agent + 工具/技能（harness）</th>
+<th>编码 agent（代码即策略 / 自动研发）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输出</td>
+<td>连续动作块（10–50Hz，Helix S1 为 200Hz）</td>
+<td>工具/技能调用（秒级）</td>
+<td>程序、训练代码、配置</td>
+</tr>
+<tr>
+<td>能力来源</td>
+<td>机器人演示 + VLM 预训练</td>
+<td>前沿模型的常识推理 + 现成技能</td>
+<td>前沿模型的编程能力 + 执行反馈</td>
+</tr>
+<tr>
+<td>新任务适配</td>
+<td>采数据、微调</td>
+<td>改提示、加工具、写技能</td>
+<td>让 agent 写或改代码，少量试错</td>
+</tr>
+<tr>
+<td>强项</td>
+<td>接触丰富、灵巧、实时</td>
+<td>开放语义、长时程、失败恢复、可解释</td>
+<td>工程自动化，结果可复用、可验证</td>
+</tr>
+<tr>
+<td>弱项</td>
+<td>长时程、分布外指令、数据昂贵</td>
+<td>延迟高、精细控制差、依赖接口质量</td>
+<td>依赖感知和原语质量，评估器可能被"钻空子"</td>
+</tr>
+<tr>
+<td>代表</td>
+<td>π0.5/π0.7、Gemini Robotics 2、GR00T、Helix</td>
+<td>Gemini Robotics 1.5 / ER 2、RoboClaw、Thea、ETA</td>
+<td>CaP-X、OpenRUA、ENPIRE、ASPIRE</td>
+</tr>
+</tbody>
+</table>
+<p>实际系统往往三者都有：VLA 作为 agent 的工具，程序作为上层，编码 agent 在离线阶段改进前两者。</p>
+<hr />
+<h2>2. 全景：八条技术路线</h2>
+<h3>2.1 LLM/VLM 作为高层规划器（2022–）</h3>
+<ul>
+<li><strong>思路</strong>：语言模型分解任务，从技能库里选下一步；技能本身由传统方法或 RL/IL 获得。</li>
+<li><strong>代表</strong>：</li>
+<li>SayCan：LLM 有用性 × 价值函数可行性；</li>
+<li>Inner Monologue：把感知反馈作为文本回灌；</li>
+<li>LLM-Planner、Text2Motion、LLM+P / AutoTAMP：接上经典规划和 TAMP；</li>
+<li>SayPlan / ConceptGraphs / VLMaps：用场景图或语义地图 grounding；</li>
+<li>KnowNo：共形预测，不确定时求助；</li>
+<li>TidyBot：个性化。</li>
+<li><strong>遗产</strong>：后来所有分层系统里的"System 2"都源于这条线；"规划器 + 可调用技能"也成了 2026 年 harness 的基本形态。</li>
+<li><strong>局限</strong>：能力受限于技能库，规划与物理可行性之间有鸿沟，闭环反馈很粗。</li>
+</ul>
+<h3>2.2 代码即策略 → 编码智能体（2022–2026）</h3>
+<ul>
+<li><strong>思路</strong>：动作空间不是关节角，而是程序。LLM 组合感知 API、控制 API 和数学库来写策略。</li>
+<li><strong>早期</strong>：</li>
+<li>Code as Policies；</li>
+<li>ProgPrompt；</li>
+<li>Microsoft 的 ChatGPT for Robotics（API 库 + 提示 + 人在环）；</li>
+<li>VoxPoser（LLM 写代码构造 3D 价值图）；</li>
+<li>ReKep（VLM 写关键点约束、求解器实时优化）；</li>
+<li>MOKA。</li>
+<li><strong>2026 年的编码 agent 化</strong>：</li>
+<li><strong>CaP-X</strong>（ICML'26）：系统化的基准与框架，含 CaP-Gym（39 个任务）、CaP-Bench（S1–S4 单轮、M1–M4 多轮共 8 档）、CaP-Agent0、CaP-RL。核心发现是人类提供的高层抽象越少，模型越吃力；多轮交互、视觉差分、自动技能合成和集成推理能把差距补回来。CaP-RL 在真实 Franka 上做到抬方块 84%、堆叠 76%。</li>
+<li><strong>RHO</strong>：训练期由编码 agent 搜索多文件的"仓库即策略"。LIBERO-PRO 45%，π0.5 只有 12.83%。</li>
+<li><strong>Agent as Policy (AGP)</strong>：Codex CLI + GPT-6 Astra 直接驱动真实 YAM 机械臂完成装配、抛掷、叠毛巾等任务。</li>
+<li><strong>OpenRUA</strong>：只给 Claude Code 一个 ROS 2 终端（"零抽象"）。CaP-Bench 99%、LIBERO-PRO 87%；96.8% 的 episode 里 agent 自发写出感知处理程序。</li>
+<li><strong>RobotUse</strong>：agent 只做视觉选择，后端负责几何与控制。RoboLab 45%，比 CaP-X 高 6.7pp。</li>
+<li><strong>EmbodiedSWE</strong>：编码 agent 解半小时级灵巧任务，再把解扩增为 VLA 训练数据。</li>
+<li><strong>RACaP</strong>：编码移到进化期，部署时调用冻结的 Policy API，解决延迟问题。</li>
+<li><strong>要点</strong>：代码可检查、可验证、可复用，天然适合"写一次、跑多次"；最大的瓶颈在感知和原语质量。Kuroki &amp; Tang 的实验里，同样的 agent 在仿真特权状态下成功率 65%，只用 RGB 时降到 22.5%。</li>
+</ul>
+<h3>2.3 LLM 生成奖励、仿真与数据（2023–2026）</h3>
+<ul>
+<li><strong>奖励</strong>：</li>
+<li>Eureka：LLM 写奖励代码并进化迭代，多数任务超过专家；</li>
+<li>DrEureka：同时生成奖励和域随机化，做 sim2real；</li>
+<li>Text2Reward、Language to Rewards、CurricuLLM：课程生成。</li>
+<li><strong>仿真与任务</strong>：</li>
+<li>RoboGen（生成式仿真）、GenSim/GenSim2、Holodeck；</li>
+<li>2026 年的 agentic 版本：SceneSmith（ICML'26 Spotlight）、SimWorld Studio、Articraft（铰接资产）、SimFoundry、Agentic Real2Sim、ARSTAG（单张图 + 一句指令做 Real2Sim2Real，π0.5 真机 74.6%）、EmbodiedSmith。</li>
+<li><strong>数据</strong>：</li>
+<li>AutoRT：VLM/LLM 编排 20 多台机器人采数据，带"机器人宪法"；</li>
+<li>RoboClaw：正逆动作对实现自复位采集；</li>
+<li>EmbodiedSWE-Gen、HARBOR（RL 工作流全自动化）；</li>
+<li>Gemini 4 Argon for Robotics：从视频或草图生成 MuJoCo 孪生与仿真数据，把真机成功率从 56% 提到 75%。</li>
+</ul>
+<h3>2.4 VLA 与机器人基础模型（2023–2026）</h3>
+<ul>
+<li><strong>谱系</strong>：RT-1 → RT-2（动作即 token，提出 VLA）→ Open X-Embodiment → Octo / OpenVLA → π0（flow matching 动作专家）→ FAST / OpenVLA-OFT → π0.5（开放世界、子任务文本）→ π<em>0.6（RECAP，从经验中 RL）→ </em><em>π0.7</em>*（2026-04，可用多模态上下文"操控"，约 5B）。</li>
+<li><strong>Google DeepMind</strong>：Gemini Robotics（2025-03）→ On-Device（2025-06）→ <strong>1.5</strong>（2025-09，"先思考再行动" + Motion Transfer，ER 1.5 编排）→ ER 1.6（2026-04）→ <strong>Gemini Robotics 2 系列</strong>（VLA、ER 2、On-Device 2；ER 2 于 2026-07-30 发布）。</li>
+<li><strong>NVIDIA</strong>：GR00T N1（2025-03，双系统）→ N1.5 → N1.6（Cosmos-Reason-2B 骨干 + 32 层 DiT）→ N1.7（GTC 2026，商业授权早期访问）→ <strong>N2 预览</strong>（基于 DreamZero 的世界-动作模型）。</li>
+<li><strong>其他</strong>：</li>
+<li>Figure：Helix（2025-02）→ Helix 02（2026-01，新增 1kHz 的 System 0）；</li>
+<li>字节 GR-3 / Robix；AI2 MolmoAct / MolmoAct2；Hugging Face SmolVLA；</li>
+<li>X-VLA、WALL-OSS、EO-1、InternVLA-M1、UniVLA、RoboBrain 2.0；</li>
+<li>Qwen-RobotManip（2026-06）、腾讯 HY-Embodied-0.5、AgiBot GO-2；</li>
+<li>Generalist GEN-0/GEN-1（扩展规律）、Skild S1、微软 Rho-alpha（触觉 + 持续学习）。</li>
+<li><strong>RL 后训练</strong>：π*0.6/RECAP、RL Token（几小时在线 RL 把关键阶段提速最多 3 倍）、πRL、Learning While Deploying（舰队规模 RL）、TORL-VLA（触觉）等。</li>
+<li><strong>世界模型 / WAM</strong>：</li>
+<li>V-JEPA 2（Meta）、Genie 3；</li>
+<li><strong>DreamZero</strong>（14B，7Hz 闭环，泛化比 VLA 高 2 倍以上；2026-04 RoboArena 1750 Elo，同期 π0.5 为 1622）；</li>
+<li>Cosmos 3、1X World Model、DYNA-2（100 万小时以上人类视频）、GE-Act 2.0。</li>
+<li><strong>与 agent 的关系</strong>：VLA 正在成为 agent 的"手"。对 VLA 研究者来说，<strong>可操控性（steerability）</strong>和<strong>可终止性</strong>变成新的设计目标，因为 agent 需要能精确地命令它、打断它。π0.7 的"steerable"、Hi-VLA 研究中的终止规则、InSight 的"原语可操控性"都是这个方向。</li>
+</ul>
+<h3>2.5 分层编排：System 2 → System 1 → System 0（2024–2026）</h3>
+<ul>
+<li><strong>集成式双系统</strong>：</li>
+<li>Helix：7–9Hz 的 VLM 潜变量驱动 200Hz 策略；</li>
+<li>GR00T N1：10Hz 推理 + 120Hz 动作块；</li>
+<li>π0.5：同一模型先解码子任务；</li>
+<li>Hi Robot：每秒一次语言子任务，支持用户插话纠正。</li>
+<li><strong>把 VLA 当工具的组装式分层</strong>：</li>
+<li><strong>Gemini Robotics 1.5</strong>：ER 1.5 用语言指令调用 VLA，必要时调用搜索工具；换成具身推理编排者后总失败率减半；</li>
+<li><strong>ER 2</strong>：Live API 流式编排，"边执行边思考"，可看视频跟踪进度、调用工具、协调多台机器人；</li>
+<li>VLAs-as-Tools、Harness VLA、Physical Agency (Pigey，LIBERO-PRO 12.8%→53.3%)、VoLo（VLA/WAM 作可中断工具）、RoboHarness、RoboRouter、Critic in the Loop（三系统）、Cortex（32 种规范技能原语）。</li>
+<li><strong>设计经验</strong>：</li>
+<li>Hi-VLA 系统研究：<strong>终止规则与 VLA 的可操控性和规划器大小同样重要</strong>；</li>
+<li>VLA-OS：低层策略对视觉计划比对语言计划更"听话"；</li>
+<li>潜变量接口信息多但难以监控，文本、路径、路点可检查但表达力有限。</li>
+</ul>
+<h3>2.6 Agentic Harness 与机器人 Agent OS（2025–2026）</h3>
+<p>借用 <em>Towards Agentic Robots</em> 的拆法，harness 有六个功能：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>解决什么</th>
+<th>代表工作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>编排 Orchestration</td>
+<td>谁来执行下一步、参数怎么绑定、何时交还控制权</td>
+<td>VoLo、EMOS（从 URDF 生成"机器人简历"）、Physical Agency、ROSClaw、Thea、RoboHarness、HarnessWAM、VLAs-as-Tools</td>
+</tr>
+<tr>
+<td>记忆 Memory</td>
+<td>写什么、何时更新、检索什么</td>
+<td>MessyMem、HiMe、Mimir、SafeMem、NavMCP、BATON、HoloAgent-0、MeCo</td>
+</tr>
+<tr>
+<td>监控与恢复</td>
+<td>执行前、中、后的检查与修复</td>
+<td>DoReMi、Code-as-Monitor、REFLECT、AHA、LIBERO-RECOVER、PhyAgentOS、FLARE</td>
+</tr>
+<tr>
+<td>技能 Skills</td>
+<td>可复用行为如何进入、演化、退出</td>
+<td>Voyager、DROC、Uni-Skill、ASPIRE、RATs、RoboRSI、SkillOpt、Zetta</td>
+</tr>
+<tr>
+<td>基础设施</td>
+<td>接口、工具链、策略服务、运行时闸门</td>
+<td>ROS MCP Server、RoboNeuron（MCP↔ROS 2）、ETP（100+ 工具）、openpi 远程推理、LeRobot、RTC/VLASH（异步执行）、ROSA/Robion（舰队推理）</td>
+</tr>
+<tr>
+<td>分层系统</td>
+<td>规划器、学习策略、解析控制之间的权限划分</td>
+<td>Helix、GR00T、Hi Robot、Gemini Robotics 1.5、Harness VLA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>"机器人 Agent OS"与开源运行时</strong>：
+- OpenClaw 生态：ROSClaw、RoboClaw、PHILIA，以及 Intel 的 OpenClaw + AgenticROS 示例；
+- ETA/OpenETA（可作为 Codex 插件）、Thea（"场景图即上下文""评估即退出码"）；
+- PhyAgentOS、ABot-AgentOS、RoboOS、Show-Harness、Guava（把 harness 能力蒸馏到 4B 模型）、Robo-Harness K1（感知即工具）。</p>
+<p><strong>接口标准化</strong>：
+- ROS MCP Server（2025-09 开源）：机器人端加一个 rosbridge，Claude Code / Codex / Gemini CLI 就能发现并调用 topic、service、action；
+- Anthropic 的 Model Hardware Standard（2026-08，研究预览）：读/写命令 + 安全参数参考文件，经 MCP/CLI/API 控制机械臂、显微镜等设备，对其他模型同样开放；
+- OpenAI 的 Decisions API（2026-10，gpt-6-luna）这类"决策模型"开始被用作 harness 里的快速决策层：代码给出合法候选，模型带概率挑一个。</p>
+<h3>2.7 编码智能体自动化机器人研发与自我改进（2026）</h3>
+<ul>
+<li><strong>Anthropic Project Fetch</strong>：</li>
+<li>2025-11：有 Claude 辅助的人类团队完成 7/8 项任务，对照组 6/8，共同任务用时约减半；</li>
+<li>2026-06 第二阶段：Opus 4.7 在 Claude Code 中独立完成，比最快人类团队快约 19 倍，但仍没实现自主"取回"。</li>
+<li><strong>ENPIRE</strong>：自动复位 → 执行 → 验证 → agent 修改训练代码，灵巧任务训练到 99%；派出 agent 团队、使用机器人舰队时更快。</li>
+<li><strong>ASPIRE</strong>：执行引擎 + 技能库 + 进化搜索；用 Claude Opus 5.5 时 LIBERO-Pro 80 个任务平均 99%，并能在真机上逐步更高效地解魔方。</li>
+<li><strong>其他</strong>：</li>
+<li>SimEX：仿真里练出工具箱，几次真机试次同时校正仿真器，每任务约 10 分钟真机时间；</li>
+<li>GaP：图即策略，工业变型自动化；</li>
+<li>RATs：玩耍式学习；</li>
+<li>RPG、RoboRSI、Zetta、HarnessPAI：不同的自我改进机制；</li>
+<li>AgenticRobotics：把 Claude Code / Codex 的主-子 agent 架构用于"训练-评估-改进"，强调证据门控；</li>
+<li>AgenticRoboRL：后训练 9B 规划器，LIBERO-PRO 18.1%→71.0%，接近 Codex（GPT-5.5）+ 外部记忆的 72.1%。</li>
+<li><strong>反面教材</strong>：<em>What Stops Recursive Self-Improvement in Robotics?</em> 跑了 123 轮自改进。agent 能自己发现"目标不在视野内"并部署主动视角模型，但改进不累加，目标任务始终没成功。三个原因：
+  1. 分割模型能找到"架子"却找不到"最上层的架子"；
+  2. 技能链的经验都堆在第一步；
+  3. agent 精确地优化评估器量的东西，包括评估器出错的地方。</li>
+</ul>
+<h3>2.8 通用前沿模型直接当机器人策略（2026 下半年）</h3>
+<ul>
+<li><strong>背景</strong>：GPT-6 Astra（2026-09-03）能直接生成数值动作，社区在两个月内出现几十项"LLM 即策略"研究（汇总见 Awesome-Astra-Embodied-AI）；Anthropic、Google 也在同期发布了系统性评测和机器人专用能力。</li>
+<li><strong>主要结果</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>研究</th>
+<th>设置</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claude plays robotics（Anthropic，2026-07）</td>
+<td>12 个模型 × 4 种接口（扭矩直控 / 写控制器 / 训 RL / 监督 VLA）</td>
+<td>越高层的接口提升越稳定；LIBERO 直接操控 0–5.5%；单用 MolmoAct 比任何"LLM 监督 MolmoAct"都强；G1 一次也没站起来</td>
+</tr>
+<tr>
+<td>Galbot GPT-as-Policy（2609.38537）</td>
+<td>6 个领域</td>
+<td>导航 RxR 92%、HM3D 82%；与 π0.5 混合控制 RoboDojo 48%；步态 0/5；HumanoidBench 30 个任务中 13 个超过基线</td>
+</tr>
+<tr>
+<td>An Unexpected Robot Policy（2609.24170）</td>
+<td>RoboDojo 42 个任务</td>
+<td>Astra 22.48%（第 1，超过全部 40 个公开策略），GPT-5.5 0.88%，DeepSeek-Flash 1.92%</td>
+</tr>
+<tr>
+<td>GPT-6 as a Beginning（2610.28259）</td>
+<td>5 个操作基准</td>
+<td>RoboDojo 26.92%、RoboTwin 2.0 76.0%、LIBERO-GeoMotion 11.1%</td>
+</tr>
+<tr>
+<td>LIBERO-10 frontier（2610.30051）</td>
+<td>6 个前沿模型 × 3 档推理</td>
+<td>Astra 44%、Gemini-4 Argon 43%</td>
+</tr>
+<tr>
+<td>RobotWorld（2610.10409）</td>
+<td>84 个任务 / 5 个领域</td>
+<td>Astra 19.0%、Opus 5.5 15.5%、Kimi K3 2.4%、DeepSeek V4.1 Flash 1.2%、Gemini 3.8 Flash 1.2%；63 个任务无人完成</td>
+</tr>
+<tr>
+<td>RoboQuest（2610.10388）</td>
+<td>需主动获取信息的移动操作</td>
+<td>最好 23%；微调 π0.5 几乎为 0；失败主因是"太早停止探索"</td>
+</tr>
+<tr>
+<td>OpenRUA（2610.02459）</td>
+<td>Claude Code（Opus 5）+ ROS 2 终端</td>
+<td>CaP-Bench 99.0%、LIBERO-PRO 87.0%</td>
+</tr>
+<tr>
+<td>SenseNova（2610.22471）</td>
+<td>12 个基准 + 8 种真机配置</td>
+<td>具身能力"基本具备"，实用具身智能"尚未"</td>
+</tr>
+<tr>
+<td>HomeBody（Stanford/Caltech）</td>
+<td>Astra 直接调用 5 个技能驱动 Unitree G1</td>
+<td>能在陌生厨房整理取物；延迟、舵机过热、算力成本是瓶颈；未公布成功率</td>
+</tr>
+<tr>
+<td>Gemini 4 Argon for Robotics（2026-10-13）</td>
+<td>物理推理 + 写代码</td>
+<td>ERQA 87%；视频/草图→MuJoCo 孪生；仿真数据把真机成功率 56%→75%</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>解读</strong>：
+  1. 语义与规划强，精度、动力学和双臂协调弱。
+  2. 接口与 harness 是主要变量，Astranomy 发现扩展接口把成功率从 80% 提到 86%。
+  3. 延迟和 token 成本仍高 1–2 个数量级。
+  4. 真机安全问题突出：RoboDojo 的 Astra 评测因安全原因中止了真机测试。</li>
+</ul>
+<hr />
+<h2>3. 时间线（精选）</h2>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>事件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2022-04</td>
+<td>SayCan、Socratic Models</td>
+</tr>
+<tr>
+<td>2022-07</td>
+<td>Inner Monologue、LM-Nav</td>
+</tr>
+<tr>
+<td>2022-09</td>
+<td>Code as Policies、ProgPrompt</td>
+</tr>
+<tr>
+<td>2022-12</td>
+<td>RT-1、LLM-Planner</td>
+</tr>
+<tr>
+<td>2023-02</td>
+<td>ChatGPT for Robotics（Microsoft）</td>
+</tr>
+<tr>
+<td>2023-03</td>
+<td>PaLM-E</td>
+</tr>
+<tr>
+<td>2023-05</td>
+<td>Voyager（Minecraft，代码技能库）</td>
+</tr>
+<tr>
+<td>2023-07</td>
+<td>RT-2（VLA）、VoxPoser、RoCo、KnowNo</td>
+</tr>
+<tr>
+<td>2023-10</td>
+<td>Eureka、Open X-Embodiment、GenSim</td>
+</tr>
+<tr>
+<td>2023-11</td>
+<td>RoboGen</td>
+</tr>
+<tr>
+<td>2024-01</td>
+<td>AutoRT、OK-Robot</td>
+</tr>
+<tr>
+<td>2024-05/06</td>
+<td>Octo、OpenVLA</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td>π0、RoboPAIR（越狱 LLM 机器人）、Embodied Agent Interface</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td>Figure 结束与 OpenAI 合作并发布 Helix；Hi Robot；EmbodiedBench</td>
+</tr>
+<tr>
+<td>2025-03</td>
+<td>Gemini Robotics + ER、GR00T N1、ASIMOV</td>
+</tr>
+<tr>
+<td>2025-04</td>
+<td>π0.5</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td>Gemini Robotics On-Device、SmolVLA、V-JEPA 2</td>
+</tr>
+<tr>
+<td>2025-08</td>
+<td>Genie 3</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td>ROS MCP Server 开源；Gemini Robotics 1.5 / ER 1.5（agentic 编排）</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td>Butter-Bench、LIBERO-PRO</td>
+</tr>
+<tr>
+<td>2025-11</td>
+<td>Anthropic Project Fetch；π*0.6（RECAP）；GEN-0；SIMA 2</td>
+</tr>
+<tr>
+<td>2026-01</td>
+<td>Helix 02；Microsoft Rho-alpha；NVIDIA Alpamayo；Skild AI 融资约 14 亿美元</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td>DreamZero（世界-动作模型）</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td>CaP-X、RoboClaw、ROSClaw；GTC：GR00T N1.7 / N2 预览、Cosmos 3；PI 的 MEM 与 RL Token</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td>π0.7；Gemini Robotics-ER 1.6；GEN-1；AgiBot GO-2</td>
+</tr>
+<tr>
+<td>2026-05/06</td>
+<td>OpenAI 成立机器人部门；Project Fetch 第二阶段；RHO；ENPIRE；Hi-VLA 设计研究</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td>Claude plays robotics；ASPIRE；GaP；Physical Agency；Gemini Robotics 2 / ER 2（7/30）</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td>Thea、ETA、AgenticRobotics loop；Anthropic MHS（8/27）；DYNA-2；Skild S1</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td>GPT-6 Astra（9/3）引发"LLM 即策略"研究潮；HomeBody；SimEX；OpenAI 表态做人形</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td>Pi API beta、Gemini 4 Argon for Robotics（10/13）；RobotWorld、RoboQuest、OpenRUA；综述 <em>Towards Agentic Robots</em>（10/14）；AgenticRoboRL</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4. 前沿实验室与公司专题</h2>
+<h3>4.1 Anthropic × Claude</h3>
+<ul>
+<li><strong>Project Fetch（2025-11-12）</strong>：8 名零机器人经验的研究员分两组，给 Unitree Go2 编程捡沙滩球。</li>
+<li>Claude 组完成 7/8 项任务，对照组 6/8；共同任务用时约减半，最大差距出在连接硬件和读取传感器上。</li>
+<li>据媒体报道，让当时的 Claude（Opus 4.1）独自完成时，它卡在了第一步（连上机器人）。</li>
+<li>作者提醒：AI 的"助力"往往先于"自主"出现。按 RSP 的思路，机器人能力是可能突然进步、需要监测的领域。</li>
+<li><strong>Project Fetch 第二阶段（2026-06-18）</strong>：Claude Opus 4.7（Claude Code、adaptive thinking 最大档、每任务 3 次试验）独立完成。</li>
+<li>4 项共同任务用时 9 分 35 秒；对照有 Claude 辅助的人类团队 181 分钟（约 19×），无 Claude 的人类团队 361 分钟（约 38×）。</li>
+<li>代码约 1,045 行，人类 Claude 组写了 10,309 行。</li>
+<li>仍未完成自主"取回"（闭环控制差）；没有测试底层控制。</li>
+<li>作者称模型可能正在进入"physical agentic AI"的早期阶段。</li>
+<li><strong>Claude plays robotics（2026-07-09，Frontier Red Team）</strong>：12 个模型、5 家厂商。</li>
+<li>本体：倒立摆等经典控制、仿真 G1/Go2、LIBERO 场景里的 Franka，加上真实 Go2 的若干演示。</li>
+<li>接口：扭矩/末端直接控制、写 <code>controller(obs)-&gt;action</code>、训练 PPO、监督预训练步态策略或 MolmoAct VLA。</li>
+<li>Embody 综合分 Mythos Preview 最高（0.389），Opus 4 最低（0.115）；新模型主要靠"从失败中改策略"进步。</li>
+<li>实时直控约需 83Hz，非推理模式的推理只有 0.2–0.4Hz。</li>
+<li>作者把这项工作定位为安全问题：模型在真实世界的影响力取决于给它的接口权限。</li>
+<li><strong>Model Hardware Standard（2026-08-27，研究预览）</strong>：Anthropic 第一个面向物理世界的产品。</li>
+<li>设备只需理解简单的读/写命令；安全参数和控制方法存成由自然语言描述生成的参考文件，可以编码机械臂的速度、角度限制。</li>
+<li>经 MCP/CLI/API 接入，一条命令可编排多台设备，模型无关。</li>
+<li>CMU 约 8 小时接好一整套液体处理 + 成像设备。</li>
+<li><strong>生态</strong>：大量第三方工作以 Claude 为 agent，包括 OpenRUA（Opus 5）、ASPIRE（Opus 5.5）、RobotWorld / Embodied Playground（Opus 5.5）、Project Fetch 风格的 Claude Code 工作流，以及 ROS MCP Server 示例（Claude 诊断工业机器人末端执行器）。</li>
+</ul>
+<h3>4.2 OpenAI × GPT</h3>
+<ul>
+<li>2023 年 Microsoft 发布 ChatGPT for Robotics，确立了"API 库 + 提示"的范式。2024 年 Figure 用 OpenAI 模型做对话，2025-02 Figure 宣布终止合作、转向自研 Helix。</li>
+<li><strong>2026-06</strong>：Sam Altman 宣布成立 OpenAI Robotics，由 Aditya Ramesh 领导，起源于 world simulation 研究。9 月起表态"一定会做人形"，10 月报道计划 2027 年公开演示。目前没有公开的机器人模型或论文。</li>
+<li><strong>GPT-6 Astra（2026-09-03）</strong>：官方主打电脑操作，社区发现它能直接输出数值动作。</li>
+<li>学术评测：Galbot、RoboDojo、SenseNova、NVIDIA Astranomy、RoboICL、GPT-Policy、触觉、LIBERO-Agent、LIBERO-10；</li>
+<li>真机演示：AGP（Codex CLI 驱动 YAM）、HomeBody（Unitree G1）、写字、画画、插插头等。</li>
+<li><strong>Decisions API（2026-10-06 公测）</strong>：用 gpt-6-luna 回答有限选项的判断、选择、打分，比通用接口快约 10 倍。<em>Towards Agentic Robots</em> 把这类"决策模型"列为 harness 中 System 2 与执行器之间的新一层。</li>
+</ul>
+<h3>4.3 Google DeepMind × Gemini</h3>
+<ul>
+<li><strong>Gemini Robotics / ER（2025-03）</strong>：VLA + 具身推理模型，提出 ERQA；ASIMOV 语义安全基准。</li>
+<li><strong>Gemini Robotics 1.5 / ER 1.5（2025-09）</strong>：</li>
+<li>"先思考再行动"的 VLA，Motion Transfer 支持多本体（ALOHA、双臂 Franka、Apollo 人形）；</li>
+<li>ER 1.5 是官方第一个为具身推理优化的 thinking 模型，通过 API 开放；它编排 VLA，可调用搜索（如按当地天气打包、按城市规则分类垃圾）。</li>
+<li><strong>ER 1.6（2026-04-14）</strong>：空间与多视角推理增强，新增仪表读数（与 Boston Dynamics 合作，已集成进 Spot/Orbit），官方称"迄今最安全的机器人模型"。</li>
+<li><strong>Gemini Robotics 2 系列（2026 年中）</strong>：</li>
+<li>VLA：可适配双臂到全身人形；</li>
+<li>ER 2（2026-07-30）：实时视频理解、任务进度跟踪、Live API 流式低延迟编排、工具调用、多机器人协作，Boston Dynamics Spot 演示；</li>
+<li>On-Device 2：可在机器人本地运行的轻量 VLA。</li>
+<li><strong>Gemini 4 Argon for Robotics（2026-10-13）</strong>：通用物理推理模型。</li>
+<li>ERQA 87%；</li>
+<li>从机器人视频、第一人称人类视频或手绘草图生成 MuJoCo 孪生；</li>
+<li>生成 4,500+ 条域随机化仿真数据给 VLA 微调，真机成功率 56%→75%；</li>
+<li>支持在 SO-101 上迭代自我改进。The Decoder 评论说示例提示暴露出它仍需要大量人工引导。</li>
+<li><strong>虚拟世界</strong>：SIMA 2（Gemini 驱动的 3D 世界 agent，能在 Genie 3 生成的世界中自我改进）。</li>
+</ul>
+<h3>4.4 NVIDIA</h3>
+<ul>
+<li><strong>模型</strong>：GR00T 系列（N1 → N1.7，N2 预览基于 DreamZero WAM）、Cosmos Reason/Cosmos 3、Alpamayo（驾驶推理 VLA）。</li>
+<li><strong>平台</strong>：Isaac Sim/Lab；与 Hugging Face 合作把 GR00T 接入 LeRobot。</li>
+<li><strong>GEAR 团队 + 高校的 agent 线</strong>：CaP-X、ASPIRE、ENPIRE、GaP、Voyager/Eureka 的延续。</li>
+<li><strong>Seattle Robotics Lab</strong>：Astranomy（Astra 当策略的实证研究）、VoLo。</li>
+</ul>
+<h3>4.5 Physical Intelligence</h3>
+<ul>
+<li>模型：π0 → π0-FAST → π0.5 → π0.6/π*0.6（RECAP）→ π0.7（2026-04，可操控、有涌现能力）。</li>
+<li>MEM（多尺度具身记忆，十分钟以上任务）、RL Token（2026-03）。</li>
+<li><strong>Pi API beta（2026-10-13）</strong>：上传数据、托管微调、云端推理。</li>
+<li>与 agent 的关系：Hi Robot 开创了"VLM 发子任务给 VLA"的分层；openpi 的远程推理接口（WebSocket 返回动作块）是很多 harness 调用 VLA 的方式。</li>
+</ul>
+<h3>4.6 其他</h3>
+<ul>
+<li><strong>Figure</strong>：Helix → Helix 02（S0/S1/S2 三层，1kHz 全身控制）。2026-05 宣称多台人形全自主跑完 8 小时班次（公司自述）。</li>
+<li><strong>Tesla</strong>：Optimus V3 + Grok 语音/对话层 + 端到端 VLA，均为非官方二手信息。</li>
+<li><strong>1X</strong>：Redwood AI + 1X World Model（官方称 NEO 的"认知核心"）；复杂家务仍依赖远程专家模式。</li>
+<li><strong>Generalist AI</strong>：GEN-0（27 万小时）、GEN-1（50 万小时，所选任务 99%）。</li>
+<li><strong>Skild AI</strong>：Skild Brain、S1（看视频学 10 分钟级任务）。</li>
+<li><strong>Dyna</strong>：DYNA-2 WAM。</li>
+<li><strong>Microsoft</strong>：Magma、Rho-alpha。</li>
+<li><strong>Meta</strong>：V-JEPA 2。</li>
+<li><strong>中国机构</strong>：</li>
+<li>AgiBot：GO-1/GO-2、Genie Envisioner 2.0、Genie Sim 3.0、RoboClaw、HarnessVLN；</li>
+<li>字节 Seed：GR-3、Robix；</li>
+<li>阿里：Qwen-RobotManip、AMAP ABot-N0/N1/AgentOS；</li>
+<li>腾讯：HY-Embodied-0.5；</li>
+<li>其他：BAAI RoboBrain/RoboOS、上海 AI Lab InternVLA、Galbot（Astra 评测）、X Square WALL-OSS。</li>
+</ul>
+<hr />
+<h2>5. 基准：怎样评价"agent 上机器人"</h2>
+<table>
+<thead>
+<tr>
+<th>基准</th>
+<th>评什么</th>
+<th>关键发现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Embodied Agent Interface（NeurIPS'24）</td>
+<td>LLM 具身决策四模块</td>
+<td>细粒度诊断规划错误类型</td>
+</tr>
+<tr>
+<td>EmbodiedBench（ICML'25）</td>
+<td>MLLM agent 高层 vs 低层任务</td>
+<td>高层任务 Claude-3.5 约 64–68%；低层操作最好的 GPT-4o 仅 28.9%</td>
+</tr>
+<tr>
+<td>ERQA（Gemini Robotics）</td>
+<td>具身推理问答</td>
+<td>Gemini 4 Argon 87%（Google 自家基准）</td>
+</tr>
+<tr>
+<td>Butter-Bench（2025-10）</td>
+<td>LLM 当机器人"大脑"</td>
+<td>最好 40%，人类 95%</td>
+</tr>
+<tr>
+<td>CaP-Bench（CaP-X）</td>
+<td>编码 agent 在不同抽象层</td>
+<td>去掉人类抽象就掉分</td>
+</tr>
+<tr>
+<td>LIBERO-PRO</td>
+<td>扰动后的操作</td>
+<td>VLA 记忆化；agent 方法的主战场</td>
+</tr>
+<tr>
+<td>RoboArena</td>
+<td>分布式真机成对评测</td>
+<td>DreamZero 1750 Elo，π0.5 1622（2026-04）</td>
+</tr>
+<tr>
+<td>BEHAVIOR Challenge 2025</td>
+<td>50 个家务长时程任务</td>
+<td>冠军 Q-score 0.26（基于 π0.5）</td>
+</tr>
+<tr>
+<td>RoboDojo</td>
+<td>仿真 + 真机统一</td>
+<td>Astra 22.48% 排第 1</td>
+</tr>
+<tr>
+<td>RobotWorld</td>
+<td>5 个领域 84 个任务</td>
+<td>最强 19%；63 个任务无人完成</td>
+</tr>
+<tr>
+<td>RoboQuest</td>
+<td>主动探索获取信息</td>
+<td>最好 23%</td>
+</tr>
+<tr>
+<td>Embodied Playground、LIBERO-Agent、EmbodiedSWE-Bench、Video2World、4DCodeBench</td>
+<td>长时程、agent 原生、编码 agent、世界重建</td>
+<td>2026-09/10 新出</td>
+</tr>
+<tr>
+<td>ASIMOV / ASIMOV-2.0、AgentSafe、GuardianBench</td>
+<td>语义与物理安全</td>
+<td>据 ARC 转述：GPT-5、Gemini-2.5-Pro、Claude Opus 4.1 在 ASIMOV-2.0 的约束任务上违规率都在 30% 以上</td>
+</tr>
+</tbody>
+</table>
+<p><strong>评测上的共识</strong>（<em>Towards Agentic Robots</em> §8）：任务成功率无法区分是 agent 的功劳还是执行器的功劳。应当固定执行器、观测和交互预算，报告 token、时间和人工协助，并且加入需要处理缺失信息、执行器不合适、动作失败的任务。</p>
+<hr />
+<h2>6. 安全</h2>
+<ul>
+<li><strong>攻击面</strong>：</li>
+<li>RoboPAIR：越狱 LLM 控制的机器人，自驾 LLM、GPT 规划的地面车、商用四足全部攻破；</li>
+<li>BadRobot；</li>
+<li>AgentRob：论坛 agent 经 MCP 调度真实 Go2/G1；</li>
+<li>Butter-Bench 红队：电量低时诱导机器人泄露信息换充电。</li>
+<li><strong>行为风险</strong>：</li>
+<li>SafeHarness：编码 agent 在多数情况下仍撞上被禁止触碰的障碍物，推理里提到了障碍却不优先；</li>
+<li>ROSClaw：不同模型提出越界动作的比率最多相差 4.8 倍；</li>
+<li>Claude plays robotics 的真机片段：Grok 4.1 Fast 把玻璃门里的反射当成桌子冲过去；Opus 4.6 误判垃圾桶位置，把它拖行了几米。</li>
+<li><strong>防护</strong>：</li>
+<li>规范检查：Safety Chip（LTL）、RoboGuard（越狱成功率 92.3%→2.3%）、SafeGate（ISO 13482）、RoboSafe（可执行谓词）、CORE（控制屏障函数）；</li>
+<li>接口层闸门：ROSClaw 安全包络、ETA 区分"想做"与"允许做"、MHS 参考文件编码限位；</li>
+<li>基准：ASIMOV 系列。</li>
+<li><strong>部署清单（建议）</strong>：
+  1. 先仿真后真机；
+  2. 安全检查放在模型之外：话题/服务白名单、速度、工作空间、力矩限幅；
+  3. 运动类命令需要人工确认（Claude Code / Codex 的权限确认可直接利用）；
+  4. 急停在手边；
+  5. 全量记录日志与录像；
+  6. 评估器与被评估的 agent 隔离，防止"钻评估器的空子"。</li>
+</ul>
+<hr />
+<h2>7. 给机器人研究者的上手路线</h2>
+<ol>
+<li><strong>零改动试水（1 小时）</strong>：
+   - 机器人端：<code>sudo apt install ros-&lt;distro&gt;-rosbridge-server</code>，再 <code>ros2 launch rosbridge_server rosbridge_websocket_launch.xml</code>；
+   - 本地：<code>claude mcp add ros-mcp -- uvx ros-mcp --transport=stdio</code>；
+   - 然后让 Claude Code 先"只读"地探索 topic 和 service，描述机器人状态。</li>
+<li><strong>让编码 agent 当策略（1 天）</strong>：
+   - OpenRUA：<code>pip install -U openrua</code> → 在项目目录运行 <code>openrua</code>，先选仿真机器人；
+   - CaP-X：<code>git clone --recurse-submodules https://github.com/capgym/cap-x</code> → <code>uv sync</code>，提供 39 个任务的 Gym 与基准。</li>
+<li><strong>把 VLA 当工具</strong>：
+   - openpi 有 π0/π0.5 权重和远程推理接口；也可以用 LeRobot / SmolVLA、GR00T N1.6、MolmoAct2；
+   - 用 VLM 或 ER 模型（如 <code>gemini-robotics-er-2-preview</code>）编排，包装成 <code>vla_act(instruction, budget)</code> 工具，并返回进度和失败类型。</li>
+<li><strong>自动化研发闭环</strong>：参考 ENPIRE、ASPIRE、SimEX、HARBOR，关键是可自动复位、可自动判定成功、可回放的环境。</li>
+<li><strong>数据与仿真</strong>：SceneSmith、ARSTAG、Agentic Real2Sim、RoboGen；或者让 Gemini 4 Argon、GPT-6 Astra 这类模型写 MuJoCo/Isaac 场景。</li>
+</ol>
+<p><strong>延迟预算参考</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>典型频率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>前沿模型一次调用</td>
+<td>秒级到数十秒</td>
+</tr>
+<tr>
+<td>ER 2 流式编排</td>
+<td>低延迟，但仍远低于控制频率</td>
+</tr>
+<tr>
+<td>VLA</td>
+<td>10–50Hz（GR00T N1 为 120Hz 动作块，Helix S1 为 200Hz）</td>
+</tr>
+<tr>
+<td>全身控制</td>
+<td>200–1000Hz（Helix 02 S0 为 1kHz）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>原则：LLM 不进快环。</strong></p>
+<hr />
+<h2>8. 开放问题与趋势</h2>
+<ol>
+<li><strong>归因与公平评测</strong>：agent 的贡献和执行器的贡献如何分离？</li>
+<li><strong>何时调用大模型</strong>：事件触发（HarnessWAM、VLAs-as-Tools）与固定频率之间的权衡；端云协同。</li>
+<li><strong>物理世界里的"退出码"</strong>：怎样可靠判断"做完了""失败了""为什么失败"（Thea、LIBERO-RECOVER）。</li>
+<li><strong>自我改进的可累加性</strong>：评估器、感知关系理解、技能链前端偏置（123 轮研究）。</li>
+<li><strong>精细接触与动力学</strong>：前沿模型的系统性短板，需要 VLA/WAM 或触觉补位（GPT-6-Astra Understands Touch 显示触觉上下文有帮助）。</li>
+<li><strong>跨本体泛化</strong>：agent 要先"读懂"陌生机器人的能力（EMOS 的机器人简历、OpenRUA 的 <code>openrua connect</code>）。</li>
+<li><strong>权重 vs 技能</strong>：VLA 把能力烤进权重，agent 把能力写成代码。一个可能的终局是：VLA 作为可调用的底层，程序作为上层，agent 离线进化二者，再把进化出的经验蒸馏回权重（EmbodiedSWE-Gen、RACaP、HarnessPAI、InSight）。</li>
+<li><strong>安全、权限与治理</strong>：MHS 等硬件标准、欧盟自 2027 年起对机械中 AI 安全功能的监管、RSP 类框架如何覆盖物理能力。</li>
+</ol>
+<hr />
+<h2>9. 推荐阅读路径（新手）</h2>
+<ol>
+<li>经典三篇：SayCan → Code as Policies → VoxPoser</li>
+<li>VLA 主线：RT-2 → OpenVLA → π0.5 → π0.7</li>
+<li>Agentic VLA 栈：Gemini Robotics 1.5 技术报告 + ER 2 博客</li>
+<li>编码 agent：CaP-X → OpenRUA → ASPIRE / ENPIRE</li>
+<li>综述：<em>Towards Agentic Robots</em>（2610.20442）+ <em>Survey on Multimodal Embodied Agents</em>（NUS，engrXiv）+ <em>Weights or Skills?</em>（2608.01851）</li>
+<li>前沿模型即策略：Claude plays robotics → Galbot GPT-6 Astra 评测 → RobotWorld</li>
+<li>安全：RoboPAIR → RoboGuard → ASIMOV-2.0 → SafeHarness</li>
+</ol>
+<hr />
+<h2>10. 方法与可信度说明</h2>
+<ul>
+<li>检索时间 2026-10-23。arXiv 条目（283 条）全部用 export.arxiv.org API 按编号核验了标题与首发日期。网页/产业条目以官方博客为主，第三方报道已在文中注明（如 Tesla Optimus、Figure 与 BMW 的合作、部分 ER 1.6 指标）。</li>
+<li>文中数值均摘自对应论文摘要、官方博客或其直接转述；跨论文的数字设置不同，不可直接横向比较。</li>
+<li>2026 年的大量工作仍是预印本，没经过同行评审，部分演示没有公开成功率（如 HomeBody）。</li>
+<li>有意从略的方向：纯自动驾驶（只列了 Alpamayo、MindVLA-U1 等少量条目）、纯数字 GUI agent、纯视觉导航方法细节。</li>
+</ul>
+<h2>主要网页来源</h2>
+<ul>
+<li>Anthropic：<a href="https://www.anthropic.com/research/project-fetch-robot-dog">Project Fetch</a> · <a href="https://www.anthropic.com/news/project-fetch-phase-two">Phase two</a> · <a href="https://www.anthropic.com/research/claude-plays-robotics">Claude plays robotics</a> · <a href="https://www.bloomberg.com/news/articles/2026-08-27/anthropic-tests-new-way-for-claude-to-work-with-robots-and-scientific-lab-tools">MHS（Bloomberg）</a></li>
+<li>Google DeepMind：<a href="https://deepmind.google/blog/gemini-robotics-15-brings-ai-agents-into-the-physical-world/">Gemini Robotics 1.5</a> · <a href="https://deepmind.google/blog/gemini-robotics-er-1-6/">ER 1.6</a> · <a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-2/">ER 2</a> · <a href="https://deepmind.google/models/gemini-robotics/">Gemini Robotics 2 系列</a> · <a href="https://developers.googleblog.com/gemini-4-argon-for-robotics/">Gemini 4 Argon for Robotics</a></li>
+<li>OpenAI：<a href="https://theaiinsider.tech/2026/06/02/sam-altman-says-openai-now-has-a-dedicated-robotics-initiative-hiring-engineers/">机器人部门（AI Insider）</a> · <a href="https://www.techtimes.com/articles/329197/20261019/openai-confirms-humanoid-robot-2027-demo-competing-companies-it-once-backed.htm">人形 2027（TechTimes）</a> · <a href="https://www.cnbc.com/2026/09/03/open-ai-astra-gpt-6-cyber.html">GPT-6 Astra（CNBC）</a> · <a href="https://community.openai.com/t/decisions-api-is-now-available-in-public-beta/1403877">Decisions API</a></li>
+<li>Physical Intelligence：<a href="https://www.pi.website/blog/api-beta">Pi API beta</a> · <a href="https://www.pi.website/research/rlt">RL Token</a></li>
+<li>NVIDIA：<a href="https://research.nvidia.com/labs/gear/gr00t-n1_6/">GR00T N1.6</a> · <a href="https://nvidianews.nvidia.com/news/nvidia-and-global-robotics-leaders-take-physical-ai-to-the-real-world">GTC 2026</a> · <a href="https://developer.nvidia.com/blog/pretrained-to-imagine-fine-tuned-to-act-the-rise-of-world-action-models/">World-Action Models 博客</a> · <a href="https://research.nvidia.com/labs/srl/projects/astranomy/">Astranomy</a></li>
+<li>工具与资源：<a href="https://github.com/robotmcp/ros-mcp-server">ROS MCP Server</a> · <a href="https://github.com/capgym/cap-x">CaP-X</a> · <a href="https://github.com/terminalworld/OpenRUA">OpenRUA</a> · <a href="https://github.com/zjwzcx/Awesome-Astra-Embodied-AI">Awesome-Astra-Embodied-AI</a> · <a href="https://github.com/zchoi/Awesome-Embodied-Robotics-and-Agent">Awesome-Embodied-Robotics-and-Agent</a> · <a href="https://engrxiv.org/preprint/view/8364">NUS 多模态具身 agent 综述</a></li>
+<li>其他：<a href="https://andonlabs.com/evals/butter-bench">Butter-Bench</a> · <a href="https://robo-arena.github.io/">RoboArena</a> · <a href="https://behavior.stanford.edu/challenge/leaderboard.html">BEHAVIOR 2025 榜单</a> · <a href="https://asimov-benchmark.github.io/v2">ASIMOV-2.0</a> · <a href="https://www.figure.ai/news/helix">Helix</a> · <a href="https://www.therobotreport.com/generalist-introduces-gen-1-general-purpose-model-for-physical-ai/">GEN-1</a> · <a href="https://www.therobotreport.com/microsoft-research-reveals-rho-alpha-vision-language-action-model-for-robots/">Rho-alpha</a> · <a href="https://www.therobotreport.com/skild-ai-unveils-s1-flagship-robot-foundation-model/">Skild S1</a> · <a href="https://www.therobotreport.com/agibot-releases-go-2-foundation-model-embodied-ai/">AgiBot GO-2</a> · <a href="https://the-decoder.com/researchers-plug-gpt-6-astra-directly-into-a-robot-and-let-it-clean-up-an-unfamiliar-kitchen/">HomeBody（The Decoder）</a></li>
+</ul>
+<hr />
+<h2>附录 A：论文与资源总表（315 条，按主类别分组，组内按时间倒序）</h2>
+<blockquote>
+<p>arXiv 条目的标题与日期由 export.arxiv.org API 校验；★ 为入门推荐。</p>
+</blockquote>
+<h3>LLM 规划器（16）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2024-11</td>
+<td><a href="https://arxiv.org/abs/2412.00171">RoboMatrix</a> <code>arXiv:2412.00171</code></td>
+<td></td>
+<td>以技能为中心的分层框架，用于开放世界的任务规划与执行</td>
+</tr>
+<tr>
+<td>2024-04</td>
+<td><a href="https://arxiv.org/abs/2404.03275">DELTA</a> <code>arXiv:2404.03275</code></td>
+<td></td>
+<td>场景图 + LLM 分解长时程任务，提升规划效率</td>
+</tr>
+<tr>
+<td>2023-09</td>
+<td><a href="https://arxiv.org/abs/2309.16650">ConceptGraphs</a> <code>arXiv:2309.16650</code></td>
+<td>Toronto/MIT 等</td>
+<td>开放词汇 3D 场景图，作为 LLM 规划的结构化记忆</td>
+</tr>
+<tr>
+<td>2023-07</td>
+<td><a href="https://arxiv.org/abs/2307.06135">SayPlan</a> <code>arXiv:2307.06135</code></td>
+<td>QUT</td>
+<td>用 3D 场景图做 grounding，把 LLM 规划扩展到多楼层、多房间</td>
+</tr>
+<tr>
+<td>2023-07</td>
+<td>★ <a href="https://arxiv.org/abs/2307.01928">KnowNo</a> <code>arXiv:2307.01928</code></td>
+<td>Princeton/Google</td>
+<td>用共形预测校准 LLM 规划的不确定性，不确定时主动向人求助</td>
+</tr>
+<tr>
+<td>2023-06</td>
+<td><a href="https://arxiv.org/abs/2306.17840">Statler</a> <code>arXiv:2306.17840</code></td>
+<td>TTIC</td>
+<td>让 LLM 显式维护世界状态，改善长时程推理</td>
+</tr>
+<tr>
+<td>2023-06</td>
+<td><a href="https://arxiv.org/abs/2306.06531">AutoTAMP</a> <code>arXiv:2306.06531</code></td>
+<td>MIT</td>
+<td>LLM 把自然语言翻译成时序逻辑并做检查，再交给 TAMP</td>
+</tr>
+<tr>
+<td>2023-05</td>
+<td><a href="https://arxiv.org/abs/2305.15021">EmbodiedGPT</a> <code>arXiv:2305.15021</code></td>
+<td>HKU 等</td>
+<td>用具身思维链预训练的视觉语言模型</td>
+</tr>
+<tr>
+<td>2023-05</td>
+<td><a href="https://arxiv.org/abs/2305.05658">TidyBot</a> <code>arXiv:2305.05658</code></td>
+<td>Princeton/Stanford</td>
+<td>LLM 从少量例子归纳用户偏好，实现个性化整理</td>
+</tr>
+<tr>
+<td>2023-04</td>
+<td><a href="https://arxiv.org/abs/2304.11477">LLM+P</a> <code>arXiv:2304.11477</code></td>
+<td>UT Austin</td>
+<td>LLM 把任务翻译成 PDDL，再交给经典规划器求解</td>
+</tr>
+<tr>
+<td>2023-03</td>
+<td><a href="https://arxiv.org/abs/2303.12153">Text2Motion</a> <code>arXiv:2303.12153</code></td>
+<td>Stanford</td>
+<td>把语言指令变成几何上可行的长时程技能序列</td>
+</tr>
+<tr>
+<td>2023-03</td>
+<td><a href="https://arxiv.org/abs/2303.03378">PaLM-E</a> <code>arXiv:2303.03378</code></td>
+<td>Google</td>
+<td>562B 具身多模态语言模型：图像/状态与文本交错输入，直接输出规划</td>
+</tr>
+<tr>
+<td>2022-12</td>
+<td><a href="https://arxiv.org/abs/2212.04088">LLM-Planner</a> <code>arXiv:2212.04088</code></td>
+<td>Ohio State</td>
+<td>少样本 grounded 高层规划，执行受阻时根据环境重规划</td>
+</tr>
+<tr>
+<td>2022-07</td>
+<td>★ <a href="https://arxiv.org/abs/2207.05608">Inner Monologue</a> <code>arXiv:2207.05608</code></td>
+<td>Google</td>
+<td>把成功检测、场景描述、人类反馈作为文本回灌 LLM，形成闭环规划</td>
+</tr>
+<tr>
+<td>2022-04</td>
+<td>★ <a href="https://arxiv.org/abs/2204.01691">SayCan</a> <code>arXiv:2204.01691</code></td>
+<td>Google</td>
+<td>LLM 给技能打"是否有用"分，价值函数给"是否可行"分，两者相乘选出下一步预训练技能</td>
+</tr>
+<tr>
+<td>2022-04</td>
+<td><a href="https://arxiv.org/abs/2204.00598">Socratic Models</a> <code>arXiv:2204.00598</code></td>
+<td>Google</td>
+<td>多个基础模型以自然语言为接口零样本组合推理</td>
+</tr>
+</tbody>
+</table>
+<h3>代码即策略（24）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10</td>
+<td>★ <a href="https://github.com/terminalworld/OpenRUA">OpenRUA</a> <code>arXiv:2610.02459</code></td>
+<td>UCL/CMU</td>
+<td>"零抽象" harness：Claude Code（Opus 5）只拿到 ROS 2 终端和文档，CaP-Bench 99%、LIBERO-PRO 87%</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.30249">RAPID</a> <code>arXiv:2609.30249</code></td>
+<td>MIT/NUS</td>
+<td>从单次人类视觉演示自动生成、验证、精炼机器人程序</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.29394">RACaP</a> <code>arXiv:2609.29394</code></td>
+<td></td>
+<td>把"写代码"挪到进化阶段，部署时用 ReAct 调用冻结的类型化 Policy API，降低延迟</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.27308">EmbodiedSWE</a> <code>arXiv:2609.27308</code></td>
+<td></td>
+<td>编码 agent 解决长达半小时的灵巧长时程任务，再把解扩增成 VLA 训练数据，在真机上验证</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.26499">Local Coding Agent</a> <code>arXiv:2609.26499</code></td>
+<td></td>
+<td>本地开源 VLM（Qwen3.8-27B）在编码 agent 框架里驱动 UR3e，一次泛化到任务新变体</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.19906">Closed-Loop Robot Software</a> <code>arXiv:2609.19906</code></td>
+<td></td>
+<td>把编码 agent 优化过的闭环代码策略归档，作为新任务可迁移的经验</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td>★ <a href="https://arxiv.org/abs/2609.12541">Agent as Policy (AGP)</a> <code>arXiv:2609.12541</code></td>
+<td>Notre Dame/UCSD</td>
+<td>Codex CLI + GPT-6 Astra 直接驱动真实 YAM 机械臂：看图、写程序、发运动指令、按物理结果修正；8 种配置中 7 种成功率 ≥80%</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.22832">MEMENTO</a> <code>arXiv:2607.22832</code></td>
+<td></td>
+<td>记忆引导的模因式（memetic）代码策略进化</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.16458">RHO</a> <code>arXiv:2606.16458</code></td>
+<td>UC Berkeley 等</td>
+<td>训练阶段让编码 agent 搜索多文件的"仓库即策略"；LIBERO-PRO 45%（π0.5 为 12.83%，OpenVLA 为 0%）</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td>★ <a href="https://arxiv.org/abs/2603.22435">CaP-X</a> <code>arXiv:2603.22435</code></td>
+<td>NVIDIA/UC Berkeley/Stanford/CMU</td>
+<td>编码 agent 操控框架与基准：人类给的抽象越少越难；多轮交互、视觉差分、技能合成与 RL 可以补回来（ICML'26）</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.04466">Act-Observe-Rewrite</a> <code>arXiv:2603.04466</code></td>
+<td></td>
+<td>多模态编码 agent 在两次尝试之间重写完整的底层控制器代码，无需梯度更新</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.18597">LYRA</a> <code>arXiv:2509.18597</code></td>
+<td></td>
+<td>人类引导的终身代码生成，学到超长时程操作技能</td>
+</tr>
+<tr>
+<td>2024-09</td>
+<td><a href="https://arxiv.org/abs/2409.01652">ReKep</a> <code>arXiv:2409.01652</code></td>
+<td>Stanford</td>
+<td>VLM 写"关系关键点约束"函数，求解器约 10Hz 实时优化轨迹</td>
+</tr>
+<tr>
+<td>2024-06</td>
+<td><a href="https://arxiv.org/abs/2406.18746">LRLL</a> <code>arXiv:2406.18746</code></td>
+<td>Groningen</td>
+<td>终身机器人技能库学习，自举可组合、可泛化的技能</td>
+</tr>
+<tr>
+<td>2024-06</td>
+<td><a href="https://arxiv.org/abs/2406.03757">RoboCoder</a> <code>arXiv:2406.03757</code></td>
+<td>CUHK</td>
+<td>基础技能库 + 评估器反馈，逐步生成更复杂任务的代码</td>
+</tr>
+<tr>
+<td>2024-03</td>
+<td><a href="https://arxiv.org/abs/2403.03174">MOKA</a> <code>arXiv:2403.03174</code></td>
+<td>UC Berkeley</td>
+<td>标记式视觉提示：VLM 在图上选关键点/路径点，转为动作</td>
+</tr>
+<tr>
+<td>2024-02</td>
+<td><a href="https://arxiv.org/abs/2402.16117">RoboCodeX</a> <code>arXiv:2402.16117</code></td>
+<td>HKU/Shanghai AI Lab</td>
+<td>多模态树状代码生成合成机器人行为，并微调代码模型</td>
+</tr>
+<tr>
+<td>2023-11</td>
+<td><a href="https://arxiv.org/abs/2311.10678">DROC</a> <code>arXiv:2311.10678</code></td>
+<td>Stanford</td>
+<td>从人的语言纠正中蒸馏并检索可泛化知识，同样的纠正不用说第二次</td>
+</tr>
+<tr>
+<td>2023-10</td>
+<td><a href="https://arxiv.org/abs/2310.17555">OLAF</a> <code>arXiv:2310.17555</code></td>
+<td>UT Austin</td>
+<td>把口头纠正转成修正后的动作标签，交互式学习</td>
+</tr>
+<tr>
+<td>2023-07</td>
+<td>★ <a href="https://arxiv.org/abs/2307.05973">VoxPoser</a> <code>arXiv:2307.05973</code></td>
+<td>Stanford</td>
+<td>LLM 写代码调用 VLM，组合出 3D 价值图，交给运动规划执行</td>
+</tr>
+<tr>
+<td>2023-05</td>
+<td><a href="https://arxiv.org/abs/2305.11176">Instruct2Act</a> <code>arXiv:2305.11176</code></td>
+<td></td>
+<td>LLM 生成代码，调用 SAM/CLIP 等感知模型与运动基元</td>
+</tr>
+<tr>
+<td>2023-02</td>
+<td><a href="https://arxiv.org/abs/2306.17582">ChatGPT for Robotics</a> <code>arXiv:2306.17582</code></td>
+<td>Microsoft</td>
+<td>提出"API 库 + 提示工程 + 人在环"的 LLM 机器人编程范式</td>
+</tr>
+<tr>
+<td>2022-09</td>
+<td><a href="https://arxiv.org/abs/2209.11302">ProgPrompt</a> <code>arXiv:2209.11302</code></td>
+<td>NVIDIA/USC</td>
+<td>程序化提示：用带断言的程序表示可执行的情境化任务计划</td>
+</tr>
+<tr>
+<td>2022-09</td>
+<td>★ <a href="https://arxiv.org/abs/2209.07753">Code as Policies</a> <code>arXiv:2209.07753</code></td>
+<td>Google</td>
+<td>LLM 写 Python 程序组合感知/控制 API，程序本身就是策略。"代码即策略"的开山之作</td>
+</tr>
+</tbody>
+</table>
+<h3>奖励/仿真/数据生成（23）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.07969">EmbodiedSmith</a> <code>arXiv:2610.07969</code></td>
+<td></td>
+<td>在仿真中跑递归自我改进的数据飞轮</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.04432">Video2World</a> <code>arXiv:2610.04432</code></td>
+<td></td>
+<td>基准：编码 agent 从具身视频重建可交互的仿真世界</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.03715">4DCodeBench</a> <code>arXiv:2610.03715</code></td>
+<td></td>
+<td>基准：agent 写可执行代码重建动态场景（逆图形学）</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.24563">ARSTAG</a> <code>arXiv:2609.24563</code></td>
+<td>CMU</td>
+<td>一张 RGB 图 + 一句指令，经 Real2Sim2Real 生成训练数据；π0.5 真机平均成功率 74.6%</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.19190">Agentic Real2Sim</a> <code>arXiv:2607.19190</code></td>
+<td></td>
+<td>VLM agent 把真实机器人交互录像变成可仿真的"情景孪生"，用于微调与评测</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.28276">SimFoundry</a> <code>arXiv:2606.28276</code></td>
+<td></td>
+<td>模块化、自动化的场景生成，用于策略学习与评测</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.08610">HARBOR</a> <code>arXiv:2606.08610</code></td>
+<td></td>
+<td>把机器人 RL 自动化看成 harness 工程：环境搭建、奖励设计、调参、训练一条龙</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.14700">SR-Platform</a> <code>arXiv:2605.14700</code></td>
+<td></td>
+<td>从自然语言生成 MuJoCo 仿真环境的 agentic 流水线</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.15187">Articraft</a> <code>arXiv:2605.15187</code></td>
+<td></td>
+<td>agentic 方式大规模生成铰接 3D 资产</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.09423">SimWorld Studio</a> <code>arXiv:2605.09423</code></td>
+<td></td>
+<td>进化式编码 agent 自动生成具身学习环境</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.09153">SceneSmith</a> <code>arXiv:2602.09153</code></td>
+<td>MIT/TRI</td>
+<td>agentic 生成可直接仿真的室内场景，由评估 agent 检查任务是否成功（ICML'26 Spotlight）</td>
+</tr>
+<tr>
+<td>2026-01</td>
+<td><a href="https://arxiv.org/abs/2601.02078">Genie Sim 3.0</a> <code>arXiv:2601.02078</code></td>
+<td>AgiBot</td>
+<td>高保真人形机器人仿真平台</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.09886">Video2Policy</a> <code>arXiv:2502.09886</code></td>
+<td></td>
+<td>从互联网视频批量构建仿真任务</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.03645">GenSim2</a> <code>arXiv:2410.03645</code></td>
+<td></td>
+<td>用多模态/推理 LLM 扩展机器人数据生成</td>
+</tr>
+<tr>
+<td>2024-09</td>
+<td><a href="https://arxiv.org/abs/2409.18382">CurricuLLM</a> <code>arXiv:2409.18382</code></td>
+<td>UC Berkeley</td>
+<td>LLM 自动设计任务课程来学习复杂技能</td>
+</tr>
+<tr>
+<td>2024-06</td>
+<td><a href="https://arxiv.org/abs/2406.01967">DrEureka</a> <code>arXiv:2406.01967</code></td>
+<td>UPenn/NVIDIA</td>
+<td>LLM 同时设计奖励与域随机化参数，实现 sim2real（如四足在瑜伽球上行走）</td>
+</tr>
+<tr>
+<td>2024-01</td>
+<td><a href="https://arxiv.org/abs/2401.12963">AutoRT</a> <code>arXiv:2401.12963</code></td>
+<td>Google DeepMind</td>
+<td>VLM + LLM 编排 20 多台机器人大规模采数据，内置"机器人宪法"安全规则</td>
+</tr>
+<tr>
+<td>2023-12</td>
+<td><a href="https://arxiv.org/abs/2312.09067">Holodeck</a> <code>arXiv:2312.09067</code></td>
+<td>UPenn/AI2</td>
+<td>用语言引导生成 3D 具身 AI 环境</td>
+</tr>
+<tr>
+<td>2023-11</td>
+<td>★ <a href="https://arxiv.org/abs/2311.01455">RoboGen</a> <code>arXiv:2311.01455</code></td>
+<td>CMU/MIT 等</td>
+<td>生成式仿真：自动提出任务、生成场景、选择学习方法并产出技能</td>
+</tr>
+<tr>
+<td>2023-10</td>
+<td>★ <a href="https://arxiv.org/abs/2310.12931">Eureka</a> <code>arXiv:2310.12931</code></td>
+<td>NVIDIA/UPenn</td>
+<td>LLM 写奖励函数代码并进化式迭代，多数任务上超过人类专家设计的奖励</td>
+</tr>
+<tr>
+<td>2023-10</td>
+<td><a href="https://arxiv.org/abs/2310.01361">GenSim</a> <code>arXiv:2310.01361</code></td>
+<td>MIT</td>
+<td>LLM 生成仿真任务代码，扩充任务库</td>
+</tr>
+<tr>
+<td>2023-09</td>
+<td><a href="https://arxiv.org/abs/2309.11489">Text2Reward</a> <code>arXiv:2309.11489</code></td>
+<td>HKU 等</td>
+<td>自然语言目标转成可执行的稠密奖励代码</td>
+</tr>
+<tr>
+<td>2023-06</td>
+<td><a href="https://arxiv.org/abs/2306.08647">Language to Rewards</a> <code>arXiv:2306.08647</code></td>
+<td>Google</td>
+<td>LLM 把指令翻译成奖励参数，由 MPC 实时合成技能</td>
+</tr>
+</tbody>
+</table>
+<h3>VLA/基础模型（37）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.14973">PhysBrain 1.5</a> <code>arXiv:2609.14973</code></td>
+<td>DeepCybo</td>
+<td>用人类交互视频预训练，把理解、动作与未来预测统一在一个模型里</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.04426">ACE-Brain-0.5</a> <code>arXiv:2607.04426</code></td>
+<td></td>
+<td>面向"物理 agentic AI"的统一具身基础模型：感知、决策、交互、自我监控、持续改进</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.17846">Qwen-RobotManip</a> <code>arXiv:2606.17846</code></td>
+<td>Alibaba Qwen</td>
+<td>基于 Qwen-VL，从表征、运动、行为三个维度对齐来扩大规模</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.11324">Embodied-R1.5</a> <code>arXiv:2606.11324</code></td>
+<td></td>
+<td>统一的具身推理模型（认知/规划/纠正/指点），配 Planner-Grounder-Corrector 闭环</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.02881">MolmoAct2</a> <code>arXiv:2605.02881</code></td>
+<td>AI2</td>
+<td>全开源的动作推理模型，面向真实部署</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td>★ <a href="https://arxiv.org/abs/2604.15483">π0.7</a> <code>arXiv:2604.15483</code></td>
+<td>Physical Intelligence</td>
+<td>可用多模态上下文（策略、元数据、子目标图）操控的约 5B 通用模型，零样本跨本体</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.07430">HY-Embodied-0.5</a> <code>arXiv:2604.07430</code></td>
+<td>Tencent</td>
+<td>面向真实世界 agent 的具身基础模型（2B/32B 激活参数两档）</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.22818">LeRobot</a> <code>arXiv:2602.22818</code></td>
+<td>Hugging Face</td>
+<td>端到端机器人学习开源库：硬件接口、数据、训练、部署</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.13778">InternVLA-M1</a> <code>arXiv:2510.13778</code></td>
+<td>Shanghai AI Lab</td>
+<td>空间引导的 VLA 框架</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.10274">X-VLA</a> <code>arXiv:2510.10274</code></td>
+<td>Tsinghua 等</td>
+<td>软提示 Transformer，可扩展的跨本体 VLA</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.05684">D2E</a> <code>arXiv:2510.05684</code></td>
+<td></td>
+<td>用桌面（游戏/GUI）交互数据做视觉-动作预训练，再迁移到具身任务（ICLR'26）</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td>★ <a href="https://arxiv.org/abs/2510.03342">Gemini Robotics 1.5</a> <code>arXiv:2510.03342</code></td>
+<td>Google DeepMind</td>
+<td>"先思考再行动"的 VLA + Motion Transfer；ER 1.5 担任编排者，调用 VLA 和搜索等工具</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.11766">WALL-OSS</a> <code>arXiv:2509.11766</code></td>
+<td>X Square Robot</td>
+<td>统一跨层思维链的具身基础模型（"Igniting VLMs toward the Embodied Space"）</td>
+</tr>
+<tr>
+<td>2025-08</td>
+<td><a href="https://arxiv.org/abs/2508.21112">EO-1</a> <code>arXiv:2508.21112</code></td>
+<td>Shanghai AI Lab 等</td>
+<td>开源统一具身基础模型（视觉-文本-动作交错预训练）</td>
+</tr>
+<tr>
+<td>2025-08</td>
+<td><a href="https://arxiv.org/abs/2508.07917">MolmoAct</a> <code>arXiv:2508.07917</code></td>
+<td>AI2</td>
+<td>"动作推理模型"：先做深度感知和轨迹规划，再输出动作</td>
+</tr>
+<tr>
+<td>2025-07</td>
+<td><a href="https://arxiv.org/abs/2507.16815">ThinkAct</a> <code>arXiv:2507.16815</code></td>
+<td>NVIDIA</td>
+<td>用强化学习的视觉潜在规划增强 VLA 推理</td>
+</tr>
+<tr>
+<td>2025-07</td>
+<td><a href="https://arxiv.org/abs/2507.15493">GR-3</a> <code>arXiv:2507.15493</code></td>
+<td>ByteDance Seed</td>
+<td>大规模 VLA 技术报告，覆盖长时程与灵巧操作</td>
+</tr>
+<tr>
+<td>2025-07</td>
+<td><a href="https://arxiv.org/abs/2507.02029">RoboBrain 2.0</a> <code>arXiv:2507.02029</code></td>
+<td>BAAI</td>
+<td>具身"大脑"VLM：空间理解与时序决策</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.01844">SmolVLA</a> <code>arXiv:2506.01844</code></td>
+<td>Hugging Face</td>
+<td>小型开源 VLA + 异步推理，消费级硬件就能训练</td>
+</tr>
+<tr>
+<td>2025-05</td>
+<td><a href="https://arxiv.org/abs/2505.11917">OneTwoVLA</a> <code>arXiv:2505.11917</code></td>
+<td>Tsinghua</td>
+<td>单个模型自适应地在推理和执行之间切换</td>
+</tr>
+<tr>
+<td>2025-05</td>
+<td><a href="https://arxiv.org/abs/2505.06111">UniVLA</a> <code>arXiv:2505.06111</code></td>
+<td>HKU/OpenDriveLab</td>
+<td>以任务为中心的潜在动作，跨本体学习</td>
+</tr>
+<tr>
+<td>2025-04</td>
+<td>★ <a href="https://arxiv.org/abs/2504.16054">π0.5</a> <code>arXiv:2504.16054</code></td>
+<td>Physical Intelligence</td>
+<td>开放世界泛化；同一模型先解码子任务文本，再生成动作</td>
+</tr>
+<tr>
+<td>2025-03</td>
+<td>★ <a href="https://arxiv.org/abs/2503.20020">Gemini Robotics</a> <code>arXiv:2503.20020</code></td>
+<td>Google DeepMind</td>
+<td>基于 Gemini 2.0 的 VLA 与具身推理（ER）模型，提出 ERQA 基准</td>
+</tr>
+<tr>
+<td>2025-03</td>
+<td><a href="https://arxiv.org/abs/2503.14734">GR00T N1</a> <code>arXiv:2503.14734</code></td>
+<td>NVIDIA</td>
+<td>开源人形基础模型，双系统：VLM（10Hz）+ 扩散动作模块（120Hz）</td>
+</tr>
+<tr>
+<td>2025-03</td>
+<td><a href="https://arxiv.org/abs/2503.15558">Cosmos-Reason1</a> <code>arXiv:2503.15558</code></td>
+<td>NVIDIA</td>
+<td>物理常识与具身推理 VLM；后续 Cosmos Reason 2 成为 GR00T N1.6 的骨干</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.19645">OpenVLA-OFT</a> <code>arXiv:2502.19645</code></td>
+<td>Stanford</td>
+<td>VLA 微调配方：并行解码、动作块、连续动作</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.13130">Magma</a> <code>arXiv:2502.13130</code></td>
+<td>Microsoft</td>
+<td>同时面向 UI 操作和机器人操作的多模态 agent 基础模型</td>
+</tr>
+<tr>
+<td>2025-01</td>
+<td><a href="https://arxiv.org/abs/2501.09747">FAST</a> <code>arXiv:2501.09747</code></td>
+<td>Physical Intelligence</td>
+<td>基于 DCT 压缩的高效动作 tokenizer</td>
+</tr>
+<tr>
+<td>2024-11</td>
+<td><a href="https://arxiv.org/abs/2411.19650">CogACT</a> <code>arXiv:2411.19650</code></td>
+<td>Microsoft 等</td>
+<td>认知（VLM）与动作（扩散）模块协同的 VLA</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td>★ <a href="https://arxiv.org/abs/2410.24164">π0</a> <code>arXiv:2410.24164</code></td>
+<td>Physical Intelligence</td>
+<td>VLM + flow matching 动作专家，跨本体灵巧操作</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.07864">RDT-1B</a> <code>arXiv:2410.07864</code></td>
+<td>Tsinghua</td>
+<td>双臂操作的扩散基础模型</td>
+</tr>
+<tr>
+<td>2024-07</td>
+<td><a href="https://arxiv.org/abs/2407.08693">ECoT</a> <code>arXiv:2407.08693</code></td>
+<td>UC Berkeley/Stanford 等</td>
+<td>具身思维链：先推理子任务、物体、运动，再输出动作</td>
+</tr>
+<tr>
+<td>2024-06</td>
+<td>★ <a href="https://arxiv.org/abs/2406.09246">OpenVLA</a> <code>arXiv:2406.09246</code></td>
+<td>Stanford/UC Berkeley 等</td>
+<td>7B 开源 VLA，开源 VLA 生态由此起步</td>
+</tr>
+<tr>
+<td>2024-05</td>
+<td><a href="https://arxiv.org/abs/2405.12213">Octo</a> <code>arXiv:2405.12213</code></td>
+<td>UC Berkeley 等</td>
+<td>开源通用机器人策略（Transformer + 扩散动作头）</td>
+</tr>
+<tr>
+<td>2023-10</td>
+<td><a href="https://arxiv.org/abs/2310.08864">Open X-Embodiment / RT-X</a> <code>arXiv:2310.08864</code></td>
+<td>多机构合作</td>
+<td>跨 22 种本体、百万级轨迹的开放数据集与 RT-X 模型</td>
+</tr>
+<tr>
+<td>2023-07</td>
+<td>★ <a href="https://arxiv.org/abs/2307.15818">RT-2</a> <code>arXiv:2307.15818</code></td>
+<td>Google DeepMind</td>
+<td>把动作当作语言 token 来微调 VLM，提出 VLA 概念</td>
+</tr>
+<tr>
+<td>2022-12</td>
+<td><a href="https://arxiv.org/abs/2212.06817">RT-1</a> <code>arXiv:2212.06817</code></td>
+<td>Google</td>
+<td>用约 13 万条真机演示训练的 Transformer 机器人策略</td>
+</tr>
+</tbody>
+</table>
+<h3>VLA 强化学习（7）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.18207">RL for Real-Time VLA</a> <code>arXiv:2609.18207</code></td>
+<td>Stanford</td>
+<td>面向实时 VLA 策略的强化学习</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.09776">HELP</a> <code>arXiv:2607.09776</code></td>
+<td></td>
+<td>按 rollout 分段，降低大规模后训练所需的人力</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.09337">TORL-VLA</a> <code>arXiv:2606.09337</code></td>
+<td></td>
+<td>触觉引导的接触密集操作在线 RL</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.00416">Learning While Deploying</a> <code>arXiv:2605.00416</code></td>
+<td></td>
+<td>在机器人舰队规模上对通用策略做强化学习</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://www.pi.website/research/rlt">RL Token</a> <code>arXiv:2604.23073</code></td>
+<td>Physical Intelligence</td>
+<td>从 VLA 读出一个紧凑的"RL token"，小型 actor-critic 头在线 RL，几小时内关键阶段提速最高 3×</td>
+</tr>
+<tr>
+<td>2025-11</td>
+<td>★ <a href="https://arxiv.org/abs/2511.14759">π*0.6 / RECAP</a> <code>arXiv:2511.14759</code></td>
+<td>Physical Intelligence</td>
+<td>优势条件化 RL，融合演示、自主数据与人类干预，让 VLA 从部署经验中提升</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.25889">πRL</a> <code>arXiv:2510.25889</code></td>
+<td></td>
+<td>流匹配 VLA 的在线 RL 微调</td>
+</tr>
+</tbody>
+</table>
+<h3>分层编排 S2→S1（18）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-07</td>
+<td>★ <a href="https://arxiv.org/abs/2607.21725">Physical Agency (Pigey)</a> <code>arXiv:2607.21725</code></td>
+<td>Princeton</td>
+<td>闭环物理 agent 编排器调度 VLA 与参数化技能，不收集新数据；LIBERO-PRO 12.8%→53.3%</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.18060">RoboHarness</a> <code>arXiv:2607.18060</code></td>
+<td></td>
+<td>记忆驱动地编排异构策略，用运动规划的"记忆桥"衔接前后状态</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.17213">Retriever</a> <code>arXiv:2607.17213</code></td>
+<td></td>
+<td>异步的感知-信念-规划-VLA-控制循环：决策模型、编程模型与运行时</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://harnessvla.github.io/">Harness VLA</a> <code>arXiv:2607.08448</code></td>
+<td></td>
+<td>冻结的 VLA 作为可重试的接触原语，再配少量解析原语；用记忆学习各原语的适用范围</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.06256">Semantic Handoff Failures</a> <code>arXiv:2607.06256</code></td>
+<td></td>
+<td>诊断 agent 编排 VLA 技能组合时的语义交接失败</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.05377">Cortex</a> <code>arXiv:2607.05377</code></td>
+<td></td>
+<td>把子任务标准化成 32 种规范技能原语，让 VLM 的规划与 VLA 的执行双向对齐</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td>★ <a href="https://arxiv.org/abs/2606.10267">Hi-VLA 设计研究</a> <code>arXiv:2606.10267</code></td>
+<td></td>
+<td>系统研究分层 VLA agent：终止规则、VLA 可操控性与规划器大小同样关键</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.07723">VoLo</a> <code>arXiv:2606.07723</code></td>
+<td>NVIDIA</td>
+<td>VLM 把 VLA/WAM 当作可中断的工具，执行中途接管、监控与恢复</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.13119">VLAs-as-Tools</a> <code>arXiv:2605.13119</code></td>
+<td>SJTU</td>
+<td>VLM agent 调用一族专用 VLA 工具，每个工具有执行预算并回报进度</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.07892">RoboRouter</a> <code>arXiv:2603.07892</code></td>
+<td></td>
+<td>免训练的策略路由：根据当前状态从多个策略里挑一个</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.05185">Critic in the Loop</a> <code>arXiv:2603.05185</code></td>
+<td></td>
+<td>VLM 大脑 + VLA 小脑 + 轻量视觉 critic 的三系统</td>
+</tr>
+<tr>
+<td>2026-01</td>
+<td><a href="https://interestingengineering.com/ai-robotics/figure-helix02-upgrades-humanoid-robot-control">Helix 02 (Figure)</a></td>
+<td>Figure</td>
+<td>新增 System 0（1kHz 学习式全身控制器，替代约 10.9 万行 C++），一个网络控制行走、操作与平衡；连续 61 个动作完成洗碗机任务</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.01106">Robix</a> <code>arXiv:2509.01106</code></td>
+<td>ByteDance Seed</td>
+<td>统一机器人交互、推理与任务规划的高层模型</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.17561">VLA-OS</a> <code>arXiv:2506.17561</code></td>
+<td></td>
+<td>对比不同规划表示：低层策略对视觉计划比对语言计划更"听话"</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td>★ <a href="https://arxiv.org/abs/2502.19417">Hi Robot</a> <code>arXiv:2502.19417</code></td>
+<td>Physical Intelligence</td>
+<td>VLM 约每秒一次（或用户插话时）生成语言子任务交给 VLA，支持开放式指令与纠正</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td><a href="https://www.figure.ai/news/helix">Helix (Figure)</a></td>
+<td>Figure</td>
+<td>System 2（7–9Hz VLM）+ System 1（200Hz 视觉运动策略）控制人形上半身；发布前 Figure 宣布结束与 OpenAI 的合作</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.05485">HAMSTER</a> <code>arXiv:2502.05485</code></td>
+<td>NVIDIA/UW</td>
+<td>VLM 预测 2D 路径作为中间表示，交给 3D 低层策略</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.08001">RoboDual</a> <code>arXiv:2410.08001</code></td>
+<td></td>
+<td>通用 VLA + 专用扩散策略组成的双系统</td>
+</tr>
+</tbody>
+</table>
+<h3>Harness/工具/MCP/记忆（35）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.04929">RobotUse</a> <code>arXiv:2610.04929</code></td>
+<td>Seoul National Univ.</td>
+<td>agent 在图像上选目标与位姿，后端负责几何、规划与控制；子 agent 管细节，持续更新 playbook。RoboLab 45%（比 CaP-X 高 6.7pp）</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.33378">Recursive Harness Distillation</a> <code>arXiv:2609.33378</code></td>
+<td>Seoul National Univ.</td>
+<td>强 agent 把干预经验蒸馏成 playbook，交给廉价 agent 指挥冻结 VLA；真机成功率 37.3%→64.0%</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.29389">Robo-Harness K1</a> <code>arXiv:2609.29389</code></td>
+<td></td>
+<td>把感知包装成工具（标定深度、持久视觉锚点、抓取假设），供 agent 查询</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.15976">MessyMem</a> <code>arXiv:2609.15976</code></td>
+<td>Stanford/CMU 等</td>
+<td>"做中学"记忆：每次物理交互后由 VLM 记录结果（如没抓住、抽屉锁着），更新对应物体条目</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.11225">Harness Robotic OS</a> <code>arXiv:2609.11225</code></td>
+<td></td>
+<td>四足闭环巡检的统一具身 agent 运行时</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.10522">Show-Harness</a> <code>arXiv:2609.10522</code></td>
+<td>NUS Show Lab</td>
+<td>离散语义动作单元 + 本体解释器：闭源 VLM 零样本控制，小开源 VLM 微调几个 GPU 小时即可</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.29896">EMERGE-Policy</a> <code>arXiv:2608.29896</code></td>
+<td></td>
+<td>主 agent + 角色子 agent（感知/监控/验证/记忆），图结构编排</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.22657">Physical Agentic AI</a> <code>arXiv:2608.22657</code></td>
+<td></td>
+<td>编排机器人"船员"：每个计划动作在执行前都对照能力、状态和流程约束做验证</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.16889">BATON</a> <code>arXiv:2608.16889</code></td>
+<td>USC</td>
+<td>在技能切换时检索"过渡记忆"，支撑长时程操作</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td>★ <a href="https://arxiv.org/abs/2608.03924">ETA / OpenETA</a> <code>arXiv:2608.03924</code></td>
+<td>Fudan</td>
+<td>Planner–Tool–Interface–World 循环，一次只调用一个工具；可以作为 Codex 的轻量插件（只暴露 observe/mark_point/move_to）</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td>★ <a href="https://eit-hai.github.io/thea">Thea</a> <code>arXiv:2608.11246</code></td>
+<td></td>
+<td>把编码 agent 的 harness 搬进物理世界，提出"场景图即上下文""评估即退出码"</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.16636">PhyAgentOS</a> <code>arXiv:2607.16636</code></td>
+<td>Sun Yat-sen Univ.</td>
+<td>以"会话"为调度单元的具身 agent 运行时，用 State-as-a-File 解耦认知与物理执行</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.11377">PHILIA</a> <code>arXiv:2607.11377</code></td>
+<td></td>
+<td>基于 OpenClaw 的长期多机器人助理：机器人网关抽象，长期记忆人与偏好</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.10350">ABot-AgentOS</a> <code>arXiv:2607.10350</code></td>
+<td>Alibaba AMAP</td>
+<td>通用机器人 Agent OS：场景规划、技能隔离执行、多级验证、多模态记忆、端云协同</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.04162">ACE</a> <code>arXiv:2607.04162</code></td>
+<td>Tsinghua</td>
+<td>零样本工作流推理的 agentic 操作控制</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.03449">HiMe</a> <code>arXiv:2607.03449</code></td>
+<td>Fudan</td>
+<td>层次化具身记忆，用于长时程 VLA 控制</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.01088">ROSA (serving)</a> <code>arXiv:2607.01088</code></td>
+<td>NVIDIA/Stanford</td>
+<td>机器人工厂中多台机器人共享 GPU 池的基础模型推理服务</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.23565">HoloAgent-0</a> <code>arXiv:2606.23565</code></td>
+<td></td>
+<td>带 3D 空间记忆的统一具身 agent 框架</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.18363">Guava</a> <code>arXiv:2606.18363</code></td>
+<td></td>
+<td>系统探索 harness 的设计空间，并把能力蒸馏进 4B 开源模型（不到 2K 条仿真轨迹）</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.26637">Embodied Tool Protocol</a> <code>arXiv:2605.26637</code></td>
+<td></td>
+<td>100+ 具身工具的注册/发现/调用标准与 EmbodiedToolBench；EB-ALFRED +31%，但执行类工具增益有限</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.13942">Goal2Skill</a> <code>arXiv:2604.13942</code></td>
+<td></td>
+<td>自适应规划 + 反思，面向长时程操作</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.13533">EEAgent</a> <code>arXiv:2604.13533</code></td>
+<td></td>
+<td>长短期反思与优化的可进化具身 agent</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.07395">Physical Agentic Loop</a> <code>arXiv:2604.07395</code></td>
+<td>QUT</td>
+<td>语言引导抓取的执行状态监控，只在夹爪为空时才重试</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.26997">ROSClaw</a> <code>arXiv:2603.26997</code></td>
+<td></td>
+<td>把开源 agent 运行时 OpenClaw 接到 ROS 2：能力发现、执行前安全包络、审计日志；不同模型提出越界动作的比率最多相差 4.8×</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td>★ <a href="https://roboclaw-agibot.github.io/">RoboClaw</a> <code>arXiv:2603.11558</code></td>
+<td>AgiBot 等</td>
+<td>一个 VLM 控制器统一数据采集、策略学习与执行；"正向动作+逆向复位"对实现自主采集；长时程成功率 +25%，人力投入 −53.7%</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.20323">PhysMem</a> <code>arXiv:2602.20323</code></td>
+<td>UCSD</td>
+<td>扩展测试时记忆来做物理推理</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.18397">VLA-Perf</a> <code>arXiv:2602.18397</code></td>
+<td></td>
+<td>解析建模 VLA 在不同设备与网络上的推理延迟（π0 经 WiFi 用边缘服务器可能比机载更快）</td>
+</tr>
+<tr>
+<td>2026</td>
+<td><a href="https://agenticros.com/">AgenticROS</a></td>
+<td>AgenticROS</td>
+<td>提供 Claude Code / Claude 桌面端可用的 MCP 服务，以"命名能力 + 多步任务"而非原始 topic 控制机器人</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://arxiv.org/abs/2512.10394">RoboNeuron</a> <code>arXiv:2512.10394</code></td>
+<td></td>
+<td>MCP 与 ROS 2 之间的中间层：从 ROS 消息模式自动生成 agent 可调用的工具</td>
+</tr>
+<tr>
+<td>2025-11</td>
+<td><a href="https://arxiv.org/abs/2512.01031">VLASH</a> <code>arXiv:2512.01031</code></td>
+<td></td>
+<td>以"动作执行时刻的预测状态"为条件做异步推理，补偿 VLA 延迟</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.26742">Running VLAs at Real-time Speed</a> <code>arXiv:2510.26742</code></td>
+<td></td>
+<td>算子融合与 GPU kernel 优化，让 π0 在消费级 GPU 上约 27ms 一次推理</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td>★ <a href="https://github.com/robotmcp/ros-mcp-server">ROS MCP Server</a></td>
+<td>robotmcp（开源）</td>
+<td>只需在机器人端启动 rosbridge，Claude Code / Codex / Gemini CLI 等 MCP 客户端就能发现并调用 ROS 1/2 的 topic、service、action</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.07339">Real-Time Chunking (RTC)</a> <code>arXiv:2506.07339</code></td>
+<td>Physical Intelligence</td>
+<td>推理期间冻结已承诺的动作、补全下一块，让推理慢的流匹配策略也能实时执行</td>
+</tr>
+<tr>
+<td>2023-07</td>
+<td><a href="https://arxiv.org/abs/2307.00329">DoReMi</a> <code>arXiv:2307.00329</code></td>
+<td>Tsinghua 等</td>
+<td>LLM 为下一个技能写约束，VLM 定期检查，一旦违反就停下并重规划</td>
+</tr>
+<tr>
+<td>2023-06</td>
+<td><a href="https://arxiv.org/abs/2306.15724">REFLECT</a> <code>arXiv:2306.15724</code></td>
+<td>Columbia</td>
+<td>把机器人经历按传感器、事件、子目标三级汇总成文本，解释失败并给出纠正计划</td>
+</tr>
+</tbody>
+</table>
+<h3>自动化研发/自我改进（20）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.28589">AgenticRoboRL</a> <code>arXiv:2610.28589</code></td>
+<td></td>
+<td>对机器人规划器做 SFT + 多轮 RL 后训练：9B 模型 LIBERO-PRO 18.1%→71.0%，接近带外部记忆的 Codex（GPT-5.5）的 72.1%</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.12424">RoboRSI</a> <code>arXiv:2610.12424</code></td>
+<td>SJTU</td>
+<td>自顶向下的技能精炼：把每次修复归因到具体能力，验证后才复用</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.02204">RPG (Reconstruct, Practice, Go Real)</a> <code>arXiv:2610.02204</code></td>
+<td>UC Berkeley</td>
+<td>从离线数据识别能力，在仿真里构造练习任务，再上真机；全程不更新权重</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://robo-simex.github.io/">SimEX</a> <code>arXiv:2609.38982</code></td>
+<td>UT Austin/Amazon FAR/CMU</td>
+<td>仿真集成的机器人 autoresearch：先在仿真里练出工具箱，再用少量真机试次同时校正仿真器和工具箱（每任务约 10 分钟真机时间）</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.38905">EmbodiRSI</a> <code>arXiv:2609.38905</code></td>
+<td></td>
+<td>面向数据高效适配的递归自我改进</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.37810">Explore, Execute, Evolve</a> <code>arXiv:2609.37810</code></td>
+<td>Fudan</td>
+<td>技能获取与复用闭环（论文报告进步并非单调）</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://darwin-agent.github.io/HarnessPAI">HarnessPAI</a> <code>arXiv:2609.29166</code></td>
+<td></td>
+<td>以代码作为可执行、可进化的接口来组织动作原语</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td>★ <a href="https://arxiv.org/abs/2609.31760">123 轮自改进的教训</a> <code>arXiv:2609.31760</code></td>
+<td></td>
+<td>agent 能自己发现缺失能力，但改进不累加；瓶颈在感知的关系理解、技能链前端偏置和评估器本身</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.16590">Zetta</a> <code>arXiv:2608.16590</code></td>
+<td></td>
+<td>在线演化基于代码的运行时 critic 与恢复技能，基础策略保持冻结</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.17209">Teach and Grow</a> <code>arXiv:2608.17209</code></td>
+<td>SJTU</td>
+<td>以 agent 为中心的通用机器人学习架构</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.07555">AgenticRobotics</a> <code>arXiv:2608.07555</code></td>
+<td></td>
+<td>把 Claude Code/Codex 的"主 agent + 子 agent + 工具"架构移植到训练-评估-改进闭环，强调证据门控与崩溃恢复</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.14047">Zero2Skill</a> <code>arXiv:2607.14047</code></td>
+<td></td>
+<td>自主采集、训练、部署的闭环技能自举</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://graph-robots.github.io/gap">GaP</a> <code>arXiv:2607.05369</code></td>
+<td>UC Berkeley/NVIDIA 等</td>
+<td>多 agent 编码 harness 生成"图即策略"，在内部仿真里并行排练、优化，面向工业"变型自动化"</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td>★ <a href="https://arxiv.org/abs/2607.00272">ASPIRE</a> <code>arXiv:2607.00272</code></td>
+<td>NVIDIA 等</td>
+<td>闭环执行引擎 + 可复用技能库 + 进化搜索；用 Claude Opus 5.5 时 LIBERO-Pro 80 个任务平均 99%，并能在真机上解魔方</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.24884">InSight</a> <code>arXiv:2606.24884</code></td>
+<td></td>
+<td>VLM 找出 VLA 缺失的原语，经真机执行验证后再蒸馏回 VLA</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.22142">RoboLineage</a> <code>arXiv:2606.22142</code></td>
+<td></td>
+<td>agent 原生的数据生命周期治理，跨越多轮策略迭代</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td>★ <a href="https://arxiv.org/abs/2606.19980">ENPIRE</a> <code>arXiv:2606.19980</code></td>
+<td>NVIDIA/CMU/UC Berkeley</td>
+<td>给编码 agent 的真实世界策略改进 harness：自动复位、执行、验证，再由 agent 改训练代码；灵巧任务成功率 99%</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.19419">RATs (Playful Agentic Robot Learning)</a> <code>arXiv:2606.19419</code></td>
+<td>UC Berkeley</td>
+<td>编码 agent 在下游任务到来前"自己玩"：提出探索任务、执行、诊断失败、蒸馏技能</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.02623">Uni-Skill</a> <code>arXiv:2603.02623</code></td>
+<td>ICT, CAS</td>
+<td>自进化技能库，从视频派生的仓库里补全缺失技能</td>
+</tr>
+<tr>
+<td>2024-05</td>
+<td><a href="https://arxiv.org/abs/2405.15019">Agentic Skill Discovery</a> <code>arXiv:2405.15019</code></td>
+<td>Univ. Hamburg</td>
+<td>LLM 提出技能、生成奖励、用 RL 训练并验证，自主扩展技能库</td>
+</tr>
+</tbody>
+</table>
+<h3>前沿模型即策略（18）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.30051">Frontier Models on LIBERO-10</a> <code>arXiv:2610.30051</code></td>
+<td></td>
+<td>6 个前沿模型 × 3 档推理强度：GPT-6 Astra 44%，Gemini-4 Argon 43%；推理越强一般越好，但代价更高</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.28457">GPT-6-Astra Understands Touch</a> <code>arXiv:2610.28457</code></td>
+<td></td>
+<td>把触觉作为上下文，5 个 UniVTAC 任务平均 93.8%，Insert Hole 31%→99%</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.28259">GPT-6 as a Beginning</a> <code>arXiv:2610.28259</code></td>
+<td></td>
+<td>RoboDojo 26.92%、RoboTwin 2.0 76.0%，但几何约束新基准 LIBERO-GeoMotion 只有 11.1%</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td>★ <a href="https://arxiv.org/abs/2610.22471">Has GPT-6-Astra Achieved Embodied Intelligence?</a> <code>arXiv:2610.22471</code></td>
+<td>SenseNova</td>
+<td>12 个基准 + 8 种真机配置，结论：具身能力"基本具备"，实用的具身智能"尚未"</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td>★ <a href="https://developers.googleblog.com/gemini-4-argon-for-robotics/">Gemini 4 Argon for Robotics</a></td>
+<td>Google DeepMind</td>
+<td>ERQA 87%；能从视频/草图生成 MuJoCo 孪生与控制代码，生成的仿真数据把真机成功率从 56% 提到 75%</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td><a href="https://github.com/zjwzcx/Awesome-Astra-Embodied-AI">Awesome-Astra-Embodied-AI</a></td>
+<td>社区</td>
+<td>GPT-6 Astra 具身/机器人用例汇总：零样本控制、调用 VLA、real2sim、自建 RL 环境，约 44 个案例</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td><a href="https://research.nvidia.com/labs/srl/projects/astranomy/">Astranomy</a></td>
+<td>NVIDIA SRL</td>
+<td>在 RoboLab-120 上比较 Astra 的三种角色：直接策略、Codex 中的 agentic 策略（74.8%）、编排基础模型的监督者，同时统计延迟与 token 成本</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.39507">LIBERO-Agent</a> <code>arXiv:2609.39507</code></td>
+<td></td>
+<td>agent 原生的操控基准：自己挑观测、自己用工具处理、发原生动作命令；GPT-6 Astra 综合最强</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td>★ <a href="https://arxiv.org/abs/2609.38537">GPT-6 Astra as Embodied Policies</a> <code>arXiv:2609.38537</code></td>
+<td>Galbot</td>
+<td>六个领域系统评测：导航强（RxR 92%），与 π0.5 混合控制 RoboDojo 48%；灵巧在手操作与步态弱；30 秒步态需 250 次调用、每次约 40 秒</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://mosi-ai.github.io/RoboICL-GPT6-Astra.github.io/">RoboICL</a> <code>arXiv:2609.34261</code></td>
+<td></td>
+<td>冻结的 GPT-6 Astra + 示范上下文 + 有界的锚定交互记忆，做具身上下文学习</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://the-decoder.com/researchers-plug-gpt-6-astra-directly-into-a-robot-and-let-it-clean-up-an-unfamiliar-kitchen/">HomeBody</a></td>
+<td>Stanford/Caltech</td>
+<td>GPT-6 Astra 不经 VLA，直接调用 5 个可组合技能，驱动 Unitree G1 在陌生厨房整理、取物（先建 Isaac Sim 数字孪生）；未公布成功率</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.24170">An Unexpected Robot Policy</a> <code>arXiv:2609.24170</code></td>
+<td></td>
+<td>RoboDojo 42 个任务上，GPT-6 Astra 平均成功率 22.48%，超过全部 40 个公开策略；GPT-5.5 只有 0.88%</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.19138">GPT-Policy</a> <code>arXiv:2609.19138</code></td>
+<td></td>
+<td>上下文编译器 + VLM 提议工具动作 + 约束控制器验证执行；人类视频示范即使没有动作标签也有帮助</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://www.cnbc.com/2026/09/03/open-ai-astra-gpt-6-cyber.html">GPT-6 Astra 发布</a></td>
+<td>OpenAI</td>
+<td>官方主打电脑操作；发布后社区大量把它直接当机器人策略测试（可直接输出数值动作）</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://www.bloomberg.com/news/articles/2026-08-27/anthropic-tests-new-way-for-claude-to-work-with-robots-and-scientific-lab-tools">Model Hardware Standard (MHS)</a></td>
+<td>Anthropic</td>
+<td>研究预览：用简单的读/写命令 + 安全参数参考文件，让 agent 经 MCP/CLI/API 控制机械臂、显微镜等设备，对其他模型同样开放</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td>★ <a href="https://www.anthropic.com/research/claude-plays-robotics">Claude plays robotics</a></td>
+<td>Anthropic</td>
+<td>5 家厂商的 12 个模型，跨扭矩直控、写控制器、训 RL、监督 VLA 四种接口：越高层越好用；实时直控约需 83Hz，而推理只有 0.2–0.4Hz</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td>★ <a href="https://www.anthropic.com/news/project-fetch-phase-two">Project Fetch 第二阶段</a></td>
+<td>Anthropic</td>
+<td>Claude Opus 4.7 在 Claude Code 中独立完成：4 项共同任务用时 9 分 35 秒，对照最快人类团队 181 分钟（约 19×）；但仍没能完成自主"取回"球</td>
+</tr>
+<tr>
+<td>2025-11</td>
+<td>★ <a href="https://www.anthropic.com/research/project-fetch-robot-dog">Project Fetch</a></td>
+<td>Anthropic</td>
+<td>两组零机器人经验的研究员给 Unitree Go2 编程捡球：用 Claude 的一组完成 7/8 项任务（对照组 6/8），共同任务用时约减半</td>
+</tr>
+</tbody>
+</table>
+<h3>世界模型/WAM（11）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.29964">World Action Agent</a> <code>arXiv:2609.29964</code></td>
+<td></td>
+<td>VLM 在执行前先做"世界-动作预演"</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.05588">GE-Act 2.0</a> <code>arXiv:2609.05588</code></td>
+<td>AgiBot</td>
+<td>从零预训练并扩展的世界-动作模型（Genie Envisioner Act 2.0）</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.01281">EmbodiedSkills</a> <code>arXiv:2609.01281</code></td>
+<td></td>
+<td>用 WAM 预测动作后果，再从冻结 VLA 的候选动作里挑</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.09516">HarnessWAM</a> <code>arXiv:2608.09516</code></td>
+<td></td>
+<td>给 WAM 配一个 VLM 任务管理器：维护任务图和证据化的场景信念，由事件触发审议</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://www.prnewswire.com/news-releases/dyna-robotics-unveils-dyna-2-world-action-model-demonstrating-first-true-scaling-law-in-robotics-powered-entirely-by-human-data-302847114.html">DYNA-2</a></td>
+<td>Dyna Robotics</td>
+<td>用超过 100 万小时第一人称人类视频训练的 WAM，宣称出现人到机器人的扩展规律</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://nvidianews.nvidia.com/news/nvidia-and-global-robotics-leaders-take-physical-ai-to-the-real-world">Cosmos 3</a></td>
+<td>NVIDIA</td>
+<td>GTC 2026 发布：把世界生成、视觉推理与动作仿真统一起来的世界基础模型</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td>★ <a href="https://arxiv.org/abs/2602.15922">DreamZero</a> <code>arXiv:2602.15922</code></td>
+<td>NVIDIA GEAR</td>
+<td>14B 世界-动作模型，联合预测视频与动作，7Hz 闭环，泛化比 VLA 高 2 倍以上（GR00T N2 的基础）</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.09765">NavDreamer</a> <code>arXiv:2602.09765</code></td>
+<td></td>
+<td>视频生成模型直接作零样本 3D 导航器</td>
+</tr>
+<tr>
+<td>2026-01</td>
+<td><a href="https://www.1x.tech/ai">1X World Model</a></td>
+<td>1X</td>
+<td>官方称其为 NEO 的"认知核心"：视频预测想象未来，再用逆动力学模型转成动作</td>
+</tr>
+<tr>
+<td>2025-08</td>
+<td><a href="https://deepmind.google/models/">Genie 3</a></td>
+<td>Google DeepMind</td>
+<td>实时可交互的世界模型（720p/24fps），用于训练具身 agent；2026-01 以 Project Genie 形式开放</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.09985">V-JEPA 2</a> <code>arXiv:2506.09985</code></td>
+<td>Meta</td>
+<td>自监督视频世界模型；动作条件版 V-JEPA 2-AC 能零样本规划抓放</td>
+</tr>
+</tbody>
+</table>
+<h3>基准评测（20）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10</td>
+<td><a href="https://arxiv.org/abs/2610.27039">Embodied Playground</a> <code>arXiv:2610.27039</code></td>
+<td></td>
+<td>410 个长时程 agentic 机器人环境，考察物理、策略与空间推理</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td>★ <a href="https://arxiv.org/abs/2610.10409">RobotWorld</a> <code>arXiv:2610.10409</code></td>
+<td></td>
+<td>84 个任务覆盖操作、移动操作、步态、驾驶、飞行：GPT-6 Astra 19.0%，Claude Opus 5.5 15.5%，63 个任务所有模型都没完成</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td><a href="https://declare-lab.github.io/RoboQuest/">RoboQuest</a> <code>arXiv:2610.10388</code></td>
+<td>NTU</td>
+<td>关键信息开局缺失，需要主动搜索、检查、试验才能拿到；最好的 agent 只有 23%，微调后的 π0.5 几乎为 0</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.24124">ActiveArena</a> <code>arXiv:2609.24124</code></td>
+<td></td>
+<td>操作中的主动感知基准</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.05178">LIBERO-RECOVER</a> <code>arXiv:2609.05178</code></td>
+<td></td>
+<td>不只看成功率，还评测失败后的恢复能力</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.22014">Aerial MLLM Mission Eval</a> <code>arXiv:2607.22014</code></td>
+<td></td>
+<td>空中 MLLM agent 的零样本任务级评测</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://robodojo-benchmark.com/">RoboDojo</a> <code>arXiv:2607.04434</code></td>
+<td></td>
+<td>仿真 + 真机统一基准，带公开排行榜</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.20774">VLA-REPLICA</a> <code>arXiv:2605.20774</code></td>
+<td></td>
+<td>低成本、可复现的真机 VLA 基准（SO101 机械臂）</td>
+</tr>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.10921">RoboMemArena</a> <code>arXiv:2605.10921</code></td>
+<td></td>
+<td>机器人记忆基准</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://arxiv.org/abs/2512.18028">Embodied4C</a> <code>arXiv:2512.18028</code></td>
+<td></td>
+<td>具身视觉语言导航评测</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://behavior.stanford.edu/challenge/leaderboard.html">BEHAVIOR Challenge 2025 冠军方案</a> <code>arXiv:2512.06951</code></td>
+<td></td>
+<td>基于 π0.5 做任务适配，50 个家务任务 Q-score 0.26（NeurIPS 2025 挑战赛第一）</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td>★ <a href="https://andonlabs.com/evals/butter-bench">Butter-Bench</a> <code>arXiv:2510.21860</code></td>
+<td>Andon Labs</td>
+<td>LLM 当机器人"大脑"（TurtleBot 4，ReAct 循环）：最好的模型 40%，人类 95%；多步空间规划与社交理解最弱</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.08173">NavSpace</a> <code>arXiv:2510.08173</code></td>
+<td>PKU 等</td>
+<td>导航 agent 对空间智能指令的跟随能力（ICRA'26）</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.03827">LIBERO-PRO</a> <code>arXiv:2510.03827</code></td>
+<td></td>
+<td>扰动版 LIBERO，暴露 VLA 的记忆化问题，也是 2026 年 agent 方法的常用擂台</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://robo-arena.github.io/">RoboArena</a> <code>arXiv:2506.18123</code></td>
+<td>多机构合作</td>
+<td>分布式真机双盲成对评测（DROID 平台）；2026-04 榜单 DreamZero 1750 Elo，π0.5 1622</td>
+</tr>
+<tr>
+<td>2025-02</td>
+<td>★ <a href="https://arxiv.org/abs/2502.09560">EmbodiedBench</a> <code>arXiv:2502.09560</code></td>
+<td>UIUC 等</td>
+<td>MLLM 具身 agent 基准：高层任务 Claude-3.5 最好（约 64–68%），低层操作最好的 GPT-4o 也只有 28.9%（ICML'25）</td>
+</tr>
+<tr>
+<td>2025-01</td>
+<td><a href="https://arxiv.org/abs/2501.11858">EmbodiedEval</a> <code>arXiv:2501.11858</code></td>
+<td>Tsinghua</td>
+<td>MLLM 作为具身 agent 的交互式评测</td>
+</tr>
+<tr>
+<td>2024-12</td>
+<td><a href="https://arxiv.org/abs/2412.18194">VLABench</a> <code>arXiv:2412.18194</code></td>
+<td>Fudan</td>
+<td>需要长时程推理的语言条件操作基准</td>
+</tr>
+<tr>
+<td>2024-12</td>
+<td><a href="https://arxiv.org/abs/2412.14171">VSI-Bench (Thinking in Space)</a> <code>arXiv:2412.14171</code></td>
+<td>NYU</td>
+<td>评测 MLLM 的视觉空间智能：看、记、回忆空间</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td>★ <a href="https://arxiv.org/abs/2410.07166">Embodied Agent Interface</a> <code>arXiv:2410.07166</code></td>
+<td>Stanford</td>
+<td>把 LLM 具身决策拆成目标解释、子目标分解、动作序列、转移建模四个模块，细粒度评测（NeurIPS'24 D&amp;B）</td>
+</tr>
+</tbody>
+</table>
+<h3>安全（16）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-09</td>
+<td>★ <a href="https://arxiv.org/abs/2609.20822">SafeHarness</a> <code>arXiv:2609.20822</code></td>
+<td>USC</td>
+<td>编码 agent 多数情况下会撞上明令禁止触碰的障碍物（它"知道"却不优先）；加障碍感知的路径/接触 harness 修复</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.12932">ARC</a> <code>arXiv:2609.12932</code></td>
+<td></td>
+<td>面向已部署自主系统的三层治理架构</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.08444">SafeMem</a> <code>arXiv:2609.08444</code></td>
+<td></td>
+<td>用长期图记忆做安全任务规划，视野外物体也保留在场景图里</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.21928">GuardianBench</a> <code>arXiv:2608.21928</code></td>
+<td></td>
+<td>同一场景只换指令：良性指令与安全场景组合后才出现的潜在风险</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://arxiv.org/abs/2606.16788">SoK: FM 机器人的安全与隐私</a> <code>arXiv:2606.16788</code></td>
+<td></td>
+<td>从风险来源、传播路径到缓解措施位置的统一分析框架</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.05427">SafeGate</a> <code>arXiv:2604.05427</code></td>
+<td>Purdue</td>
+<td>参照 ISO 13482 的执行前安全闸门与任务安全契约</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.19983">CORE</a> <code>arXiv:2602.19983</code></td>
+<td>UPenn</td>
+<td>VLM 在线推理情境化的安全约束，再用控制屏障函数强制执行</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.13591">AgentRob</a> <code>arXiv:2602.13591</code></td>
+<td></td>
+<td>论坛里的 agent 通过 MCP 调度真实 Go2/G1，说明"被劫持的物理机器人"风险</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://arxiv.org/abs/2512.21220">RoboSafe</a> <code>arXiv:2512.21220</code></td>
+<td>Beihang</td>
+<td>基于可执行谓词安全逻辑的运行时防护</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://asimov-benchmark.github.io/v2">ASIMOV-2.0</a> <code>arXiv:2509.21651</code></td>
+<td>Google DeepMind</td>
+<td>物理危险感知与干预基准，分伤害、本体约束、视频风险三部分</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.14697">AgentSafe</a> <code>arXiv:2506.14697</code></td>
+<td></td>
+<td>具身 VLM agent 面对危险指令时的安全基准（CVPR'26）</td>
+</tr>
+<tr>
+<td>2025-03</td>
+<td><a href="https://arxiv.org/abs/2503.08663">ASIMOV (Robot Constitutions)</a> <code>arXiv:2503.08663</code></td>
+<td>Google DeepMind</td>
+<td>生成"机器人宪法"与语义安全基准</td>
+</tr>
+<tr>
+<td>2025-03</td>
+<td>★ <a href="https://arxiv.org/abs/2503.07885">RoboGuard</a> <code>arXiv:2503.07885</code></td>
+<td>UPenn</td>
+<td>由隔离模型生成情境化安全规范，再做时序逻辑模型检查；越狱成功率 92.3%→2.3%</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td>★ <a href="https://arxiv.org/abs/2410.13691">RoboPAIR</a> <code>arXiv:2410.13691</code></td>
+<td>UPenn</td>
+<td>首个越狱 LLM 控制机器人的算法：自驾 LLM、GPT 规划的地面机器人、商用四足全部被攻破</td>
+</tr>
+<tr>
+<td>2024-07</td>
+<td><a href="https://arxiv.org/abs/2407.20242">BadRobot</a> <code>arXiv:2407.20242</code></td>
+<td></td>
+<td>在物理世界中越狱具身 LLM agent</td>
+</tr>
+<tr>
+<td>2023-09</td>
+<td><a href="https://arxiv.org/abs/2309.09919">Safety Chip</a> <code>arXiv:2309.09919</code></td>
+<td>Brown</td>
+<td>把专家验证的 LTL 约束编译成自动机，执行前剪掉不安全动作</td>
+</tr>
+</tbody>
+</table>
+<h3>导航（10）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.15195">HarnessVLN</a> <code>arXiv:2609.15195</code></td>
+<td>AgiBot</td>
+<td>免训练的统一导航 agent harness</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.30396">NavMCP</a> <code>arXiv:2608.30396</code></td>
+<td>SJTU</td>
+<td>VLM agent 决定找什么、去哪找、何时停，导航基础模型负责执行；长时程探索 78.3%</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.10383">ABot-N1</a> <code>arXiv:2607.10383</code></td>
+<td>Alibaba AMAP</td>
+<td>用慢-快架构解耦认知与控制的通用 VLN 基础模型</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.11598">ABot-N0</a> <code>arXiv:2602.11598</code></td>
+<td>Alibaba AMAP</td>
+<td>统一 5 类导航任务的 VLA（LLM 认知大脑 + 流匹配动作专家）</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://arxiv.org/abs/2512.08186">DualVLN</a> <code>arXiv:2512.08186</code></td>
+<td>Shanghai AI Lab</td>
+<td>"慢推理、快运动"的双系统导航基础模型</td>
+</tr>
+<tr>
+<td>2024-12</td>
+<td><a href="https://arxiv.org/abs/2412.06224">Uni-NaVid</a> <code>arXiv:2412.06224</code></td>
+<td>PKU</td>
+<td>基于视频的 VLA，统一多种导航任务</td>
+</tr>
+<tr>
+<td>2024-12</td>
+<td><a href="https://arxiv.org/abs/2412.04453">NaVILA</a> <code>arXiv:2412.04453</code></td>
+<td>UCSD/NVIDIA</td>
+<td>腿式机器人导航 VLA：VLM 输出语言化动作，交给步态策略执行</td>
+</tr>
+<tr>
+<td>2023-05</td>
+<td><a href="https://arxiv.org/abs/2305.16986">NavGPT</a> <code>arXiv:2305.16986</code></td>
+<td>Adelaide</td>
+<td>用 LLM 的显式推理做视觉语言导航</td>
+</tr>
+<tr>
+<td>2022-10</td>
+<td><a href="https://arxiv.org/abs/2210.05714">VLMaps</a> <code>arXiv:2210.05714</code></td>
+<td>Freiburg/Google</td>
+<td>视觉语言地图，支持开放词汇的空间指令</td>
+</tr>
+<tr>
+<td>2022-07</td>
+<td><a href="https://arxiv.org/abs/2207.04429">LM-Nav</a> <code>arXiv:2207.04429</code></td>
+<td>UC Berkeley/Google</td>
+<td>LLM + CLIP + 视觉导航模型零样本组合</td>
+</tr>
+</tbody>
+</table>
+<h3>多机器人/多智能体（11）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-09</td>
+<td><a href="https://arxiv.org/abs/2609.18520">AeroWeaver</a> <code>arXiv:2609.18520</code></td>
+<td></td>
+<td>给空中集群编织技能、分配角色的具身 agent harness</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://arxiv.org/abs/2608.15549">MistyPilot</a> <code>arXiv:2608.15549</code></td>
+<td></td>
+<td>多 agent LLM 技能编排，控制社交机器人</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://arxiv.org/abs/2604.11975">M2HRI</a> <code>arXiv:2604.11975</code></td>
+<td></td>
+<td>LLM 驱动的多模态多 agent 个性化人机交互</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.02669">IMR-LLM</a> <code>arXiv:2603.02669</code></td>
+<td></td>
+<td>工业多机器人任务规划与程序生成</td>
+</tr>
+<tr>
+<td>2026-01</td>
+<td><a href="https://arxiv.org/abs/2601.11063">EmboTeam</a> <code>arXiv:2601.11063</code></td>
+<td></td>
+<td>LLM 推理经 PDDL 落地成反应式行为树，用于多机协作</td>
+</tr>
+<tr>
+<td>2025-11</td>
+<td><a href="https://arxiv.org/abs/2512.00797">Monolithic→Multi-Agent</a> <code>arXiv:2512.00797</code></td>
+<td></td>
+<td>把单体基础模型改造成具身多 agent 架构，用于人机协作</td>
+</tr>
+<tr>
+<td>2025-05</td>
+<td><a href="https://arxiv.org/abs/2505.03673">RoboOS</a> <code>arXiv:2505.03673</code></td>
+<td>BAAI</td>
+<td>跨本体、多 agent 协作的分层具身框架</td>
+</tr>
+<tr>
+<td>2024-10</td>
+<td><a href="https://arxiv.org/abs/2410.22662">EMOS</a> <code>arXiv:2410.22662</code></td>
+<td></td>
+<td>本体感知的异构多机器人 OS：从 URDF 和正运动学自动生成"机器人简历"（ICLR'25）</td>
+</tr>
+<tr>
+<td>2023-09</td>
+<td><a href="https://arxiv.org/abs/2309.10062">SMART-LLM</a> <code>arXiv:2309.10062</code></td>
+<td>Purdue</td>
+<td>LLM 完成多机器人任务分解、联盟形成与分配</td>
+</tr>
+<tr>
+<td>2023-07</td>
+<td><a href="https://arxiv.org/abs/2307.04738">RoCo</a> <code>arXiv:2307.04738</code></td>
+<td>Columbia</td>
+<td>多个机械臂通过 LLM 对话协商计划，执行前做可行性检查</td>
+</tr>
+<tr>
+<td>2023-07</td>
+<td><a href="https://arxiv.org/abs/2307.02485">CoELA</a> <code>arXiv:2307.02485</code></td>
+<td>UMass 等</td>
+<td>模块化的合作具身 LLM agent，含通信模块</td>
+</tr>
+</tbody>
+</table>
+<h3>人形（7）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.27180">HumanCLAW</a> <code>arXiv:2607.27180</code></td>
+<td></td>
+<td>把 VLM 的动作决策和底层全身运动解耦的评测框架</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.10675">Cybo-Waiter</a> <code>arXiv:2603.10675</code></td>
+<td></td>
+<td>人形全身移动操作的物理 agent 框架</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://arxiv.org/abs/2512.11047">WholeBodyVLA</a> <code>arXiv:2512.11047</code></td>
+<td></td>
+<td>统一潜在 VLA 的全身移动操作（ICLR'26）</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.22827">Humanoid VL Planning</a> <code>arXiv:2506.22827</code></td>
+<td></td>
+<td>RL 全身跟踪 + 模仿技能 + VLM 规划监控三层；Unitree G1 上成功率 72.5%</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.13751">LeVERB</a> <code>arXiv:2506.13751</code></td>
+<td>UC Berkeley 等</td>
+<td>用潜在视觉-语言指令驱动人形全身控制</td>
+</tr>
+<tr>
+<td>2025-04</td>
+<td><a href="https://arxiv.org/abs/2504.21738">LangWBC</a> <code>arXiv:2504.21738</code></td>
+<td>UC Berkeley</td>
+<td>语言指令端到端控制人形全身</td>
+</tr>
+<tr>
+<td>2025-03</td>
+<td><a href="https://arxiv.org/abs/2503.12533">Being-0</a> <code>arXiv:2503.12533</code></td>
+<td>PKU/BeingBeyond</td>
+<td>基础模型做高层认知，经 Connector VLM 衔接模块化技能的人形 agent</td>
+</tr>
+</tbody>
+</table>
+<h3>虚拟世界智能体（2）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2025-12</td>
+<td><a href="https://arxiv.org/abs/2512.04797">SIMA 2</a> <code>arXiv:2512.04797</code></td>
+<td>Google DeepMind</td>
+<td>Gemini 驱动的 3D 虚拟世界通用 agent，能在 Genie 3 生成的新世界里自我改进</td>
+</tr>
+<tr>
+<td>2023-05</td>
+<td>★ <a href="https://arxiv.org/abs/2305.16291">Voyager</a> <code>arXiv:2305.16291</code></td>
+<td>NVIDIA/Caltech</td>
+<td>Minecraft 里由 GPT-4 驱动的终身学习 agent：自动课程 + 代码技能库 + 自我验证，后来"技能库"范式的源头</td>
+</tr>
+</tbody>
+</table>
+<h3>自动驾驶（4）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.12624">MindVLA-U1</a> <code>arXiv:2605.12624</code></td>
+<td></td>
+<td>统一流式架构的驾驶 VLA</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://github.com/NVlabs/alpamayo1.5">Alpamayo 1.5</a></td>
+<td>NVIDIA</td>
+<td>开放的 10B 推理型驾驶 VLA（Cosmos-Reason2 骨干 + 扩散轨迹解码），支持语言导航指引</td>
+</tr>
+<tr>
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.08440">SteerVLA</a> <code>arXiv:2602.08440</code></td>
+<td></td>
+<td>在长尾驾驶场景中操控 VLA</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.24044">VLA4AD 综述</a> <code>arXiv:2506.24044</code></td>
+<td></td>
+<td>自动驾驶 VLA 综述</td>
+</tr>
+</tbody>
+</table>
+<h3>综述/资源（23）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10</td>
+<td>★ <a href="https://arxiv.org/abs/2610.20442">Towards Agentic Robots</a> <code>arXiv:2610.20442</code></td>
+<td>CUHK MMLab/Fudan/Tsinghua 等</td>
+<td>Model/Data/Environment/Harness 四大域、17 类，目前对 agentic robots 最系统的综述（2026-10）</td>
+</tr>
+<tr>
+<td>2026-09</td>
+<td>★ <a href="https://engrxiv.org/preprint/view/8364">Survey on Multimodal Embodied Agents</a></td>
+<td>NUS Show Lab</td>
+<td>从 computer-use 到 robot-use 的统一能力视角，提出 PAPAV 框架（感知-预判-规划-行动-验证）</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td>★ <a href="https://arxiv.org/abs/2608.01851">Weights or Skills?</a> <code>arXiv:2608.01851</code></td>
+<td></td>
+<td>"把能力烤进权重（VLA）"与"agent 自己写技能（代码）"两条路线；按自我改进程度梳理代码即策略</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://arxiv.org/abs/2603.06749">Industrial RFM Survey</a> <code>arXiv:2603.06749</code></td>
+<td></td>
+<td>机器人基础模型在工业中的可用性综述与评估框架</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.10903">Unified Robot Manipulation Survey</a> <code>arXiv:2510.10903</code></td>
+<td></td>
+<td>机器人操作的统一视角综述</td>
+</tr>
+<tr>
+<td>2025-10</td>
+<td><a href="https://arxiv.org/abs/2510.07077">VLA Review toward Real-World</a> <code>arXiv:2510.07077</code></td>
+<td></td>
+<td>面向真实世界应用的 VLA 综述</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.20021">Embodied AI: From LLMs to World Models</a> <code>arXiv:2509.20021</code></td>
+<td></td>
+<td>从 LLM 到世界模型的具身 AI 综述</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://arxiv.org/abs/2509.19012">Pure VLA Survey</a> <code>arXiv:2509.19012</code></td>
+<td></td>
+<td>按自回归、扩散、强化、混合等路线分类的 VLA 综述</td>
+</tr>
+<tr>
+<td>2025-08</td>
+<td><a href="https://arxiv.org/abs/2508.13073">Large VLM-based VLA Survey</a> <code>arXiv:2508.13073</code></td>
+<td></td>
+<td>基于大 VLM 的操作 VLA 综述</td>
+</tr>
+<tr>
+<td>2025-08</td>
+<td><a href="https://arxiv.org/abs/2508.05294">Towards Embodied Agentic AI</a> <code>arXiv:2508.05294</code></td>
+<td></td>
+<td>LLM/VLM 驱动的机器人自主与交互：分类与集成视角</td>
+</tr>
+<tr>
+<td>2025-07</td>
+<td><a href="https://arxiv.org/abs/2507.10087">FM-driven Robotics Review</a> <code>arXiv:2507.10087</code></td>
+<td></td>
+<td>基础模型驱动的机器人综述</td>
+</tr>
+<tr>
+<td>2025-07</td>
+<td><a href="https://arxiv.org/abs/2507.01925">VLA: Action Tokenization Perspective</a> <code>arXiv:2507.01925</code></td>
+<td>PKU</td>
+<td>从"动作 token 化"角度看 VLA</td>
+</tr>
+<tr>
+<td>2025-06</td>
+<td><a href="https://arxiv.org/abs/2506.22355">Embodied AI Agents: Modeling the World</a> <code>arXiv:2506.22355</code></td>
+<td>Meta</td>
+<td>Meta 的具身 agent 观点文章：以世界模型为核心</td>
+</tr>
+<tr>
+<td>2025-05</td>
+<td><a href="https://arxiv.org/abs/2505.20503">FMs for Mobile Service Robots</a> <code>arXiv:2505.20503</code></td>
+<td>Univ. Toronto</td>
+<td>移动服务机器人上的基础模型系统性综述</td>
+</tr>
+<tr>
+<td>2025-05</td>
+<td><a href="https://arxiv.org/abs/2505.05108">Multi-agent Embodied AI</a> <code>arXiv:2505.05108</code></td>
+<td></td>
+<td>多智能体具身 AI 的进展与方向</td>
+</tr>
+<tr>
+<td>2025-05</td>
+<td><a href="https://arxiv.org/abs/2505.04769">VLA: Concepts, Progress, Applications</a> <code>arXiv:2505.04769</code></td>
+<td></td>
+<td>VLA 的概念、进展、应用与挑战</td>
+</tr>
+<tr>
+<td>2024-07</td>
+<td><a href="https://arxiv.org/abs/2407.06886">Aligning Cyber Space with Physical World</a> <code>arXiv:2407.06886</code></td>
+<td>Sun Yat-sen Univ.</td>
+<td>具身 AI 全景综述</td>
+</tr>
+<tr>
+<td>2024-05</td>
+<td><a href="https://arxiv.org/abs/2405.14093">Survey on VLA for Embodied AI</a> <code>arXiv:2405.14093</code></td>
+<td>CUHK 等</td>
+<td>较早的 VLA 综述，持续更新（2026-05 到 v8）</td>
+</tr>
+<tr>
+<td>2024-02</td>
+<td><a href="https://arxiv.org/abs/2402.05741">Real-World Robot Applications of FMs</a> <code>arXiv:2402.05741</code></td>
+<td>Univ. Tokyo</td>
+<td>基础模型在真实机器人上的应用综述</td>
+</tr>
+<tr>
+<td>2024-02</td>
+<td><a href="https://arxiv.org/abs/2402.02385">Robotics with FMs toward Embodied AI</a> <code>arXiv:2402.02385</code></td>
+<td></td>
+<td>基础模型机器人走向具身 AI 的综述</td>
+</tr>
+<tr>
+<td>2023-12</td>
+<td><a href="https://arxiv.org/abs/2312.08782">Toward General-Purpose Robots via FMs</a> <code>arXiv:2312.08782</code></td>
+<td>CMU 等</td>
+<td>基础模型通往通用机器人：综述与元分析</td>
+</tr>
+<tr>
+<td>2023-12</td>
+<td><a href="https://arxiv.org/abs/2312.07843">Foundation Models in Robotics</a> <code>arXiv:2312.07843</code></td>
+<td>Stanford 等</td>
+<td>应用、挑战与未来</td>
+</tr>
+<tr>
+<td>2023-11</td>
+<td><a href="https://arxiv.org/abs/2311.07226">LLMs for Robotics: A Survey</a> <code>arXiv:2311.07226</code></td>
+<td></td>
+<td>LLM 用于机器人的综述</td>
+</tr>
+</tbody>
+</table>
+<h3>产业发布（13）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>工作</th>
+<th>机构</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10</td>
+<td><a href="https://www.pi.website/blog/api-beta">Pi API beta</a></td>
+<td>Physical Intelligence</td>
+<td>上传机器人数据、在托管算力上微调 π 模型、云端推理接入自己的机器人</td>
+</tr>
+<tr>
+<td>2026-10</td>
+<td><a href="https://community.openai.com/t/decisions-api-is-now-available-in-public-beta/1403877">OpenAI Decisions API</a></td>
+<td>OpenAI</td>
+<td>让模型（gpt-6-luna）只回答有限选项的判断/选择/打分，速度快且有概率输出，可作 harness 里的快速决策层</td>
+</tr>
+<tr>
+<td>2026-08</td>
+<td><a href="https://www.therobotreport.com/skild-ai-unveils-s1-flagship-robot-foundation-model/">Skild S1</a></td>
+<td>Skild AI</td>
+<td>看一段任务视频即可学会最长 10 分钟的任务并实时执行</td>
+</tr>
+<tr>
+<td>2026-07</td>
+<td>★ <a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-2/">Gemini Robotics 2 / ER 2</a></td>
+<td>Google DeepMind</td>
+<td>ER 2：实时视频理解、任务进度跟踪、Live API 流式低延迟编排、工具调用、多机器人协作；同系列还有 VLA 与 On-Device 2</td>
+</tr>
+<tr>
+<td>2026-06</td>
+<td><a href="https://theaiinsider.tech/2026/06/02/sam-altman-says-openai-now-has-a-dedicated-robotics-initiative-hiring-engineers/">OpenAI Robotics</a></td>
+<td>OpenAI</td>
+<td>独立机器人部门（Aditya Ramesh 领导，源自 world simulation 研究），10 月确认自研人形，计划 2027 年公开演示</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://deepmind.google/blog/gemini-robotics-er-1-6/">Gemini Robotics-ER 1.6</a></td>
+<td>Google DeepMind</td>
+<td>空间与多视角推理增强，新增仪表读数（与 Boston Dynamics 合作），官方称"迄今最安全的机器人模型"</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://www.therobotreport.com/agibot-releases-go-2-foundation-model-embodied-ai/">AgiBot GO-2</a></td>
+<td>AgiBot</td>
+<td>一个系统里统一推理与执行：先生成动作意图序列作宏观计划，异步双系统分离推理与控制</td>
+</tr>
+<tr>
+<td>2026-04</td>
+<td><a href="https://www.therobotreport.com/generalist-introduces-gen-1-general-purpose-model-for-physical-ai/">GEN-1</a></td>
+<td>Generalist AI</td>
+<td>约 50 万小时数据从零训练；所选任务平均成功率 99%（GEN-0 为 64%），每项任务只需约 1 小时机器人数据</td>
+</tr>
+<tr>
+<td>2026-03</td>
+<td><a href="https://nvidianews.nvidia.com/news/nvidia-and-global-robotics-leaders-take-physical-ai-to-the-real-world">GR00T N1.7 / N2 预览</a></td>
+<td>NVIDIA</td>
+<td>GTC 2026：N1.7 提供商业授权早期访问；N2 预览，基于 DreamZero 的"世界-动作模型"架构</td>
+</tr>
+<tr>
+<td>2026-01</td>
+<td><a href="https://www.therobotreport.com/microsoft-research-reveals-rho-alpha-vision-language-action-model-for-robots/">Rho-alpha (ρα)</a></td>
+<td>Microsoft Research</td>
+<td>基于 Phi 系列的首个机器人模型，"VLA+"：加入触觉与基于人类反馈的持续学习</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td><a href="https://research.nvidia.com/labs/gear/gr00t-n1_6/">GR00T N1.6</a></td>
+<td>NVIDIA</td>
+<td>3B 开源 VLA：Cosmos-Reason-2B 骨干 + 32 层 DiT 动作头，支持人形边走边操作（发布时间各来源说法不一，2025-10 至 2026-01）</td>
+</tr>
+<tr>
+<td>2025-11</td>
+<td><a href="https://eu.36kr.com/en/p/3551715251804547">GEN-0</a></td>
+<td>Generalist AI</td>
+<td>用 27 万小时真实操作数据训练，宣称在 7B 以上出现机器人扩展规律</td>
+</tr>
+<tr>
+<td>2025-09</td>
+<td><a href="https://deepmind.google/blog/gemini-robotics-15-brings-ai-agents-into-the-physical-world/">Gemini Robotics 1.5 发布</a></td>
+<td>Google DeepMind</td>
+<td>官方博客："把 AI agent 带进物理世界"，ER 1.5 编排、VLA 执行，ER 1.5 通过 API 开放</td>
+</tr>
+</tbody>
+</table>
+</main></body></html>
