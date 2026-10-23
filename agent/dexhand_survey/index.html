@@ -1,0 +1,1074 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>灵巧手算法：给运控研究者的全景导读（截至 2026-10）</title>
+<meta name="description" content="灵巧手算法调研导读，面向运动控制研究者：A 部分为不沾 agent 的硬件、手内操作 RL 与 sim2real、抓取、触觉、接触 MPC、遥操作、人类演示、灵巧 VLA、人形全身灵巧；B 部分为 LLM/VLM/编码 agent 与灵巧手的结合。">
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --surface-2: #f0efec;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.10);
+  --accent: #2a78d6;
+  --accent-ink: #1c5cab;
+  --accent-wash: rgba(42, 120, 214, 0.08);
+  --series-1: #2a78d6;
+  --radius: 12px;
+  --font: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-2: #262624;
+    --ink: #f0efec;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --accent: #3987e5;
+    --accent-ink: #86b6ef;
+    --accent-wash: rgba(57, 135, 229, 0.13);
+    --series-1: #3987e5;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d;
+  --surface: #1a1a19;
+  --surface-2: #262624;
+  --ink: #f0efec;
+  --ink-2: #c3c2b7;
+  --muted: #898781;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --border: rgba(255, 255, 255, 0.10);
+  --accent: #3987e5;
+  --accent-ink: #86b6ef;
+  --accent-wash: rgba(57, 135, 229, 0.13);
+  --series-1: #3987e5;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+code { font-family: var(--mono); font-size: 0.88em; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--surface); padding: 6px 10px; border-radius: 8px; z-index: 100; }
+.skip:focus { left: 12px; }
+
+/* header */
+.site-header { background: var(--surface); border-bottom: 1px solid var(--border); }
+.header-inner { display: flex; gap: 24px; align-items: flex-start; justify-content: space-between; padding-top: 36px; padding-bottom: 22px; }
+.eyebrow { margin: 0 0 6px; font-size: 13px; color: var(--ink-2); letter-spacing: 0.02em; }
+h1 { margin: 0 0 10px; font-size: clamp(26px, 3.4vw, 38px); line-height: 1.25; font-weight: 700; }
+.lede { margin: 0 0 10px; font-size: 16px; color: var(--ink-2); max-width: 820px; }
+.meta { margin: 0; font-size: 13px; color: var(--ink-2); }
+.theme-btn, .btn-small {
+  font: inherit; font-size: 13px; color: var(--ink); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; cursor: pointer; white-space: nowrap;
+}
+.theme-btn:hover, .btn-small:hover { border-color: var(--axis); }
+.btn-small { font-size: 12px; padding: 3px 10px; }
+.toc { position: sticky; top: 0; z-index: 20; background: var(--surface); border-bottom: 1px solid var(--border); }
+.toc-inner { position: relative; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: thin; padding-top: 6px; padding-bottom: 6px; }
+.toc a { color: var(--ink-2); font-size: 13.5px; padding: 6px 10px; border-radius: 8px; white-space: nowrap; }
+.toc a:hover { background: var(--surface-2); text-decoration: none; color: var(--ink); }
+.toc a[aria-current="true"] { background: var(--accent-wash); color: var(--ink); }
+
+/* sections */
+main { padding-bottom: 40px; }
+section { padding-top: 46px; scroll-margin-top: 56px; }
+h2 { font-size: 26px; line-height: 1.3; margin: 0 0 8px; }
+h3 { font-size: 17px; line-height: 1.4; margin: 22px 0 10px; }
+.card h3:first-child, .card > h3 { margin-top: 0; }
+.section-lede { color: var(--ink-2); max-width: 900px; margin: 0 0 18px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+.grid-2, .grid-3, .grid-4 { display: grid; gap: 14px; }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 980px) { .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid-3 { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 720px) { .grid-2, .grid-4 { grid-template-columns: minmax(0, 1fr); } }
+.stack-gap > * + * { margin-top: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 4px; padding: 1px 9px; border-radius: 999px;
+  background: var(--surface-2); color: var(--ink-2); font-size: 12px; line-height: 20px; border: 1px solid transparent;
+}
+a.chip { color: var(--ink); }
+a.chip:hover { border-color: var(--axis); text-decoration: none; }
+.callout { border-left: 3px solid var(--accent); background: var(--accent-wash); padding: 12px 16px; border-radius: 0 10px 10px 0; margin: 16px 0; }
+.note { font-size: 13px; color: var(--ink-2); }
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--grid); }
+th { font-weight: 600; color: var(--ink-2); background: var(--surface-2); white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+td .chip, td a.chip { margin: 2px 4px 2px 0; }
+
+/* tldr */
+.era { position: relative; }
+.era-time { font-size: 12.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.era h3 { margin: 2px 0 6px; }
+.era p { margin: 0; font-size: 14px; color: var(--ink-2); }
+.era.now { border-color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); }
+.kpis { margin-top: 14px; }
+.stat .label { font-size: 13px; color: var(--ink-2); line-height: 1.45; min-height: 38px; }
+.stat .value { font-size: 30px; font-weight: 650; line-height: 1.2; margin: 6px 0 4px; letter-spacing: -0.01em; }
+.stat .sub { font-size: 12px; color: var(--ink-2); }
+.takeaways { margin-top: 14px; }
+.takeaways ol { margin: 0; padding-left: 20px; }
+.takeaways li { margin: 6px 0; }
+
+/* agent 101 */
+.defs { margin: 0; display: grid; grid-template-columns: 76px 1fr; gap: 8px 12px; font-size: 14px; }
+.defs dt { font-weight: 650; }
+.defs dd { margin: 0; color: var(--ink-2); }
+.diagram { margin: 0; display: flex; flex-direction: column; align-items: center; }
+.diagram svg { width: 100%; max-width: 460px; height: auto; }
+.diagram figcaption { font-size: 13px; color: var(--ink-2); margin-top: 6px; text-align: center; }
+.svg-frame { fill: none; stroke: var(--axis); stroke-width: 1; }
+.svg-node { fill: var(--surface-2); stroke: var(--border); }
+.svg-core { fill: var(--accent-wash); stroke: var(--accent); stroke-width: 1.5; }
+.svg-edge { fill: none; stroke: var(--ink-2); stroke-width: 1.5; }
+.svg-arrowhead { fill: var(--ink-2); }
+.svg-t1 { fill: var(--ink); font-size: 14px; font-weight: 650; }
+.svg-t2 { fill: var(--ink-2); font-size: 11px; }
+.svg-t3 { fill: var(--ink-2); font-size: 12px; }
+.glossary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 980px) { .glossary { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .glossary { grid-template-columns: minmax(0, 1fr); } }
+.term { padding: 14px 16px; }
+.term-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.term-head b { font-size: 15px; }
+.term-head span { font-size: 12.5px; color: var(--ink-2); }
+.term p { margin: 6px 0 0; font-size: 13.5px; }
+.term .analogy { color: var(--ink); }
+.term .analogy span, .term .eg span { display: inline-block; font-size: 11.5px; color: var(--ink-2); background: var(--surface-2); border-radius: 6px; padding: 0 6px; margin-right: 6px; }
+.term .eg { color: var(--ink-2); }
+.trace { margin: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.7; white-space: pre-wrap; overflow-x: auto; }
+.trace .k { font-weight: 700; color: var(--ink); }
+.trace .c { color: var(--ink-2); }
+.trace .badge { display: inline-block; font-size: 11px; color: var(--ink-2); border: 1px solid var(--border); border-radius: 6px; padding: 0 6px; margin-bottom: 6px; font-family: var(--font); }
+
+/* stack */
+.stack { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+@media (max-width: 900px) { .stack { grid-template-columns: minmax(0, 1fr); } }
+.layer { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.layer p { margin: 4px 0 0; font-size: 13.5px; color: var(--ink-2); }
+.layer-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.rate { font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.layer.s2, .layer.harness { box-shadow: inset 3px 0 0 var(--accent); }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+@media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tile { background: var(--surface-2); border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+.tile b { display: block; font-size: 13.5px; }
+.tile span { color: var(--ink-2); }
+.flow { text-align: center; font-size: 12.5px; color: var(--ink-2); padding: 5px 0; }
+.offline ol { margin: 8px 0 0; padding-left: 20px; font-size: 13.5px; }
+.offline li { margin: 3px 0; }
+
+/* routes */
+.routes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 860px) { .routes { grid-template-columns: minmax(0, 1fr); } }
+.route-head { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+.route-head h3 { margin: 0; }
+.route-num { color: var(--ink-2); font-variant-numeric: tabular-nums; margin-right: 6px; }
+.route p.one { margin: 6px 0 0; font-size: 14px; }
+.route details { margin-top: 10px; border-top: 1px solid var(--grid); padding-top: 8px; }
+.route summary { cursor: pointer; font-size: 13px; color: var(--ink-2); }
+.route dl { margin: 8px 0 0; display: grid; grid-template-columns: 56px 1fr; gap: 6px 10px; font-size: 13.5px; }
+.route dt { color: var(--ink-2); }
+.route dd { margin: 0; }
+
+/* timeline */
+.filters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 4px 0 14px; }
+.filters .label { font-size: 13px; color: var(--ink-2); margin-right: 4px; }
+button.chip { font: inherit; font-size: 12.5px; cursor: pointer; padding: 3px 11px; }
+button.chip[aria-pressed="true"] { background: var(--accent-wash); border-color: var(--accent); color: var(--ink); }
+button.chip .n { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.tl { list-style: none; margin: 0; padding: 0; }
+.tl-year { font-size: 15px; font-weight: 700; margin: 18px 0 4px; color: var(--ink); }
+.tl-item { display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; gap: 12px; padding: 9px 2px; border-top: 1px solid var(--grid); align-items: baseline; }
+.tl-item time { color: var(--ink-2); font-variant-numeric: tabular-nums; font-size: 13px; }
+.tl-item .tl-title { font-weight: 650; }
+.tl-item p { margin: 2px 0 0; font-size: 13.5px; color: var(--ink-2); }
+.tl-item.hidden, .tl-year.hidden { display: none; }
+@media (max-width: 640px) { .tl-item { grid-template-columns: 64px minmax(0, 1fr); } .tl-item .chip { display: none; } }
+
+/* charts */
+.chart { margin: 0; }
+.chart-title { font-weight: 650; font-size: 15px; }
+.chart-sub { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+.plot { margin-top: 14px; }
+.bar-row { display: grid; grid-template-columns: 8.2em minmax(0, 1fr); gap: 10px; align-items: center; min-height: 34px; cursor: default; border-radius: 6px; }
+.bar-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
+.bar-label { font-size: 12.5px; color: var(--ink); text-align: right; line-height: 1.25; }
+.bar-track { position: relative; align-self: stretch; min-height: 34px; }
+.bar-track::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: var(--axis); }
+.gridline { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--grid); }
+.bar { position: absolute; left: 0; top: 50%; height: 18px; transform: translateY(-50%); background: var(--series-1); border-radius: 0 4px 4px 0; transition: filter 0.12s; }
+.bar-row:hover .bar, .bar-row:focus-visible .bar { filter: brightness(1.15); }
+.bar-val { position: absolute; top: 50%; transform: translateY(-50%); padding-left: 6px; font-size: 12px; color: var(--ink); white-space: nowrap; }
+.bar-axis { display: grid; grid-template-columns: 8.2em minmax(0, 1fr); gap: 10px; margin-top: 2px; }
+.ticks { position: relative; height: 18px; }
+.tick { position: absolute; transform: translateX(-50%); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tick:first-child { transform: none; }
+.tick:last-child { transform: translateX(-100%); }
+@media (max-width: 480px) { .bar-row, .bar-axis { grid-template-columns: 6.6em minmax(0, 1fr); } }
+.chart-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.chart-foot a { font-size: 12.5px; }
+.data-table { margin-top: 10px; font-size: 12.5px; }
+.data-table td.num { font-variant-numeric: tabular-nums; text-align: right; }
+.tooltip {
+  position: fixed; z-index: 60; pointer-events: none; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+  font-size: 12px; max-width: 260px;
+}
+.tooltip .tt-val { font-size: 14px; font-weight: 650; }
+.tooltip .tt-lab { color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
+.tooltip .key { display: inline-block; width: 12px; height: 2px; background: var(--series-1); border-radius: 1px; }
+
+/* labs + misc */
+.mini-tl { list-style: none; margin: 0; padding: 0; font-size: 13.5px; }
+.mini-tl li { padding: 6px 0; border-top: 1px solid var(--grid); }
+.mini-tl li:first-child { border-top: none; }
+.mini-tl span { display: inline-block; min-width: 58px; color: var(--ink-2); font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.consensus ul { margin: 0; padding-left: 20px; }
+.consensus li { margin: 6px 0; }
+.steps { counter-reset: step; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.step { position: relative; padding-left: 54px; }
+.step::before { counter-increment: step; content: counter(step); position: absolute; left: 16px; top: 16px; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-wash); border: 1px solid var(--accent); color: var(--ink); font-size: 13px; font-weight: 650; display: grid; place-items: center; }
+.step h3 { margin: 0 0 4px; }
+.step p { margin: 4px 0; font-size: 14px; }
+.code { position: relative; margin: 10px 0 0; background: var(--surface-2); border-radius: 8px; padding: 12px 14px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.6; }
+.code .cm { color: var(--ink-2); }
+.copy { position: absolute; top: 8px; right: 8px; }
+.prob h3 { margin: 0 0 4px; font-size: 15.5px; }
+.prob p { margin: 0; font-size: 13.5px; color: var(--ink-2); }
+.reading ol { margin: 0; padding-left: 22px; }
+.reading li { margin: 7px 0; }
+.sources ul { columns: 2; column-gap: 28px; padding-left: 18px; margin: 0; font-size: 13.5px; }
+@media (max-width: 720px) { .sources ul { columns: 1; } }
+.sources li { break-inside: avoid; margin: 3px 0; }
+
+/* papers */
+.pcontrols { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px; }
+.pcontrols input[type="search"], .pcontrols select {
+  font: inherit; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 10px;
+}
+.pcontrols input[type="search"] { flex: 1 1 280px; min-width: 200px; }
+.pcontrols label { font-size: 13.5px; color: var(--ink-2); display: inline-flex; gap: 6px; align-items: center; }
+.pcount { font-size: 13px; color: var(--ink-2); margin: 6px 0 8px; }
+.ptable td { font-size: 13px; }
+.ptable td.date { white-space: nowrap; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.ptable .pshort { font-weight: 650; }
+.ptable .ptitle { display: block; font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+.ptable .porg { display: block; font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+.ptable .star { color: var(--ink); margin-right: 2px; }
+.ptable td.cats { min-width: 120px; }
+.more-row { text-align: center; margin-top: 10px; }
+
+footer { border-top: 1px solid var(--border); background: var(--surface); color: var(--ink-2); font-size: 13px; padding: 22px 0 30px; margin-top: 40px; }
+footer p { margin: 4px 0; }
+@media print { .toc, .theme-btn, .btn-small, .copy, .filters, .pcontrols { display: none !important; } section { break-inside: avoid-page; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div>
+      <p class="eyebrow">调研导读 · Dexterous Hands for Motion-Control Researchers</p>
+      <h1>灵巧手算法：给运控研究者的全景导读</h1>
+      <p class="lede">A 部分讲"不沾 agent"的灵巧手：硬件、手内操作 RL 与 sim2real、抓取、触觉、基于模型的接触控制、遥操作与重定向、人类演示、灵巧 VLA、人形全身灵巧。B 部分讲 agent（LLM / VLM / 编码 agent）在灵巧手上能做什么、不能做什么。全文用腿足与人形控制的概念来对照解释。</p>
+      <p class="meta">数据截至 2026-10-23 · 收录 162 条论文与资源（其中 152 条 arXiv 已用官方 API 核验标题与日期）· 长文版：<a href="survey.html">survey.html</a>（<a href="survey.md">Markdown 源文件</a>）· 姊妹篇：<a href="../embodied_agent_survey/">机器人 × Agent 导读</a></p>
+    </div>
+    <button id="themeBtn" class="theme-btn" type="button" aria-label="切换配色主题">◐ 主题：自动</button>
+  </div>
+</header>
+<nav class="toc" aria-label="目录">
+  <div class="wrap toc-inner">
+    <a href="#tldr">要点</a><a href="#mc">运控视角</a><a href="#map">技术地图</a><a href="#hw">硬件</a><a href="#partA">A 部分</a><a href="#partB">B 部分</a><a href="#timeline">时间线</a><a href="#data">数据与基准</a><a href="#open">开放问题</a><a href="#start">上手</a><a href="#papers">论文库</a><a href="#sources">来源</a>
+  </div>
+</nav>
+
+<main id="main" class="wrap">
+
+<!-- ============ TL;DR ============ -->
+<section id="tldr" aria-labelledby="tldr-h">
+  <h2 id="tldr-h">一页看懂</h2>
+  <div class="grid-2">
+    <article class="card era">
+      <div class="era-time">A 部分 · 不沾 agent</div>
+      <h3>主线仍是"仿真 RL + sim2real"</h3>
+      <p>从 Dactyl 到 DexNDM、ViserDex，工具和运控几乎一一对应：域随机化、教师-学生、RMA 式适应、执行器建模。新变量是<b>触觉</b>和<b>执行器层面的建模</b>；"重定向 + RL 跟踪"成了与人形 WBC 同构的配方；数据从遥操作、人类视频到合成，规模迅速上涨。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/1808.00177" target="_blank" rel="noopener" title="Learning Dexterous In-Hand Manipulation">Dactyl</a><a class="chip ref" href="https://arxiv.org/abs/2210.04887" target="_blank" rel="noopener" title="In-Hand Object Rotation via Rapid Motor Adaptation">HORA</a><a class="chip ref" href="https://arxiv.org/abs/2510.08556" target="_blank" rel="noopener" title="DexNDM: Closing the Reality Gap for Dexterous In-Hand Rotation via Joint-Wise Neural Dynamics Model">DexNDM</a><a class="chip ref" href="https://arxiv.org/abs/2607.11874" target="_blank" rel="noopener" title="A Minimalist Retargeting-Guided Reinforcement Learning Recipe for Dexterous Manipulation">REGRIND</a><a class="chip ref" href="https://arxiv.org/abs/2602.16710" target="_blank" rel="noopener" title="EgoScale: Scaling Dexterous Manipulation with Diverse Egocentric Human Data">EgoScale</a></div>
+    </article>
+    <article class="card era now">
+      <div class="era-time">B 部分 · Agent × 灵巧手</div>
+      <h3>agent 留在慢环和离线环</h3>
+      <p>写奖励（Eureka 转笔、Text2Touch）、生成仿真与数据（GenDexHand、DexAgent）、给语义抓取目标（OmniDexVLG、DextER）、编码 agent 自己训策略（Dexterous Astra、ASPIRE）。直接让大模型控手指仍然弱，但<b>把触觉作为上下文</b>能显著改善接触任务。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2310.12931" target="_blank" rel="noopener" title="Eureka: Human-Level Reward Design via Coding Large Language Models">Eureka</a><a class="chip ref" href="https://arxiv.org/abs/2509.07445" target="_blank" rel="noopener" title="Text2Touch: Tactile In-Hand Manipulation with LLM-Designed Reward Functions">Text2Touch</a><a class="chip ref" href="https://arxiv.org/abs/2609.35318" target="_blank" rel="noopener" title="DexAgent: An Agentic Human2Sim2Robot Framework for Dexterous Manipulation with Self-Evolving Tool Library">DexAgent</a><a class="chip ref" href="https://github.com/jianglongye/dexterous-astra" target="_blank" rel="noopener" title="Dexterous Astra: pen spinning and Rubik&#x27;s cube">Dexterous Astra</a><a class="chip ref" href="https://arxiv.org/abs/2610.28457" target="_blank" rel="noopener" title="GPT-6-Astra Understands Touch and Outperform Vision--Tactile--Language--Action Models">GPT-6-Astra Understands Touch</a></div>
+    </article>
+  </div>
+  <div class="grid-4 kpis">
+    <div class="card stat"><div class="label">跨 4 种灵巧手共享潜在动作空间，对比 π0 基线</div><div class="value">72% vs 32%</div><div class="sub"><a href="https://arxiv.org/abs/2603.10158" target="_blank" rel="noopener" title="Cross-Hand Latent Representation for Vision-Language-Action Models">XL-VLA</a> · 2026-03</div></div>
+    <div class="card stat"><div class="label">agentic 数据管线训出的策略，对比基线（11 个真机任务）</div><div class="value">3.5×</div><div class="sub"><a href="https://arxiv.org/abs/2609.35318" target="_blank" rel="noopener" title="DexAgent: An Agentic Human2Sim2Robot Framework for Dexterous Manipulation with Self-Evolving Tool Library">DexAgent</a> · 2026-09</div></div>
+    <div class="card stat"><div class="label">冻结的 GPT-6 Astra 加入触觉上下文，插孔任务成功率</div><div class="value">31% → 99%</div><div class="sub"><a href="https://arxiv.org/abs/2610.28457" target="_blank" rel="noopener" title="GPT-6-Astra Understands Touch and Outperform Vision--Tactile--Language--Action Models">GPT-6-Astra Understands Touch</a> · 2026-10</div></div>
+    <div class="card stat"><div class="label">训练灵巧 VLA 的人类第一人称视频，规模与损失呈对数线性</div><div class="value">20,854 小时</div><div class="sub"><a href="https://arxiv.org/abs/2602.16710" target="_blank" rel="noopener" title="EgoScale: Scaling Dexterous Manipulation with Diverse Egocentric Human Data">EgoScale</a> · 2026-02</div></div>
+  </div>
+  <div class="card takeaways">
+    <h3>六个判断</h3>
+    <ol>
+      <li><b>你的 sim2real 工具箱可以直接迁移。</b>域随机化、教师-学生、RMA、执行器网络在灵巧手上都有成熟对应（HORA、DexNDM、Force-Based Sim2Real）。</li>
+      <li><b>"重定向 + 跟踪 RL"是最快的切入点。</b>ManipTrans、DexMachina、SPIDER、REGRIND 的流程和人形运动模仿几乎一样。</li>
+      <li><b>数据的瓶颈是"力不对"。</b>人类视频与遥操作的运动学数据很多，但缺接触力和触觉；2026 年的重定向开始保接触结构、追踪接触力。</li>
+      <li><b>基于模型的方法仍有位置。</b>采样 MPC 与接触感知优化不用训练、可解释，正与 RL 分层结合（高层 RL 选接触点，低层 MPC 推物体）。</li>
+      <li><b>VLA 覆盖了高自由度手，但手指接触协调仍靠低层控制器。</b>GR-Dexter、XL-VLA、Dexora 之下，仍需要 DexterityGen、TacBPM 这类基础控制器或先验。</li>
+      <li><b>agent 擅长自动化"奖励-环境-数据-调参-评估"循环</b>，不擅长替代 30–500 Hz 的手指接触控制。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 运控视角 ============ -->
+<section id="mc" aria-labelledby="mc-h">
+  <h2 id="mc-h">运控视角：一张翻译表</h2>
+  <p class="section-lede">左列是你在腿足 / 人形控制里熟悉的概念，中间是灵巧手里的对应物，右列是可以直接读的代表工作。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>运控里熟悉的</th><th>灵巧手里的对应物</th><th>代表工作</th></tr></thead>
+      <tbody>
+        <tr><td>地面接触、步态、支撑相 / 摆动相</td><td>物体接触与"指步态"（finger gaiting）：一部分手指稳住物体，另一部分换位</td><td><a class="chip ref" href="https://arxiv.org/abs/2210.04887" target="_blank" rel="noopener" title="In-Hand Object Rotation via Rapid Motor Adaptation">HORA</a><a class="chip ref" href="https://arxiv.org/abs/2609.33973" target="_blank" rel="noopener" title="FINGR: Learning Dexterous Hand Control for Real-World Rubik&#x27;s Cube Solving">FINGR</a><a class="chip ref" href="https://arxiv.org/abs/2609.18174" target="_blank" rel="noopener" title="TacBPM: A Tactile-conditioned Behavior Prior Model for Dexterous Reorientation">TacBPM</a></td></tr>
+        <tr><td>大规模并行 PPO + 域随机化</td><td>同样是主力；自动域随机化（ADR）最早就出现在灵巧手上</td><td><a class="chip ref" href="https://arxiv.org/abs/1808.00177" target="_blank" rel="noopener" title="Learning Dexterous In-Hand Manipulation">Dactyl</a><a class="chip ref" href="https://arxiv.org/abs/1910.07113" target="_blank" rel="noopener" title="Solving Rubik&#x27;s Cube with a Robot Hand">Rubik&#x27;s Cube (OpenAI)</a><a class="chip ref" href="https://arxiv.org/abs/2210.13702" target="_blank" rel="noopener" title="DeXtreme: Transfer of Agile In-hand Manipulation from Simulation to Reality">DeXtreme</a><a class="chip ref" href="https://arxiv.org/abs/2305.12127" target="_blank" rel="noopener" title="DexPBT: Scaling up Dexterous Manipulation for Hand-Arm Systems with Population Based Training">DexPBT</a></td></tr>
+        <tr><td>RMA / 教师-学生特权蒸馏</td><td>物体质量、摩擦、形状作特权信息，学生只用本体、触觉或视觉</td><td><a class="chip ref" href="https://arxiv.org/abs/2210.04887" target="_blank" rel="noopener" title="In-Hand Object Rotation via Rapid Motor Adaptation">HORA</a><a class="chip ref" href="https://arxiv.org/abs/2309.09979" target="_blank" rel="noopener" title="General In-Hand Object Rotation with Vision and Touch">RotateIt</a><a class="chip ref" href="https://arxiv.org/abs/2603.04531" target="_blank" rel="noopener" title="PTLD: Sim-to-real Privileged Tactile Latent Distillation for Dexterous Manipulation">PTLD</a><a class="chip ref" href="https://arxiv.org/abs/2604.11138" target="_blank" rel="noopener" title="ViserDex: Visual Sim-to-Real for Robust Dexterous In-hand Reorientation">ViserDex</a></td></tr>
+        <tr><td>执行器网络、系统辨识</td><td>腱、减速器、电流-力矩更难建模：关节级神经动力学、电流-力矩标定</td><td><a class="chip ref" href="https://arxiv.org/abs/2510.08556" target="_blank" rel="noopener" title="DexNDM: Closing the Reality Gap for Dexterous In-Hand Rotation via Joint-Wise Neural Dynamics Model">DexNDM</a><a class="chip ref" href="https://arxiv.org/abs/2601.02778" target="_blank" rel="noopener" title="Closing the Reality Gap: Zero-Shot Sim-to-Real Deployment for Dexterous Force-Based Grasping and Manipulation">Force-Based Sim2Real</a><a class="chip ref" href="https://arxiv.org/abs/2607.11874" target="_blank" rel="noopener" title="A Minimalist Retargeting-Guided Reinforcement Learning Recipe for Dexterous Manipulation">REGRIND</a></td></tr>
+        <tr><td>动作重定向 + 运动跟踪</td><td>人手 → 机器人手重定向 + 以物体为中心的跟踪 RL</td><td><a class="chip ref" href="https://arxiv.org/abs/2503.21860" target="_blank" rel="noopener" title="ManipTrans: Efficient Dexterous Bimanual Manipulation Transfer via Residual Learning">ManipTrans</a><a class="chip ref" href="https://arxiv.org/abs/2502.09614" target="_blank" rel="noopener" title="DexTrack: Towards Generalizable Neural Tracking Control for Dexterous Manipulation from Human References">DexTrack</a><a class="chip ref" href="https://arxiv.org/abs/2505.24853" target="_blank" rel="noopener" title="DexMachina: Functional Retargeting for Bimanual Dexterous Manipulation">DexMachina</a><a class="chip ref" href="https://arxiv.org/abs/2511.09484" target="_blank" rel="noopener" title="SPIDER: Scalable Physics-Informed Dexterous Retargeting">SPIDER</a><a class="chip ref" href="https://arxiv.org/abs/2607.11874" target="_blank" rel="noopener" title="A Minimalist Retargeting-Guided Reinforcement Learning Recipe for Dexterous Manipulation">REGRIND</a></td></tr>
+        <tr><td>运动先验 / 潜在动作空间</td><td>灵巧"基础控制器"、行为先验、预训练后再后训练</td><td><a class="chip ref" href="https://arxiv.org/abs/2502.04307" target="_blank" rel="noopener" title="DexterityGen: Foundation Controller for Unprecedented Dexterity">DexterityGen</a><a class="chip ref" href="https://arxiv.org/abs/2609.18174" target="_blank" rel="noopener" title="TacBPM: A Tactile-conditioned Behavior Prior Model for Dexterous Reorientation">TacBPM</a><a class="chip ref" href="https://arxiv.org/abs/2608.19182" target="_blank" rel="noopener" title="ADEPT: Accelerating Dexterity via Pre-Training and Post-Training using Reinforcement Learning">ADEPT</a><a class="chip ref" href="https://arxiv.org/abs/2606.23680" target="_blank" rel="noopener" title="CoorDex: Coordinating Body and Hand Priors for Continuous Dexterous Humanoid Loco-Manipulation">CoorDex</a></td></tr>
+        <tr><td>采样 MPC（MPPI、DIAL-MPC、MuJoCo MPC）</td><td>接触丰富的手内 MPC，要处理非光滑与接触模式组合</td><td><a class="chip ref" href="https://arxiv.org/abs/2409.14562" target="_blank" rel="noopener" title="DROP: Dexterous Reorientation via Online Planning">DROP</a><a class="chip ref" href="https://arxiv.org/abs/2609.14868" target="_blank" rel="noopener" title="Primitive-Informed Sampling-Based MPC for Multi-Fingered Dexterous Manipulation">Primitive-Informed MPC</a><a class="chip ref" href="https://arxiv.org/abs/2604.27175" target="_blank" rel="noopener" title="Global Sampling-Based Trajectory Optimization for Contact-Rich Manipulation via KernelSOS">Global-MPPI (KernelSOS)</a><a class="chip ref" href="https://arxiv.org/abs/2505.02291" target="_blank" rel="noopener" title="Dexterous Contact-Rich Manipulation via the Contact Trust Region">Contact Trust Region</a></td></tr>
+        <tr><td>地形感知</td><td>物体形状与位姿感知（深度、RGB、触觉），且手-物遮挡严重</td><td><a class="chip ref" href="https://arxiv.org/abs/2211.11744" target="_blank" rel="noopener" title="Visual Dexterity: In-Hand Reorientation of Novel and Complex Object Shapes">Visual Dexterity</a><a class="chip ref" href="https://arxiv.org/abs/2604.11138" target="_blank" rel="noopener" title="ViserDex: Visual Sim-to-Real for Robust Dexterous In-hand Reorientation">ViserDex</a><a class="chip ref" href="https://arxiv.org/abs/2412.01791" target="_blank" rel="noopener" title="DextrAH-RGB: Visuomotor Policies to Grasp Anything with Dexterous Hands">DextrAH-RGB</a></td></tr>
+        <tr><td>抗外扰</td><td>防滑、抓握稳定、力调节</td><td><a class="chip ref" href="https://arxiv.org/abs/2601.02778" target="_blank" rel="noopener" title="Closing the Reality Gap: Zero-Shot Sim-to-Real Deployment for Dexterous Force-Based Grasping and Manipulation">Force-Based Sim2Real</a><a class="chip ref" href="https://arxiv.org/abs/2609.07002" target="_blank" rel="noopener" title="WM-Craftnet: World Synesthesia Model for Generalizable and Robust Dexterous In-Hand Manipulation">WM-Craftnet</a></td></tr>
+        <tr><td>全身控制（WBC）</td><td>手指 + 手腕 + 手臂 + 身体协调；人形边走边操作</td><td><a class="chip ref" href="https://arxiv.org/abs/2606.23680" target="_blank" rel="noopener" title="CoorDex: Coordinating Body and Hand Priors for Continuous Dexterous Humanoid Loco-Manipulation">CoorDex</a><a class="chip ref" href="https://arxiv.org/abs/2609.34724" target="_blank" rel="noopener" title="DexWeave: Learning Dexterous Humanoid Loco-Manipulation from Human Demonstrations">DexWeave</a><a class="chip ref" href="https://arxiv.org/abs/2407.02274" target="_blank" rel="noopener" title="DextrAH-G: Pixels-to-Action Dexterous Arm-Hand Grasping with Geometric Fabrics">DextrAH-G</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>四个本质差异</h3>
+  <div class="grid-4">
+    <div class="card prob"><h3>被控对象不受驱动</h3><p>要控制的是物体状态，物体没有执行器，只能经由间歇接触施力：欠驱动的混合系统，接触模式切换比步态更频繁、组合更多。</p></div>
+    <div class="card prob"><h3>接触多且小</h3><p>力、尺寸、速度都小，摩擦、滑移、柔顺性影响更大；仿真接触参数的误差相对更致命。</p></div>
+    <div class="card prob"><h3>感知被遮挡</h3><p>物体常被手挡住，视觉位姿难估；触觉因此关键，但触觉仿真很难。</p></div>
+    <div class="card prob"><h3>硬件不统一</h3><p>腱、连杆、直驱并存，自由度 6–22 不等，没有统一平台，跨本体表示因此成为独立方向。</p></div>
+  </div>
+  <p class="note">泛化维度也不同：腿足主要泛化地形，灵巧手主要泛化<b>物体</b>（形状、质量、摩擦、铰接结构）。</p>
+</section>
+
+<!-- ============ 技术地图 ============ -->
+<section id="map" aria-labelledby="map-h">
+  <h2 id="map-h">技术地图：在线控制栈与离线回路</h2>
+  <p class="section-lede">左边是灵巧手系统在线运行时的分层（越往下越快）；右边是离线的数据与训练回路。标 <span class="chip">B</span> 的环节是 agent 已经能起作用的地方。</p>
+  <div class="stack">
+    <div>
+      <div class="layer s2">
+        <div class="layer-head"><b>任务层 · VLM / LLM / agent</b><span class="rate">秒级</span></div>
+        <p>理解指令，确定抓哪里、用什么抓型，规划步骤，失败后恢复。<span class="chip">B</span></p>
+        <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2502.20900" target="_blank" rel="noopener" title="DexGraspVLA: A Vision-Language-Action Framework Towards General Dexterous Grasping">DexGraspVLA</a><a class="chip ref" href="https://arxiv.org/abs/2503.01616" target="_blank" rel="noopener" title="RoboDexVLM: Visual Language Model-Enabled Task Planning and Motion Control for Dexterous Robot Manipulation">RoboDexVLM</a><a class="chip ref" href="https://arxiv.org/abs/2512.03874" target="_blank" rel="noopener" title="OmniDexVLG: Learning Dexterous Grasp Generation from Vision Language Model-Guided Grasp Semantics, Taxonomy and Functional Affordance">OmniDexVLG</a><a class="chip ref" href="https://arxiv.org/abs/2601.16046" target="_blank" rel="noopener" title="DextER: Language-driven Dexterous Grasp Generation with Embodied Reasoning">DextER</a></div>
+      </div>
+      <div class="flow">↓ 子任务 / 目标抓取 / 物体目标位姿　　↑ 进度 · 失败 · 触觉事件</div>
+      <div class="layer harness">
+        <div class="layer-head"><b>技能 / 策略层 · VLA 或 RL 策略</b><span class="rate">约 10–50 Hz</span></div>
+        <p>灵巧 VLA、手内操作 RL 策略、抓取策略、跟踪人类参考的策略，以及"基础控制器"与行为先验。</p>
+        <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2603.10158" target="_blank" rel="noopener" title="Cross-Hand Latent Representation for Vision-Language-Action Models">XL-VLA</a><a class="chip ref" href="https://arxiv.org/abs/2512.24210" target="_blank" rel="noopener" title="GR-Dexter Technical Report">GR-Dexter</a><a class="chip ref" href="https://arxiv.org/abs/2510.08556" target="_blank" rel="noopener" title="DexNDM: Closing the Reality Gap for Dexterous In-Hand Rotation via Joint-Wise Neural Dynamics Model">DexNDM</a><a class="chip ref" href="https://arxiv.org/abs/2502.04307" target="_blank" rel="noopener" title="DexterityGen: Foundation Controller for Unprecedented Dexterity">DexterityGen</a><a class="chip ref" href="https://arxiv.org/abs/2609.18174" target="_blank" rel="noopener" title="TacBPM: A Tactile-conditioned Behavior Prior Model for Dexterous Reorientation">TacBPM</a></div>
+      </div>
+      <div class="flow">↓ 关节目标 / 期望接触力　　↑ 关节状态 · 电流 · 触觉</div>
+      <div class="layer s1">
+        <div class="layer-head"><b>手指控制层 · PD / 阻抗 / MPC</b><span class="rate">约 100–1000 Hz</span></div>
+        <p>关节 PD 或阻抗控制、电流-力矩估计；也可以是采样 MPC 或接触隐式 MPC 直接给出接触动作（如 Sharpa Wave 控制频率 500 Hz）。</p>
+        <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2601.02778" target="_blank" rel="noopener" title="Closing the Reality Gap: Zero-Shot Sim-to-Real Deployment for Dexterous Force-Based Grasping and Manipulation">Force-Based Sim2Real</a><a class="chip ref" href="https://arxiv.org/abs/2409.14562" target="_blank" rel="noopener" title="DROP: Dexterous Reorientation via Online Planning">DROP</a><a class="chip ref" href="https://arxiv.org/abs/2505.02291" target="_blank" rel="noopener" title="Dexterous Contact-Rich Manipulation via the Contact Trust Region">Contact Trust Region</a><a class="chip ref" href="https://arxiv.org/abs/2601.10930" target="_blank" rel="noopener" title="Where to Touch, How to Contact: A Hierarchical RL-MPC Framework for Geometry-Aware Sim-to-Real Manipulation">Hierarchical RL-MPC</a></div>
+      </div>
+      <div class="flow" aria-hidden="true">↓</div>
+      <div class="layer s0">
+        <div class="layer-head"><b>硬件 · 驱动与传感</b></div>
+        <p>直驱 / 腱驱动 / 连杆；指尖或全手触觉；腕部与掌心相机。</p>
+        <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2309.06440" target="_blank" rel="noopener" title="LEAP Hand: Low-Cost, Efficient, and Anthropomorphic Hand for Robot Learning">LEAP Hand</a><a class="chip ref" href="https://www.cnx-software.com/2026/06/02/sharpa-wave-high-end-dexterous-robotic-hand-with-22-dof-high-sensitivity-dynamic-tactile-array/" target="_blank" rel="noopener" title="Sharpa Wave: 22-DoF dexterous hand with dynamic tactile array">Sharpa Wave</a><a class="chip ref" href="https://wuji.tech/en/hand" target="_blank" rel="noopener" title="Wuji Hand">Wuji Hand</a><a class="chip ref" href="https://arxiv.org/abs/2504.04259" target="_blank" rel="noopener" title="ORCA: An Open-Source, Reliable, Cost-Effective, Anthropomorphic Robotic Hand for Uninterrupted Dexterous Task Learning">ORCA Hand</a></div>
+      </div>
+    </div>
+    <aside class="layer offline" aria-label="离线回路">
+      <div class="layer-head"><b>离线回路：数据与训练</b></div>
+      <ol>
+        <li>数据：遥操作、人类视频、合成抓取 / 轨迹</li>
+        <li>重定向（保运动学 → 保接触 → 保力）</li>
+        <li>仿真环境与奖励 <span class="chip">B</span></li>
+        <li>RL / 模仿 / VLA 训练，执行器与触觉建模</li>
+        <li>sim2real 评测，迭代修改 <span class="chip">B</span></li>
+      </ol>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2310.12931" target="_blank" rel="noopener" title="Eureka: Human-Level Reward Design via Coding Large Language Models">Eureka</a><a class="chip ref" href="https://arxiv.org/abs/2511.01791" target="_blank" rel="noopener" title="GenDexHand: Generative Simulation for Dexterous Hands">GenDexHand</a><a class="chip ref" href="https://arxiv.org/abs/2609.35318" target="_blank" rel="noopener" title="DexAgent: An Agentic Human2Sim2Robot Framework for Dexterous Manipulation with Self-Evolving Tool Library">DexAgent</a><a class="chip ref" href="https://github.com/jianglongye/dexterous-astra" target="_blank" rel="noopener" title="Dexterous Astra: pen spinning and Rubik&#x27;s cube">Dexterous Astra</a><a class="chip ref" href="https://arxiv.org/abs/2607.00272" target="_blank" rel="noopener" title="ASPIRE: Agentic /Skills Discovery for Robotics">ASPIRE</a></div>
+      <p class="note">B 部分的大多数工作都落在这条回路上：写奖励、搭环境、生成数据、自动训练。</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ 硬件 ============ -->
+<section id="hw" aria-labelledby="hw-h">
+  <h2 id="hw-h">硬件：选手之前先看这些</h2>
+  <p class="section-lede">运控研究者最该关注的不是自由度数字，而是：能否反驱、控制带宽、能否从电流估力矩、触觉布局、能否自己维修，以及<b>有没有可靠的 MuJoCo / URDF 资产</b>——它直接决定 sim2real 的起点。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>手</th><th>自由度 / 驱动</th><th>传感</th><th>备注</th></tr></thead>
+      <tbody>
+        <tr><td><b>Allegro Hand</b></td><td>16 DoF，四指，关节电机</td><td>原装无触觉，研究中常外加视触觉</td><td>DeXtreme、Text2Touch、Primitive-Informed MPC 等的常用平台</td></tr>
+        <tr><td><b>LEAP Hand</b></td><td>16 DoF，关节电机</td><td>可外加</td><td>低成本、易组装维修，sim2real 常用 <a class="chip ref" href="https://arxiv.org/abs/2309.06440" target="_blank" rel="noopener" title="LEAP Hand: Low-Cost, Efficient, and Anthropomorphic Hand for Robot Learning">LEAP Hand</a></td></tr>
+        <tr><td><b>Shadow Hand</b></td><td>24 个关节、20 个电机在前臂，腱驱动</td><td>可选指尖传感</td><td>Dactyl、OpenAI 魔方、DexGraspNet 的主角</td></tr>
+        <tr><td><b>XHand</b></td><td>12 DoF，直驱</td><td>指尖触觉</td><td>力控 sim2real、XL-VLA 使用 <a class="chip ref" href="https://arxiv.org/abs/2601.02778" target="_blank" rel="noopener" title="Closing the Reality Gap: Zero-Shot Sim-to-Real Deployment for Dexterous Force-Based Grasping and Manipulation">Force-Based Sim2Real</a></td></tr>
+        <tr><td><b>Inspire RH56</b></td><td>连杆驱动，6 个主动自由度级别</td><td>部分型号带触觉</td><td>中国人形常见标配；XL-VLA、DexWeave 使用</td></tr>
+        <tr><td><b>ORCA</b></td><td>17 DoF，腱驱动，开源</td><td>集成触觉</td><td>8 小时内组装，物料成本不到 2000 瑞士法郎 <a class="chip ref" href="https://arxiv.org/abs/2504.04259" target="_blank" rel="noopener" title="ORCA: An Open-Source, Reliable, Cost-Effective, Anthropomorphic Robotic Hand for Uninterrupted Dexterous Task Learning">ORCA Hand</a></td></tr>
+        <tr><td><b>DexLink</b></td><td>16 个执行器驱动 20 个关节，连杆</td><td>—</td><td>320 g，成本不到 400 美元 <a class="chip ref" href="https://arxiv.org/abs/2606.17418" target="_blank" rel="noopener" title="DexLink Hand: A Compact, Affordable, 16-DOF Linkage-Driven Hand with Human-Like Dexterity">DexLink Hand</a></td></tr>
+        <tr><td><b>MM-Hand</b></td><td>21 DoF，远端腱驱动</td><td>触觉 + 关节角 + 掌内双目</td><td>模块化、易维护 <a class="chip ref" href="https://arxiv.org/abs/2604.17245" target="_blank" rel="noopener" title="MM-Hand: A 21-DOF Multi-modal Modular Dexterous Robotic Hand with Remote Actuation">MM-Hand</a></td></tr>
+        <tr><td><b>GR-Dexter 手</b></td><td>21 DoF，紧凑</td><td>—</td><td>面向双手 VLA 的软硬一体系统 <a class="chip ref" href="https://arxiv.org/abs/2512.24210" target="_blank" rel="noopener" title="GR-Dexter Technical Report">GR-Dexter</a></td></tr>
+        <tr><td><b>Sharpa Wave</b></td><td>22 DoF，直驱，控制频率 500 Hz</td><td>每指动态触觉阵列 + 力矩传感</td><td>1.3 kg；进入 NVIDIA 参考人形套件（报道）；Dexterous Astra 的转笔平台 <a class="chip ref" href="https://www.cnx-software.com/2026/06/02/sharpa-wave-high-end-dexterous-robotic-hand-with-22-dof-high-sensitivity-dynamic-tactile-array/" target="_blank" rel="noopener" title="Sharpa Wave: 22-DoF dexterous hand with dynamic tactile array">Sharpa Wave</a></td></tr>
+        <tr><td><b>Wuji Hand</b></td><td>20 DoF，每个关节独立电机，FOC</td><td>—</td><td>裸手不到 600 g，指尖力 15 N；CoorDex 装在 G1 上 <a class="chip ref" href="https://wuji.tech/en/hand" target="_blank" rel="noopener" title="Wuji Hand">Wuji Hand</a></td></tr>
+        <tr><td><b>Tesla Optimus Gen 3 手</b></td><td>报道为手 22 DoF + 腕 3 DoF，腱传动</td><td>未确认</td><td>二手信息 <a class="chip ref" href="https://humanoid.guide/tendon-driven-humanoid-hands/" target="_blank" rel="noopener" title="Tendon-Driven Humanoid Hands: Optimus, NEO and Shadow (Humanoid.guide)">Tesla Optimus Gen 3 手</a></td></tr>
+        <tr><td><b>TESOLLO DG-5F-S</b></td><td>五指 20 DoF</td><td>—</td><td>缩小减重以便装上人形 <a class="chip ref" href="https://www.axis3d.com/en/post/tesollo-showcases-vla-and-dexterous-manipulation-at-icra-2026-from-teleoperation-to-humanoid-roboti" target="_blank" rel="noopener" title="TESOLLO at ICRA 2026">TESOLLO DG-5F-S</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ A 部分 ============ -->
+<section id="partA" aria-labelledby="pa-h">
+  <h2 id="pa-h">A 部分：不沾 agent 的灵巧手</h2>
+  <p class="section-lede">八个方向。每张卡片的"展开"里有给运控研究者的要点。</p>
+  <p><button class="btn-small" type="button" data-expand="#partA" aria-expanded="false">全部展开</button></p>
+  <div class="routes">
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">A1</span>手内操作：RL 与 sim2real</h3><span class="chip">主线</span></div>
+      <p class="one">从 Dactyl、魔方到 HORA、DeXtreme，再到 DexNDM、ViserDex；任务从单轴旋转扩展到任意重定向、6D 到达、工具与魔方。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/1808.00177" target="_blank" rel="noopener" title="Learning Dexterous In-Hand Manipulation">Dactyl</a><a class="chip ref" href="https://arxiv.org/abs/1910.07113" target="_blank" rel="noopener" title="Solving Rubik&#x27;s Cube with a Robot Hand">Rubik&#x27;s Cube (OpenAI)</a><a class="chip ref" href="https://arxiv.org/abs/2210.04887" target="_blank" rel="noopener" title="In-Hand Object Rotation via Rapid Motor Adaptation">HORA</a><a class="chip ref" href="https://arxiv.org/abs/2210.13702" target="_blank" rel="noopener" title="DeXtreme: Transfer of Agile In-hand Manipulation from Simulation to Reality">DeXtreme</a><a class="chip ref" href="https://arxiv.org/abs/2510.08556" target="_blank" rel="noopener" title="DexNDM: Closing the Reality Gap for Dexterous In-Hand Rotation via Joint-Wise Neural Dynamics Model">DexNDM</a><a class="chip ref" href="https://arxiv.org/abs/2604.11138" target="_blank" rel="noopener" title="ViserDex: Visual Sim-to-Real for Robust Dexterous In-hand Reorientation">ViserDex</a><a class="chip ref" href="https://arxiv.org/abs/2608.19182" target="_blank" rel="noopener" title="ADEPT: Accelerating Dexterity via Pre-Training and Post-Training using Reinforcement Learning">ADEPT</a><a class="chip ref" href="https://arxiv.org/abs/2609.33973" target="_blank" rel="noopener" title="FINGR: Learning Dexterous Hand Control for Real-World Rubik&#x27;s Cube Solving">FINGR</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>新进展</dt><dd>执行器差距：DexNDM 关节级神经动力学、电流-力矩标定、REGRIND 的仔细系统辨识。视觉：ViserDex 在 3D 高斯泼溅空间做域随机化。先验：ADEPT 预训练再后训练，TacBPM 行为先验。</dd>
+        <dt>运控要点</dt><dd>和腿足的 actuator net、RMA、AMP 类先验同构；最大的不同是被控对象（物体）不受驱动，指步态需要"一部分手指保持接触、一部分换位"。</dd>
+      </dl></details>
+    </article>
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">A2</span>抓取合成</h3><span class="chip">优化 → 生成 → 闭环</span></div>
+      <p class="one">力封闭优化（DexGraspNet、BODex）→ 生成模型（DexGrasp Anything、Dex1B）→ 闭环抓取策略的 sim2real（DextrAH）→ 跨手迁移与人类先验。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2210.02697" target="_blank" rel="noopener" title="DexGraspNet: A Large-Scale Robotic Dexterous Grasp Dataset for General Objects Based on Simulation">DexGraspNet</a><a class="chip ref" href="https://arxiv.org/abs/2412.16490" target="_blank" rel="noopener" title="BODex: Scalable and Efficient Robotic Dexterous Grasp Synthesis Using Bilevel Optimization">BODex</a><a class="chip ref" href="https://arxiv.org/abs/2503.08257" target="_blank" rel="noopener" title="DexGrasp Anything: Towards Universal Robotic Dexterous Grasping with Physics Awareness">DexGrasp Anything</a><a class="chip ref" href="https://arxiv.org/abs/2506.17198" target="_blank" rel="noopener" title="Dex1B: Learning with 1B Demonstrations for Dexterous Manipulation">Dex1B</a><a class="chip ref" href="https://arxiv.org/abs/2407.02274" target="_blank" rel="noopener" title="DextrAH-G: Pixels-to-Action Dexterous Arm-Hand Grasping with Geometric Fabrics">DextrAH-G</a><a class="chip ref" href="https://arxiv.org/abs/2412.01791" target="_blank" rel="noopener" title="DextrAH-RGB: Visuomotor Policies to Grasp Anything with Dexterous Hands">DextrAH-RGB</a><a class="chip ref" href="https://arxiv.org/abs/2602.16712" target="_blank" rel="noopener" title="One Hand to Rule Them All: Canonical Representations for Unified Dexterous Manipulation">OHRA (One Hand to Rule Them All)</a><a class="chip ref" href="https://arxiv.org/abs/2606.23689" target="_blank" rel="noopener" title="AutoDex: An Automated Real-World System for Dexterous Grasping Data Collection">AutoDex</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>新进展</dt><dd>BODex 用双层 QP 在单卡每秒合成 49 个以上抓取；OHRA 统一 22 DoF 规范 URDF，3 指 LEAP 零样本 81.9%；AutoDex 做无人值守的真实世界抓取采集。</dd>
+        <dt>运控要点</dt><dd>抓取合成本质是带接触约束的优化；静态质量指标（力封闭）与动态执行成功率之间仍有差距，所以闭环策略和真实验证很重要。</dd>
+      </dl></details>
+    </article>
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">A3</span>触觉</h3><span class="chip">2026 年热点</span></div>
+      <p class="one">传感器（DIGIT、AnySkin、商用阵列）、触觉仿真（HydroShear、TacMap、ETac、Tactile Genesis）、绕开触觉仿真（PTLD、SBLR）、触觉进入世界模型（DexTacWAM）。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2005.14679" target="_blank" rel="noopener" title="DIGIT: A Novel Design for a Low-Cost Compact High-Resolution Tactile Sensor with Application to In-Hand Manipulation">DIGIT</a><a class="chip ref" href="https://arxiv.org/abs/2409.08276" target="_blank" rel="noopener" title="AnySkin: Plug-and-play Skin Sensing for Robotic Touch">AnySkin</a><a class="chip ref" href="https://arxiv.org/abs/2603.00446" target="_blank" rel="noopener" title="HydroShear: Hydroelastic Shear Simulation for Tactile Sim-to-Real Reinforcement Learning">HydroShear</a><a class="chip ref" href="https://arxiv.org/abs/2602.21625" target="_blank" rel="noopener" title="Tacmap: Bridging the Tactile Sim-to-Real Gap via Geometry-Consistent Penetration Depth Map">TacMap</a><a class="chip ref" href="https://arxiv.org/abs/2606.22332" target="_blank" rel="noopener" title="Tactile Genesis: Exploring Tactile Sensors at Scale for Learning Dexterous Tasks">Tactile Genesis</a><a class="chip ref" href="https://arxiv.org/abs/2603.04531" target="_blank" rel="noopener" title="PTLD: Sim-to-real Privileged Tactile Latent Distillation for Dexterous Manipulation">PTLD</a><a class="chip ref" href="https://arxiv.org/abs/2608.15897" target="_blank" rel="noopener" title="Tactile Sim2Real without Tactile Simulation via Bottlenecked Latent Reconstruction">SBLR</a><a class="chip ref" href="https://arxiv.org/abs/2609.24976" target="_blank" rel="noopener" title="DexTacWAM: A Visuo-Tactile World-Action Model for Dexterous Manipulation">DexTacWAM</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>新进展</dt><dd>PTLD 用真实世界特权传感器采数据再蒸馏，不需要触觉仿真；SBLR 用"预言者传感器"训练、部署时对齐真实潜变量；DexTacWAM 在 6 个任务上平均 70.6 分，最强基线 38.0。</dd>
+        <dt>运控要点</dt><dd>触觉相当于"高维的足底接触传感"，但仿真难度高一个量级；最省事的入门路线是不依赖精确触觉仿真的方法。</dd>
+      </dl></details>
+    </article>
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">A4</span>基于模型的接触控制</h3><span class="chip">MPC / 优化</span></div>
+      <p class="one">准静态接触平滑 + 全局规划、接触信赖域（CTR）、采样 MPC（DROP、原语化采样、Global-MPPI），以及 RL + MPC 分层。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2206.10787" target="_blank" rel="noopener" title="Global Planning for Contact-Rich Manipulation via Local Smoothing of Quasi-dynamic Contact Models">Quasi-Dynamic Smoothing</a><a class="chip ref" href="https://arxiv.org/abs/2505.02291" target="_blank" rel="noopener" title="Dexterous Contact-Rich Manipulation via the Contact Trust Region">Contact Trust Region</a><a class="chip ref" href="https://arxiv.org/abs/2212.00541" target="_blank" rel="noopener" title="Predictive Sampling: Real-time Behaviour Synthesis with MuJoCo">Predictive Sampling</a><a class="chip ref" href="https://arxiv.org/abs/2409.14562" target="_blank" rel="noopener" title="DROP: Dexterous Reorientation via Online Planning">DROP</a><a class="chip ref" href="https://arxiv.org/abs/2609.14868" target="_blank" rel="noopener" title="Primitive-Informed Sampling-Based MPC for Multi-Fingered Dexterous Manipulation">Primitive-Informed MPC</a><a class="chip ref" href="https://arxiv.org/abs/2604.27175" target="_blank" rel="noopener" title="Global Sampling-Based Trajectory Optimization for Contact-Rich Manipulation via KernelSOS">Global-MPPI (KernelSOS)</a><a class="chip ref" href="https://arxiv.org/abs/2601.10930" target="_blank" rel="noopener" title="Where to Touch, How to Contact: A Hierarchical RL-MPC Framework for Geometry-Aware Sim-to-Real Manipulation">Hierarchical RL-MPC</a><a class="chip ref" href="https://arxiv.org/abs/2603.12185" target="_blank" rel="noopener" title="ComFree-Sim: A GPU-Parallelized Analytical Contact Physics Engine for Scalable Contact-Rich Robotics Simulation and Control">ComFree-Sim</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>新进展</dt><dd>Contact Trust Region 不靠并行就比 RL 和采样 MPC 省算力；Primitive-Informed MPC 用低维原语偏置采样；Hierarchical RL-MPC 让 RL 选"碰哪里"、MPC 管"怎么推"。</dd>
+        <dt>运控要点</dt><dd>这是你最熟悉的工具链（与 DIAL-MPC、MPPI 同源）；难点是接触模式组合爆炸和梯度不可靠。</dd>
+      </dl></details>
+    </article>
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">A5</span>遥操作与重定向</h3><span class="chip">数据入口</span></div>
+      <p class="one">视觉遥操作（DexPilot、AnyTeleop、Bunny-VisionPro）、穿戴式（DexCap、DexUMI、DexWild）、重定向目标（免标定、旋量、力感知），以及共享自主。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/1910.03135" target="_blank" rel="noopener" title="DexPilot: Vision Based Teleoperation of Dexterous Robotic Hand-Arm System">DexPilot</a><a class="chip ref" href="https://arxiv.org/abs/2307.04577" target="_blank" rel="noopener" title="AnyTeleop: A General Vision-Based Dexterous Robot Arm-Hand Teleoperation System">AnyTeleop</a><a class="chip ref" href="https://arxiv.org/abs/2407.03162" target="_blank" rel="noopener" title="Bunny-VisionPro: Real-Time Bimanual Dexterous Teleoperation for Imitation Learning">Bunny-VisionPro</a><a class="chip ref" href="https://arxiv.org/abs/2403.07788" target="_blank" rel="noopener" title="DexCap: Scalable and Portable Mocap Data Collection System for Dexterous Manipulation">DexCap</a><a class="chip ref" href="https://arxiv.org/abs/2505.21864" target="_blank" rel="noopener" title="DexUMI: Using Human Hand as the Universal Manipulation Interface for Dexterous Manipulation">DexUMI</a><a class="chip ref" href="https://arxiv.org/abs/2505.07813" target="_blank" rel="noopener" title="DexWild: Dexterous Human Interactions for In-the-Wild Robot Policies">DexWild</a><a class="chip ref" href="https://arxiv.org/abs/2608.15560" target="_blank" rel="noopener" title="ReForce: Learning Force-aware Retargeting for Dexterous Manipulation">ReForce</a><a class="chip ref" href="https://arxiv.org/abs/2502.04307" target="_blank" rel="noopener" title="DexterityGen: Foundation Controller for Unprecedented Dexterity">DexterityGen</a><a class="chip ref" href="https://arxiv.org/abs/2607.11481" target="_blank" rel="noopener" title="Towards Human-level Dexterous Teleoperation">TeleDexter</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>新进展</dt><dd>ReForce 在运动学结果上预测残差以达到期望接触力；DexterityGen、TeleDexter 让学到的低层控制器"补"人类难以遥控的接触执行。</dd>
+        <dt>运控要点</dt><dd>与人形遥操作用 RL 跟踪器兜底是同一思路：人给意图，控制器负责动力学可行。</dd>
+      </dl></details>
+    </article>
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">A6</span>人类演示 → 机器人</h3><span class="chip">与人形运动模仿同构</span></div>
+      <p class="one">重定向 + 跟踪 RL（DexTrack、ManipTrans、DexMachina、SPIDER、REGRIND），保接触重定向，以及从单目视频到大规模第一人称数据。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2502.09614" target="_blank" rel="noopener" title="DexTrack: Towards Generalizable Neural Tracking Control for Dexterous Manipulation from Human References">DexTrack</a><a class="chip ref" href="https://arxiv.org/abs/2503.21860" target="_blank" rel="noopener" title="ManipTrans: Efficient Dexterous Bimanual Manipulation Transfer via Residual Learning">ManipTrans</a><a class="chip ref" href="https://arxiv.org/abs/2505.24853" target="_blank" rel="noopener" title="DexMachina: Functional Retargeting for Bimanual Dexterous Manipulation">DexMachina</a><a class="chip ref" href="https://arxiv.org/abs/2511.09484" target="_blank" rel="noopener" title="SPIDER: Scalable Physics-Informed Dexterous Retargeting">SPIDER</a><a class="chip ref" href="https://arxiv.org/abs/2504.12609" target="_blank" rel="noopener" title="Crossing the Human-Robot Embodiment Gap with Sim-to-Real RL using One Human Demonstration">Human2Sim2Robot</a><a class="chip ref" href="https://arxiv.org/abs/2606.16272" target="_blank" rel="noopener" title="TopoRetarget: Interaction-Preserving Retargeting for Dexterous Manipulation">TopoRetarget</a><a class="chip ref" href="https://arxiv.org/abs/2609.24093" target="_blank" rel="noopener" title="Dexterous Robot Manipulation from Human Demonstrations via Contact-Anchored Retargeting and Residual Policy Learning">Contact-Anchored Retargeting</a><a class="chip ref" href="https://arxiv.org/abs/2606.19333" target="_blank" rel="noopener" title="Do as I Do: Dexterous Manipulation Data from Everyday Human Videos">Do as I Do</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>新进展</dt><dd>Contact-Anchored Retargeting 迁移"哪个手指部位碰哪里、按什么顺序"而非关节运动；Dex-X 把仿真当作触觉补全引擎；EgoScale 的验证损失与真机表现强相关。</dd>
+        <dt>运控要点</dt><dd>如果你做过 mocap → 重定向 → RL 跟踪的人形运动模仿，这里的流程几乎可以照搬，只是奖励要以物体为中心。</dd>
+      </dl></details>
+    </article>
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">A7</span>灵巧 VLA 与基础模型</h3><span class="chip">2025–2026</span></div>
+      <p class="one">抓取型（DexGraspVLA、DexVLG）与通用型（GR-Dexter、XL-VLA、Dexora、EgoScale、Being-H0），以及视触觉世界-动作模型。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2502.20900" target="_blank" rel="noopener" title="DexGraspVLA: A Vision-Language-Action Framework Towards General Dexterous Grasping">DexGraspVLA</a><a class="chip ref" href="https://arxiv.org/abs/2507.02747" target="_blank" rel="noopener" title="DexVLG: Dexterous Vision-Language-Grasp Model at Scale">DexVLG</a><a class="chip ref" href="https://arxiv.org/abs/2512.24210" target="_blank" rel="noopener" title="GR-Dexter Technical Report">GR-Dexter</a><a class="chip ref" href="https://arxiv.org/abs/2603.10158" target="_blank" rel="noopener" title="Cross-Hand Latent Representation for Vision-Language-Action Models">XL-VLA</a><a class="chip ref" href="https://arxiv.org/abs/2605.18722" target="_blank" rel="noopener" title="Dexora: Open-source VLA for High-DoF Bimanual Dexterity">Dexora</a><a class="chip ref" href="https://arxiv.org/abs/2602.16710" target="_blank" rel="noopener" title="EgoScale: Scaling Dexterous Manipulation with Diverse Egocentric Human Data">EgoScale</a><a class="chip ref" href="https://arxiv.org/abs/2507.15597" target="_blank" rel="noopener" title="Being-H0: Vision-Language-Action Pretraining from Large-Scale Human Videos">Being-H0</a><a class="chip ref" href="https://interestingengineering.com/ai-robotics/figure-helix02-upgrades-humanoid-robot-control" target="_blank" rel="noopener" title="Figure Helix 02">Helix 02</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>难点</dt><dd>动作维度高（双手 40 维以上）、遮挡、真机数据贵。对应的解法是跨本体潜在动作、人类视频预训练、共享自主采数据。</dd>
+        <dt>运控要点</dt><dd>VLA 输出的通常是关节目标块，手指接触的稳定性仍依赖低层控制与硬件顺应性。</dd>
+      </dl></details>
+    </article>
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">A8</span>人形全身灵巧</h3><span class="chip">运控交叉点</span></div>
+      <p class="one">身体与手的先验组合：边走边操作（CoorDex）、交互一致的全身重定向（DexWeave）、便携全身遥操作（HumDex）。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2606.23680" target="_blank" rel="noopener" title="CoorDex: Coordinating Body and Hand Priors for Continuous Dexterous Humanoid Loco-Manipulation">CoorDex</a><a class="chip ref" href="https://arxiv.org/abs/2609.34724" target="_blank" rel="noopener" title="DexWeave: Learning Dexterous Humanoid Loco-Manipulation from Human Demonstrations">DexWeave</a><a class="chip ref" href="https://arxiv.org/abs/2603.12260" target="_blank" rel="noopener" title="HumDex: Humanoid Dexterous Manipulation Made Easy">HumDex</a><a class="chip ref" href="https://arxiv.org/abs/2512.11047" target="_blank" rel="noopener" title="WholeBodyVLA: Towards Unified Latent VLA for Whole-Body Loco-Manipulation Control">WholeBodyVLA</a><a class="chip ref" href="https://arxiv.org/abs/2607.16187" target="_blank" rel="noopener" title="Handroid: Bridging Dexterous Hand and Humanoid">Handroid</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>新进展</dt><dd>CoorDex 分别训练身体与手的特权跟踪教师，蒸馏成潜在先验，冻结后作为残差 RL 的动作空间（Unitree G1 + 20 DoF Wuji 手）。</dd>
+        <dt>运控要点</dt><dd>这是运控研究者最容易切入的交叉点：把已有的人形 WBC 先验与灵巧手先验组合起来。</dd>
+      </dl></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ B 部分 ============ -->
+<section id="partB" aria-labelledby="pb-h">
+  <h2 id="pb-h">B 部分：Agent × 灵巧手</h2>
+  <p class="section-lede">一句话：agent 擅长自动化"奖励-环境-数据-调参-评估"这个慢循环，不擅长替代 30–500 Hz 的手指接触控制。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>环节</th><th>agent 的作用</th><th>成熟度</th><th>代表</th></tr></thead>
+      <tbody>
+        <tr><td>奖励与课程</td><td>写奖励函数代码、迭代改进</td><td>较成熟，已上真机</td><td><a class="chip ref" href="https://arxiv.org/abs/2310.12931" target="_blank" rel="noopener" title="Eureka: Human-Level Reward Design via Coding Large Language Models">Eureka</a><a class="chip ref" href="https://arxiv.org/abs/2509.07445" target="_blank" rel="noopener" title="Text2Touch: Tactile In-Hand Manipulation with LLM-Designed Reward Functions">Text2Touch</a><a class="chip ref" href="https://arxiv.org/abs/2602.23876" target="_blank" rel="noopener" title="RF-Agent: Automated Reward Function Design via Language Agent Tree Search">RF-Agent</a></td></tr>
+        <tr><td>仿真参数 / 域随机化</td><td>VLM 当视觉真实感评判来调参</td><td>起步</td><td><a class="chip ref" href="https://arxiv.org/abs/2605.05241" target="_blank" rel="noopener" title="DexSim2Real: Foundation Model-Guided Sim-to-Real Transfer for Generalizable Dexterous Manipulation">DexSim2Real</a></td></tr>
+        <tr><td>仿真环境与数据生成</td><td>生成任务和场景；从人类视频重建并生成训练数据</td><td>快速发展</td><td><a class="chip ref" href="https://arxiv.org/abs/2511.01791" target="_blank" rel="noopener" title="GenDexHand: Generative Simulation for Dexterous Hands">GenDexHand</a><a class="chip ref" href="https://arxiv.org/abs/2609.35318" target="_blank" rel="noopener" title="DexAgent: An Agentic Human2Sim2Robot Framework for Dexterous Manipulation with Self-Evolving Tool Library">DexAgent</a><a class="chip ref" href="https://arxiv.org/abs/2609.27308" target="_blank" rel="noopener" title="EmbodiedSWE: Coding Agents for Long Horizon Dexterous Robotics">EmbodiedSWE</a><a class="chip ref" href="https://developers.googleblog.com/gemini-4-argon-for-robotics/" target="_blank" rel="noopener" title="Gemini 4 Argon for Robotics">Gemini 4 Argon for Robotics</a></td></tr>
+        <tr><td>语义 / 功能抓取目标</td><td>理解"拿杯柄""按喷头"，给出接触与抓取类型</td><td>较成熟</td><td><a class="chip ref" href="https://arxiv.org/abs/2512.03874" target="_blank" rel="noopener" title="OmniDexVLG: Learning Dexterous Grasp Generation from Vision Language Model-Guided Grasp Semantics, Taxonomy and Functional Affordance">OmniDexVLG</a><a class="chip ref" href="https://arxiv.org/abs/2601.16046" target="_blank" rel="noopener" title="DextER: Language-driven Dexterous Grasp Generation with Embodied Reasoning">DextER</a><a class="chip ref" href="https://arxiv.org/abs/2604.08410" target="_blank" rel="noopener" title="BLaDA: Bridging Language to Functional Dexterous Actions within 3DGS Fields">BLaDA</a><a class="chip ref" href="https://arxiv.org/abs/2503.07360" target="_blank" rel="noopener" title="AffordDexGrasp: Open-set Language-guided Dexterous Grasp with Generalizable-Instructive Affordance">AffordDexGrasp</a></td></tr>
+        <tr><td>高层规划 + 灵巧技能</td><td>VLM 规划、调用抓取或手内技能、失败后恢复</td><td>较成熟</td><td><a class="chip ref" href="https://arxiv.org/abs/2502.20900" target="_blank" rel="noopener" title="DexGraspVLA: A Vision-Language-Action Framework Towards General Dexterous Grasping">DexGraspVLA</a><a class="chip ref" href="https://arxiv.org/abs/2503.01616" target="_blank" rel="noopener" title="RoboDexVLM: Visual Language Model-Enabled Task Planning and Motion Control for Dexterous Robot Manipulation">RoboDexVLM</a><a class="chip ref" href="https://arxiv.org/abs/2503.12533" target="_blank" rel="noopener" title="Being-0: A Humanoid Robotic Agent with Vision-Language Models and Modular Skills">Being-0</a><a class="chip ref" href="https://arxiv.org/abs/2610.30136" target="_blank" rel="noopener" title="Agentic World Action Models">AW-0 (Agentic WAM)</a></td></tr>
+        <tr><td>编码 agent 自动训策略</td><td>自己搭仿真、写奖励、训 PPO、调参</td><td>2026 年刚出现</td><td><a class="chip ref" href="https://github.com/jianglongye/dexterous-astra" target="_blank" rel="noopener" title="Dexterous Astra: pen spinning and Rubik&#x27;s cube">Dexterous Astra</a><a class="chip ref" href="https://arxiv.org/abs/2607.00272" target="_blank" rel="noopener" title="ASPIRE: Agentic /Skills Discovery for Robotics">ASPIRE</a><a class="chip ref" href="https://arxiv.org/abs/2610.18792" target="_blank" rel="noopener" title="SEAR: Self-Evolving Agentic Robotics">SEAR</a></td></tr>
+        <tr><td>直接控制手指</td><td>大模型逐步输出手指动作</td><td>弱（触觉上下文例外）</td><td><a class="chip ref" href="https://arxiv.org/abs/2609.38537" target="_blank" rel="noopener" title="Systematically Exploring the Capabilities of GPT-6 Astra as Embodied Policies">GPT-6 Astra as Embodied Policies</a><a class="chip ref" href="https://arxiv.org/abs/2610.28457" target="_blank" rel="noopener" title="GPT-6-Astra Understands Touch and Outperform Vision--Tactile--Language--Action Models">GPT-6-Astra Understands Touch</a><a class="chip ref" href="https://tactalent.github.io/" target="_blank" rel="noopener" title="TacTalent: GPT-6 Astra as a Visuo-Tactile Policy">TacTalent</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><button class="btn-small" type="button" data-expand="#partB" aria-expanded="false">全部展开</button></p>
+  <div class="routes">
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">B1</span>LLM 写奖励 / 调仿真参数</h3><span class="chip">最成熟</span></div>
+      <p class="one">Eureka 让仿真里的 Shadow 手第一次学会快速转笔；Text2Touch 把 LLM 奖励扩展到触觉并上了真机。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2310.12931" target="_blank" rel="noopener" title="Eureka: Human-Level Reward Design via Coding Large Language Models">Eureka</a><a class="chip ref" href="https://arxiv.org/abs/2509.07445" target="_blank" rel="noopener" title="Text2Touch: Tactile In-Hand Manipulation with LLM-Designed Reward Functions">Text2Touch</a><a class="chip ref" href="https://arxiv.org/abs/2602.23876" target="_blank" rel="noopener" title="RF-Agent: Automated Reward Function Design via Language Agent Tree Search">RF-Agent</a><a class="chip ref" href="https://arxiv.org/abs/2605.05241" target="_blank" rel="noopener" title="DexSim2Real: Foundation Model-Guided Sim-to-Real Transfer for Generalizable Dexterous Manipulation">DexSim2Real</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>细节</dt><dd>Text2Touch 的提示结构可处理 70 多个环境变量，奖励更短，表现超过人工精调版本；RF-Agent 用蒙特卡洛树搜索管理奖励迭代；DexSim2Real 让 VLM 当视觉真实感评判，闭环 CMA-ES 调域随机化，真机平均 78.2%。</dd>
+        <dt>运控要点</dt><dd>你写奖励的那部分工作可以交给 agent，但任务定义、可自动判定的成功条件和安全约束仍要你来给。</dd>
+      </dl></details>
+    </article>
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">B2</span>生成式仿真与 agentic 数据管线</h3><span class="chip">快速发展</span></div>
+      <p class="one">GenDexHand 为灵巧手生成任务与环境；DexAgent 从一段第一人称视频生成物理可信的训练数据，自建工具库，成功率是基线的 3.5 倍。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2511.01791" target="_blank" rel="noopener" title="GenDexHand: Generative Simulation for Dexterous Hands">GenDexHand</a><a class="chip ref" href="https://arxiv.org/abs/2609.35318" target="_blank" rel="noopener" title="DexAgent: An Agentic Human2Sim2Robot Framework for Dexterous Manipulation with Self-Evolving Tool Library">DexAgent</a><a class="chip ref" href="https://arxiv.org/abs/2609.27308" target="_blank" rel="noopener" title="EmbodiedSWE: Coding Agents for Long Horizon Dexterous Robotics">EmbodiedSWE</a><a class="chip ref" href="https://developers.googleblog.com/gemini-4-argon-for-robotics/" target="_blank" rel="noopener" title="Gemini 4 Argon for Robotics">Gemini 4 Argon for Robotics</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>细节</dt><dd>DexAgent 分四步：语义理解 → 按物体属性重建仿真 → 轨迹优化 → 数据生成，每一步都有属性相关的校验器把关，工具库越用越快。Gemini 4 Argon 能把第一人称视频重定向到带 22 DoF 手的仿真人形，并从视频或草图生成 MuJoCo 孪生。</dd>
+        <dt>运控要点</dt><dd>这类工作的关键在"校验器"：没有可靠的物理校验，生成数据就会把错误传下去。</dd>
+      </dl></details>
+    </article>
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">B3</span>VLM / LLM 语义与功能抓取</h3><span class="chip">给控制器一个参考</span></div>
+      <p class="one">从语言到"哪个手指碰哪里、用什么抓型"：AffordDexGrasp、OmniDexVLG（多 agent 推理）、DextER（接触 token）、BLaDA、AdaRoboVLG、DexVLG。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2412.08468" target="_blank" rel="noopener" title="Multi-GraspLLM: A Multimodal LLM for Multi-Hand Semantic Guided Grasp Generation">Multi-GraspLLM</a><a class="chip ref" href="https://arxiv.org/abs/2503.07360" target="_blank" rel="noopener" title="AffordDexGrasp: Open-set Language-guided Dexterous Grasp with Generalizable-Instructive Affordance">AffordDexGrasp</a><a class="chip ref" href="https://arxiv.org/abs/2512.03874" target="_blank" rel="noopener" title="OmniDexVLG: Learning Dexterous Grasp Generation from Vision Language Model-Guided Grasp Semantics, Taxonomy and Functional Affordance">OmniDexVLG</a><a class="chip ref" href="https://arxiv.org/abs/2601.16046" target="_blank" rel="noopener" title="DextER: Language-driven Dexterous Grasp Generation with Embodied Reasoning">DextER</a><a class="chip ref" href="https://arxiv.org/abs/2604.08410" target="_blank" rel="noopener" title="BLaDA: Bridging Language to Functional Dexterous Actions within 3DGS Fields">BLaDA</a><a class="chip ref" href="https://arxiv.org/abs/2609.04096" target="_blank" rel="noopener" title="Adaptive Vision-Language Grasping via Composable Foundation Priors and Generalizable Grasp Synthesis">AdaRoboVLG</a><a class="chip ref" href="https://arxiv.org/abs/2507.02747" target="_blank" rel="noopener" title="DexVLG: Dexterous Vision-Language-Grasp Model at Scale">DexVLG</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>细节</dt><dd>DextER 先自回归生成接触 token，再生成抓取，把接触当作具身推理的中间表示；AdaRoboVLG 把任务理解交给可组合的基础模型模块，底层抓取策略不用重训。</dd>
+        <dt>运控要点</dt><dd>这一层给的是语义化的目标接触，下游仍需力封闭检查和闭环控制。</dd>
+      </dl></details>
+    </article>
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">B4</span>VLM 规划 + 灵巧技能</h3><span class="chip">分层</span></div>
+      <p class="one">VLM 负责规划与恢复，学习到的灵巧技能负责执行：DexGraspVLA、RoboDexVLM、Being-0；AW-0 把代码、未来视频与动作联合生成。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2502.20900" target="_blank" rel="noopener" title="DexGraspVLA: A Vision-Language-Action Framework Towards General Dexterous Grasping">DexGraspVLA</a><a class="chip ref" href="https://arxiv.org/abs/2503.01616" target="_blank" rel="noopener" title="RoboDexVLM: Visual Language Model-Enabled Task Planning and Motion Control for Dexterous Robot Manipulation">RoboDexVLM</a><a class="chip ref" href="https://arxiv.org/abs/2503.12533" target="_blank" rel="noopener" title="Being-0: A Humanoid Robotic Agent with Vision-Language Models and Modular Skills">Being-0</a><a class="chip ref" href="https://arxiv.org/abs/2411.18562" target="_blank" rel="noopener" title="DexHandDiff: Interaction-aware Diffusion Planning for Adaptive Dexterous Manipulation">DexHandDiff</a><a class="chip ref" href="https://arxiv.org/abs/2610.30136" target="_blank" rel="noopener" title="Agentic World Action Models">AW-0 (Agentic WAM)</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>细节</dt><dd>DexGraspVLA 把多样的语言与视觉输入经基础模型转成领域不变表示，再用扩散控制器执行，杂乱场景抓取 90% 以上；Being-0 用 Connector VLM 衔接基础模型与行走、灵巧技能。</dd>
+        <dt>运控要点</dt><dd>分层接口（子目标、抓取类型、终止条件）的设计比规划器大小更重要，这一点与第一份调研的结论一致。</dd>
+      </dl></details>
+    </article>
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">B5</span>编码 agent 与自我进化</h3><span class="chip">2026 年新出现</span></div>
+      <p class="one">编码 agent 自己搭仿真、写奖励、训 PPO：Dexterous Astra 让 Sharpa Wave 转笔三圈、Wuji 手解魔方；ASPIRE 在真机灵巧手上解魔方。</p>
+      <div class="chips"><a class="chip ref" href="https://github.com/jianglongye/dexterous-astra" target="_blank" rel="noopener" title="Dexterous Astra: pen spinning and Rubik&#x27;s cube">Dexterous Astra</a><a class="chip ref" href="https://arxiv.org/abs/2607.00272" target="_blank" rel="noopener" title="ASPIRE: Agentic /Skills Discovery for Robotics">ASPIRE</a><a class="chip ref" href="https://arxiv.org/abs/2610.18792" target="_blank" rel="noopener" title="SEAR: Self-Evolving Agentic Robotics">SEAR</a><a class="chip ref" href="https://arxiv.org/abs/2610.27039" target="_blank" rel="noopener" title="Embodied Playground: A Long-Horizon Agentic Robotics Benchmark for Physical, Strategic, and Spatial Reasoning">Embodied Playground</a><a class="chip ref" href="https://arxiv.org/abs/2609.27308" target="_blank" rel="noopener" title="EmbodiedSWE: Coding Agents for Long Horizon Dexterous Robotics">EmbodiedSWE</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>细节</dt><dd>社区记录了 GPT-6 Astra 自主运行约一天半，从建笔的网格到训好 PPO 转笔策略的案例；SEAR 设计对照实验，区分"真的学到了"和"只是多试了几次"；EmbodiedSWE 把编码 agent 的解扩增成 VLA 训练数据。</dd>
+        <dt>运控要点</dt><dd>本质是 Eureka 的放大版：agent 接管"写环境 → 写奖励 → 训练 → 看曲线 → 改"的循环，你负责可自动评估的任务定义和安全的真机流程。</dd>
+      </dl></details>
+    </article>
+    <article class="card route">
+      <div class="route-head"><h3><span class="route-num">B6</span>前沿模型直接控手</h3><span class="chip">触觉上下文是例外</span></div>
+      <p class="one">直接做手内操作时难以协调手指接触（Galbot 评测）；但把触觉总结成上下文后，冻结的 GPT-6 Astra 在接触任务上表现很好。</p>
+      <div class="chips"><a class="chip ref" href="https://arxiv.org/abs/2609.38537" target="_blank" rel="noopener" title="Systematically Exploring the Capabilities of GPT-6 Astra as Embodied Policies">GPT-6 Astra as Embodied Policies</a><a class="chip ref" href="https://arxiv.org/abs/2610.28457" target="_blank" rel="noopener" title="GPT-6-Astra Understands Touch and Outperform Vision--Tactile--Language--Action Models">GPT-6-Astra Understands Touch</a><a class="chip ref" href="https://tactalent.github.io/" target="_blank" rel="noopener" title="TacTalent: GPT-6 Astra as a Visuo-Tactile Policy">TacTalent</a><a class="chip ref" href="https://arxiv.org/abs/2610.22471" target="_blank" rel="noopener" title="Has GPT-6-Astra Achieved Embodied Intelligence?">Has GPT-6-Astra Achieved Embodied Intelligence?</a><a class="chip ref" href="https://github.com/zjwzcx/Awesome-Astra-Embodied-AI" target="_blank" rel="noopener" title="Awesome Astra Embodied AI">Awesome-Astra-Embodied-AI</a></div>
+      <details><summary>展开</summary><dl>
+        <dt>细节</dt><dd>Galbot：与学习策略混合控制在 DexJoCo 10 次试验中成功 50%。GPT-6-Astra Understands Touch：5 个 UniVTAC 任务平均 93.8%，插孔任务 31%→99%。TacTalent：19 个视触觉仿真任务，加触觉后成功率上升。</dd>
+        <dt>运控要点</dt><dd>大模型的强项是"理解接触信号、做纠正决策"，弱项是"高频协调多指"，所以应把它放在慢环。</dd>
+      </dl></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 时间线 ============ -->
+<section id="timeline" aria-labelledby="tl-h">
+  <h2 id="tl-h">时间线（2018 → 2026-10）</h2>
+  <div class="filters" role="group" aria-label="按方向筛选时间线">
+    <span class="label">方向：</span>
+    <button class="chip" type="button" data-track="all" aria-pressed="true">全部</button>
+    <button class="chip" type="button" data-track="ctrl" aria-pressed="false">A·控制 / sim2real / 触觉</button>
+    <button class="chip" type="button" data-track="data" aria-pressed="false">A·数据 / 遥操作 / 抓取</button>
+    <button class="chip" type="button" data-track="vla" aria-pressed="false">A·VLA / 人形</button>
+    <button class="chip" type="button" data-track="agent" aria-pressed="false">B·Agent</button>
+    <button class="chip" type="button" data-track="hw" aria-pressed="false">硬件 / 产业</button>
+  </div>
+  <ol class="tl" id="tlList">
+    <li class="tl-year">2018</li>
+    <li class="tl-item" data-track="ctrl"><time>2018-08</time><div><div class="tl-title"><a href="https://arxiv.org/abs/1808.00177" target="_blank" rel="noopener" title="Learning Dexterous In-Hand Manipulation">Dactyl</a></div><p>大规模域随机化 + RL，Shadow 手方块重定向 sim2real</p></div><span class="chip">控制</span></li>
+    <li class="tl-year">2019</li>
+    <li class="tl-item" data-track="ctrl"><time>2019-10</time><div><div class="tl-title"><a href="https://arxiv.org/abs/1910.07113" target="_blank" rel="noopener" title="Solving Rubik&#x27;s Cube with a Robot Hand">OpenAI 魔方</a></div><p>自动域随机化 + 带记忆的策略</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="data"><time>2019-10</time><div><div class="tl-title"><a href="https://arxiv.org/abs/1910.03135" target="_blank" rel="noopener" title="DexPilot: Vision Based Teleoperation of Dexterous Robotic Hand-Arm System">DexPilot</a></div><p>纯视觉遥操作手臂-手系统</p></div><span class="chip">数据</span></li>
+    <li class="tl-year">2021</li>
+    <li class="tl-item" data-track="ctrl"><time>2021-11</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2111.03043" target="_blank" rel="noopener" title="A System for General In-Hand Object Re-Orientation">通用手内重定向</a></div><p>教师-学生，掌心朝下也能重定向</p></div><span class="chip">控制</span></li>
+    <li class="tl-year">2022</li>
+    <li class="tl-item" data-track="ctrl"><time>2022-06</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2206.08686" target="_blank" rel="noopener" title="Towards Human-Level Bimanual Dexterous Manipulation with Reinforcement Learning">Bi-DexHands</a> · <a href="https://arxiv.org/abs/2206.10787" target="_blank" rel="noopener" title="Global Planning for Contact-Rich Manipulation via Local Smoothing of Quasi-dynamic Contact Models">准静态平滑全局规划</a></div><p>双手 RL 基准；接触丰富规划的模型路线</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="ctrl"><time>2022-10</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2210.04887" target="_blank" rel="noopener" title="In-Hand Object Rotation via Rapid Motor Adaptation">HORA</a> · <a href="https://arxiv.org/abs/2210.13702" target="_blank" rel="noopener" title="DeXtreme: Transfer of Agile In-hand Manipulation from Simulation to Reality">DeXtreme</a></div><p>RMA 进入灵巧手；Isaac Gym 并行 + 视觉位姿</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="data"><time>2022-10</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2210.02697" target="_blank" rel="noopener" title="DexGraspNet: A Large-Scale Robotic Dexterous Grasp Dataset for General Objects Based on Simulation">DexGraspNet</a></div><p>132 万个 ShadowHand 抓取</p></div><span class="chip">数据</span></li>
+    <li class="tl-item" data-track="ctrl"><time>2022-11</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2211.11744" target="_blank" rel="noopener" title="Visual Dexterity: In-Hand Reorientation of Novel and Complex Object Shapes">Visual Dexterity</a> · <a href="https://arxiv.org/abs/2212.00541" target="_blank" rel="noopener" title="Predictive Sampling: Real-time Behaviour Synthesis with MuJoCo">Predictive Sampling</a></div><p>单深度相机重定向；MuJoCo 采样 MPC</p></div><span class="chip">控制</span></li>
+    <li class="tl-year">2023</li>
+    <li class="tl-item" data-track="ctrl"><time>2023-03</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2303.10880" target="_blank" rel="noopener" title="Rotating without Seeing: Towards In-hand Dexterity through Touch">Rotating without Seeing</a></div><p>只靠触觉旋转</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="ctrl"><time>2023-05</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2305.12127" target="_blank" rel="noopener" title="DexPBT: Scaling up Dexterous Manipulation for Hand-Arm Systems with Population Based Training">DexPBT</a></div><p>种群训练扩展到手臂 + 手</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="data"><time>2023-07</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2307.04577" target="_blank" rel="noopener" title="AnyTeleop: A General Vision-Based Dexterous Robot Arm-Hand Teleoperation System">AnyTeleop</a></div><p>通用视觉遥操作框架</p></div><span class="chip">数据</span></li>
+    <li class="tl-item" data-track="hw"><time>2023-09</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2309.06440" target="_blank" rel="noopener" title="LEAP Hand: Low-Cost, Efficient, and Anthropomorphic Hand for Robot Learning">LEAP Hand</a></div><p>低成本学习用灵巧手</p></div><span class="chip">硬件</span></li>
+    <li class="tl-item" data-track="agent"><time>2023-10</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2310.12931" target="_blank" rel="noopener" title="Eureka: Human-Level Reward Design via Coding Large Language Models">Eureka</a></div><p>LLM 写奖励，第一次让仿真 Shadow 手学会转笔</p></div><span class="chip">B·Agent</span></li>
+    <li class="tl-year">2024</li>
+    <li class="tl-item" data-track="data"><time>2024-03</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2403.07788" target="_blank" rel="noopener" title="DexCap: Scalable and Portable Mocap Data Collection System for Dexterous Manipulation">DexCap</a></div><p>便携动捕采人手数据</p></div><span class="chip">数据</span></li>
+    <li class="tl-item" data-track="ctrl"><time>2024-07</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2407.02274" target="_blank" rel="noopener" title="DextrAH-G: Pixels-to-Action Dexterous Arm-Hand Grasping with Geometric Fabrics">DextrAH-G</a> · <a href="https://arxiv.org/abs/2407.18902" target="_blank" rel="noopener" title="Lessons from Learning to Spin &quot;Pens&quot;">转笔经验总结</a></div><p>几何 fabrics + RL 抓取；高动态手内操作</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="ctrl"><time>2024-09</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2409.14562" target="_blank" rel="noopener" title="DROP: Dexterous Reorientation via Online Planning">DROP</a></div><p>在线采样规划做手内重定向</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="data"><time>2024-10</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2410.24185" target="_blank" rel="noopener" title="DexMimicGen: Automated Data Generation for Bimanual Dexterous Manipulation via Imitation Learning">DexMimicGen</a> · <a href="https://arxiv.org/abs/2410.23004" target="_blank" rel="noopener" title="DexGraspNet 2.0: Learning Generative Dexterous Grasping in Large-scale Synthetic Cluttered Scenes">DexGraspNet 2.0</a></div><p>自动扩增双手数据；杂乱场景生成式抓取</p></div><span class="chip">数据</span></li>
+    <li class="tl-item" data-track="data"><time>2024-12</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2412.16490" target="_blank" rel="noopener" title="BODex: Scalable and Efficient Robotic Dexterous Grasp Synthesis Using Bilevel Optimization">BODex</a></div><p>双层 QP 的 GPU 并行抓取合成</p></div><span class="chip">数据</span></li>
+    <li class="tl-year">2025</li>
+    <li class="tl-item" data-track="ctrl"><time>2025-02</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2502.04307" target="_blank" rel="noopener" title="DexterityGen: Foundation Controller for Unprecedented Dexterity">DexterityGen</a> · <a href="https://arxiv.org/abs/2502.08844" target="_blank" rel="noopener" title="MuJoCo Playground">MuJoCo Playground</a></div><p>灵巧基础控制器；MJX 开源训练框架</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="vla"><time>2025-02</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2502.20900" target="_blank" rel="noopener" title="DexGraspVLA: A Vision-Language-Action Framework Towards General Dexterous Grasping">DexGraspVLA</a></div><p>VLM 规划 + 扩散控制器</p></div><span class="chip">VLA</span></li>
+    <li class="tl-item" data-track="data"><time>2025-03</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2503.21860" target="_blank" rel="noopener" title="ManipTrans: Efficient Dexterous Bimanual Manipulation Transfer via Residual Learning">ManipTrans</a> · <a href="https://arxiv.org/abs/2503.08257" target="_blank" rel="noopener" title="DexGrasp Anything: Towards Universal Robotic Dexterous Grasping with Physics Awareness">DexGrasp Anything</a></div><p>人类双手技能迁移；物理感知的扩散抓取</p></div><span class="chip">数据</span></li>
+    <li class="tl-item" data-track="agent"><time>2025-03</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2503.07360" target="_blank" rel="noopener" title="AffordDexGrasp: Open-set Language-guided Dexterous Grasp with Generalizable-Instructive Affordance">AffordDexGrasp</a> · <a href="https://arxiv.org/abs/2503.01616" target="_blank" rel="noopener" title="RoboDexVLM: Visual Language Model-Enabled Task Planning and Motion Control for Dexterous Robot Manipulation">RoboDexVLM</a> · <a href="https://arxiv.org/abs/2503.12533" target="_blank" rel="noopener" title="Being-0: A Humanoid Robotic Agent with Vision-Language Models and Modular Skills">Being-0</a></div><p>语言可供性抓取；VLM 规划 + 灵巧抓取；人形 agent</p></div><span class="chip">B·Agent</span></li>
+    <li class="tl-item" data-track="ctrl"><time>2025-05</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2505.02291" target="_blank" rel="noopener" title="Dexterous Contact-Rich Manipulation via the Contact Trust Region">Contact Trust Region</a></div><p>尊重接触单边性的 MPC + 全局规划</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="data"><time>2025-05</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2505.21864" target="_blank" rel="noopener" title="DexUMI: Using Human Hand as the Universal Manipulation Interface for Dexterous Manipulation">DexUMI</a> · <a href="https://arxiv.org/abs/2505.07813" target="_blank" rel="noopener" title="DexWild: Dexterous Human Interactions for In-the-Wild Robot Policies">DexWild</a> · <a href="https://arxiv.org/abs/2505.24853" target="_blank" rel="noopener" title="DexMachina: Functional Retargeting for Bimanual Dexterous Manipulation">DexMachina</a></div><p>人手当操作接口；野外采集；功能性重定向</p></div><span class="chip">数据</span></li>
+    <li class="tl-item" data-track="data"><time>2025-06</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2506.17198" target="_blank" rel="noopener" title="Dex1B: Learning with 1B Demonstrations for Dexterous Manipulation">Dex1B</a></div><p>10 亿条演示</p></div><span class="chip">数据</span></li>
+    <li class="tl-item" data-track="vla"><time>2025-07</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2507.02747" target="_blank" rel="noopener" title="DexVLG: Dexterous Vision-Language-Grasp Model at Scale">DexVLG</a> · <a href="https://arxiv.org/abs/2507.15597" target="_blank" rel="noopener" title="Being-H0: Vision-Language-Action Pretraining from Large-Scale Human Videos">Being-H0</a> · <a href="https://arxiv.org/abs/2507.12440" target="_blank" rel="noopener" title="EgoVLA: Learning Vision-Language-Action Models from Egocentric Human Videos">EgoVLA</a></div><p>1.7 亿语义抓取；人类视频预训练的灵巧 VLA</p></div><span class="chip">VLA</span></li>
+    <li class="tl-item" data-track="agent"><time>2025-09</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2509.07445" target="_blank" rel="noopener" title="Text2Touch: Tactile In-Hand Manipulation with LLM-Designed Reward Functions">Text2Touch</a></div><p>LLM 设计触觉奖励，真机多轴旋转</p></div><span class="chip">B·Agent</span></li>
+    <li class="tl-item" data-track="ctrl"><time>2025-10</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2510.08556" target="_blank" rel="noopener" title="DexNDM: Closing the Reality Gap for Dexterous In-Hand Rotation via Joint-Wise Neural Dynamics Model">DexNDM</a></div><p>关节级神经动力学闭合 sim2real 差距</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="agent"><time>2025-11</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2511.01791" target="_blank" rel="noopener" title="GenDexHand: Generative Simulation for Dexterous Hands">GenDexHand</a></div><p>灵巧手的生成式仿真</p></div><span class="chip">B·Agent</span></li>
+    <li class="tl-item" data-track="vla"><time>2025-12</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2512.24210" target="_blank" rel="noopener" title="GR-Dexter Technical Report">GR-Dexter</a></div><p>21 DoF 手 + 双手遥操作 + VLA</p></div><span class="chip">VLA</span></li>
+    <li class="tl-year">2026</li>
+    <li class="tl-item" data-track="ctrl"><time>2026-01</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2601.02778" target="_blank" rel="noopener" title="Closing the Reality Gap: Zero-Shot Sim-to-Real Deployment for Dexterous Force-Based Grasping and Manipulation">Force-Based Sim2Real</a> · <a href="https://arxiv.org/abs/2601.10930" target="_blank" rel="noopener" title="Where to Touch, How to Contact: A Hierarchical RL-MPC Framework for Geometry-Aware Sim-to-Real Manipulation">Hierarchical RL-MPC</a></div><p>电流-力矩标定 + 触觉；RL 选接触点、MPC 执行</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="hw"><time>2026-01</time><div><div class="tl-title"><a href="https://interestingengineering.com/ai-robotics/figure-helix02-upgrades-humanoid-robot-control" target="_blank" rel="noopener" title="Figure Helix 02">Figure Helix 02</a></div><p>指尖触觉 + 掌心相机分药片、推注射器</p></div><span class="chip">产业</span></li>
+    <li class="tl-item" data-track="vla"><time>2026-02</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2602.16710" target="_blank" rel="noopener" title="EgoScale: Scaling Dexterous Manipulation with Diverse Egocentric Human Data">EgoScale</a></div><p>2 万多小时人类视频，对数线性规律</p></div><span class="chip">VLA</span></li>
+    <li class="tl-item" data-track="agent"><time>2026-02</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2602.23876" target="_blank" rel="noopener" title="RF-Agent: Automated Reward Function Design via Language Agent Tree Search">RF-Agent</a></div><p>蒙特卡洛树搜索管理 LLM 奖励设计</p></div><span class="chip">B·Agent</span></li>
+    <li class="tl-item" data-track="ctrl"><time>2026-03</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2603.04531" target="_blank" rel="noopener" title="PTLD: Sim-to-real Privileged Tactile Latent Distillation for Dexterous Manipulation">PTLD</a></div><p>不做触觉仿真的触觉 sim2real</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="vla"><time>2026-03</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2603.10158" target="_blank" rel="noopener" title="Cross-Hand Latent Representation for Vision-Language-Action Models">XL-VLA</a></div><p>跨手潜在动作空间，72% vs π0 的 32%</p></div><span class="chip">VLA</span></li>
+    <li class="tl-item" data-track="ctrl"><time>2026-04</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2604.11138" target="_blank" rel="noopener" title="ViserDex: Visual Sim-to-Real for Robust Dexterous In-hand Reorientation">ViserDex</a></div><p>3D 高斯泼溅空间的视觉域随机化</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="vla"><time>2026-05</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2605.18722" target="_blank" rel="noopener" title="Dexora: Open-source VLA for High-DoF Bimanual Dexterity">Dexora</a></div><p>开源双臂双手 VLA</p></div><span class="chip">VLA</span></li>
+    <li class="tl-item" data-track="hw"><time>2026-06</time><div><div class="tl-title"><a href="https://www.cnx-software.com/2026/06/02/sharpa-wave-high-end-dexterous-robotic-hand-with-22-dof-high-sensitivity-dynamic-tactile-array/" target="_blank" rel="noopener" title="Sharpa Wave: 22-DoF dexterous hand with dynamic tactile array">Sharpa Wave</a> · <a href="https://arxiv.org/abs/2606.17418" target="_blank" rel="noopener" title="DexLink Hand: A Compact, Affordable, 16-DOF Linkage-Driven Hand with Human-Like Dexterity">DexLink</a></div><p>22 DoF 直驱 + 触觉阵列；400 美元以内的 20 关节手</p></div><span class="chip">硬件</span></li>
+    <li class="tl-item" data-track="vla"><time>2026-06</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2606.23680" target="_blank" rel="noopener" title="CoorDex: Coordinating Body and Hand Priors for Continuous Dexterous Humanoid Loco-Manipulation">CoorDex</a></div><p>人形边走边灵巧操作</p></div><span class="chip">人形</span></li>
+    <li class="tl-item" data-track="data"><time>2026-07</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2607.11874" target="_blank" rel="noopener" title="A Minimalist Retargeting-Guided Reinforcement Learning Recipe for Dexterous Manipulation">REGRIND</a> · <a href="https://arxiv.org/abs/2607.08751" target="_blank" rel="noopener" title="DexVerse: A Modular Benchmark for Multi-Task, Multi-Embodiment Dexterous Manipulation">DexVerse</a></div><p>人形 WBC 配方迁移到灵巧手；100 任务 6 手基准</p></div><span class="chip">数据</span></li>
+    <li class="tl-item" data-track="agent"><time>2026-07</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2607.00272" target="_blank" rel="noopener" title="ASPIRE: Agentic /Skills Discovery for Robotics">ASPIRE</a></div><p>编码 agent 持续写技能，真机解魔方</p></div><span class="chip">B·Agent</span></li>
+    <li class="tl-item" data-track="ctrl"><time>2026-08</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2608.19182" target="_blank" rel="noopener" title="ADEPT: Accelerating Dexterity via Pre-Training and Post-Training using Reinforcement Learning">ADEPT</a> · <a href="https://arxiv.org/abs/2608.15897" target="_blank" rel="noopener" title="Tactile Sim2Real without Tactile Simulation via Bottlenecked Latent Reconstruction">SBLR</a></div><p>灵巧预训练 + 后训练；免传感器仿真的触觉迁移</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="ctrl"><time>2026-09</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2609.33973" target="_blank" rel="noopener" title="FINGR: Learning Dexterous Hand Control for Real-World Rubik&#x27;s Cube Solving">FINGR</a> · <a href="https://arxiv.org/abs/2609.18174" target="_blank" rel="noopener" title="TacBPM: A Tactile-conditioned Behavior Prior Model for Dexterous Reorientation">TacBPM</a> · <a href="https://arxiv.org/abs/2609.14868" target="_blank" rel="noopener" title="Primitive-Informed Sampling-Based MPC for Multi-Fingered Dexterous Manipulation">Primitive-Informed MPC</a></div><p>真实魔方；触觉行为先验；原语化采样 MPC</p></div><span class="chip">控制</span></li>
+    <li class="tl-item" data-track="agent"><time>2026-09</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2609.35318" target="_blank" rel="noopener" title="DexAgent: An Agentic Human2Sim2Robot Framework for Dexterous Manipulation with Self-Evolving Tool Library">DexAgent</a> · <a href="https://github.com/jianglongye/dexterous-astra" target="_blank" rel="noopener" title="Dexterous Astra: pen spinning and Rubik&#x27;s cube">Dexterous Astra</a> · <a href="https://arxiv.org/abs/2609.38537" target="_blank" rel="noopener" title="Systematically Exploring the Capabilities of GPT-6 Astra as Embodied Policies">Galbot 评测</a></div><p>agentic 数据管线 3.5×；编码 agent 训转笔与魔方；大模型直接控手的边界</p></div><span class="chip">B·Agent</span></li>
+    <li class="tl-item" data-track="agent"><time>2026-10</time><div><div class="tl-title"><a href="https://arxiv.org/abs/2610.28457" target="_blank" rel="noopener" title="GPT-6-Astra Understands Touch and Outperform Vision--Tactile--Language--Action Models">GPT-6-Astra Understands Touch</a> · <a href="https://arxiv.org/abs/2610.18792" target="_blank" rel="noopener" title="SEAR: Self-Evolving Agentic Robotics">SEAR</a> · <a href="https://developers.googleblog.com/gemini-4-argon-for-robotics/" target="_blank" rel="noopener" title="Gemini 4 Argon for Robotics">Gemini 4 Argon</a></div><p>触觉上下文 31%→99%；自我进化框架；视频到 22 DoF 手的仿真</p></div><span class="chip">B·Agent</span></li>
+  </ol>
+</section>
+
+<!-- ============ 数据与基准 ============ -->
+<section id="data" aria-labelledby="data-h">
+  <h2 id="data-h">数据规模与基准</h2>
+  <div class="grid-4">
+    <div class="card stat"><div class="label">DexGraspNet：力封闭优化合成的 ShadowHand 抓取</div><div class="value">132 万</div><div class="sub"><a href="https://arxiv.org/abs/2210.02697" target="_blank" rel="noopener" title="DexGraspNet: A Large-Scale Robotic Dexterous Grasp Dataset for General Objects Based on Simulation">2022-10</a></div></div>
+    <div class="card stat"><div class="label">DexGraspNet 3.0：与语义部件对齐的抓取（DexVLG）</div><div class="value">1.7 亿</div><div class="sub"><a href="https://arxiv.org/abs/2507.02747" target="_blank" rel="noopener" title="DexVLG: Dexterous Vision-Language-Grasp Model at Scale">2025-07</a></div></div>
+    <div class="card stat"><div class="label">Dex1B：生成模型产出的抓取与铰接演示</div><div class="value">10 亿</div><div class="sub"><a href="https://arxiv.org/abs/2506.17198" target="_blank" rel="noopener" title="Dex1B: Learning with 1B Demonstrations for Dexterous Manipulation">2025-06</a></div></div>
+    <div class="card stat"><div class="label">EgoScale：带动作标签的第一人称人类视频</div><div class="value">20,854 小时</div><div class="sub"><a href="https://arxiv.org/abs/2602.16710" target="_blank" rel="noopener" title="EgoScale: Scaling Dexterous Manipulation with Diverse Egocentric Human Data">2026-02</a></div></div>
+  </div>
+  <p class="note">四个数字的单位不同（抓取、演示、视频小时），不能直接比较，只说明三条数据路线各自的量级。</p>
+  <div class="table-wrap" style="margin-top:14px">
+    <table>
+      <thead><tr><th>基准 / 数据集</th><th>内容</th><th>适合做什么</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://arxiv.org/abs/2206.08686" target="_blank" rel="noopener" title="Towards Human-Level Bimanual Dexterous Manipulation with Reinforcement Learning">Bi-DexHands</a></td><td>Isaac Gym 双手灵巧任务</td><td>RL 算法、LLM 奖励设计的常用测试场</td></tr>
+        <tr><td><a href="https://arxiv.org/abs/2305.05706" target="_blank" rel="noopener" title="DexArt: Benchmarking Generalizable Dexterous Manipulation with Articulated Objects">DexArt</a></td><td>铰接物体的灵巧操作</td><td>泛化到新物体</td></tr>
+        <tr><td><a href="https://arxiv.org/abs/2505.24853" target="_blank" rel="noopener" title="DexMachina: Functional Retargeting for Bimanual Dexterous Manipulation">DexMachina</a></td><td>由人类演示定义的长时程双手任务，多种手</td><td>重定向 + 跟踪方法、比较不同手的硬件设计</td></tr>
+        <tr><td><a href="https://arxiv.org/abs/2607.08751" target="_blank" rel="noopener" title="DexVerse: A Modular Benchmark for Multi-Task, Multi-Embodiment Dexterous Manipulation">DexVerse</a></td><td>100 个任务、3 种机械臂、6 种灵巧手</td><td>多任务、跨本体泛化</td></tr>
+        <tr><td><a href="https://arxiv.org/abs/2502.08844" target="_blank" rel="noopener" title="MuJoCo Playground">MuJoCo Playground</a></td><td>MJX 环境，含灵巧手任务</td><td>快速训练与 sim2real 入门</td></tr>
+        <tr><td><a href="https://arxiv.org/abs/2412.16490" target="_blank" rel="noopener" title="BODex: Scalable and Efficient Robotic Dexterous Grasp Synthesis Using Bilevel Optimization">BODex</a></td><td>MuJoCo 中可复现的抓取评测</td><td>抓取合成与学习</td></tr>
+        <tr><td><a href="https://arxiv.org/abs/2606.22332" target="_blank" rel="noopener" title="Tactile Genesis: Exploring Tactile Sensors at Scale for Learning Dexterous Tasks">Tactile Genesis</a></td><td>多种触觉抽象的 GPU 仿真</td><td>研究"需要什么样的触觉"</td></tr>
+        <tr><td><a href="https://arxiv.org/abs/2104.04631" target="_blank" rel="noopener" title="DexYCB: A Benchmark for Capturing Hand Grasping of Objects">DexYCB</a> · <a href="https://arxiv.org/abs/2204.13662" target="_blank" rel="noopener" title="ARCTIC: A Dataset for Dexterous Bimanual Hand-Object Manipulation">ARCTIC</a> · <a href="https://arxiv.org/abs/2403.19417" target="_blank" rel="noopener" title="OAKINK2: A Dataset of Bimanual Hands-Object Manipulation in Complex Task Completion">OakInk2</a></td><td>人手-物体交互数据集</td><td>人类演示重定向、手-物重建</td></tr>
+        <tr><td><a href="https://arxiv.org/abs/2610.27039" target="_blank" rel="noopener" title="Embodied Playground: A Long-Horizon Agentic Robotics Benchmark for Physical, Strategic, and Spatial Reasoning">Embodied Playground</a></td><td>长时程 agentic 任务，含灵巧手魔方与汉诺塔</td><td>评测 agent（B 部分）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 开放问题 ============ -->
+<section id="open" aria-labelledby="open-h">
+  <h2 id="open-h">开放问题</h2>
+  <div class="grid-4">
+    <div class="card prob"><h3>力与接触数据从哪来</h3><p>人类视频与遥操作缺力和触觉；仿真补全、力感知重定向、真实特权传感器三条路尚未收敛。</p></div>
+    <div class="card prob"><h3>执行器与接触参数</h3><p>腱、回差、指尖材料让关节级建模成为必需，需要像腿足 actuator net 那样的标准流程。</p></div>
+    <div class="card prob"><h3>触觉标准化</h3><p>每种传感器都像一台新机器人；SBLR、Tactile Genesis 在尝试统一抽象。</p></div>
+    <div class="card prob"><h3>跨本体</h3><p>6–22 DoF、不同驱动的手能否共享策略？规范 URDF、潜在动作空间是候选答案。</p></div>
+    <div class="card prob"><h3>长时程与工具</h3><p>魔方、铰接工具、拧螺丝要"保持一部分接触、同时改变另一部分接触"，策略组合与接触规划仍难。</p></div>
+    <div class="card prob"><h3>评测</h3><p>真机任务难复现；仿真基准在推进，但缺少分布式的真机评测。</p></div>
+    <div class="card prob"><h3>agent 的边界</h3><p>大模型能否在 10–100 Hz 的环里做触觉纠正？目前只在慢速、离散的决策上有效。</p></div>
+    <div class="card prob"><h3>评估器与安全</h3><p>编码 agent 自动训练需要可靠的自动判定与真机安全流程，否则会"优化评估器的漏洞"。</p></div>
+  </div>
+  <div class="card reading" style="margin-top:14px">
+    <h3>推荐阅读路径（运控研究者）</h3>
+    <ol>
+      <li><a href="https://arxiv.org/abs/1808.00177" target="_blank" rel="noopener" title="Learning Dexterous In-Hand Manipulation">Dactyl</a> → <a href="https://arxiv.org/abs/2210.04887" target="_blank" rel="noopener" title="In-Hand Object Rotation via Rapid Motor Adaptation">HORA</a>（RMA 迁移）→ <a href="https://arxiv.org/abs/2210.13702" target="_blank" rel="noopener" title="DeXtreme: Transfer of Agile In-hand Manipulation from Simulation to Reality">DeXtreme</a> → <a href="https://arxiv.org/abs/2510.08556" target="_blank" rel="noopener" title="DexNDM: Closing the Reality Gap for Dexterous In-Hand Rotation via Joint-Wise Neural Dynamics Model">DexNDM</a>（执行器建模）</li>
+      <li><a href="https://arxiv.org/abs/2503.21860" target="_blank" rel="noopener" title="ManipTrans: Efficient Dexterous Bimanual Manipulation Transfer via Residual Learning">ManipTrans</a> / <a href="https://arxiv.org/abs/2505.24853" target="_blank" rel="noopener" title="DexMachina: Functional Retargeting for Bimanual Dexterous Manipulation">DexMachina</a> / <a href="https://arxiv.org/abs/2607.11874" target="_blank" rel="noopener" title="A Minimalist Retargeting-Guided Reinforcement Learning Recipe for Dexterous Manipulation">REGRIND</a>（重定向 + 跟踪）</li>
+      <li><a href="https://arxiv.org/abs/2409.14562" target="_blank" rel="noopener" title="DROP: Dexterous Reorientation via Online Planning">DROP</a> / <a href="https://arxiv.org/abs/2505.02291" target="_blank" rel="noopener" title="Dexterous Contact-Rich Manipulation via the Contact Trust Region">Contact Trust Region</a> / <a href="https://arxiv.org/abs/2601.10930" target="_blank" rel="noopener" title="Where to Touch, How to Contact: A Hierarchical RL-MPC Framework for Geometry-Aware Sim-to-Real Manipulation">Hierarchical RL-MPC</a>（MPC 视角）</li>
+      <li><a href="https://arxiv.org/abs/2502.04307" target="_blank" rel="noopener" title="DexterityGen: Foundation Controller for Unprecedented Dexterity">DexterityGen</a>（基础控制器）→ <a href="https://arxiv.org/abs/2606.23680" target="_blank" rel="noopener" title="CoorDex: Coordinating Body and Hand Priors for Continuous Dexterous Humanoid Loco-Manipulation">CoorDex</a>（人形全身）</li>
+      <li><a href="https://arxiv.org/abs/2601.02778" target="_blank" rel="noopener" title="Closing the Reality Gap: Zero-Shot Sim-to-Real Deployment for Dexterous Force-Based Grasping and Manipulation">Force-Based Sim2Real</a> / <a href="https://arxiv.org/abs/2603.04531" target="_blank" rel="noopener" title="PTLD: Sim-to-real Privileged Tactile Latent Distillation for Dexterous Manipulation">PTLD</a>（触觉）</li>
+      <li><a href="https://arxiv.org/abs/2602.16710" target="_blank" rel="noopener" title="EgoScale: Scaling Dexterous Manipulation with Diverse Egocentric Human Data">EgoScale</a> / <a href="https://arxiv.org/abs/2603.10158" target="_blank" rel="noopener" title="Cross-Hand Latent Representation for Vision-Language-Action Models">XL-VLA</a> / <a href="https://arxiv.org/abs/2512.24210" target="_blank" rel="noopener" title="GR-Dexter Technical Report">GR-Dexter</a>（数据与 VLA）</li>
+      <li>B 部分：<a href="https://arxiv.org/abs/2310.12931" target="_blank" rel="noopener" title="Eureka: Human-Level Reward Design via Coding Large Language Models">Eureka</a> → <a href="https://arxiv.org/abs/2509.07445" target="_blank" rel="noopener" title="Text2Touch: Tactile In-Hand Manipulation with LLM-Designed Reward Functions">Text2Touch</a> → <a href="https://arxiv.org/abs/2609.35318" target="_blank" rel="noopener" title="DexAgent: An Agentic Human2Sim2Robot Framework for Dexterous Manipulation with Self-Evolving Tool Library">DexAgent</a> → <a href="https://arxiv.org/abs/2610.28457" target="_blank" rel="noopener" title="GPT-6-Astra Understands Touch and Outperform Vision--Tactile--Language--Action Models">GPT-6-Astra Understands Touch</a></li>
+      <li>综述：<a href="https://arxiv.org/abs/2605.13925" target="_blank" rel="noopener" title="Towards Robotic Dexterous Hand Intelligence: A Survey">Towards Robotic Dexterous Hand Intelligence: A Survey</a></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 上手 ============ -->
+<section id="start" aria-labelledby="start-h">
+  <h2 id="start-h">上手路线（给运控研究者）</h2>
+  <div class="steps">
+    <div class="card step">
+      <h3>仿真起步：先复现方块重定向</h3>
+      <p>MuJoCo Playground 基于 MJX，含灵巧手任务，单 GPU 几分钟就能训完；Isaac Lab 自带手内重定向任务，ViserDex 的仓库就是在它上面扩展的。</p>
+<pre class="code"><span class="cm"># MuJoCo Playground（命令摘自论文摘要，以官方文档为准）</span>
+pip install playground</pre>
+      <p class="note"><a href="https://arxiv.org/abs/2502.08844" target="_blank" rel="noopener" title="MuJoCo Playground">MuJoCo Playground 论文</a> · <a href="https://arxiv.org/abs/2604.11138" target="_blank" rel="noopener" title="ViserDex: Visual Sim-to-Real for Robust Dexterous In-hand Reorientation">ViserDex</a></p>
+    </div>
+    <div class="card step">
+      <h3>把你的 sim2real 工具箱搬过来</h3>
+      <p>执行器建模（<a href="https://arxiv.org/abs/2510.08556" target="_blank" rel="noopener" title="DexNDM: Closing the Reality Gap for Dexterous In-Hand Rotation via Joint-Wise Neural Dynamics Model">DexNDM</a>、<a href="https://arxiv.org/abs/2601.02778" target="_blank" rel="noopener" title="Closing the Reality Gap: Zero-Shot Sim-to-Real Deployment for Dexterous Force-Based Grasping and Manipulation">电流-力矩标定</a>）、RMA 式适应（<a href="https://arxiv.org/abs/2210.04887" target="_blank" rel="noopener" title="In-Hand Object Rotation via Rapid Motor Adaptation">HORA</a>）、视觉位姿（<a href="https://arxiv.org/abs/2604.11138" target="_blank" rel="noopener" title="ViserDex: Visual Sim-to-Real for Robust Dexterous In-hand Reorientation">ViserDex</a>）、预训练先验（<a href="https://arxiv.org/abs/2608.19182" target="_blank" rel="noopener" title="ADEPT: Accelerating Dexterity via Pre-Training and Post-Training using Reinforcement Learning">ADEPT</a>）。</p>
+    </div>
+    <div class="card step">
+      <h3>选硬件</h3>
+      <p>入门可选 <a href="https://arxiv.org/abs/2309.06440" target="_blank" rel="noopener" title="LEAP Hand: Low-Cost, Efficient, and Anthropomorphic Hand for Robot Learning">LEAP Hand</a>（低成本）或 <a href="https://arxiv.org/abs/2504.04259" target="_blank" rel="noopener" title="ORCA: An Open-Source, Reliable, Cost-Effective, Anthropomorphic Robotic Hand for Uninterrupted Dexterous Task Learning">ORCA</a>（开源）；要做力控与触觉，看直驱 + 触觉的商用手（<a href="https://www.cnx-software.com/2026/06/02/sharpa-wave-high-end-dexterous-robotic-hand-with-22-dof-high-sensitivity-dynamic-tactile-array/" target="_blank" rel="noopener" title="Sharpa Wave: 22-DoF dexterous hand with dynamic tactile array">Sharpa Wave</a>、<a href="https://wuji.tech/en/hand" target="_blank" rel="noopener" title="Wuji Hand">Wuji</a> 等），先确认 MuJoCo / URDF 资产与电流-力矩接口。</p>
+    </div>
+    <div class="card step">
+      <h3>数据与模仿</h3>
+      <p><a href="https://arxiv.org/abs/2307.04577" target="_blank" rel="noopener" title="AnyTeleop: A General Vision-Based Dexterous Robot Arm-Hand Teleoperation System">AnyTeleop</a> 或 Vision Pro 遥操作（<a href="https://arxiv.org/abs/2407.03162" target="_blank" rel="noopener" title="Bunny-VisionPro: Real-Time Bimanual Dexterous Teleoperation for Imitation Learning">Bunny-VisionPro</a>）；"重定向 + 跟踪 RL"可从 <a href="https://arxiv.org/abs/2505.24853" target="_blank" rel="noopener" title="DexMachina: Functional Retargeting for Bimanual Dexterous Manipulation">DexMachina</a> 或 <a href="https://arxiv.org/abs/2503.21860" target="_blank" rel="noopener" title="ManipTrans: Efficient Dexterous Bimanual Manipulation Transfer via Residual Learning">ManipTrans</a> 的配方入手，流程和人形运动模仿几乎一样。</p>
+    </div>
+    <div class="card step">
+      <h3>加入 agent</h3>
+      <p>让编码 agent（Claude Code / Codex）照 <a href="https://arxiv.org/abs/2310.12931" target="_blank" rel="noopener" title="Eureka: Human-Level Reward Design via Coding Large Language Models">Eureka</a>、<a href="https://arxiv.org/abs/2509.07445" target="_blank" rel="noopener" title="Text2Touch: Tactile In-Hand Manipulation with LLM-Designed Reward Functions">Text2Touch</a> 的方式写奖励，或照 <a href="https://arxiv.org/abs/2511.01791" target="_blank" rel="noopener" title="GenDexHand: Generative Simulation for Dexterous Hands">GenDexHand</a>、<a href="https://arxiv.org/abs/2609.35318" target="_blank" rel="noopener" title="DexAgent: An Agentic Human2Sim2Robot Framework for Dexterous Manipulation with Self-Evolving Tool Library">DexAgent</a> 的方式生成环境与数据；低层控制仍由你训练的策略或 MPC 负责。真机前务必有限位、急停与人工确认。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 论文库 ============ -->
+<section id="papers" aria-labelledby="papers-h">
+  <h2 id="papers-h">论文与资源库</h2>
+  <p class="section-lede">共 162 条，可按 A / B 部分、关键词、类别、年份筛选。★ 为入门推荐。arXiv 条目的标题与日期经官方 API 核验，"一句话"是本页的中文概括。</p>
+  <div class="pcontrols">
+    <input id="pq" type="search" placeholder="搜索标题、简称、机构、作者、一句话……" aria-label="搜索论文">
+    <select id="ppart" aria-label="按部分筛选"><option value="all">A + B 全部</option><option value="A">A 部分：不沾 agent</option><option value="B">B 部分：Agent × 灵巧手</option></select>
+    <select id="pyear" aria-label="按年份筛选"><option value="all">全部年份</option><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021 及更早</option></select>
+    <select id="psort" aria-label="排序"><option value="desc">时间：新 → 旧</option><option value="asc">时间：旧 → 新</option></select>
+    <label><input id="pstar" type="checkbox"> 只看 ★</label>
+    <button id="preset" class="btn-small" type="button">清除筛选</button>
+  </div>
+  <div class="filters" id="pcats" role="group" aria-label="按类别筛选（可多选）"></div>
+  <div class="pcount" id="pcount" aria-live="polite"></div>
+  <div class="table-wrap">
+    <table class="ptable">
+      <thead><tr><th>日期</th><th>工作</th><th>类别</th><th>一句话</th></tr></thead>
+      <tbody id="ptbody"></tbody>
+    </table>
+  </div>
+  <div class="more-row"><button id="pmore" class="btn-small" type="button" hidden>显示更多</button></div>
+  <noscript><p class="note">论文库需要 JavaScript；完整列表见 survey.html 附录 A。</p></noscript>
+</section>
+
+<!-- ============ 来源 ============ -->
+<section id="sources" aria-labelledby="src-h" class="sources">
+  <h2 id="src-h">主要来源与方法</h2>
+  <div class="card">
+    <ul>
+      <li>综述：<a href="https://arxiv.org/abs/2605.13925" target="_blank" rel="noopener" title="Towards Robotic Dexterous Hand Intelligence: A Survey">Towards Robotic Dexterous Hand Intelligence</a> · <a href="https://arxiv.org/abs/2506.00098" target="_blank" rel="noopener" title="Interactive Imitation Learning for Dexterous Robotic Manipulation: Challenges and Perspectives -- A Survey">Interactive IL Survey</a> · <a href="https://arxiv.org/abs/2401.07915" target="_blank" rel="noopener" title="Survey of Learning-based Approaches for Robotic In-Hand Manipulation">In-Hand Manipulation Survey</a> · <a href="https://github.com/CyanHaze/Awesome-Dexterous-Hands" target="_blank" rel="noopener" title="Awesome-Dexterous-Hands">Awesome-Dexterous-Hands</a></li>
+      <li>硬件：<a href="https://www.cnx-software.com/2026/06/02/sharpa-wave-high-end-dexterous-robotic-hand-with-22-dof-high-sensitivity-dynamic-tactile-array/" target="_blank" rel="noopener" title="Sharpa Wave: 22-DoF dexterous hand with dynamic tactile array">Sharpa Wave（CNX）</a> · <a href="https://wuji.tech/en/hand" target="_blank" rel="noopener" title="Wuji Hand">Wuji Hand</a> · <a href="https://humanoid.guide/tendon-driven-humanoid-hands/" target="_blank" rel="noopener" title="Tendon-Driven Humanoid Hands: Optimus, NEO and Shadow (Humanoid.guide)">腱驱动人形手（Humanoid.guide）</a> · <a href="https://www.axis3d.com/en/post/tesollo-showcases-vla-and-dexterous-manipulation-at-icra-2026-from-teleoperation-to-humanoid-roboti" target="_blank" rel="noopener" title="TESOLLO at ICRA 2026">TESOLLO @ ICRA 2026</a></li>
+      <li>Agent × 灵巧手：<a href="https://developers.googleblog.com/gemini-4-argon-for-robotics/" target="_blank" rel="noopener" title="Gemini 4 Argon for Robotics">Gemini 4 Argon for Robotics</a> · <a href="https://github.com/jianglongye/dexterous-astra" target="_blank" rel="noopener" title="Dexterous Astra: pen spinning and Rubik&#x27;s cube">Dexterous Astra</a> · <a href="https://tactalent.github.io/" target="_blank" rel="noopener" title="TacTalent: GPT-6 Astra as a Visuo-Tactile Policy">TacTalent</a> · <a href="https://github.com/zjwzcx/Awesome-Astra-Embodied-AI" target="_blank" rel="noopener" title="Awesome Astra Embodied AI">Awesome-Astra-Embodied-AI</a></li>
+      <li>产业：<a href="https://interestingengineering.com/ai-robotics/figure-helix02-upgrades-humanoid-robot-control" target="_blank" rel="noopener" title="Figure Helix 02">Figure Helix 02</a> · <a href="https://arxiv.org/abs/2512.24210" target="_blank" rel="noopener" title="GR-Dexter Technical Report">GR-Dexter</a></li>
+    </ul>
+    <p class="note" style="margin-top:12px">方法：2026-10-23 检索。arXiv 条目用 export.arxiv.org API 按编号核验标题与首发日期；"一句话"根据摘要概括。硬件参数来自官方页面或媒体报道，Tesla Optimus 手部参数为二手信息。不同论文的任务、硬件和成功率口径不同，数字不可横向比较；2026 年的大量工作仍是未经同行评审的预印本。</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>灵巧手算法调研导读（面向运控研究者）· 数据截至 2026-10-23 · 页面与长文由同一份数据（data/papers.txt）生成。</p>
+    <p>本页为调研整理，不代表任何机构的官方观点。</p>
+  </div>
+</footer>
+
+<div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+
+<script>
+"use strict";
+const DATA = {"cats":[["hw","A·硬件"],["tactile","A·触觉"],["inhand","A·手内操作 RL/sim2real"],["grasp","A·抓取合成"],["mbc","A·基于模型的接触控制"],["teleop","A·遥操作与重定向"],["human","A·人类演示→机器人"],["data","A·数据规模化"],["vla","A·灵巧 VLA/基础模型"],["humanoid","A·人形全身灵巧"],["bench","A·基准与数据集"],["survey","综述/资源"],["llmreward","B·LLM 奖励与仿真参数"],["gensim","B·生成式仿真/agentic 数据"],["semantic","B·VLM 语义/功能抓取"],["hier","B·VLM 规划+灵巧技能"],["coding","B·编码 agent/自我进化"],["frontier","B·前沿模型直接控手"],["industry","产业/硬件发布"]],"papers":[{"key":"2610.30136","arxiv":"2610.30136","date":"2026-10-21","short":"AW-0 (Agentic WAM)","title":"Agentic World Action Models","cats":["hier","coding"],"org":"","note":"代码、未来视频与动作三路联合生成：代码专家写参数化技能，视频与动作专家给出预测和电机指令；在 YAM 臂与灵巧手上实测","url":"https://arxiv.org/abs/2610.30136","authors":"Zhuoyang Liu, Dantong Niu, Botong Zhang 等","star":false},{"key":"2610.28457","arxiv":"2610.28457","date":"2026-10-20","short":"GPT-6-Astra Understands Touch","title":"GPT-6-Astra Understands Touch and Outperform Vision--Tactile--Language--Action Models","cats":["frontier","tactile"],"org":"","note":"把专家示范总结成任务指导与触觉参考，冻结的 GPT-6 Astra 在 5 个 UniVTAC 任务上平均 93.8%，触觉让插孔任务 31%→99%","url":"https://arxiv.org/abs/2610.28457","authors":"Ziyong Wang, Yupei Lin, Runxuan Huang 等","star":true},{"key":"2610.27039","arxiv":"2610.27039","date":"2026-10-19","short":"Embodied Playground","title":"Embodied Playground: A Long-Horizon Agentic Robotics Benchmark for Physical, Strategic, and Spatial Reasoning","cats":["coding","bench"],"org":"","note":"长时程 agentic 基准，含需要推断状态并逐层转动的魔方、灵巧手版汉诺塔等任务","url":"https://arxiv.org/abs/2610.27039","authors":"Feng Chen, Pei Zhou, Lixuan He 等","star":false},{"key":"web-tactalent","arxiv":"","date":"2026-10-17","short":"TacTalent","title":"TacTalent: GPT-6 Astra as a Visuo-Tactile Policy","cats":["frontier","tactile"],"org":"","note":"GPT-6 Astra 作视触觉策略：19 个仿真任务少样本评测，加触觉后两组平均 93.8% 和 81.8%（只用视觉为 76.3% 和 80.6%）","url":"https://tactalent.github.io/","authors":"","star":false},{"key":"2610.24392","arxiv":"2610.24392","date":"2026-10-17","short":"Gen2Dex","title":"Gen2Dex: Learning Dexterous Manipulation from Simulation-Initialized Generated Video Demonstrations","cats":["human","data"],"org":"","note":"把仿真场景初始化的生成视频转成物理可执行的灵巧演示（残差 RL 修正）","url":"https://arxiv.org/abs/2610.24392","authors":"Xiaowen Qiu, Yian Wang, Haoxiang You 等","star":false},{"key":"2610.22471","arxiv":"2610.22471","date":"2026-10-15","short":"Has GPT-6-Astra Achieved Embodied Intelligence?","title":"Has GPT-6-Astra Achieved Embodied Intelligence?","cats":["frontier"],"org":"SenseNova","note":"12 个基准（含灵巧手）统一评测：具身能力大体具备，实用的具身智能尚未具备","url":"https://arxiv.org/abs/2610.22471","authors":" SenseNova, Joint Research Team, Zhongang Cai 等","star":false},{"key":"2610.18792","arxiv":"2610.18792","date":"2026-10-13","short":"SEAR","title":"SEAR: Self-Evolving Agentic Robotics","cats":["coding"],"org":"","note":"自我进化的 agentic 机器人框架与基准：代码即策略、agent 即策略、自动研究三种模式，7 个前沿模型、330 个仿真 + 5 个真机任务","url":"https://arxiv.org/abs/2610.18792","authors":"Xinyi Wang, Bangzheng Li, Hanyu Wang 等","star":false},{"key":"web-argon","arxiv":"","date":"2026-10-13","short":"Gemini 4 Argon for Robotics","title":"Gemini 4 Argon for Robotics","cats":["gensim","frontier","industry"],"org":"Google DeepMind","note":"把第一人称人类视频重定向到带 22 DoF 手的仿真人形，并能从视频或草图生成 MuJoCo 孪生与训练数据","url":"https://developers.googleblog.com/gemini-4-argon-for-robotics/","authors":"","star":false},{"key":"web-optimus-hand","arxiv":"","date":"2026-10","short":"Tesla Optimus Gen 3 手","title":"Tendon-Driven Humanoid Hands: Optimus, NEO and Shadow (Humanoid.guide)","cats":["hw","industry"],"org":"Tesla","note":"报道称手部 22 DoF + 腕部 3 DoF，执行器移到前臂、腱传动（工程师帖子与专利解读，二手信息）","url":"https://humanoid.guide/tendon-driven-humanoid-hands/","authors":"","star":false},{"key":"web-awesome-astra","arxiv":"","date":"2026-10","short":"Awesome-Astra-Embodied-AI","title":"Awesome Astra Embodied AI","cats":["frontier","survey"],"org":"社区","note":"GPT-6 Astra 具身用例汇总，含多个灵巧手案例（魔方、苹果梗抓取、44 DoF 手重定向、腱驱动手重建）","url":"https://github.com/zjwzcx/Awesome-Astra-Embodied-AI","authors":"","star":false},{"key":"2609.38537","arxiv":"2609.38537","date":"2026-09-29","short":"GPT-6 Astra as Embodied Policies","title":"Systematically Exploring the Capabilities of GPT-6 Astra as Embodied Policies","cats":["frontier"],"org":"Galbot","note":"灵巧操作部分：与学习策略混合控制，在 DexJoCo 的 10 次试验中成功 50%；直接控制手内操作时难以协调手指接触","url":"https://arxiv.org/abs/2609.38537","authors":" Galbot Team, Xuchuan Chen, Xiaoqian Cheng 等","star":true},{"key":"2609.34724","arxiv":"2609.34724","date":"2026-09-28","short":"DexWeave","title":"DexWeave: Learning Dexterous Humanoid Loco-Manipulation from Human Demonstrations","cats":["humanoid","human"],"org":"","note":"交互一致的身体 + 手重定向，加上解剖感知的全身策略，从人类示范学人形灵巧移动操作","url":"https://arxiv.org/abs/2609.34724","authors":"Naichuan Sun, Haotian Shen, Yizhang Zhang 等","star":false},{"key":"2609.35318","arxiv":"2609.35318","date":"2026-09-28","short":"DexAgent","title":"DexAgent: An Agentic Human2Sim2Robot Framework for Dexterous Manipulation with Self-Evolving Tool Library","cats":["gensim"],"org":"Stanford/Columbia","note":"一段第一人称视频 + 任务描述 → agent 从工具库选工具或自造新工具，完成理解、仿真重建、轨迹优化与数据生成；11 个真机任务成功率是基线的 3.5 倍","url":"https://arxiv.org/abs/2609.35318","authors":"Youhui Wang, Yunzhu Li, Li Fei-Fei 等","star":true},{"key":"2609.33973","arxiv":"2609.33973","date":"2026-09-27","short":"FINGR","title":"FINGR: Learning Dexterous Hand Control for Real-World Rubik's Cube Solving","cats":["inhand"],"org":"","note":"单手还原真实魔方：以指尖为参照表示魔方几何，并预测未来接触力与转层进度","url":"https://arxiv.org/abs/2609.33973","authors":"Yutong Liang, Quanquan Peng, Matthew Kim 等","star":false},{"key":"2609.27308","arxiv":"2609.27308","date":"2026-09-23","short":"EmbodiedSWE","title":"EmbodiedSWE: Coding Agents for Long Horizon Dexterous Robotics","cats":["coding","gensim"],"org":"","note":"编码 agent 解决长达半小时的接触丰富/灵巧任务，再把一个解扩增成大量 VLA 训练轨迹","url":"https://arxiv.org/abs/2609.27308","authors":"Zeyu Shen, Haoxiang You, Yilang Liu 等","star":true},{"key":"2609.24976","arxiv":"2609.24976","date":"2026-09-21","short":"DexTacWAM","title":"DexTacWAM: A Visuo-Tactile World-Action Model for Dexterous Manipulation","cats":["tactile","vla"],"org":"","note":"视触觉世界-动作模型：把触觉潜变量注入视频扩散世界模型；22 DoF 双手 6 个任务平均 70.6 分，最强基线 38.0","url":"https://arxiv.org/abs/2609.24976","authors":"Haoran Yuan, Zekai Wang, Boning Shao 等","star":false},{"key":"2609.24093","arxiv":"2609.24093","date":"2026-09-21","short":"Contact-Anchored Retargeting","title":"Dexterous Robot Manipulation from Human Demonstrations via Contact-Anchored Retargeting and Residual Policy Learning","cats":["human"],"org":"","note":"迁移\"哪些手指部位碰物体哪里、按什么顺序\"，而不是关节运动；一个残差 RL 修复动捕数据的物理一致性","url":"https://arxiv.org/abs/2609.24093","authors":"Zihao Yang, Chengyuan Liu, Yu Zhou 等","star":false},{"key":"web-dexastra","arxiv":"","date":"2026-09-17","short":"Dexterous Astra","title":"Dexterous Astra: pen spinning and Rubik's cube","cats":["coding","frontier"],"org":"个人发布（UCSD 博士生）","note":"GPT-6 Astra 自己搭环境、写代码、训 PPO：Isaac Lab 中 Sharpa Wave 手转笔三圈，MuJoCo 中 Wuji 手解出魔方 U F L 三步；公开了提示词与检查点","url":"https://github.com/jianglongye/dexterous-astra","authors":"","star":false},{"key":"2609.18174","arxiv":"2609.18174","date":"2026-09-16","short":"TacBPM","title":"TacBPM: A Tactile-conditioned Behavior Prior Model for Dexterous Reorientation","cats":["tactile","inhand"],"org":"","note":"触觉条件的行为先验：多尺度专家蒸馏成潜在控制器，下游策略用残差潜动作复用它，减少从关节空间重新探索","url":"https://arxiv.org/abs/2609.18174","authors":"Jie Yin, Wanli Xing, Zeyuan Zhao 等","star":false},{"key":"2609.14868","arxiv":"2609.14868","date":"2026-09-14","short":"Primitive-Informed MPC","title":"Primitive-Informed Sampling-Based MPC for Multi-Fingered Dexterous Manipulation","cats":["mbc"],"org":"","note":"用低维操作原语偏置采样，再优化关节残差；在 16 DoF Allegro 上提高采样效率","url":"https://arxiv.org/abs/2609.14868","authors":"Emek Barış Küçüktabak, Karankumar Patel, Jinda Cui 等","star":false},{"key":"2609.13761","arxiv":"2609.13761","date":"2026-09-12","short":"POISE","title":"Learning In-Hand Object Reaching to General 6D Poses","cats":["inhand"],"org":"","note":"手内 6D 位姿到达：从已有抓取出发，用手指把物体移到掌心坐标系下的目标位姿","url":"https://arxiv.org/abs/2609.13761","authors":"Junxiao Lin, Tianyue Wu, Jie Yin 等","star":false},{"key":"2609.07002","arxiv":"2609.07002","date":"2026-09-07","short":"WM-Craftnet","title":"WM-Craftnet: World Synesthesia Model for Generalizable and Robust Dexterous In-Hand Manipulation","cats":["inhand","tactile"],"org":"","note":"把本体、深度、触觉的动作条件潜在动力学作为循环上下文，提升手内操作在扰动下的鲁棒性","url":"https://arxiv.org/abs/2609.07002","authors":"Jie Yin, Zeyuan Zhao, Xiaojing Tan 等","star":false},{"key":"2609.07747","arxiv":"2609.07747","date":"2026-09-07","short":"Dex-X","title":"Dex-X: Learning Visual-Tactile Dexterous Manipulation From Human Videos with Simulated Interaction","cats":["human","tactile"],"org":"","note":"把仿真当\"触觉补全引擎\"：从人类视频重建交互，在仿真里得到触觉监督，学视触觉策略","url":"https://arxiv.org/abs/2609.07747","authors":"Ruoqu Chen, Feixiang Ruan, Liu Cao 等","star":false},{"key":"2609.04096","arxiv":"2609.04096","date":"2026-09-03","short":"AdaRoboVLG","title":"Adaptive Vision-Language Grasping via Composable Foundation Priors and Generalizable Grasp Synthesis","cats":["semantic","grasp"],"org":"","note":"通用基础抓取策略 + 可组合的基础模型先验，按任务调整抓取而不用重训，跨手泛化","url":"https://arxiv.org/abs/2609.04096","authors":"Sixu Yan, Shikang Wang, Binhua Huang 等","star":false},{"key":"2608.19182","arxiv":"2608.19182","date":"2026-08-19","short":"ADEPT","title":"ADEPT: Accelerating Dexterity via Pre-Training and Post-Training using Reinforcement Learning","cats":["inhand"],"org":"","note":"大规模 RL 预训练通用的\"物体重摆\"策略，再稳定地后训练到长时程任务（视触觉输入）","url":"https://arxiv.org/abs/2608.19182","authors":"Jayjun Lee, Jessica Yin, Asif Rana 等","star":false},{"key":"2608.15897","arxiv":"2608.15897","date":"2026-08-16","short":"SBLR","title":"Tactile Sim2Real without Tactile Simulation via Bottlenecked Latent Reconstruction","cats":["tactile"],"org":"","note":"用仿真原生的\"预言者传感器\"（点云 + 指尖力）训练策略，部署时把真实传感器的潜变量对齐过去，免去为每种传感器写仿真","url":"https://arxiv.org/abs/2608.15897","authors":"Fan Yang, Youngsun Wi, Jinhao Yu 等","star":false},{"key":"2608.15560","arxiv":"2608.15560","date":"2026-08-16","short":"ReForce","title":"ReForce: Learning Force-aware Retargeting for Dexterous Manipulation","cats":["teleop","human"],"org":"","note":"力感知重定向：在运动学结果上预测残差以达到期望接触力，支持在线遥操作与离线数据转换","url":"https://arxiv.org/abs/2608.15560","authors":"Yuhang Wu, Lingqi Zeng, Changwei Jing 等","star":false},{"key":"2607.16187","arxiv":"2607.16187","date":"2026-07-17","short":"Handroid","title":"Handroid: Bridging Dexterous Hand and Humanoid","cats":["hw","humanoid"],"org":"","note":"同一个 27 DoF 机电身体可重构为 20 DoF 灵巧手或桌面人形","url":"https://arxiv.org/abs/2607.16187","authors":"Ruogu Li, Chenyang Ma, Sikai Li 等","star":false},{"key":"2607.11481","arxiv":"2607.11481","date":"2026-07-13","short":"TeleDexter","title":"Towards Human-level Dexterous Teleoperation","cats":["teleop"],"org":"","note":"\"手-物协同跟踪\"控制器把操作者意图映射成学到的接触执行，迈向人类水平的手内遥操作","url":"https://arxiv.org/abs/2607.11481","authors":"Puhao Li, Zeyuan Chen, Yingying Wu 等","star":false},{"key":"2607.11874","arxiv":"2607.11874","date":"2026-07-13","short":"REGRIND","title":"A Minimalist Retargeting-Guided Reinforcement Learning Recipe for Dexterous Manipulation","cats":["inhand","human"],"org":"","note":"把人形全身控制的\"重定向 + RL 跟踪\"配方搬到灵巧手：一段人类示范 + 残差 RL + 仔细的系统辨识，零样本上真机","url":"https://arxiv.org/abs/2607.11874","authors":"Yunhai Feng, Natalie Leung, Jiaxuan Wang 等","star":true},{"key":"2607.08751","arxiv":"2607.08751","date":"2026-07-09","short":"DexVerse","title":"DexVerse: A Modular Benchmark for Multi-Task, Multi-Embodiment Dexterous Manipulation","cats":["bench"],"org":"","note":"100 个任务、3 种机械臂、6 种灵巧手的模块化多任务多本体基准","url":"https://arxiv.org/abs/2607.08751","authors":"Yunchao Yao, Zhuxiu Xu, Tianqi Zhang 等","star":true},{"key":"2607.08341","arxiv":"2607.08341","date":"2026-07-09","short":"AnyDexRT","title":"AnyDexRT: Calibration-Free Dexterous Hand Retargeting with Few-Shot Human Guidance","cats":["teleop"],"org":"","note":"免标定的重定向：自监督指尖对应 + 少量人工示例锚定 + 捏取接触分类器","url":"https://arxiv.org/abs/2607.08341","authors":"Chenxi Wang, Ying Feng, Hongjie Fang 等","star":false},{"key":"2607.04554","arxiv":"2607.04554","date":"2026-07-06","short":"HUGS","title":"HUGS: Guiding Unified Dexterous Grasp Synthesis Across Modes and Scales via Learned Human Priors","cats":["grasp"],"org":"","note":"学习人类抓取偏好先验来引导力封闭优化，统一从两指捏取到双手抱持的多种模式","url":"https://arxiv.org/abs/2607.04554","authors":"Mingrui Yu, Yongpeng Jiang, Yongyi Jia 等","star":false},{"key":"2607.03570","arxiv":"2607.03570","date":"2026-07-03","short":"UHAS","title":"Cross-Embodiment Robot Manipulation via a Unified Hand Action Space","cats":["inhand"],"org":"","note":"用球面形变表示的统一手部动作空间 + 级联 IK，同一策略跨 Allegro、LEAP、Shadow 和 MANO 人手","url":"https://arxiv.org/abs/2607.03570","authors":"Luis Felipe Casas, Robert Teal, Keval Shah 等","star":false},{"key":"2607.00272","arxiv":"2607.00272","date":"2026-06-30","short":"ASPIRE","title":"ASPIRE: Agentic /Skills Discovery for Robotics","cats":["coding"],"org":"NVIDIA 等","note":"编码 agent 持续写、修控制程序并沉淀技能库；在真机灵巧手上解魔方，效率随经验提升","url":"https://arxiv.org/abs/2607.00272","authors":"Runyu Lu, Yubo Wu, Ethan Kou 等","star":true},{"key":"2606.30749","arxiv":"2606.30749","date":"2026-06-29","short":"From Grasps to Dexterity","title":"From Grasps to Dexterity: Large-Scale Grasp Pretraining for Dexterous Manipulation","cats":["grasp","data"],"org":"","note":"用 35.5 万条抓取轨迹预训练低层控制器，再微调到铰接工具使用（DexCraft 基准）","url":"https://arxiv.org/abs/2606.30749","authors":"Ying Yuan, Xinyu Liu, Sriram Krishna 等","star":false},{"key":"2606.28323","arxiv":"2606.28323","date":"2026-06-26","short":"DexCompose","title":"DexCompose: Reusing Dexterous Policies for Multi-Task Manipulation with a Single Hand","cats":["inhand"],"org":"","note":"按手指分配\"动作所有权\"的残差组合，复用两个已训练好的全手策略做多任务","url":"https://arxiv.org/abs/2606.28323","authors":"Dihong Huang, Zhenyu Wei, Zhuxiu Xu 等","star":false},{"key":"2606.23431","arxiv":"2606.23431","date":"2026-06-22","short":"DexTeleop-0","title":"DexTeleop-0: Force-Aware Bimanual Dexterous Teleoperation with Ego-Centric Perception towards Shared Autonomy","cats":["teleop","tactile"],"org":"","note":"触觉驱动的实时优化把粗糙的人手意图转成力顺应的精细指令，双手共享自主","url":"https://arxiv.org/abs/2606.23431","authors":"Haichao Liu, Yuyao Jiang, Hyunsun Park 等","star":false},{"key":"2606.23680","arxiv":"2606.23680","date":"2026-06-22","short":"CoorDex","title":"CoorDex: Coordinating Body and Hand Priors for Continuous Dexterous Humanoid Loco-Manipulation","cats":["humanoid"],"org":"UNC 等","note":"身体与手分别训特权跟踪教师、蒸馏成潜在先验，再用协调残差 RL 实现边走边做灵巧操作（Unitree G1 + 20 DoF Wuji 手）","url":"https://arxiv.org/abs/2606.23680","authors":"Sikai Li, Shuning Li, Zhenyu Wei 等","star":true},{"key":"2606.23689","arxiv":"2606.23689","date":"2026-06-22","short":"AutoDex","title":"AutoDex: An Automated Real-World System for Dexterous Grasping Data Collection","cats":["grasp","data"],"org":"","note":"无人值守的真实世界抓取数据采集：20 台相机感知、自动执行、自动标注成败、自动复位","url":"https://arxiv.org/abs/2606.23689","authors":"Mingi Choi, Gunhee Kim, Jisoo Kim 等","star":false},{"key":"2606.22332","arxiv":"2606.22332","date":"2026-06-21","short":"Tactile Genesis","title":"Tactile Genesis: Exploring Tactile Sensors at Scale for Learning Dexterous Tasks","cats":["tactile","bench"],"org":"","note":"GPU 并行触觉仿真平台：二值接触、深度、力/力矩、标记点位移、温度等触觉抽象统一接口，可跑 2 万个并行环境","url":"https://arxiv.org/abs/2606.22332","authors":"Trinity Chung, Kashu Yamazaki, Dhruv Patel 等","star":false},{"key":"2606.19333","arxiv":"2606.19333","date":"2026-06-17","short":"Do as I Do","title":"Do as I Do: Dexterous Manipulation Data from Everyday Human Videos","cats":["human","data"],"org":"","note":"重建并重定向单目 RGB 的野外人类视频（第一或第三人称），生成可在真机执行的灵巧数据","url":"https://arxiv.org/abs/2606.19333","authors":"Bhawna Paliwal, Haritheja Etukuru, William Liang 等","star":false},{"key":"2606.17418","arxiv":"2606.17418","date":"2026-06-16","short":"DexLink Hand","title":"DexLink Hand: A Compact, Affordable, 16-DOF Linkage-Driven Hand with Human-Like Dexterity","cats":["hw"],"org":"","note":"连杆驱动：16 个执行器驱动 20 个关节，全部集成在人手大小的结构里，320 g，成本不到 400 美元","url":"https://arxiv.org/abs/2606.17418","authors":"Hao Wu, Yanzhe Wang, Yu Feng 等","star":false},{"key":"2606.16272","arxiv":"2606.16272","date":"2026-06-15","short":"TopoRetarget","title":"TopoRetarget: Interaction-Preserving Retargeting for Dexterous Manipulation","cats":["human"],"org":"","note":"稀疏交互图 + 拉普拉斯形变，在重定向中保持手-物接触结构；转笔、方块重定向零样本上真机","url":"https://arxiv.org/abs/2606.16272","authors":"Jielin Wu, Shenzhe Yao, Guanqi He 等","star":false},{"key":"2606.13677","arxiv":"2606.13677","date":"2026-06-11","short":"Mana","title":"Mana: Dexterous Manipulation of Articulated Tools","cats":["inhand"],"org":"","note":"把铰接工具操作当成\"动画\"问题：程序生成抓取关键帧，再用运动规划 + RL 补全；每个工具标注不到 1 分钟","url":"https://arxiv.org/abs/2606.13677","authors":"Zhao-Heng Yin, Guanya Shi, Pieter Abbeel 等","star":false},{"key":"2606.11767","arxiv":"2606.11767","date":"2026-06-10","short":"Blind Dexterous Grasping","title":"Blind Dexterous Grasping via Real2Sim2Real Tactile Policy Learning","cats":["tactile","grasp"],"org":"","note":"只用稀疏触觉、不看图像的抓取：Real2Sim 触觉标定 + 版图感知编码器 + 扩散策略，零样本上真机","url":"https://arxiv.org/abs/2606.11767","authors":"Shengcheng Luo, Xiyan Huang, Zhe Xu 等","star":false},{"key":"2606.03268","arxiv":"2606.03268","date":"2026-06-02","short":"EaDex","title":"EaDex: A Cross-Embodiment Dexterous Manipulation Framework from Low-Cost Demonstrations","cats":["human","data"],"org":"","note":"单台 RGB-D 相机采人手示范 + 接触奖励退火，低成本的多本体灵巧学习","url":"https://arxiv.org/abs/2606.03268","authors":"Qian Zhao, Xin Tong, Chengdong Wu 等","star":false},{"key":"web-tesollo","arxiv":"","date":"2026-06","short":"TESOLLO DG-5F-S","title":"TESOLLO at ICRA 2026","cats":["hw","industry"],"org":"TESOLLO","note":"五指 20 DoF，比上一代更小更轻，便于装上人形；ICRA 2026 展示遥操作与 VLA 驱动的灵巧操作","url":"https://www.axis3d.com/en/post/tesollo-showcases-vla-and-dexterous-manipulation-at-icra-2026-from-teleoperation-to-humanoid-roboti","authors":"","star":false},{"key":"web-sharpa","arxiv":"","date":"2026-06","short":"Sharpa Wave","title":"Sharpa Wave: 22-DoF dexterous hand with dynamic tactile array","cats":["hw","industry"],"org":"Sharpa","note":"22 DoF 直驱，每指有动态触觉阵列，500 Hz 控制，1.3 kg；被 NVIDIA GR00T 参考人形套件选用（据 CNX 报道）","url":"https://www.cnx-software.com/2026/06/02/sharpa-wave-high-end-dexterous-robotic-hand-with-22-dof-high-sensitivity-dynamic-tactile-array/","authors":"","star":false},{"key":"2605.18722","arxiv":"2605.18722","date":"2026-05-18","short":"Dexora","title":"Dexora: Open-source VLA for High-DoF Bimanual Dexterity","cats":["vla"],"org":"","note":"首个开源的双臂双手高自由度 VLA，外骨骼背包 + Vision Pro 混合遥操作采数据","url":"https://arxiv.org/abs/2605.18722","authors":"Zongzheng Zhang, Jingrui Pang, Zhuo Yang 等","star":false},{"key":"2605.13925","arxiv":"2605.13925","date":"2026-05-13","short":"Dexterous Hand Intelligence Survey","title":"Towards Robotic Dexterous Hand Intelligence: A Survey","cats":["survey"],"org":"","note":"从硬件、控制与学习方法、数据与评测、局限四个角度的灵巧手综述（2026-05）","url":"https://arxiv.org/abs/2605.13925","authors":"Weiguang Zhao, Tian Liang, Xihao Guo 等","star":true},{"key":"2605.12182","arxiv":"2605.12182","date":"2026-05-12","short":"DexTwist","title":"DexTwist: Dexterous Hand Retargeting for Twist Motion via Mixed Reality-based Teleoperation","cats":["teleop"],"org":"","note":"针对拧、转类动作的功能性\"旋量重定向\"，避免纯运动学模仿导致指尖打滑","url":"https://arxiv.org/abs/2605.12182","authors":"Dongmyoung Lee, Chengxi Li, Dongheui Lee","star":false},{"key":"2605.05241","arxiv":"2605.05241","date":"2026-05-03","short":"DexSim2Real","title":"DexSim2Real: Foundation Model-Guided Sim-to-Real Transfer for Generalizable Dexterous Manipulation","cats":["llmreward","tactile"],"org":"","note":"让 VLM 当\"视觉真实感评判\"，闭环 CMA-ES 优化仿真的域随机化参数；真机平均成功率 78.2%","url":"https://arxiv.org/abs/2605.05241","authors":"Zijian Zeng, Fei Ding, Huiming Yang 等","star":false},{"key":"web-wuji","arxiv":"","date":"2026-05","short":"Wuji Hand","title":"Wuji Hand","cats":["hw","industry"],"org":"Wuji Technology","note":"20 个主动自由度（每指 4 个、关节不耦合，各有独立电机），裸手不到 600 g，指尖力 15 N，无刷电机 FOC 控制","url":"https://wuji.tech/en/hand","authors":"","star":false},{"key":"2604.27175","arxiv":"2604.27175","date":"2026-04-29","short":"Global-MPPI (KernelSOS)","title":"Global Sampling-Based Trajectory Optimization for Contact-Rich Manipulation via KernelSOS","cats":["mbc"],"org":"","note":"核平方和做全局探索，渐进非凸平滑做局部细化；测试含手内方块重定向","url":"https://arxiv.org/abs/2604.27175","authors":"Zhongqi Wei, Frederike Dümbgen","star":false},{"key":"2604.20295","arxiv":"2604.20295","date":"2026-04-22","short":"ETac","title":"ETac: A Lightweight and Efficient Tactile Simulation Framework for Learning Dexterous Manipulation","cats":["tactile"],"org":"","note":"轻量数据驱动的弹性体形变传播模型，精度接近 FEM，可支撑大规模触觉策略训练","url":"https://arxiv.org/abs/2604.20295","authors":"Zhe Xu, Feiyu Zhao, Xiyan Huang 等","star":false},{"key":"2604.17245","arxiv":"2604.17245","date":"2026-04-19","short":"MM-Hand","title":"MM-Hand: A 21-DOF Multi-modal Modular Dexterous Robotic Hand with Remote Actuation","cats":["hw"],"org":"","note":"21 DoF 远端腱驱动模块化手：电机移出手掌，集成关节角、触觉、电机侧反馈与掌内双目","url":"https://arxiv.org/abs/2604.17245","authors":"Zhuoheng Li, Qingquan Lin, Checheng Yu 等","star":false},{"key":"2604.11138","arxiv":"2604.11138","date":"2026-04-13","short":"ViserDex","title":"ViserDex: Visual Sim-to-Real for Robust Dexterous In-hand Reorientation","cats":["inhand"],"org":"ETH Zurich/NVIDIA","note":"在 3D 高斯泼溅空间里做域随机化，实现单目 RGB 的手内重定向视觉 sim2real（RSS'26）","url":"https://arxiv.org/abs/2604.11138","authors":"Arjun Bhardwaj, Maximum Wilder-Smith, Mayank Mittal 等","star":false},{"key":"2604.08726","arxiv":"2604.08726","date":"2026-04-09","short":"Bimanual Affordance via VLM","title":"Task-Aware Bimanual Affordance Prediction via VLM-Guided Semantic-Geometric Reasoning","cats":["semantic"],"org":"","note":"VLM 联合推理双手各自的接触区域与分工","url":"https://arxiv.org/abs/2604.08726","authors":"Fabian Hahne, Vignesh Prasad, Georgia Chalvatzaki 等","star":false},{"key":"2604.08410","arxiv":"2604.08410","date":"2026-04-09","short":"BLaDA","title":"BLaDA: Bridging Language to Functional Dexterous Actions within 3DGS Fields","cats":["semantic"],"org":"","note":"把开放词汇指令解析成结构化约束，在 3D 高斯场里定位功能部位，零样本功能性灵巧抓取","url":"https://arxiv.org/abs/2604.08410","authors":"Fan Yang, Wenrui Chen, Guorun Yan 等","star":false},{"key":"2603.17323","arxiv":"2603.17323","date":"2026-03-18","short":"DexEXO","title":"DexEXO: A Wearability-First Dexterous Exoskeleton for Operator-Agnostic Demonstration and Learning","cats":["teleop"],"org":"","note":"以佩戴舒适为先的外骨骼：适配 140–217 mm 手长，被动手外观与机器人一致，可直接用腕部相机图像训练","url":"https://arxiv.org/abs/2603.17323","authors":"Alvin Zhu, Mingzhang Zhu, Beom Jun Kim 等","star":false},{"key":"2603.12260","arxiv":"2603.12260","date":"2026-03-12","short":"HumDex","title":"HumDex: Humanoid Dexterous Manipulation Made Easy","cats":["humanoid","teleop"],"org":"","note":"IMU 全身动捕 + 学习式手部重定向的便携人形灵巧遥操作","url":"https://arxiv.org/abs/2603.12260","authors":"Liang Heng, Yihe Tang, Jiajun Xu 等","star":false},{"key":"2603.12185","arxiv":"2603.12185","date":"2026-03-12","short":"ComFree-Sim","title":"ComFree-Sim: A GPU-Parallelized Analytical Contact Physics Engine for Scalable Contact-Rich Robotics Simulation and Control","cats":["mbc","bench"],"org":"","note":"不用互补约束的解析接触 GPU 物理引擎，接触计算随接触数近线性扩展，适合接触丰富的仿真与控制","url":"https://arxiv.org/abs/2603.12185","authors":"Chetan Borse, Zhixian Xie, Wei-Cheng Huang 等","star":false},{"key":"2603.10158","arxiv":"2603.10158","date":"2026-03-10","short":"XL-VLA","title":"Cross-Hand Latent Representation for Vision-Language-Action Models","cats":["vla"],"org":"","note":"多种灵巧手共享潜在动作空间：4 种手 10 个任务平均 72%，π0 基线 32%","url":"https://arxiv.org/abs/2603.10158","authors":"Guangqi Jiang, Yutong Liang, Jianglong Ye 等","star":true},{"key":"2603.04531","arxiv":"2603.04531","date":"2026-03-04","short":"PTLD","title":"PTLD: Sim-to-real Privileged Tactile Latent Distillation for Dexterous Manipulation","cats":["tactile","inhand"],"org":"","note":"不做触觉仿真：用真实世界的特权传感器采集触觉策略数据，再蒸馏出触觉学生策略，明显优于纯本体感觉（RMA）基线","url":"https://arxiv.org/abs/2603.04531","authors":"Rosy Chen, Mustafa Mukadam, Michael Kaess 等","star":false},{"key":"2603.00446","arxiv":"2603.00446","date":"2026-02-28","short":"HydroShear","title":"HydroShear: Hydroelastic Shear Simulation for Tactile Sim-to-Real Reinforcement Learning","cats":["tactile"],"org":"","note":"基于水弹性接触的触觉仿真：建模粘滑转换、路径相关的剪切累积和完整 SE(3) 交互，服务触觉 sim2real RL（RSS'26）","url":"https://arxiv.org/abs/2603.00446","authors":"An Dang, Jayjun Lee, Mustafa Mukadam 等","star":false},{"key":"2602.23876","arxiv":"2602.23876","date":"2026-02-27","short":"RF-Agent","title":"RF-Agent: Automated Reward Function Design via Language Agent Tree Search","cats":["llmreward"],"org":"","note":"把奖励设计看成序列决策，用蒙特卡洛树搜索管理 LLM 的奖励迭代，在 Bi-DexHands 等 17 个任务上测试","url":"https://arxiv.org/abs/2602.23876","authors":"Ning Gao, Xiuhui Zhang, Xingyu Jiang 等","star":false},{"key":"2602.21625","arxiv":"2602.21625","date":"2026-02-25","short":"TacMap","title":"Tacmap: Bridging the Tactile Sim-to-Real Gap via Geometry-Consistent Penetration Depth Map","cats":["tactile"],"org":"","note":"用体积穿透深度图把仿真与真实视触觉信号统一到同一表示，兼顾保真度与大规模 RL 速度","url":"https://arxiv.org/abs/2602.21625","authors":"Lei Su, Zhijie Peng, Renyuan Ren 等","star":false},{"key":"2602.16863","arxiv":"2602.16863","date":"2026-02-18","short":"SimToolReal","title":"SimToolReal: An Object-Centric Policy for Zero-Shot Dexterous Tool Manipulation","cats":["inhand"],"org":"","note":"程序生成大量工具形状，训练一个\"把任意工具移到任意目标位姿\"的 RL 策略，零样本做工具操作","url":"https://arxiv.org/abs/2602.16863","authors":"Kushal Kedia, Tyler Ga Wei Lum, Jeannette Bohg 等","star":false},{"key":"2602.16712","arxiv":"2602.16712","date":"2026-02-18","short":"OHRA (One Hand to Rule Them All)","title":"One Hand to Rule Them All: Canonical Representations for Unified Dexterous Manipulation","cats":["grasp"],"org":"UNC","note":"统一的 22 DoF 规范 URDF + 参数空间，一个抓取策略跨多种手迁移；3 指 LEAP 零样本 81.9%（RSS'26）","url":"https://arxiv.org/abs/2602.16712","authors":"Zhenyu Wei, Yunchao Yao, Mingyu Ding","star":false},{"key":"2602.16710","arxiv":"2602.16710","date":"2026-02-18","short":"EgoScale","title":"EgoScale: Scaling Dexterous Manipulation with Diverse Egocentric Human Data","cats":["human","vla","data"],"org":"","note":"用 2 万多小时带动作标签的第一人称人类视频训练 VLA，发现人类数据规模与验证损失呈对数线性关系","url":"https://arxiv.org/abs/2602.16710","authors":"Ruijie Zheng, Dantong Niu, Yuqi Xie 等","star":true},{"key":"2602.10105","arxiv":"2602.10105","date":"2026-02-10","short":"DexImit","title":"DexImit: Learning Bimanual Dexterous Manipulation from Monocular Human Videos","cats":["human"],"org":"","note":"把单目人类视频自动转成物理合理的双手灵巧机器人数据（四阶段管线）","url":"https://arxiv.org/abs/2602.10105","authors":"Juncheng Mu, Sizhe Yang, Yiming Bao 等","star":false},{"key":"2602.09013","arxiv":"2602.09013","date":"2026-02-09","short":"VideoManip","title":"Dexterous Manipulation Policies from RGB Human Videos via 3D Hand-Object Trajectory Reconstruction","cats":["human"],"org":"","note":"不用穿戴设备：从 RGB 人类视频重建 3D 手-物轨迹，再重定向到机器人手","url":"https://arxiv.org/abs/2602.09013","authors":"Hongyi Chen, Tony Dong, Tiancheng Wu 等","star":false},{"key":"2601.16046","arxiv":"2601.16046","date":"2026-01-22","short":"DextER","title":"DextER: Language-driven Dexterous Grasp Generation with Embodied Reasoning","cats":["semantic"],"org":"","note":"先自回归生成\"哪个手指部位碰物体哪里\"的接触 token，再生成抓取，把接触当作具身推理的中间表示","url":"https://arxiv.org/abs/2601.16046","authors":"Junha Lee, Eunha Park, Minsu Cho","star":false},{"key":"2601.10930","arxiv":"2601.10930","date":"2026-01-16","short":"Hierarchical RL-MPC","title":"Where to Touch, How to Contact: A Hierarchical RL-MPC Framework for Geometry-Aware Sim-to-Real Manipulation","cats":["mbc","inhand"],"org":"","note":"高层 RL 决定\"碰哪里\"（接触意图），低层接触隐式 MPC 决定\"怎么推\"，几何感知的 sim2real","url":"https://arxiv.org/abs/2601.10930","authors":"Zhixian Xie, Yu Xiang, Michael Posa 等","star":true},{"key":"2601.02778","arxiv":"2601.02778","date":"2026-01-06","short":"Force-Based Sim2Real","title":"Closing the Reality Gap: Zero-Shot Sim-to-Real Deployment for Dexterous Force-Based Grasping and Manipulation","cats":["tactile","inhand"],"org":"","note":"稠密触觉 + 关节力矩的力控 sim2real：快速触觉仿真、电流到力矩标定（省掉力矩传感器）、执行器动力学建模","url":"https://arxiv.org/abs/2601.02778","authors":"Zhe Zhao, Haoyu Dong, Zhengmao He 等","star":true},{"key":"web-helix02","arxiv":"","date":"2026-01","short":"Helix 02","title":"Figure Helix 02","cats":["vla","humanoid","industry"],"org":"Figure","note":"一个网络控制全身；借助指尖触觉与掌心相机分药片、推注射器（公司演示）","url":"https://interestingengineering.com/ai-robotics/figure-helix02-upgrades-humanoid-robot-control","authors":"","star":false},{"key":"web-awesome-dex","arxiv":"","date":"2026","short":"Awesome-Dexterous-Hands","title":"Awesome-Dexterous-Hands","cats":["survey"],"org":"社区","note":"灵巧手论文、数据集、仿真器、硬件与开源资源清单","url":"https://github.com/CyanHaze/Awesome-Dexterous-Hands","authors":"","star":false},{"key":"2512.24210","arxiv":"2512.24210","date":"2025-12-30","short":"GR-Dexter","title":"GR-Dexter Technical Report","cats":["hw","vla"],"org":"ByteDance Seed","note":"硬件、模型、数据一体：紧凑 21 DoF 手 + 双手遥操作 + VLA 训练配方（遥操作数据 + 视觉语言数据 + 跨本体数据）","url":"https://arxiv.org/abs/2512.24210","authors":"Ruoshi Wen, Guangzeng Chen, Zhongren Cui 等","star":true},{"key":"2512.11047","arxiv":"2512.11047","date":"2025-12-11","short":"WholeBodyVLA","title":"WholeBodyVLA: Towards Unified Latent VLA for Whole-Body Loco-Manipulation Control","cats":["humanoid","vla"],"org":"","note":"从无动作标签的第一人称视频学统一的潜在 VLA，做全身移动操作（ICLR'26）","url":"https://arxiv.org/abs/2512.11047","authors":"Haoran Jiang, Jin Chen, Qingwen Bu 等","star":false},{"key":"2512.03874","arxiv":"2512.03874","date":"2025-12-03","short":"OmniDexVLG","title":"OmniDexVLG: Learning Dexterous Grasp Generation from Vision Language Model-Guided Grasp Semantics, Taxonomy and Functional Affordance","cats":["semantic"],"org":"","note":"多 agent 协作 + 检索增强 + 思维链推理抓取类型、接触语义与功能可供性，再生成可控的灵巧抓取","url":"https://arxiv.org/abs/2512.03874","authors":"Lei Zhang, Diwen Zheng, Kaixin Bai 等","star":false},{"key":"2511.09484","arxiv":"2511.09484","date":"2025-11-12","short":"SPIDER","title":"SPIDER: Scalable Physics-Informed Dexterous Retargeting","cats":["human"],"org":"","note":"物理感知的采样式重定向，把纯运动学的人类演示变成动力学可行的机器人轨迹，覆盖 9 种人形和灵巧手","url":"https://arxiv.org/abs/2511.09484","authors":"Chaoyi Pan, Changhao Wang, Haozhi Qi 等","star":false},{"key":"2511.01791","arxiv":"2511.01791","date":"2025-11-03","short":"GenDexHand","title":"GenDexHand: Generative Simulation for Dexterous Hands","cats":["gensim"],"org":"","note":"灵巧手的生成式仿真：VLM 反馈闭环调整物体位置与尺度，任务拆成子任务顺序 RL","url":"https://arxiv.org/abs/2511.01791","authors":"Feng Chen, Zhuxiu Xu, Tianzhe Chu 等","star":true},{"key":"2511.00139","arxiv":"2511.00139","date":"2025-10-31","short":"Shared-Autonomy DexGrasp-VLA","title":"End-to-End Dexterous Arm-Hand VLA Policies via Shared Autonomy: VR Teleoperation Augmented by Autonomous Hand VLA Policy for Efficient Data Collection","cats":["teleop","vla"],"org":"","note":"人用 VR 管手臂，自主 VLA 管手指（视觉 + 触觉），共享自主高效采集数据","url":"https://arxiv.org/abs/2511.00139","authors":"Yu Cui, Yujian Zhang, Lina Tao 等","star":false},{"key":"2510.08556","arxiv":"2510.08556","date":"2025-10-09","short":"DexNDM","title":"DexNDM: Closing the Reality Gap for Dexterous In-Hand Rotation via Joint-Wise Neural Dynamics Model","cats":["inhand"],"org":"Tsinghua/PKU/Galbot","note":"关节级神经动力学模型：用少量真机数据拟合每个关节的等效动力学，修正仿真策略的动作；长宽比达 5.33 的物体也能转（ICLR'26）","url":"https://arxiv.org/abs/2510.08556","authors":"Xueyi Liu, He Wang, Li Yi","star":true},{"key":"2510.08475","arxiv":"2510.08475","date":"2025-10-09","short":"DexMan","title":"DexMan: Learning Bimanual Dexterous Manipulation from Human and Generated Videos","cats":["human","humanoid"],"org":"","note":"从第三人称人类视频（以及生成视频）学人形双手灵巧技能，用接触奖励应对噪声位姿","url":"https://arxiv.org/abs/2510.08475","authors":"Jhen Hsieh, Kuan-Hsun Tu, Kuo-Han Hung 等","star":false},{"key":"2509.23075","arxiv":"2509.23075","date":"2025-09-27","short":"Articulated Tools In-Hand","title":"In-Hand Manipulation of Articulated Tools with Dexterous Robot Hands with Sim-to-Real Transfer","cats":["inhand"],"org":"","note":"仿真训练的基础策略 + 真机示范学到的传感驱动修正，应对摩擦、静摩擦与回差","url":"https://arxiv.org/abs/2509.23075","authors":"Soofiyan Atar, Daniel Huang, Florian Richter 等","star":false},{"key":"2509.07445","arxiv":"2509.07445","date":"2025-09-09","short":"Text2Touch","title":"Text2Touch: Tactile In-Hand Manipulation with LLM-Designed Reward Functions","cats":["llmreward","tactile"],"org":"Univ. Bristol 等","note":"LLM 设计含触觉的奖励（可处理 70 多个环境变量），多轴手内旋转上真机，比人工精调的奖励更好、也更短","url":"https://arxiv.org/abs/2509.07445","authors":"Harrison Field, Max Yang, Yijiong Lin 等","star":true},{"key":"2508.01695","arxiv":"2508.01695","date":"2025-08-03","short":"DexReMoE","title":"DexReMoE:In-hand Reorientation of General Object via Mixtures of Experts","cats":["inhand"],"org":"","note":"多个形状专家组成混合专家策略，泛化到复杂形状的重定向","url":"https://arxiv.org/abs/2508.01695","authors":"Jun Wan, Xing Liu, Yunlong Dong","star":false},{"key":"2507.15597","arxiv":"2507.15597","date":"2025-07-21","short":"Being-H0","title":"Being-H0: Vision-Language-Action Pretraining from Large-Scale Human Videos","cats":["vla","human"],"org":"BeingBeyond/PKU","note":"把人手当\"基础操作器\"，用大规模人类视频做物理指令微调的灵巧 VLA","url":"https://arxiv.org/abs/2507.15597","authors":"Hao Luo, Yicheng Feng, Wanpeng Zhang 等","star":false},{"key":"2507.14538","arxiv":"2507.14538","date":"2025-07-19","short":"CYJ Hand-0","title":"A 21-DOF Humanoid Dexterous Hand with Hybrid SMA-Motor Actuation: CYJ Hand-0","cats":["hw"],"org":"","note":"21 DoF，形状记忆合金 + 电机混合腱驱动的仿生手","url":"https://arxiv.org/abs/2507.14538","authors":"Jin Chai, Xiang Yao, Mengfan Hou 等","star":false},{"key":"2507.12440","arxiv":"2507.12440","date":"2025-07-16","short":"EgoVLA","title":"EgoVLA: Learning Vision-Language-Action Models from Egocentric Human Videos","cats":["vla","human"],"org":"UCSD 等","note":"用第一人称人类视频训练 VLA 预测手腕与手部动作，再经 IK 与重定向转成机器人动作","url":"https://arxiv.org/abs/2507.12440","authors":"Ruihan Yang, Qinxi Yu, Yecheng Wu 等","star":false},{"key":"2507.02747","arxiv":"2507.02747","date":"2025-07-03","short":"DexVLG","title":"DexVLG: Dexterous Vision-Language-Grasp Model at Scale","cats":["vla","semantic"],"org":"","note":"1.7 亿个与语义部件对齐的抓取（DexGraspNet 3.0），训练 VLM + 流匹配位姿头，按语言指令生成灵巧抓取","url":"https://arxiv.org/abs/2507.02747","authors":"Jiawei He, Danshi Li, Xinqiang Yu 等","star":false},{"key":"2506.17198","arxiv":"2506.17198","date":"2025-06-20","short":"Dex1B","title":"Dex1B: Learning with 1B Demonstrations for Dexterous Manipulation","cats":["grasp","data"],"org":"UCSD","note":"生成模型产出 10 亿条抓取与铰接操作演示","url":"https://arxiv.org/abs/2506.17198","authors":"Jianglong Ye, Keyi Wang, Chengjing Yuan 等","star":true},{"key":"2506.09384","arxiv":"2506.09384","date":"2025-06-11","short":"Retargeting Objectives","title":"Analyzing Key Objectives in Human-to-Robot Retargeting for Dexterous Manipulation","cats":["teleop"],"org":"","note":"用真机对比实验分析重定向优化目标中各项的作用","url":"https://arxiv.org/abs/2506.09384","authors":"Chendong Xin, Mingrui Yu, Yongpeng Jiang 等","star":false},{"key":"2506.00098","arxiv":"2506.00098","date":"2025-05-30","short":"Interactive IL Survey","title":"Interactive Imitation Learning for Dexterous Robotic Manipulation: Challenges and Perspectives -- A Survey","cats":["survey"],"org":"KIT","note":"灵巧操作的交互式模仿学习综述","url":"https://arxiv.org/abs/2506.00098","authors":"Edgar Welte, Rania Rayyes","star":false},{"key":"2505.24853","arxiv":"2505.24853","date":"2025-05-30","short":"DexMachina","title":"DexMachina: Functional Retargeting for Bimanual Dexterous Manipulation","cats":["human","bench"],"org":"NVIDIA 等","note":"功能性重定向：用强度逐渐衰减的\"虚拟物体控制器\"做课程，让策略逐步接管；附多手基准","url":"https://arxiv.org/abs/2505.24853","authors":"Zhao Mandi, Yifan Hou, Dieter Fox 等","star":true},{"key":"2505.21864","arxiv":"2505.21864","date":"2025-05-28","short":"DexUMI","title":"DexUMI: Using Human Hand as the Universal Manipulation Interface for Dexterous Manipulation","cats":["teleop","data"],"org":"Stanford/Columbia","note":"外骨骼缩小运动学差距、视频里把人手修补成机器人手，人手当\"通用操作接口\"，两种手上平均成功率 86%","url":"https://arxiv.org/abs/2505.21864","authors":"Mengda Xu, Han Zhang, Yifan Hou 等","star":false},{"key":"2505.07813","arxiv":"2505.07813","date":"2025-05-12","short":"DexWild","title":"DexWild: Dexterous Human Interactions for In-the-Wild Robot Policies","cats":["teleop","data"],"org":"CMU","note":"低成本移动设备让人用自己的手在野外大量采数据，与机器人数据共训","url":"https://arxiv.org/abs/2505.07813","authors":"Tony Tao, Mohan Kumar Srirama, Jason Jingzhou Liu 等","star":false},{"key":"2505.02291","arxiv":"2505.02291","date":"2025-05-04","short":"Contact Trust Region","title":"Dexterous Contact-Rich Manipulation via the Contact Trust Region","cats":["mbc"],"org":"MIT 等","note":"尊重接触单边性的信赖域：局部接触 MPC + 全局拼接，不靠并行也比 RL 和采样 MPC 省算力（IJRR）","url":"https://arxiv.org/abs/2505.02291","authors":"H. J. Terry Suh, Tao Pang, Tong Zhao 等","star":true},{"key":"2504.12609","arxiv":"2504.12609","date":"2025-04-17","short":"Human2Sim2Robot","title":"Crossing the Human-Robot Embodiment Gap with Sim-to-Real RL using One Human Demonstration","cats":["human"],"org":"Stanford","note":"只用一段 RGB-D 人类视频：用物体轨迹定义与本体无关的奖励，在仿真里 RL 跨越本体差距","url":"https://arxiv.org/abs/2504.12609","authors":"Tyler Ga Wei Lum, Olivia Y. Lee, C. Karen Liu 等","star":false},{"key":"2504.04259","arxiv":"2504.04259","date":"2025-04-05","short":"ORCA Hand","title":"ORCA: An Open-Source, Reliable, Cost-Effective, Anthropomorphic Robotic Hand for Uninterrupted Dexterous Task Learning","cats":["hw","tactile"],"org":"ETH Zurich","note":"开源 17 DoF 腱驱动手，集成触觉，8 小时内可装好，物料成本不到 2000 瑞士法郎","url":"https://arxiv.org/abs/2504.04259","authors":"Clemens C. Christoph, Maximilian Eberlein, Filippos Katsimalis 等","star":false},{"key":"2503.21860","arxiv":"2503.21860","date":"2025-03-27","short":"ManipTrans","title":"ManipTrans: Efficient Dexterous Bimanual Manipulation Transfer via Residual Learning","cats":["human"],"org":"","note":"先训通用轨迹模仿器，再训交互约束下的残差模块，把人类双手技能迁移到机器人手（CVPR'25）","url":"https://arxiv.org/abs/2503.21860","authors":"Kailin Li, Puhao Li, Tengyu Liu 等","star":true},{"key":"2503.20020","arxiv":"2503.20020","date":"2025-03-25","short":"Gemini Robotics","title":"Gemini Robotics: Bringing AI into the Physical World","cats":["vla"],"org":"Google DeepMind","note":"微调后能完成折纸等高灵巧、长时程任务","url":"https://arxiv.org/abs/2503.20020","authors":" Gemini Robotics Team, Saminda Abeyruwan, Joshua Ainslie 等","star":false},{"key":"2503.14734","arxiv":"2503.14734","date":"2025-03-18","short":"GR00T N1","title":"GR00T N1: An Open Foundation Model for Generalist Humanoid Robots","cats":["vla","humanoid"],"org":"NVIDIA","note":"人形双系统基础模型，支持灵巧手；后续版本加强全身灵巧控制","url":"https://arxiv.org/abs/2503.14734","authors":" NVIDIA,  :, Johan Bjorck 等","star":false},{"key":"2503.14329","arxiv":"2503.14329","date":"2025-03-18","short":"EvolvingGrasp","title":"EvolvingGrasp: Evolutionary Grasp Generation via Efficient Preference Alignment","cats":["grasp"],"org":"","note":"用成功与失败反馈做偏好对齐，让抓取生成模型持续进化","url":"https://arxiv.org/abs/2503.14329","authors":"Yufei Zhu, Yiming Zhong, Zemin Yang 等","star":false},{"key":"2503.12533","arxiv":"2503.12533","date":"2025-03-16","short":"Being-0","title":"Being-0: A Humanoid Robotic Agent with Vision-Language Models and Modular Skills","cats":["hier","humanoid"],"org":"BeingBeyond/PKU","note":"基础模型做高层认知，Connector VLM 衔接模块化技能库（行走与灵巧操作）的人形 agent","url":"https://arxiv.org/abs/2503.12533","authors":"Haoqi Yuan, Yu Bai, Yuhui Fu 等","star":false},{"key":"2503.08257","arxiv":"2503.08257","date":"2025-03-11","short":"DexGrasp Anything","title":"DexGrasp Anything: Towards Universal Robotic Dexterous Grasping with Physics Awareness","cats":["grasp"],"org":"","note":"把物理约束写进扩散模型的训练与采样；新数据集含 340 万个抓取、1.5 万多个物体","url":"https://arxiv.org/abs/2503.08257","authors":"Yiming Zhong, Qi Jiang, Jingyi Yu 等","star":false},{"key":"2503.07360","arxiv":"2503.07360","date":"2025-03-10","short":"AffordDexGrasp","title":"AffordDexGrasp: Open-set Language-guided Dexterous Grasp with Generalizable-Instructive Affordance","cats":["semantic"],"org":"","note":"用可泛化的\"指导性可供性\"连接语言语义与灵巧抓取，面向开放集类别（ICCV'25）","url":"https://arxiv.org/abs/2503.07360","authors":"Yi-Lin Wei, Mu Lin, Yuhao Lin 等","star":false},{"key":"2503.01616","arxiv":"2503.01616","date":"2025-03-03","short":"RoboDexVLM","title":"RoboDexVLM: Visual Language Model-Enabled Task Planning and Motion Control for Dexterous Robot Manipulation","cats":["hier"],"org":"","note":"VLM 任务规划（带任务级恢复）+ 语言引导的灵巧抓取感知，完成长序列开放词汇任务","url":"https://arxiv.org/abs/2503.01616","authors":"Haichao Liu, Sikai Guo, Pengfei Mai 等","star":false},{"key":"2502.20900","arxiv":"2502.20900","date":"2025-02-28","short":"DexGraspVLA","title":"DexGraspVLA: A Vision-Language-Action Framework Towards General Dexterous Grasping","cats":["vla","hier"],"org":"","note":"预训练 VLM 做高层规划 + 扩散低层控制器，杂乱场景中语言引导抓取成功率 90% 以上（AAAI'26）","url":"https://arxiv.org/abs/2502.20900","authors":"Yifan Zhong, Xuchuan Huang, Ruochong Li 等","star":true},{"key":"2502.09614","arxiv":"2502.09614","date":"2025-02-13","short":"DexTrack","title":"DexTrack: Towards Generalizable Neural Tracking Control for Dexterous Manipulation from Human References","cats":["human"],"org":"Tsinghua 等","note":"通用神经跟踪控制器：给定人类参考生成手部动作，用数据飞轮迭代增强（ICLR'25）","url":"https://arxiv.org/abs/2502.09614","authors":"Xueyi Liu, Jianibieke Adalibieke, Qianwei Han 等","star":true},{"key":"2502.08844","arxiv":"2502.08844","date":"2025-02-12","short":"MuJoCo Playground","title":"MuJoCo Playground","cats":["mbc","bench"],"org":"Google DeepMind 等","note":"基于 MJX 的开源机器人学习框架，含灵巧手任务，单 GPU 几分钟训练，零样本上真机","url":"https://arxiv.org/abs/2502.08844","authors":"Kevin Zakka, Baruch Tabanpour, Qiayuan Liao 等","star":true},{"key":"2502.04307","arxiv":"2502.04307","date":"2025-02-06","short":"DexterityGen","title":"DexterityGen: Foundation Controller for Unprecedented Dexterity","cats":["teleop","inhand"],"org":"UC Berkeley/Meta","note":"RL 预训练大规模灵巧运动原语，人只给粗指令，扩散模型生成安全精确的动作，相当于灵巧手的\"基础控制器\"","url":"https://arxiv.org/abs/2502.04307","authors":"Zhao-Heng Yin, Changhao Wang, Luis Pineda 等","star":true},{"key":"2412.16490","arxiv":"2412.16490","date":"2024-12-21","short":"BODex","title":"BODex: Scalable and Efficient Robotic Dexterous Grasp Synthesis Using Bilevel Optimization","cats":["grasp","bench"],"org":"PKU","note":"双层优化（下层为 QP）GPU 并行合成，单卡每秒 49 个以上；用它训练的模型仿真成功率约 80%，用 DexGraspNet 约 40%","url":"https://arxiv.org/abs/2412.16490","authors":"Jiayi Chen, Yubin Ke, He Wang","star":false},{"key":"2412.09743","arxiv":"2412.09743","date":"2024-12-12","short":"Learn from Sampling Planners?","title":"Should We Learn Contact-Rich Manipulation Policies from Sampling-Based Planners?","cats":["mbc","data"],"org":"","note":"讨论用采样式规划器生成的轨迹做模仿学习的利弊","url":"https://arxiv.org/abs/2412.09743","authors":"Huaijiang Zhu, Tong Zhao, Xinpei Ni 等","star":false},{"key":"2412.08468","arxiv":"2412.08468","date":"2024-12-11","short":"Multi-GraspLLM","title":"Multi-GraspLLM: A Multimodal LLM for Multi-Hand Semantic Guided Grasp Generation","cats":["semantic"],"org":"","note":"多模态 LLM 按语义指令为多种手生成抓取","url":"https://arxiv.org/abs/2412.08468","authors":"Haosheng Li, Weixin Mao, Weipeng Deng 等","star":false},{"key":"2412.01791","arxiv":"2412.01791","date":"2024-11-27","short":"DextrAH-RGB","title":"DextrAH-RGB: Visuomotor Policies to Grasp Anything with Dexterous Hands","cats":["grasp"],"org":"NVIDIA","note":"只用 RGB 的\"抓任意物体\"视觉运动策略（特权教师 → RGB 学生）","url":"https://arxiv.org/abs/2412.01791","authors":"Ritvik Singh, Arthur Allshire, Ankur Handa 等","star":false},{"key":"2411.18562","arxiv":"2411.18562","date":"2024-11-27","short":"DexHandDiff","title":"DexHandDiff: Interaction-aware Diffusion Planning for Adaptive Dexterous Manipulation","cats":["hier"],"org":"","note":"交互感知的扩散规划，用 LLM 生成的交互引导适配不同任务目标（CVPR'25）","url":"https://arxiv.org/abs/2411.18562","authors":"Zhixuan Liang, Yao Mu, Yixiao Wang 等","star":false},{"key":"2411.06183","arxiv":"2411.06183","date":"2024-11-09","short":"Tendon-Hand Sampling MPC","title":"Sampling-Based Model Predictive Control for Dexterous Manipulation on a Biomimetic Tendon-Driven Hand","cats":["mbc"],"org":"","note":"首次在实体仿生腱驱动手上用采样 MPC 做手内操作；不需长时间训练，但目标函数要按任务调","url":"https://arxiv.org/abs/2411.06183","authors":"Adrian Hess, Alexander M. Kübler, Benedek Forrai 等","star":false},{"key":"2410.23701","arxiv":"2410.23701","date":"2024-10-31","short":"Get a Grip","title":"Get a Grip: Multi-Finger Grasp Evaluation at Scale Enables Robust Sim-to-Real Transfer","cats":["grasp"],"org":"Stanford","note":"大规模多指抓取评估，支撑稳健的 sim2real","url":"https://arxiv.org/abs/2410.23701","authors":"Tyler Ga Wei Lum, Albert H. Li, Preston Culbertson 等","star":false},{"key":"2410.24185","arxiv":"2410.24185","date":"2024-10-31","short":"DexMimicGen","title":"DexMimicGen: Automated Data Generation for Bimanual Dexterous Manipulation via Imitation Learning","cats":["data"],"org":"NVIDIA","note":"从少量人类示范自动扩增双手灵巧操作数据（MimicGen 的扩展）","url":"https://arxiv.org/abs/2410.24185","authors":"Zhenyu Jiang, Yuqi Xie, Kevin Lin 等","star":false},{"key":"2410.23004","arxiv":"2410.23004","date":"2024-10-30","short":"DexGraspNet 2.0","title":"DexGraspNet 2.0: Learning Generative Dexterous Grasping in Large-scale Synthetic Cluttered Scenes","cats":["grasp"],"org":"PKU","note":"在大规模合成的杂乱场景中学习生成式抓取","url":"https://arxiv.org/abs/2410.23004","authors":"Jialiang Zhang, Haoran Liu, Danshi Li 等","star":false},{"key":"2409.14562","arxiv":"2409.14562","date":"2024-09-22","short":"DROP","title":"DROP: Dexterous Reorientation via Online Planning","cats":["mbc"],"org":"Caltech","note":"在线采样规划 + 实时状态估计，完成手内方块重定向（ICRA'25）","url":"https://arxiv.org/abs/2409.14562","authors":"Albert H. Li, Preston Culbertson, Vince Kurtz 等","star":false},{"key":"2409.12735","arxiv":"2409.12735","date":"2024-09-19","short":"Tactile Skin Sim2Real","title":"Fine Manipulation Using a Tactile Skin: Learning in Simulation and Sim-to-Real Transfer","cats":["tactile"],"org":"","note":"用触觉皮肤做精细操作：在仿真里学习并迁移到真机","url":"https://arxiv.org/abs/2409.12735","authors":"Ulf Kasolowsky, Berthold Bäuml","star":false},{"key":"2409.08276","arxiv":"2409.08276","date":"2024-09-12","short":"AnySkin","title":"AnySkin: Plug-and-play Skin Sensing for Robotic Touch","cats":["tactile","hw"],"org":"NYU 等","note":"即插即用的磁性触觉皮肤，可更换且信号一致","url":"https://arxiv.org/abs/2409.08276","authors":"Raunaq Bhirangi, Venkatesh Pattabiraman, Enes Erciyes 等","star":false},{"key":"2407.18902","arxiv":"2407.18902","date":"2024-07-26","short":"Lessons from Spinning Pens","title":"Lessons from Learning to Spin \"Pens\"","cats":["inhand"],"org":"UCSD 等","note":"仿真 RL 生成轨迹，再用少量真机示范微调；转笔这类高动态任务的经验总结","url":"https://arxiv.org/abs/2407.18902","authors":"Jun Wang, Ying Yuan, Haichuan Che 等","star":false},{"key":"2407.03162","arxiv":"2407.03162","date":"2024-07-03","short":"Bunny-VisionPro","title":"Bunny-VisionPro: Real-Time Bimanual Dexterous Teleoperation for Imitation Learning","cats":["teleop"],"org":"UCSD","note":"用 Vision Pro 做实时双手灵巧遥操作，带触觉反馈，服务模仿学习","url":"https://arxiv.org/abs/2407.03162","authors":"Runyu Ding, Yuzhe Qin, Jiyue Zhu 等","star":false},{"key":"2407.02274","arxiv":"2407.02274","date":"2024-07-02","short":"DextrAH-G","title":"DextrAH-G: Pixels-to-Action Dexterous Arm-Hand Grasping with Geometric Fabrics","cats":["grasp"],"org":"NVIDIA","note":"几何 fabrics 保证安全 + RL，像素到动作的手臂-手抓取","url":"https://arxiv.org/abs/2407.02274","authors":"Tyler Ga Wei Lum, Martin Matak, Viktor Makoviychuk 等","star":false},{"key":"2406.12731","arxiv":"2406.12731","date":"2024-06-18","short":"Tactile SoftHand-A","title":"Tactile SoftHand-A: 3D-Printed, Tactile, Highly-underactuated, Anthropomorphic Robot Hand with an Antagonistic Tendon Mechanism","cats":["hw","tactile"],"org":"","note":"3D 打印、高度欠驱动、带触觉的拟人软手（拮抗腱机构）","url":"https://arxiv.org/abs/2406.12731","authors":"Haoran Li, Christopher J. Ford, Chenghua Lu 等","star":false},{"key":"2405.07391","arxiv":"2405.07391","date":"2024-05-12","short":"AnyRotate","title":"AnyRotate: Gravity-Invariant In-Hand Object Rotation with Sim-to-Real Touch","cats":["inhand","tactile"],"org":"Univ. Bristol","note":"任意手姿态下（重力不变）的多轴旋转，触觉 sim2real","url":"https://arxiv.org/abs/2405.07391","authors":"Max Yang, Chenghua Lu, Alex Church 等","star":false},{"key":"2404.16823","arxiv":"2404.16823","date":"2024-04-25","short":"HATO","title":"Learning Visuotactile Skills with Two Multifingered Hands","cats":["teleop","tactile"],"org":"UC Berkeley","note":"双多指手的视触觉技能学习与低成本遥操作","url":"https://arxiv.org/abs/2404.16823","authors":"Toru Lin, Yu Zhang, Qiyang Li 等","star":false},{"key":"2403.19417","arxiv":"2403.19417","date":"2024-03-28","short":"OakInk2","title":"OAKINK2: A Dataset of Bimanual Hands-Object Manipulation in Complex Task Completion","cats":["bench"],"org":"SJTU","note":"复杂任务中的双手-物体操作数据集","url":"https://arxiv.org/abs/2403.19417","authors":"Xinyu Zhan, Lixin Yang, Yifei Zhao 等","star":false},{"key":"2403.07870","arxiv":"2403.07870","date":"2024-03-12","short":"OPEN TEACH","title":"OPEN TEACH: A Versatile Teleoperation System for Robotic Manipulation","cats":["teleop"],"org":"NYU","note":"基于 VR 头显的通用遥操作系统","url":"https://arxiv.org/abs/2403.07870","authors":"Aadhithya Iyer, Zhuoran Peng, Yinlong Dai 等","star":false},{"key":"2403.07788","arxiv":"2403.07788","date":"2024-03-12","short":"DexCap","title":"DexCap: Scalable and Portable Mocap Data Collection System for Dexterous Manipulation","cats":["teleop","data"],"org":"Stanford","note":"便携动捕手套 + 相机采集人手数据，配合人在环纠正学双手灵巧技能","url":"https://arxiv.org/abs/2403.07788","authors":"Chen Wang, Haochen Shi, Weizhuo Wang 等","star":true},{"key":"2403.02338","arxiv":"2403.02338","date":"2024-03-04","short":"Twisting Lids Off","title":"Twisting Lids Off with Two Hands","cats":["inhand"],"org":"UC Berkeley","note":"双手拧瓶盖：简单的物体表征 + 大规模 sim2real RL","url":"https://arxiv.org/abs/2403.02338","authors":"Toru Lin, Zhao-Heng Yin, Haozhi Qi 等","star":false},{"key":"2401.07915","arxiv":"2401.07915","date":"2024-01-15","short":"In-Hand Manipulation Survey","title":"Survey of Learning-based Approaches for Robotic In-Hand Manipulation","cats":["survey"],"org":"","note":"基于学习的手内操作方法综述","url":"https://arxiv.org/abs/2401.07915","authors":"Abraham Itzhak Weinberg, Alon Shirizly, Osher Azulay 等","star":false},{"key":"2310.12931","arxiv":"2310.12931","date":"2023-10-19","short":"Eureka","title":"Eureka: Human-Level Reward Design via Coding Large Language Models","cats":["llmreward"],"org":"NVIDIA/UPenn","note":"GPT-4 写奖励代码并进化式迭代，第一次让仿真里的 Shadow 手学会快速转笔","url":"https://arxiv.org/abs/2310.12931","authors":"Yecheng Jason Ma, William Liang, Guanzhi Wang 等","star":true},{"key":"2309.09979","arxiv":"2309.09979","date":"2023-09-18","short":"RotateIt","title":"General In-Hand Object Rotation with Vision and Touch","cats":["inhand","tactile"],"org":"UC Berkeley/Meta","note":"视觉 + 触觉的通用手内旋转，多模态特权信息蒸馏","url":"https://arxiv.org/abs/2309.09979","authors":"Haozhi Qi, Brent Yi, Sudharshan Suresh 等","star":false},{"key":"2309.06440","arxiv":"2309.06440","date":"2023-09-12","short":"LEAP Hand","title":"LEAP Hand: Low-Cost, Efficient, and Anthropomorphic Hand for Robot Learning","cats":["hw"],"org":"CMU","note":"低成本、易组装维修的 16 DoF 拟人手，专为机器人学习设计，是常用的 sim2real 平台","url":"https://arxiv.org/abs/2309.06440","authors":"Kenneth Shaw, Ananye Agarwal, Deepak Pathak","star":true},{"key":"2307.04577","arxiv":"2307.04577","date":"2023-07-10","short":"AnyTeleop","title":"AnyTeleop: A General Vision-Based Dexterous Robot Arm-Hand Teleoperation System","cats":["teleop"],"org":"UCSD/NVIDIA","note":"通用视觉遥操作框架，支持多种机械臂与灵巧手","url":"https://arxiv.org/abs/2307.04577","authors":"Yuzhe Qin, Wei Yang, Binghao Huang 等","star":true},{"key":"2305.12127","arxiv":"2305.12127","date":"2023-05-20","short":"DexPBT","title":"DexPBT: Scaling up Dexterous Manipulation for Hand-Arm Systems with Population Based Training","cats":["inhand"],"org":"NVIDIA","note":"把种群训练（PBT）扩展到手臂 + 手的高维系统，做抓取与重定向","url":"https://arxiv.org/abs/2305.12127","authors":"Aleksei Petrenko, Arthur Allshire, Gavriel State 等","star":false},{"key":"2305.05706","arxiv":"2305.05706","date":"2023-05-09","short":"DexArt","title":"DexArt: Benchmarking Generalizable Dexterous Manipulation with Articulated Objects","cats":["bench"],"org":"UCSD","note":"铰接物体上的通用灵巧操作基准","url":"https://arxiv.org/abs/2305.05706","authors":"Chen Bao, Helin Xu, Yuzhe Qin 等","star":false},{"key":"2304.00464","arxiv":"2304.00464","date":"2023-04-02","short":"UniDexGrasp++","title":"UniDexGrasp++: Improving Dexterous Grasping Policy Learning via Geometry-aware Curriculum and Iterative Generalist-Specialist Learning","cats":["grasp"],"org":"PKU","note":"几何感知课程 + 通才-专才迭代学习，提升抓取策略","url":"https://arxiv.org/abs/2304.00464","authors":"Weikang Wan, Haoran Geng, Yun Liu 等","star":false},{"key":"2303.10880","arxiv":"2303.10880","date":"2023-03-20","short":"Rotating without Seeing","title":"Rotating without Seeing: Towards In-hand Dexterity through Touch","cats":["inhand","tactile"],"org":"UCSD","note":"只靠手上密集的二值触觉、不用视觉完成旋转","url":"https://arxiv.org/abs/2303.10880","authors":"Zhao-Heng Yin, Binghao Huang, Yuzhe Qin 等","star":false},{"key":"2303.00938","arxiv":"2303.00938","date":"2023-03-02","short":"UniDexGrasp","title":"UniDexGrasp: Universal Robotic Dexterous Grasping via Learning Diverse Proposal Generation and Goal-Conditioned Policy","cats":["grasp"],"org":"PKU","note":"先生成多样的抓取提案，再用目标条件策略执行，做通用灵巧抓取","url":"https://arxiv.org/abs/2303.00938","authors":"Yinzhen Xu, Weikang Wan, Jialiang Zhang 等","star":false},{"key":"2212.04498","arxiv":"2212.04498","date":"2022-12-08","short":"VideoDex","title":"VideoDex: Learning Dexterity from Internet Videos","cats":["human"],"org":"CMU","note":"从互联网视频学习灵巧先验","url":"https://arxiv.org/abs/2212.04498","authors":"Kenneth Shaw, Shikhar Bahl, Deepak Pathak","star":false},{"key":"2212.00541","arxiv":"2212.00541","date":"2022-12-01","short":"Predictive Sampling","title":"Predictive Sampling: Real-time Behaviour Synthesis with MuJoCo","cats":["mbc"],"org":"Google DeepMind","note":"MuJoCo MPC 中的采样式实时行为合成，是灵巧手采样 MPC 的基础","url":"https://arxiv.org/abs/2212.00541","authors":"Taylor Howell, Nimrod Gileadi, Saran Tunyasuvunakool 等","star":false},{"key":"2211.11744","arxiv":"2211.11744","date":"2022-11-21","short":"Visual Dexterity","title":"Visual Dexterity: In-Hand Reorientation of Novel and Complex Object Shapes","cats":["inhand"],"org":"MIT","note":"只用一个深度相机，实时重定向新颖复杂形状的物体（Science Robotics）","url":"https://arxiv.org/abs/2211.11744","authors":"Tao Chen, Megha Tippur, Siyang Wu 等","star":false},{"key":"2210.13702","arxiv":"2210.13702","date":"2022-10-25","short":"DeXtreme","title":"DeXtreme: Transfer of Agile In-hand Manipulation from Simulation to Reality","cats":["inhand"],"org":"NVIDIA","note":"Isaac Gym 大规模并行训练 + 视觉位姿估计，在 Allegro 手上复现 Dactyl 级别的方块重定向","url":"https://arxiv.org/abs/2210.13702","authors":"Ankur Handa, Arthur Allshire, Viktor Makoviychuk 等","star":true},{"key":"2210.04887","arxiv":"2210.04887","date":"2022-10-10","short":"HORA","title":"In-Hand Object Rotation via Rapid Motor Adaptation","cats":["inhand"],"org":"UC Berkeley/Meta","note":"把腿足的快速运动适应（RMA）搬到手内旋转：只用本体感觉在线估计物体属性","url":"https://arxiv.org/abs/2210.04887","authors":"Haozhi Qi, Ashish Kumar, Roberto Calandra 等","star":true},{"key":"2210.02697","arxiv":"2210.02697","date":"2022-10-06","short":"DexGraspNet","title":"DexGraspNet: A Large-Scale Robotic Dexterous Grasp Dataset for General Objects Based on Simulation","cats":["grasp","bench"],"org":"PKU","note":"用加速的可微力封闭估计合成 132 万个 ShadowHand 抓取（5355 个物体）","url":"https://arxiv.org/abs/2210.02697","authors":"Ruicheng Wang, Jialiang Zhang, Jiayi Chen 等","star":true},{"key":"2206.10787","arxiv":"2206.10787","date":"2022-06-22","short":"Quasi-Dynamic Smoothing","title":"Global Planning for Contact-Rich Manipulation via Local Smoothing of Quasi-dynamic Contact Models","cats":["mbc"],"org":"MIT","note":"对准静态接触模型做局部平滑，配合 RRT 实现全局的接触丰富规划","url":"https://arxiv.org/abs/2206.10787","authors":"Tao Pang, H. J. Terry Suh, Lujie Yang 等","star":true},{"key":"2206.08686","arxiv":"2206.08686","date":"2022-06-17","short":"Bi-DexHands","title":"Towards Human-Level Bimanual Dexterous Manipulation with Reinforcement Learning","cats":["inhand","bench"],"org":"PKU","note":"双手灵巧操作的 RL 基准（Isaac Gym），后来 LLM 奖励设计的常用测试场","url":"https://arxiv.org/abs/2206.08686","authors":"Yuanpei Chen, Tianhao Wu, Shengjie Wang 等","star":false},{"key":"2204.13662","arxiv":"2204.13662","date":"2022-04-28","short":"ARCTIC","title":"ARCTIC: A Dataset for Dexterous Bimanual Hand-Object Manipulation","cats":["bench"],"org":"ETH/MPI","note":"双手与铰接物体交互的数据集","url":"https://arxiv.org/abs/2204.13662","authors":"Zicong Fan, Omid Taheri, Dimitrios Tzionas 等","star":false},{"key":"2111.03043","arxiv":"2111.03043","date":"2021-11-04","short":"General In-Hand Reorientation","title":"A System for General In-Hand Object Re-Orientation","cats":["inhand"],"org":"MIT","note":"教师-学生蒸馏，掌心朝下也能重定向大量新物体","url":"https://arxiv.org/abs/2111.03043","authors":"Tao Chen, Jie Xu, Pulkit Agrawal","star":false},{"key":"2108.05877","arxiv":"2108.05877","date":"2021-08-12","short":"DexMV","title":"DexMV: Imitation Learning for Dexterous Manipulation from Human Videos","cats":["human"],"org":"UCSD","note":"从人类视频重建手-物姿态，重定向后做模仿学习","url":"https://arxiv.org/abs/2108.05877","authors":"Yuzhe Qin, Yueh-Hua Wu, Shaowei Liu 等","star":false},{"key":"2104.04631","arxiv":"2104.04631","date":"2021-04-09","short":"DexYCB","title":"DexYCB: A Benchmark for Capturing Hand Grasping of Objects","cats":["bench"],"org":"NVIDIA","note":"人手抓取物体的多视角数据集","url":"https://arxiv.org/abs/2104.04631","authors":"Yu-Wei Chao, Wei Yang, Yu Xiang 等","star":false},{"key":"2005.14679","arxiv":"2005.14679","date":"2020-05-29","short":"DIGIT","title":"DIGIT: A Novel Design for a Low-Cost Compact High-Resolution Tactile Sensor with Application to In-Hand Manipulation","cats":["tactile","hw"],"org":"Meta AI","note":"低成本、紧凑、高分辨率视触觉传感器，并演示了手内操作","url":"https://arxiv.org/abs/2005.14679","authors":"Mike Lambeta, Po-Wei Chou, Stephen Tian 等","star":false},{"key":"1910.07113","arxiv":"1910.07113","date":"2019-10-16","short":"Rubik's Cube (OpenAI)","title":"Solving Rubik's Cube with a Robot Hand","cats":["inhand"],"org":"OpenAI","note":"自动域随机化（ADR）+ 带记忆的策略，单手还原魔方","url":"https://arxiv.org/abs/1910.07113","authors":" OpenAI, Ilge Akkaya, Marcin Andrychowicz 等","star":true},{"key":"1910.03135","arxiv":"1910.03135","date":"2019-10-07","short":"DexPilot","title":"DexPilot: Vision Based Teleoperation of Dexterous Robotic Hand-Arm System","cats":["teleop"],"org":"NVIDIA","note":"纯视觉（不戴手套）遥操作手臂-手系统，提出经典的重定向优化","url":"https://arxiv.org/abs/1910.03135","authors":"Ankur Handa, Karl Van Wyk, Wei Yang 等","star":false},{"key":"1808.00177","arxiv":"1808.00177","date":"2018-08-01","short":"Dactyl","title":"Learning Dexterous In-Hand Manipulation","cats":["inhand"],"org":"OpenAI","note":"Shadow 手在大规模域随机化的仿真里用 RL 学会方块重定向，零样本迁移到真机，是灵巧手 sim2real 的起点","url":"https://arxiv.org/abs/1808.00177","authors":" OpenAI, Marcin Andrychowicz, Bowen Baker 等","star":true}]};
+const CATNAME = Object.fromEntries(DATA.cats);
+const BYKEY = Object.fromEntries(DATA.papers.map(p => [p.key, p]));
+
+function el(tag, attrs, ...children) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v === false || v == null) continue;
+    if (k === "class") e.className = v;
+    else if (k === "text") e.textContent = v;
+    else if (k === "style") e.style.cssText = v;
+    else e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of children) {
+    if (c == null) continue;
+    e.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  }
+  return e;
+}
+
+/* ---------- theme ---------- */
+(function theme() {
+  const btn = document.getElementById("themeBtn");
+  const order = ["auto", "light", "dark"];
+  const label = { auto: "自动", light: "浅色", dark: "深色" };
+  let cur = "auto";
+  try { cur = localStorage.getItem("ea-theme") || "auto"; } catch (e) { /* storage unavailable */ }
+  function apply(t) {
+    cur = t;
+    if (t === "auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t);
+    btn.textContent = "◐ 主题：" + label[t];
+    try { localStorage.setItem("ea-theme", t); } catch (e) { /* ignore */ }
+  }
+  apply(order.includes(cur) ? cur : "auto");
+  btn.addEventListener("click", () => apply(order[(order.indexOf(cur) + 1) % order.length]));
+})();
+
+/* ---------- scrollspy ---------- */
+(function spy() {
+  const links = [...document.querySelectorAll(".toc a")];
+  const map = new Map(links.map(a => [a.getAttribute("href").slice(1), a]));
+  const obs = new IntersectionObserver(entries => {
+    for (const en of entries) {
+      if (en.isIntersecting) {
+        links.forEach(a => a.removeAttribute("aria-current"));
+        const a = map.get(en.target.id);
+        if (a) {
+          a.setAttribute("aria-current", "true");
+          const inner = a.parentElement;
+          inner.scrollTo({ left: a.offsetLeft - inner.clientWidth / 2 + a.clientWidth / 2 });
+        }
+      }
+    }
+  }, { rootMargin: "-45% 0px -50% 0px" });
+  document.querySelectorAll("main section[id]").forEach(s => obs.observe(s));
+})();
+
+/* ---------- tooltip ---------- */
+const tip = document.getElementById("tooltip");
+function showTip(x, y, value, label) {
+  tip.replaceChildren(
+    el("div", { class: "tt-val", text: value }),
+    el("div", { class: "tt-lab" }, el("span", { class: "key" }), label)
+  );
+  tip.hidden = false;
+  const r = tip.getBoundingClientRect();
+  let left = x + 14, top = y - r.height - 10;
+  if (left + r.width > window.innerWidth - 8) left = x - r.width - 14;
+  if (top < 8) top = y + 16;
+  tip.style.left = left + "px";
+  tip.style.top = top + "px";
+}
+function hideTip() { tip.hidden = true; }
+
+/* ---------- charts ---------- */
+const CHARTS = [];
+
+function renderChart(cfg) {
+  const host = document.getElementById(cfg.id);
+  if (!host) return;
+  const fig = el("figure", { class: "chart" });
+  fig.append(el("figcaption", {}, el("div", { class: "chart-title", text: cfg.title }), el("div", { class: "chart-sub", text: cfg.sub })));
+  const plot = el("div", { class: "plot", role: "list", "aria-label": cfg.title });
+  const valueEls = [];
+  for (const [label, v, extra] of cfg.rows) {
+    const valText = cfg.fmt(v) + (extra ? "（" + extra + "）" : "");
+    const pct = Math.max(0.8, (v / cfg.max) * 100);
+    const track = el("div", { class: "bar-track" });
+    for (const t of cfg.ticks) if (t > 0) track.append(el("span", { class: "gridline", style: "left:" + (t / cfg.max) * 100 + "%" }));
+    track.append(el("span", { class: "bar", style: "width:" + pct + "%" }));
+    const vEl = el("span", { class: "bar-val", style: "left:" + pct + "%", text: extra && /秒/.test(extra) ? extra : cfg.fmt(v) });
+    track.append(vEl);
+    valueEls.push(vEl);
+    const row = el("div", { class: "bar-row", role: "listitem", tabindex: "0", "aria-label": label + "：" + valText },
+      el("div", { class: "bar-label", text: label }), track);
+    row.addEventListener("pointermove", e => showTip(e.clientX, e.clientY, valText, label));
+    row.addEventListener("pointerleave", hideTip);
+    row.addEventListener("focus", () => { const r = track.getBoundingClientRect(); showTip(r.left + r.width / 2, r.top, valText, label); });
+    row.addEventListener("blur", hideTip);
+    plot.append(row);
+  }
+  const ticks = el("div", { class: "ticks", "aria-hidden": "true" });
+  for (const t of cfg.ticks) ticks.append(el("span", { class: "tick", style: "left:" + (t / cfg.max) * 100 + "%", text: cfg.tick(t) }));
+  plot.append(el("div", { class: "bar-axis" }, el("div"), ticks));
+  fig.append(plot);
+
+  const table = el("table", { class: "data-table", hidden: true });
+  const thead = el("thead", {}, el("tr", {}, ...cfg.head.map(h => el("th", { text: h }))));
+  const tbody = el("tbody");
+  for (const [label, v, extra] of cfg.rows) {
+    const tr = el("tr", {}, el("td", { text: label }), el("td", { class: "num", text: cfg.fmt(v) }));
+    if (cfg.head.length > 2) tr.append(el("td", { text: extra || "" }));
+    tbody.append(tr);
+  }
+  table.append(thead, tbody);
+  const btn = el("button", { class: "btn-small", type: "button", "aria-expanded": "false", text: "表格视图" });
+  btn.addEventListener("click", () => {
+    const open = table.hidden;
+    table.hidden = !open;
+    btn.setAttribute("aria-expanded", String(open));
+    btn.textContent = open ? "隐藏表格" : "表格视图";
+  });
+  const p = BYKEY[cfg.src];
+  const src = el("a", { href: p.url, target: "_blank", rel: "noopener", title: p.title, text: "来源：" + p.short });
+  fig.append(el("div", { class: "chart-foot" }, src, btn), table);
+  host.replaceChildren(fig);
+
+  // A value label that would overflow its track moves to the tooltip/table instead of being clipped.
+  const fit = () => {
+    for (const vEl of valueEls) {
+      vEl.style.visibility = "visible";
+      const tr = vEl.parentElement.getBoundingClientRect();
+      const vr = vEl.getBoundingClientRect();
+      if (vr.right > tr.right + 1) vEl.style.visibility = "hidden";
+    }
+  };
+  requestAnimationFrame(fit);
+  window.addEventListener("resize", fit);
+}
+CHARTS.forEach(renderChart);
+
+/* ---------- expand / collapse all cards in a section ---------- */
+document.querySelectorAll("button[data-expand]").forEach(btn => {
+  const all = [...document.querySelectorAll(btn.dataset.expand + " details")];
+  btn.addEventListener("click", () => {
+    const open = btn.getAttribute("aria-expanded") !== "true";
+    all.forEach(d => { d.open = open; });
+    btn.setAttribute("aria-expanded", String(open));
+    btn.textContent = open ? "全部收起" : "全部展开";
+  });
+});
+
+/* ---------- timeline filter ---------- */
+(function timeline() {
+  const btns = [...document.querySelectorAll("#timeline .filters button")];
+  const items = [...document.querySelectorAll("#tlList .tl-item")];
+  const years = [...document.querySelectorAll("#tlList .tl-year")];
+  function apply(track) {
+    btns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.track === track)));
+    items.forEach(li => li.classList.toggle("hidden", track !== "all" && li.dataset.track !== track));
+    years.forEach(y => {
+      let n = y.nextElementSibling, any = false;
+      while (n && !n.classList.contains("tl-year")) { if (!n.classList.contains("hidden")) any = true; n = n.nextElementSibling; }
+      y.classList.toggle("hidden", !any);
+    });
+  }
+  btns.forEach(b => b.addEventListener("click", () => apply(b.dataset.track)));
+})();
+
+/* ---------- paper explorer ---------- */
+(function papers() {
+  const state = { q: "", cats: new Set(), year: "all", part: "all", star: false, sort: "desc", limit: 80 };
+  const B_CATS = new Set(["llmreward", "gensim", "semantic", "hier", "coding", "frontier"]);
+  const partOf = p => (p.cats.some(c => B_CATS.has(c)) ? "B" : "A");
+  const part = document.getElementById("ppart");
+  const q = document.getElementById("pq"), year = document.getElementById("pyear"), sort = document.getElementById("psort");
+  const star = document.getElementById("pstar"), reset = document.getElementById("preset"), more = document.getElementById("pmore");
+  const catsBox = document.getElementById("pcats"), tbody = document.getElementById("ptbody"), count = document.getElementById("pcount");
+  const counts = {};
+  for (const p of DATA.papers) for (const c of p.cats) counts[c] = (counts[c] || 0) + 1;
+  catsBox.append(el("span", { class: "label", text: "类别（可多选）：" }));
+  const catBtns = [];
+  for (const [k, name] of DATA.cats) {
+    if (!counts[k]) continue;
+    const b = el("button", { class: "chip", type: "button", "aria-pressed": "false", "data-cat": k }, name + " ", el("span", { class: "n", text: String(counts[k]) }));
+    b.addEventListener("click", () => {
+      if (state.cats.has(k)) state.cats.delete(k); else state.cats.add(k);
+      b.setAttribute("aria-pressed", String(state.cats.has(k)));
+      state.limit = 80;
+      render();
+    });
+    catBtns.push(b);
+    catsBox.append(b);
+  }
+  function hay(p) { return (p.short + " " + p.title + " " + p.note + " " + p.org + " " + p.authors + " " + p.key).toLowerCase(); }
+  function render() {
+    const needle = state.q.trim().toLowerCase();
+    let rows = DATA.papers.filter(p =>
+      (state.year === "all" || (state.year === "2021" ? p.date.slice(0, 4) <= "2021" : p.date.startsWith(state.year))) &&
+      (state.part === "all" || partOf(p) === state.part) &&
+      (!state.star || p.star) &&
+      (state.cats.size === 0 || p.cats.some(c => state.cats.has(c))) &&
+      (!needle || needle.split(/\s+/).every(w => hay(p).includes(w))));
+    if (state.sort === "asc") rows = rows.slice().reverse();
+    count.textContent = "匹配 " + rows.length + " / " + DATA.papers.length + " 条";
+    const frag = document.createDocumentFragment();
+    for (const p of rows.slice(0, state.limit)) {
+      const work = el("td", {},
+        p.star ? el("span", { class: "star", title: "入门推荐", text: "★" }) : null,
+        el("a", { class: "pshort", href: p.url, target: "_blank", rel: "noopener", text: p.short }),
+        el("span", { class: "ptitle", text: p.title }),
+        (p.org || p.authors) ? el("span", { class: "porg", text: [p.org, p.authors].filter(Boolean).join(" · ") }) : null);
+      const cats = el("td", { class: "cats" }, ...p.cats.map(c => el("span", { class: "chip", text: CATNAME[c] || c })));
+      frag.append(el("tr", {}, el("td", { class: "date", text: p.date.slice(0, 7) }), work, cats, el("td", { text: p.note })));
+    }
+    tbody.replaceChildren(frag);
+    more.hidden = rows.length <= state.limit;
+    more.textContent = "显示更多（还有 " + Math.max(0, rows.length - state.limit) + " 条）";
+  }
+  let timer = 0;
+  q.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(() => { state.q = q.value; state.limit = 80; render(); }, 120); });
+  year.addEventListener("change", () => { state.year = year.value; state.limit = 80; render(); });
+  part.addEventListener("change", () => { state.part = part.value; state.limit = 80; render(); });
+  sort.addEventListener("change", () => { state.sort = sort.value; render(); });
+  star.addEventListener("change", () => { state.star = star.checked; state.limit = 80; render(); });
+  more.addEventListener("click", () => { state.limit += 120; render(); });
+  reset.addEventListener("click", () => {
+    state.q = ""; state.cats.clear(); state.year = "all"; state.part = "all"; state.star = false; state.sort = "desc"; state.limit = 80;
+    q.value = ""; year.value = "all"; part.value = "all"; sort.value = "desc"; star.checked = false;
+    catBtns.forEach(b => b.setAttribute("aria-pressed", "false"));
+    render();
+  });
+  render();
+})();
+
+/* ---------- copy buttons ---------- */
+document.querySelectorAll("pre.code").forEach(pre => {
+  const text = pre.textContent;
+  const b = el("button", { class: "btn-small copy", type: "button", text: "复制" });
+  b.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(text); b.textContent = "已复制"; }
+    catch (e) { b.textContent = "复制失败"; }
+    setTimeout(() => { b.textContent = "复制"; }, 1500);
+  });
+  pre.append(b);
+});
+</script>
+</body>
+</html>
