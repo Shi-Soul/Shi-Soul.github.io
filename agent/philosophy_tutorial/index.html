@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一百多年的哲学：从 1900 到今天</title>
+<meta name="description" content="一百多年的哲学（1900—今天）科普教程：分析哲学与欧陆哲学的分野与对话，语言转向、逻辑实证主义、现象学、存在主义、科学哲学、心灵哲学、批判理论、后结构主义、政治哲学、伦理学、实用主义、人工智能哲学与阅读路线。">
+<link rel="stylesheet" href="katex/katex.min.css">
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --surface-2: #f0efec;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #74726c;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.10);
+  --accent: #2a78d6;
+  --accent-ink: #1c5cab;
+  --accent-wash: rgba(42, 120, 214, 0.08);
+  --code-bg: #f3f2ee;
+  --warn: #a8501a;
+  --warn-wash: rgba(180, 84, 26, 0.07);
+  --ok: #2b7449;
+  --ok-wash: rgba(47, 125, 79, 0.07);
+  --radius: 12px;
+  --font: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --math: "STIX Two Math", "Cambria Math", "Latin Modern Math", "Times New Roman", "Noto Serif CJK SC", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #262624; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a988f;
+    --grid: #2c2c2a; --axis: #4a4a46; --border: rgba(255, 255, 255, 0.10); --accent: #3987e5; --accent-ink: #86b6ef;
+    --accent-wash: rgba(57, 135, 229, 0.13); --code-bg: #161616; --warn: #e3965f; --warn-wash: rgba(227, 150, 95, 0.10);
+    --ok: #74c493; --ok-wash: rgba(116, 196, 147, 0.10);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #262624; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a988f;
+  --grid: #2c2c2a; --axis: #4a4a46; --border: rgba(255, 255, 255, 0.10); --accent: #3987e5; --accent-ink: #86b6ef;
+  --accent-wash: rgba(57, 135, 229, 0.13); --code-bg: #161616; --warn: #e3965f; --warn-wash: rgba(227, 150, 95, 0.10);
+  --ok: #74c493; --ok-wash: rgba(116, 196, 147, 0.10);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--page); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--surface); padding: 6px 10px; border-radius: 8px; z-index: 100; }
+.skip:focus { left: 12px; }
+
+/* header */
+.site-header { background: var(--surface); border-bottom: 1px solid var(--border); }
+.header-inner { display: flex; gap: 24px; align-items: flex-start; justify-content: space-between; padding-top: 34px; padding-bottom: 22px; }
+.eyebrow { margin: 0 0 6px; font-size: 13px; color: var(--ink-2); letter-spacing: 0.02em; }
+h1 { margin: 0 0 10px; font-size: clamp(26px, 3.4vw, 36px); line-height: 1.25; font-weight: 700; }
+.lede { margin: 0 0 10px; font-size: 16px; color: var(--ink-2); max-width: 860px; }
+.meta { margin: 0; font-size: 13px; color: var(--ink-2); }
+.theme-btn, .btn-small { font: inherit; font-size: 13px; color: var(--ink); background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; cursor: pointer; white-space: nowrap; }
+.theme-btn:hover, .btn-small:hover { border-color: var(--axis); }
+.btn-small { font-size: 12px; padding: 3px 10px; }
+
+/* layout */
+.layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 48px; align-items: start; }
+.sidebar { position: sticky; top: 0; max-height: 100vh; overflow-y: auto; padding: 26px 4px 40px 0; font-size: 13.5px; scrollbar-width: thin; }
+.side-title { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; margin: 0 0 8px 10px; }
+.toc-list { list-style: none; margin: 0; padding: 0; }
+.toc-list > li { margin: 1px 0; }
+.toc-list a { display: block; color: var(--ink-2); padding: 4px 10px; border-radius: 8px; line-height: 1.45; }
+.toc-list a:hover { background: var(--surface-2); color: var(--ink); text-decoration: none; }
+.toc-list a[aria-current="true"] { background: var(--accent-wash); color: var(--ink); }
+.toc-list ol { list-style: none; margin: 2px 0 6px 12px; padding: 0 0 0 6px; border-left: 1px solid var(--grid); }
+.toc-list ol a { font-size: 12.5px; padding: 3px 8px; }
+.sidebar .toc-list ol { display: none; }
+.sidebar .toc-list li.open > ol { display: block; }
+.side-extra { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--grid); }
+main { min-width: 0; padding-bottom: 60px; }
+.toc-mobile { display: none; }
+@media (max-width: 1020px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .sidebar { display: none; }
+  .toc-mobile { display: block; margin: 18px 0 0; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; }
+  .toc-mobile summary { cursor: pointer; font-weight: 600; }
+  .toc-mobile .toc-list { margin-top: 8px; }
+}
+
+/* prose */
+.prose { max-width: 820px; font-size: 16px; line-height: 1.85; }
+.prose h2 { font-size: 25px; line-height: 1.35; margin: 60px 0 14px; padding-top: 22px; border-top: 1px solid var(--grid); scroll-margin-top: 14px; }
+.prose > h2:first-child { margin-top: 26px; padding-top: 0; border-top: 0; }
+.prose h3 { font-size: 19px; line-height: 1.45; margin: 36px 0 10px; scroll-margin-top: 14px; }
+.prose h4 { font-size: 16px; margin: 24px 0 8px; }
+.prose p { margin: 12px 0; }
+.prose ul, .prose ol { padding-left: 24px; margin: 10px 0; }
+.prose li { margin: 5px 0; }
+.prose li > ul, .prose li > ol { margin: 4px 0; }
+.prose li > p { margin: 4px 0; }
+.prose strong { font-weight: 650; }
+.prose a.ref { color: var(--accent-ink); border-bottom: 1px dotted currentColor; }
+.prose a.ref:hover { text-decoration: none; border-bottom-style: solid; }
+.prose code { font-family: var(--mono); font-size: 0.86em; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+.prose hr { border: 0; border-top: 1px solid var(--grid); margin: 28px 0; }
+.table-wrap { overflow-x: auto; margin: 14px 0; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.prose table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.6; }
+.prose th, .prose td { border-bottom: 1px solid var(--grid); padding: 8px 12px; text-align: left; vertical-align: top; }
+.prose tr:last-child td { border-bottom: none; }
+.prose th { background: var(--surface-2); font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+@media (max-width: 640px) { .prose table { min-width: 560px; } .prose { font-size: 15.5px; } }
+
+/* code */
+.codehilite { position: relative; border-radius: 10px; margin: 16px 0; border: 1px solid var(--border); }
+.codehilite pre { margin: 0; padding: 14px 16px; overflow-x: auto; font-family: var(--mono); font-size: 13px; line-height: 1.6; }
+.prose .codehilite code { background: none; padding: 0; font-size: inherit; }
+.copy { position: absolute; top: 8px; right: 8px; opacity: 0; transition: opacity 0.15s; }
+.codehilite:hover .copy, .copy:focus-visible { opacity: 1; }
+@media (hover: none) { .copy { opacity: 1; } }
+
+/* equations (KaTeX, rendered at build time) */
+.eq { margin: 14px 0; padding: 4px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow-x: auto; overflow-y: hidden; }
+.eq .katex-display { margin: 0.7em 0; }
+.eq .katex { font-size: 1.12em; }
+.prose .katex { font-size: 1.05em; }
+.prose td .katex, .admonition .katex { font-size: 1em; }
+.nowrap { white-space: nowrap; }
+.eq .eq-narrow, .eq.narrow .eq-wide { display: none; }
+.eq.narrow .eq-narrow { display: block; }
+@media (max-width: 600px) {
+  .eq { padding: 2px 10px; }
+  .eq .katex { font-size: 1em; }
+}
+
+/* callouts */
+.admonition { margin: 18px 0; padding: 12px 16px; border-left: 3px solid var(--accent); background: var(--accent-wash); border-radius: 0 10px 10px 0; font-size: 15px; line-height: 1.75; }
+.admonition > :last-child { margin-bottom: 0; }
+.admonition > p { margin: 6px 0; }
+.admonition .admonition-title { margin: 0 0 4px; font-weight: 650; font-size: 14.5px; color: var(--accent-ink); }
+.admonition.pitfall { border-color: var(--warn); background: var(--warn-wash); }
+.admonition.pitfall .admonition-title { color: var(--warn); }
+.admonition.key { border-color: var(--ok); background: var(--ok-wash); }
+.admonition.key .admonition-title { color: var(--ok); }
+.admonition.example { border-color: var(--axis); background: var(--surface-2); }
+.admonition.example .admonition-title { color: var(--ink-2); }
+
+/* figures */
+.fig { margin: 22px 0; }
+.fig-scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+.fig svg { display: block; width: 100%; height: auto; min-width: 620px; }
+.fig figcaption { font-size: 13px; color: var(--ink-2); margin-top: 8px; text-align: center; line-height: 1.6; }
+.fig text { font-family: var(--font); }
+.sv-box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.sv-hl { fill: var(--accent-wash); stroke: var(--accent); stroke-width: 1.5; }
+.sv-zone { fill: none; stroke: var(--axis); stroke-width: 1; stroke-dasharray: 5 4; }
+.sv-edge { fill: none; stroke: var(--ink-2); stroke-width: 1.4; }
+.sv-edge.dash { stroke-dasharray: 5 4; }
+.sv-edge.acc { stroke: var(--accent); }
+.sv-head { fill: var(--ink-2); }
+.sv-head.acc { fill: var(--accent); }
+.sv-t1 { fill: var(--ink); font-size: 14px; font-weight: 650; }
+.sv-t2 { fill: var(--ink-2); font-size: 12px; }
+.sv-t3 { fill: var(--muted); font-size: 11.5px; }
+.sv-lab { fill: var(--accent-ink); font-size: 12px; }
+
+/* self-check */
+details.quiz { margin: 12px 0; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; font-size: 15px; }
+details.quiz summary { cursor: pointer; font-weight: 600; line-height: 1.6; }
+details.quiz summary::marker { color: var(--accent); }
+details.quiz[open] summary { margin-bottom: 4px; }
+details.quiz p { margin: 6px 0 0; line-height: 1.75; }
+.qtag { display: inline-block; font-size: 11.5px; font-weight: 600; color: var(--accent-ink); background: var(--accent-wash); border-radius: 6px; padding: 0 6px; margin-right: 6px; }
+
+/* references */
+.refs h2 { font-size: 22px; }
+.refs h3 { font-size: 15px; margin: 22px 0 6px; }
+.reflist { list-style: none; padding: 0 !important; margin: 0; font-size: 13.5px; line-height: 1.6; }
+.reflist li { padding: 5px 0; margin: 0; border-top: 1px solid var(--grid); }
+.reflist .rt { color: var(--ink-2); }
+
+footer { border-top: 1px solid var(--border); background: var(--surface); color: var(--ink-2); font-size: 13px; padding: 22px 0 30px; }
+footer p { margin: 4px 0; }
+@media print { .sidebar, .toc-mobile, .theme-btn, .copy { display: none !important; } .layout { display: block; } }
+
+/* pygments */
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #ffffcc }
+.codehilite { background: #f8f8f8; }
+.codehilite .c { color: #3D7B7B; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #FF0000 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666666 } /* Operator */
+.codehilite .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #9C6500 } /* Comment.Preproc */
+.codehilite .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .gr { color: #E40000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #008400 } /* Generic.Inserted */
+.codehilite .go { color: #717171 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #0044DD } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #687822 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #880000 } /* Name.Constant */
+.codehilite .nd { color: #AA22FF } /* Name.Decorator */
+.codehilite .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #0000FF } /* Name.Function */
+.codehilite .nl { color: #767600 } /* Name.Label */
+.codehilite .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #bbbbbb } /* Text.Whitespace */
+.codehilite .mb { color: #666666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #A45A77 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #0000FF } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666666 } /* Literal.Number.Integer.Long */
+pre { line-height: 125%; }
+td.linenos .normal { color: #6e7681; background-color: #0d1117; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #6e7681; background-color: #0d1117; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #e6edf3; background-color: #6e7681; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #e6edf3; background-color: #6e7681; padding-left: 5px; padding-right: 5px; }
+:root[data-theme="dark"] .codehilite .hll { background-color: #6e7681 }
+:root[data-theme="dark"] .codehilite { background: #0d1117; color: #e6edf3 }
+:root[data-theme="dark"] .codehilite .c { color: #8b949e; font-style: italic } /* Comment */
+:root[data-theme="dark"] .codehilite .err { color: #f85149 } /* Error */
+:root[data-theme="dark"] .codehilite .esc { color: #e6edf3 } /* Escape */
+:root[data-theme="dark"] .codehilite .g { color: #e6edf3 } /* Generic */
+:root[data-theme="dark"] .codehilite .k { color: #ff7b72 } /* Keyword */
+:root[data-theme="dark"] .codehilite .l { color: #a5d6ff } /* Literal */
+:root[data-theme="dark"] .codehilite .n { color: #e6edf3 } /* Name */
+:root[data-theme="dark"] .codehilite .o { color: #ff7b72; font-weight: bold } /* Operator */
+:root[data-theme="dark"] .codehilite .x { color: #e6edf3 } /* Other */
+:root[data-theme="dark"] .codehilite .p { color: #e6edf3 } /* Punctuation */
+:root[data-theme="dark"] .codehilite .ch { color: #8b949e; font-style: italic } /* Comment.Hashbang */
+:root[data-theme="dark"] .codehilite .cm { color: #8b949e; font-style: italic } /* Comment.Multiline */
+:root[data-theme="dark"] .codehilite .cp { color: #8b949e; font-weight: bold; font-style: italic } /* Comment.Preproc */
+:root[data-theme="dark"] .codehilite .cpf { color: #8b949e; font-style: italic } /* Comment.PreprocFile */
+:root[data-theme="dark"] .codehilite .c1 { color: #8b949e; font-style: italic } /* Comment.Single */
+:root[data-theme="dark"] .codehilite .cs { color: #8b949e; font-weight: bold; font-style: italic } /* Comment.Special */
+:root[data-theme="dark"] .codehilite .gd { color: #ffa198; background-color: #490202 } /* Generic.Deleted */
+:root[data-theme="dark"] .codehilite .ge { color: #e6edf3; font-style: italic } /* Generic.Emph */
+:root[data-theme="dark"] .codehilite .gr { color: #ffa198 } /* Generic.Error */
+:root[data-theme="dark"] .codehilite .gh { color: #79c0ff; font-weight: bold } /* Generic.Heading */
+:root[data-theme="dark"] .codehilite .gi { color: #56d364; background-color: #0f5323 } /* Generic.Inserted */
+:root[data-theme="dark"] .codehilite .go { color: #8b949e } /* Generic.Output */
+:root[data-theme="dark"] .codehilite .gp { color: #8b949e } /* Generic.Prompt */
+:root[data-theme="dark"] .codehilite .gs { color: #e6edf3; font-weight: bold } /* Generic.Strong */
+:root[data-theme="dark"] .codehilite .gu { color: #79c0ff } /* Generic.Subheading */
+:root[data-theme="dark"] .codehilite .gt { color: #ff7b72 } /* Generic.Traceback */
+:root[data-theme="dark"] .codehilite .g-Underline { color: #e6edf3; text-decoration: underline } /* Generic.Underline */
+:root[data-theme="dark"] .codehilite .kc { color: #79c0ff } /* Keyword.Constant */
+:root[data-theme="dark"] .codehilite .kd { color: #ff7b72 } /* Keyword.Declaration */
+:root[data-theme="dark"] .codehilite .kn { color: #ff7b72 } /* Keyword.Namespace */
+:root[data-theme="dark"] .codehilite .kp { color: #79c0ff } /* Keyword.Pseudo */
+:root[data-theme="dark"] .codehilite .kr { color: #ff7b72 } /* Keyword.Reserved */
+:root[data-theme="dark"] .codehilite .kt { color: #ff7b72 } /* Keyword.Type */
+:root[data-theme="dark"] .codehilite .ld { color: #79c0ff } /* Literal.Date */
+:root[data-theme="dark"] .codehilite .m { color: #a5d6ff } /* Literal.Number */
+:root[data-theme="dark"] .codehilite .s { color: #a5d6ff } /* Literal.String */
+:root[data-theme="dark"] .codehilite .na { color: #e6edf3 } /* Name.Attribute */
+:root[data-theme="dark"] .codehilite .nb { color: #e6edf3 } /* Name.Builtin */
+:root[data-theme="dark"] .codehilite .nc { color: #f0883e; font-weight: bold } /* Name.Class */
+:root[data-theme="dark"] .codehilite .no { color: #79c0ff; font-weight: bold } /* Name.Constant */
+:root[data-theme="dark"] .codehilite .nd { color: #d2a8ff; font-weight: bold } /* Name.Decorator */
+:root[data-theme="dark"] .codehilite .ni { color: #ffa657 } /* Name.Entity */
+:root[data-theme="dark"] .codehilite .ne { color: #f0883e; font-weight: bold } /* Name.Exception */
+:root[data-theme="dark"] .codehilite .nf { color: #d2a8ff; font-weight: bold } /* Name.Function */
+:root[data-theme="dark"] .codehilite .nl { color: #79c0ff; font-weight: bold } /* Name.Label */
+:root[data-theme="dark"] .codehilite .nn { color: #ff7b72 } /* Name.Namespace */
+:root[data-theme="dark"] .codehilite .nx { color: #e6edf3 } /* Name.Other */
+:root[data-theme="dark"] .codehilite .py { color: #79c0ff } /* Name.Property */
+:root[data-theme="dark"] .codehilite .nt { color: #7ee787 } /* Name.Tag */
+:root[data-theme="dark"] .codehilite .nv { color: #79c0ff } /* Name.Variable */
+:root[data-theme="dark"] .codehilite .ow { color: #ff7b72; font-weight: bold } /* Operator.Word */
+:root[data-theme="dark"] .codehilite .pm { color: #e6edf3 } /* Punctuation.Marker */
+:root[data-theme="dark"] .codehilite .w { color: #6e7681 } /* Text.Whitespace */
+:root[data-theme="dark"] .codehilite .mb { color: #a5d6ff } /* Literal.Number.Bin */
+:root[data-theme="dark"] .codehilite .mf { color: #a5d6ff } /* Literal.Number.Float */
+:root[data-theme="dark"] .codehilite .mh { color: #a5d6ff } /* Literal.Number.Hex */
+:root[data-theme="dark"] .codehilite .mi { color: #a5d6ff } /* Literal.Number.Integer */
+:root[data-theme="dark"] .codehilite .mo { color: #a5d6ff } /* Literal.Number.Oct */
+:root[data-theme="dark"] .codehilite .sa { color: #79c0ff } /* Literal.String.Affix */
+:root[data-theme="dark"] .codehilite .sb { color: #a5d6ff } /* Literal.String.Backtick */
+:root[data-theme="dark"] .codehilite .sc { color: #a5d6ff } /* Literal.String.Char */
+:root[data-theme="dark"] .codehilite .dl { color: #79c0ff } /* Literal.String.Delimiter */
+:root[data-theme="dark"] .codehilite .sd { color: #a5d6ff } /* Literal.String.Doc */
+:root[data-theme="dark"] .codehilite .s2 { color: #a5d6ff } /* Literal.String.Double */
+:root[data-theme="dark"] .codehilite .se { color: #79c0ff } /* Literal.String.Escape */
+:root[data-theme="dark"] .codehilite .sh { color: #79c0ff } /* Literal.String.Heredoc */
+:root[data-theme="dark"] .codehilite .si { color: #a5d6ff } /* Literal.String.Interpol */
+:root[data-theme="dark"] .codehilite .sx { color: #a5d6ff } /* Literal.String.Other */
+:root[data-theme="dark"] .codehilite .sr { color: #79c0ff } /* Literal.String.Regex */
+:root[data-theme="dark"] .codehilite .s1 { color: #a5d6ff } /* Literal.String.Single */
+:root[data-theme="dark"] .codehilite .ss { color: #a5d6ff } /* Literal.String.Symbol */
+:root[data-theme="dark"] .codehilite .bp { color: #e6edf3 } /* Name.Builtin.Pseudo */
+:root[data-theme="dark"] .codehilite .fm { color: #d2a8ff; font-weight: bold } /* Name.Function.Magic */
+:root[data-theme="dark"] .codehilite .vc { color: #79c0ff } /* Name.Variable.Class */
+:root[data-theme="dark"] .codehilite .vg { color: #79c0ff } /* Name.Variable.Global */
+:root[data-theme="dark"] .codehilite .vi { color: #79c0ff } /* Name.Variable.Instance */
+:root[data-theme="dark"] .codehilite .vm { color: #79c0ff } /* Name.Variable.Magic */
+:root[data-theme="dark"] .codehilite .il { color: #a5d6ff } /* Literal.Number.Integer.Long */
+@media (prefers-color-scheme: dark) {
+pre { line-height: 125%; }
+td.linenos .normal { color: #6e7681; background-color: #0d1117; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #6e7681; background-color: #0d1117; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #e6edf3; background-color: #6e7681; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #e6edf3; background-color: #6e7681; padding-left: 5px; padding-right: 5px; }
+:root:not([data-theme="light"]) .codehilite .hll { background-color: #6e7681 }
+:root:not([data-theme="light"]) .codehilite { background: #0d1117; color: #e6edf3 }
+:root:not([data-theme="light"]) .codehilite .c { color: #8b949e; font-style: italic } /* Comment */
+:root:not([data-theme="light"]) .codehilite .err { color: #f85149 } /* Error */
+:root:not([data-theme="light"]) .codehilite .esc { color: #e6edf3 } /* Escape */
+:root:not([data-theme="light"]) .codehilite .g { color: #e6edf3 } /* Generic */
+:root:not([data-theme="light"]) .codehilite .k { color: #ff7b72 } /* Keyword */
+:root:not([data-theme="light"]) .codehilite .l { color: #a5d6ff } /* Literal */
+:root:not([data-theme="light"]) .codehilite .n { color: #e6edf3 } /* Name */
+:root:not([data-theme="light"]) .codehilite .o { color: #ff7b72; font-weight: bold } /* Operator */
+:root:not([data-theme="light"]) .codehilite .x { color: #e6edf3 } /* Other */
+:root:not([data-theme="light"]) .codehilite .p { color: #e6edf3 } /* Punctuation */
+:root:not([data-theme="light"]) .codehilite .ch { color: #8b949e; font-style: italic } /* Comment.Hashbang */
+:root:not([data-theme="light"]) .codehilite .cm { color: #8b949e; font-style: italic } /* Comment.Multiline */
+:root:not([data-theme="light"]) .codehilite .cp { color: #8b949e; font-weight: bold; font-style: italic } /* Comment.Preproc */
+:root:not([data-theme="light"]) .codehilite .cpf { color: #8b949e; font-style: italic } /* Comment.PreprocFile */
+:root:not([data-theme="light"]) .codehilite .c1 { color: #8b949e; font-style: italic } /* Comment.Single */
+:root:not([data-theme="light"]) .codehilite .cs { color: #8b949e; font-weight: bold; font-style: italic } /* Comment.Special */
+:root:not([data-theme="light"]) .codehilite .gd { color: #ffa198; background-color: #490202 } /* Generic.Deleted */
+:root:not([data-theme="light"]) .codehilite .ge { color: #e6edf3; font-style: italic } /* Generic.Emph */
+:root:not([data-theme="light"]) .codehilite .gr { color: #ffa198 } /* Generic.Error */
+:root:not([data-theme="light"]) .codehilite .gh { color: #79c0ff; font-weight: bold } /* Generic.Heading */
+:root:not([data-theme="light"]) .codehilite .gi { color: #56d364; background-color: #0f5323 } /* Generic.Inserted */
+:root:not([data-theme="light"]) .codehilite .go { color: #8b949e } /* Generic.Output */
+:root:not([data-theme="light"]) .codehilite .gp { color: #8b949e } /* Generic.Prompt */
+:root:not([data-theme="light"]) .codehilite .gs { color: #e6edf3; font-weight: bold } /* Generic.Strong */
+:root:not([data-theme="light"]) .codehilite .gu { color: #79c0ff } /* Generic.Subheading */
+:root:not([data-theme="light"]) .codehilite .gt { color: #ff7b72 } /* Generic.Traceback */
+:root:not([data-theme="light"]) .codehilite .g-Underline { color: #e6edf3; text-decoration: underline } /* Generic.Underline */
+:root:not([data-theme="light"]) .codehilite .kc { color: #79c0ff } /* Keyword.Constant */
+:root:not([data-theme="light"]) .codehilite .kd { color: #ff7b72 } /* Keyword.Declaration */
+:root:not([data-theme="light"]) .codehilite .kn { color: #ff7b72 } /* Keyword.Namespace */
+:root:not([data-theme="light"]) .codehilite .kp { color: #79c0ff } /* Keyword.Pseudo */
+:root:not([data-theme="light"]) .codehilite .kr { color: #ff7b72 } /* Keyword.Reserved */
+:root:not([data-theme="light"]) .codehilite .kt { color: #ff7b72 } /* Keyword.Type */
+:root:not([data-theme="light"]) .codehilite .ld { color: #79c0ff } /* Literal.Date */
+:root:not([data-theme="light"]) .codehilite .m { color: #a5d6ff } /* Literal.Number */
+:root:not([data-theme="light"]) .codehilite .s { color: #a5d6ff } /* Literal.String */
+:root:not([data-theme="light"]) .codehilite .na { color: #e6edf3 } /* Name.Attribute */
+:root:not([data-theme="light"]) .codehilite .nb { color: #e6edf3 } /* Name.Builtin */
+:root:not([data-theme="light"]) .codehilite .nc { color: #f0883e; font-weight: bold } /* Name.Class */
+:root:not([data-theme="light"]) .codehilite .no { color: #79c0ff; font-weight: bold } /* Name.Constant */
+:root:not([data-theme="light"]) .codehilite .nd { color: #d2a8ff; font-weight: bold } /* Name.Decorator */
+:root:not([data-theme="light"]) .codehilite .ni { color: #ffa657 } /* Name.Entity */
+:root:not([data-theme="light"]) .codehilite .ne { color: #f0883e; font-weight: bold } /* Name.Exception */
+:root:not([data-theme="light"]) .codehilite .nf { color: #d2a8ff; font-weight: bold } /* Name.Function */
+:root:not([data-theme="light"]) .codehilite .nl { color: #79c0ff; font-weight: bold } /* Name.Label */
+:root:not([data-theme="light"]) .codehilite .nn { color: #ff7b72 } /* Name.Namespace */
+:root:not([data-theme="light"]) .codehilite .nx { color: #e6edf3 } /* Name.Other */
+:root:not([data-theme="light"]) .codehilite .py { color: #79c0ff } /* Name.Property */
+:root:not([data-theme="light"]) .codehilite .nt { color: #7ee787 } /* Name.Tag */
+:root:not([data-theme="light"]) .codehilite .nv { color: #79c0ff } /* Name.Variable */
+:root:not([data-theme="light"]) .codehilite .ow { color: #ff7b72; font-weight: bold } /* Operator.Word */
+:root:not([data-theme="light"]) .codehilite .pm { color: #e6edf3 } /* Punctuation.Marker */
+:root:not([data-theme="light"]) .codehilite .w { color: #6e7681 } /* Text.Whitespace */
+:root:not([data-theme="light"]) .codehilite .mb { color: #a5d6ff } /* Literal.Number.Bin */
+:root:not([data-theme="light"]) .codehilite .mf { color: #a5d6ff } /* Literal.Number.Float */
+:root:not([data-theme="light"]) .codehilite .mh { color: #a5d6ff } /* Literal.Number.Hex */
+:root:not([data-theme="light"]) .codehilite .mi { color: #a5d6ff } /* Literal.Number.Integer */
+:root:not([data-theme="light"]) .codehilite .mo { color: #a5d6ff } /* Literal.Number.Oct */
+:root:not([data-theme="light"]) .codehilite .sa { color: #79c0ff } /* Literal.String.Affix */
+:root:not([data-theme="light"]) .codehilite .sb { color: #a5d6ff } /* Literal.String.Backtick */
+:root:not([data-theme="light"]) .codehilite .sc { color: #a5d6ff } /* Literal.String.Char */
+:root:not([data-theme="light"]) .codehilite .dl { color: #79c0ff } /* Literal.String.Delimiter */
+:root:not([data-theme="light"]) .codehilite .sd { color: #a5d6ff } /* Literal.String.Doc */
+:root:not([data-theme="light"]) .codehilite .s2 { color: #a5d6ff } /* Literal.String.Double */
+:root:not([data-theme="light"]) .codehilite .se { color: #79c0ff } /* Literal.String.Escape */
+:root:not([data-theme="light"]) .codehilite .sh { color: #79c0ff } /* Literal.String.Heredoc */
+:root:not([data-theme="light"]) .codehilite .si { color: #a5d6ff } /* Literal.String.Interpol */
+:root:not([data-theme="light"]) .codehilite .sx { color: #a5d6ff } /* Literal.String.Other */
+:root:not([data-theme="light"]) .codehilite .sr { color: #79c0ff } /* Literal.String.Regex */
+:root:not([data-theme="light"]) .codehilite .s1 { color: #a5d6ff } /* Literal.String.Single */
+:root:not([data-theme="light"]) .codehilite .ss { color: #a5d6ff } /* Literal.String.Symbol */
+:root:not([data-theme="light"]) .codehilite .bp { color: #e6edf3 } /* Name.Builtin.Pseudo */
+:root:not([data-theme="light"]) .codehilite .fm { color: #d2a8ff; font-weight: bold } /* Name.Function.Magic */
+:root:not([data-theme="light"]) .codehilite .vc { color: #79c0ff } /* Name.Variable.Class */
+:root:not([data-theme="light"]) .codehilite .vg { color: #79c0ff } /* Name.Variable.Global */
+:root:not([data-theme="light"]) .codehilite .vi { color: #79c0ff } /* Name.Variable.Instance */
+:root:not([data-theme="light"]) .codehilite .vm { color: #79c0ff } /* Name.Variable.Magic */
+:root:not([data-theme="light"]) .codehilite .il { color: #a5d6ff } /* Literal.Number.Integer.Long */
+}
+.codehilite, .codehilite pre { background: var(--code-bg) !important; }
+
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div>
+      <p class="eyebrow">科普教程 · A Short History of Philosophy since 1900</p>
+      <h1>一百多年的哲学：从 1900 到今天</h1>
+      <p class="lede">二十世纪的哲学常被说成一座“分裂的房子”：一边是英美的分析哲学，一边是欧陆的现象学、存在主义与批判理论。这份简明教程沿着时间线，把一百多年里最重要的转向、问题与人物串成一条读得懂的故事，每章只讲核心观点和一个值得记住的思想实验。</p>
+      <p class="meta">截至 2026-10-24 · 约 0.9 万字 · 引用 69 部经典 · <a href="tutorial.md">Markdown 版</a> · <a href="https://plato.stanford.edu/">斯坦福哲学百科（SEP）</a></p>
+    </div>
+    <button id="themeBtn" class="theme-btn" type="button" aria-label="切换配色主题">◐ 主题：自动</button>
+  </div>
+</header>
+<div class="wrap layout">
+  <nav class="sidebar" aria-label="目录">
+    <p class="side-title">目录</p>
+    <ol class="toc-list"><li><a href="#intro">导读：一座分裂的房子</a></li><li><a href="#ch1">1. 世纪之交：危机与两个“回到”</a><ol><li><a href="#ch1-1">1.1 上帝死了，然后呢</a></li><li><a href="#ch1-2">1.2 数学与逻辑的地基危机</a></li><li><a href="#ch1-3">1.3 反心理主义：分裂之前的共同起点</a></li></ol></li><li><a href="#ch2">2. 语言转向：把话说清楚</a><ol><li><a href="#ch2-1">2.1 涵义与指称</a></li><li><a href="#ch2-2">2.2 当今的法国国王是秃头吗</a></li><li><a href="#ch2-3">2.3 早期维特根斯坦：凡不可说的</a></li><li><a href="#ch2-4">2.4 维也纳学派：清扫形而上学</a></li></ol></li><li><a href="#ch3">3. 现象学与存在主义：从经验出发</a><ol><li><a href="#ch3-1">3.1 胡塞尔：回到事物本身</a></li><li><a href="#ch3-2">3.2 海德格尔：我们首先是在世界之中</a></li><li><a href="#ch3-3">3.3 存在主义：存在先于本质</a></li><li><a href="#ch3-4">3.4 诠释学：理解总是从“成见”开始</a></li></ol></li><li><a href="#ch4">4. 后期维特根斯坦：意义即用法</a><ol><li><a href="#ch4-1">4.1 推翻自己</a></li><li><a href="#ch4-2">4.2 语言游戏与家族相似</a></li><li><a href="#ch4-3">4.3 日常语言学派</a></li></ol></li><li><a href="#ch5">5. 战后分析哲学：拆掉地基，重建大厦</a><ol><li><a href="#ch5-1">5.1 蒯因：没有不可修改的信念</a></li><li><a href="#ch5-2">5.2 葛梯尔：三页纸的反例</a></li><li><a href="#ch5-3">5.3 克里普克：形而上学的回归</a></li></ol></li><li><a href="#ch6">6. 科学哲学：从证伪到范式</a><ol><li><a href="#ch6-1">6.1 波普尔：可证伪性</a></li><li><a href="#ch6-2">6.2 库恩：科学革命的结构</a></li><li><a href="#ch6-3">6.3 之后</a></li></ol></li><li><a href="#ch7">7. 心灵哲学：从机器中的幽灵到意识难题</a><ol><li><a href="#ch7-1">7.1 三个著名的思想实验</a></li><li><a href="#ch7-2">7.2 意识的难问题</a></li></ol></li><li><a href="#ch8">8. 批判理论与后结构主义：理性、权力与文本</a><ol><li><a href="#ch8-1">8.1 法兰克福学派：启蒙为何走向野蛮</a></li><li><a href="#ch8-2">8.2 结构主义：意义来自差异</a></li><li><a href="#ch8-3">8.3 后结构主义：拆解中心</a></li></ol></li><li><a href="#ch9">9. 伦理学与政治哲学：重新谈论“应该”</a><ol><li><a href="#ch9-1">9.1 从元伦理学出发</a></li><li><a href="#ch9-2">9.2 复兴：德性、案例与行动</a></li><li><a href="#ch9-3">9.3 政治哲学：正义、自由与共同体</a></li></ol></li><li><a href="#ch10">10. 实用主义：哲学回到行动</a><ol><li><a href="#ch10-1">10.1 观念的“兑现价值”</a></li><li><a href="#ch10-2">10.2 新实用主义：放下“自然之镜”</a></li></ol></li><li><a href="#ch11">11. 今天的哲学：几条正在进行的线索</a><ol><li><a href="#ch11-1">11.1 分裂的房子在打通</a></li><li><a href="#ch11-2">11.2 人工智能把老问题变成了新问题</a></li><li><a href="#ch11-3">11.3 其他活跃的方向</a></li></ol></li><li><a href="#ch12">12. 阅读路线</a><ol><li><a href="#ch12-1">12.1 先读什么</a></li><li><a href="#ch12-2">12.2 再往深处走</a></li></ol></li></ol>
+    <ol class="toc-list side-extra"><li><a href="#refs">附录：引用的工作</a></li></ol>
+  </nav>
+  <main id="main">
+    <details class="toc-mobile"><summary>目录</summary><ol class="toc-list"><li><a href="#intro">导读：一座分裂的房子</a></li><li><a href="#ch1">1. 世纪之交：危机与两个“回到”</a></li><li><a href="#ch2">2. 语言转向：把话说清楚</a></li><li><a href="#ch3">3. 现象学与存在主义：从经验出发</a></li><li><a href="#ch4">4. 后期维特根斯坦：意义即用法</a></li><li><a href="#ch5">5. 战后分析哲学：拆掉地基，重建大厦</a></li><li><a href="#ch6">6. 科学哲学：从证伪到范式</a></li><li><a href="#ch7">7. 心灵哲学：从机器中的幽灵到意识难题</a></li><li><a href="#ch8">8. 批判理论与后结构主义：理性、权力与文本</a></li><li><a href="#ch9">9. 伦理学与政治哲学：重新谈论“应该”</a></li><li><a href="#ch10">10. 实用主义：哲学回到行动</a></li><li><a href="#ch11">11. 今天的哲学：几条正在进行的线索</a></li><li><a href="#ch12">12. 阅读路线</a></li></ol></details>
+    <article class="prose">
+<h2 id="intro">导读：一座分裂的房子</h2>
+<p>1900 年 8 月，尼采在魏玛去世；同一年，胡塞尔出版了《逻辑研究》第一卷，弗洛伊德的《梦的解析》刚刚面世，罗素正在为数学寻找一个逻辑的地基。旧的确定性在松动：上帝、理性、科学、语言，似乎都需要重新被审视。接下来的一百多年，哲学就是在回答这件事——<strong>当一切不再理所当然，我们还能确定地知道什么、说出什么、做些什么？</strong></p>
+<p>人们常说，二十世纪的哲学是一座“分裂的房子”：</p>
+<ul>
+<li><strong>分析哲学</strong>（主要在英美）相信，很多哲学问题源于语言和概念的混乱，只要用逻辑把话说清楚，问题就会被解决或消解。它的风格是论证、定义、反例。</li>
+<li><strong>欧陆哲学</strong>（主要在德法）从具体的人的经验出发，关心存在、历史、权力、意义。它的风格是描述、诠释、批判。</li>
+</ul>
+<p>这个划分很粗糙——两边的源头其实是同一场危机，近几十年来也越来越多地彼此对话——但作为一张入门地图，它很好用。再加上美国本土的<strong>实用主义</strong>，以及战后复兴的<strong>伦理学与政治哲学</strong>，就是图 1 的四条主线。</p>
+<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 790 352" role="img" aria-label="1870—2030 年哲学发展时间线"><rect class="sv-zone" x="279" y="18" width="17" height="294"/><rect class="sv-zone" x="385" y="18" width="26" height="294"/><text class="sv-t3" x="288" y="14" text-anchor="middle">一战</text><text class="sv-t3" x="398" y="14" text-anchor="middle">二战</text><text class="sv-t1" x="8" y="67">分析传统</text><path class="sv-edge" d="M100,62 L755,62"/><circle class="sv-head" cx="185.5" cy="62" r="4"/><text class="sv-t2" x="185.5" y="51" text-anchor="middle">弗雷格</text><circle class="sv-head" cx="240.8" cy="62" r="4"/><text class="sv-t2" x="240.8" y="83" text-anchor="middle">罗素</text><circle class="sv-head" cx="308.8" cy="62" r="4"/><text class="sv-t2" x="308.8" y="51" text-anchor="middle">逻辑哲学论</text><circle class="sv-head" cx="342.8" cy="62" r="4"/><text class="sv-t2" x="342.8" y="83" text-anchor="middle">维也纳学派</text><circle class="sv-head" cx="436.2" cy="62" r="4"/><text class="sv-t2" x="436.2" y="51" text-anchor="middle">蒯因</text><circle class="sv-head" cx="444.8" cy="62" r="4"/><text class="sv-t2" x="444.8" y="83" text-anchor="middle">哲学研究</text><circle class="sv-head" cx="525.5" cy="62" r="4"/><text class="sv-t2" x="525.5" y="51" text-anchor="middle">克里普克</text><circle class="sv-head" cx="623.2" cy="62" r="4"/><text class="sv-t2" x="623.2" y="83" text-anchor="middle">意识难题</text><text class="sv-t1" x="8" y="133">欧陆传统</text><path class="sv-edge" d="M100,128 L755,128"/><circle class="sv-head acc" cx="219.5" cy="128" r="4"/><text class="sv-t2" x="219.5" y="117" text-anchor="middle">现象学</text><circle class="sv-head acc" cx="334.2" cy="128" r="4"/><text class="sv-t2" x="334.2" y="149" text-anchor="middle">存在与时间</text><circle class="sv-head acc" cx="402.2" cy="128" r="4"/><text class="sv-t2" x="402.2" y="117" text-anchor="middle">萨特</text><circle class="sv-head acc" cx="406.5" cy="128" r="4"/><text class="sv-t2" x="406.5" y="149" text-anchor="middle">启蒙辩证法</text><circle class="sv-head acc" cx="474.5" cy="128" r="4"/><text class="sv-t2" x="474.5" y="117" text-anchor="middle">伽达默尔</text><circle class="sv-head acc" cx="504.2" cy="128" r="4"/><text class="sv-t2" x="504.2" y="149" text-anchor="middle">德里达</text><circle class="sv-head acc" cx="538.2" cy="128" r="4"/><text class="sv-t2" x="538.2" y="117" text-anchor="middle">福柯</text><circle class="sv-head acc" cx="563.8" cy="128" r="4"/><text class="sv-t2" x="563.8" y="149" text-anchor="middle">哈贝马斯</text><text class="sv-t1" x="8" y="191">实用主义</text><text class="sv-t1" x="8" y="208">· 科学</text><path class="sv-edge" d="M100,194 L755,194"/><circle class="sv-head" cx="126.0" cy="194" r="4"/><text class="sv-t2" x="126.0" y="183" text-anchor="middle">皮尔士</text><circle class="sv-head" cx="249.2" cy="194" r="4"/><text class="sv-t2" x="249.2" y="215" text-anchor="middle">詹姆斯</text><circle class="sv-head" cx="287.5" cy="194" r="4"/><text class="sv-t2" x="287.5" y="183" text-anchor="middle">杜威</text><circle class="sv-head" cx="364.0" cy="194" r="4"/><text class="sv-t2" x="364.0" y="215" text-anchor="middle">波普尔</text><circle class="sv-head" cx="483.0" cy="194" r="4"/><text class="sv-t2" x="483.0" y="183" text-anchor="middle">库恩</text><circle class="sv-head" cx="555.2" cy="194" r="4"/><text class="sv-t2" x="555.2" y="215" text-anchor="middle">罗蒂</text><circle class="sv-head" cx="606.2" cy="194" r="4"/><text class="sv-t2" x="606.2" y="183" text-anchor="middle">具身心智</text><text class="sv-t1" x="8" y="257">伦理</text><text class="sv-t1" x="8" y="274">· 政治</text><path class="sv-edge" d="M100,260 L755,260"/><circle class="sv-head" cx="232.2" cy="260" r="4"/><text class="sv-t2" x="232.2" y="249" text-anchor="middle">摩尔</text><circle class="sv-head" cx="427.8" cy="260" r="4"/><text class="sv-t2" x="427.8" y="281" text-anchor="middle">第二性</text><circle class="sv-head" cx="436.2" cy="260" r="4"/><text class="sv-t2" x="436.2" y="249" text-anchor="middle">阿伦特</text><circle class="sv-head" cx="466.0" cy="260" r="4"/><path class="sv-edge dash" d="M466.0,265 L466.0,285"/><text class="sv-t2" x="466.0" y="297" text-anchor="middle">安斯康姆</text><circle class="sv-head" cx="521.2" cy="260" r="4"/><text class="sv-t2" x="521.2" y="249" text-anchor="middle">罗尔斯</text><circle class="sv-head" cx="534.0" cy="260" r="4"/><text class="sv-t2" x="534.0" y="281" text-anchor="middle">诺齐克</text><circle class="sv-head" cx="576.5" cy="260" r="4"/><text class="sv-t2" x="576.5" y="249" text-anchor="middle">帕菲特</text><path class="sv-edge" d="M92,324 L755,324"/><path class="sv-edge" d="M134,320 L134,328"/><text class="sv-t3" x="134" y="342" text-anchor="middle">1880</text><path class="sv-edge" d="M220,320 L220,328"/><text class="sv-t3" x="220" y="342" text-anchor="middle">1900</text><path class="sv-edge" d="M304,320 L304,328"/><text class="sv-t3" x="304" y="342" text-anchor="middle">1920</text><path class="sv-edge" d="M390,320 L390,328"/><text class="sv-t3" x="390" y="342" text-anchor="middle">1940</text><path class="sv-edge" d="M474,320 L474,328"/><text class="sv-t3" x="474" y="342" text-anchor="middle">1960</text><path class="sv-edge" d="M560,320 L560,328"/><text class="sv-t3" x="560" y="342" text-anchor="middle">1980</text><path class="sv-edge" d="M644,320 L644,328"/><text class="sv-t3" x="644" y="342" text-anchor="middle">2000</text><path class="sv-edge" d="M730,320 L730,328"/><text class="sv-t3" x="730" y="342" text-anchor="middle">2020</text></svg></div><figcaption>图 1　一百多年的四条主线。每个点是一部标志性著作或一次转向（年份见正文）；虚线框是两次世界大战——它们深刻地改变了欧洲哲学的人员与议题。</figcaption></figure>
+
+<div class="admonition key">
+<p class="admonition-title">怎么读这份教程</p>
+<p>每一章讲一个转向：它反对什么、主张什么、留下了什么问题。不必按顺序读；第 3 章（现象学与存在主义）和第 2、5 章（语言转向与分析哲学）是两条主线的骨架，其余章节都可以单独看。每章末尾有一道自测题，文中的书名链接指向斯坦福哲学百科（SEP）的相应条目。</p>
+</div>
+<h2 id="ch1">1. 世纪之交：危机与两个“回到”</h2>
+<h3 id="ch1-1">1.1 上帝死了，然后呢</h3>
+<p>尼采在 <a class="ref" href="https://plato.stanford.edu/entries/nietzsche/" target="_blank" rel="noopener" title="尼采《快乐的科学》（Die fröhliche Wissenschaft）——“上帝死了”（1882）">《快乐的科学》</a> 里借一个疯子之口宣布“上帝死了”。这不是一句无神论的口号，而是一个文化诊断：支撑欧洲两千年道德与意义的最高根据已经失效，而人们还没有意识到这件事的后果。如果没有了这个根据，价值从哪里来？真理还有没有绝对的地位？——整个二十世纪的欧陆哲学，几乎都在处理这份遗产。</p>
+<h3 id="ch1-2">1.2 数学与逻辑的地基危机</h3>
+<p>另一边，数学也遇到了麻烦。弗雷格想证明全部算术可以从纯逻辑推出来；1902 年，罗素写信告诉他，他的系统里藏着一个矛盾（“所有不包含自身的集合组成的集合，包含它自己吗？”）。弗雷格的毕生事业一夜动摇。罗素与怀特海随后写出三大卷 <a class="ref" href="https://plato.stanford.edu/entries/principia-mathematica/" target="_blank" rel="noopener" title="怀特海、罗素《数学原理》（Principia Mathematica）（1910）">《数学原理》</a> 来修补地基；1931 年，哥德尔又证明：任何足够强的形式系统，都存在既不能证明也不能否证的命题（<a class="ref" href="https://plato.stanford.edu/entries/goedel-incompleteness/" target="_blank" rel="noopener" title="哥德尔《论〈数学原理〉及有关系统的形式不可判定命题》（1931）">不完全性定理</a>）。<strong>逻辑的力量与它的极限，在同一代人手里被同时发现。</strong></p>
+<h3 id="ch1-3">1.3 反心理主义：分裂之前的共同起点</h3>
+<p>当时流行一种看法：逻辑规律不过是人类思维的心理规律。弗雷格和胡塞尔都激烈反对——如果逻辑只是心理习惯，那么“2+2=4”就只是“我们碰巧这样想”，真理就失去了客观性。</p>
+<p>有意思的是，两人从同一个起点出发，走向了相反的方向：</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>弗雷格 → 分析哲学</th>
+<th>胡塞尔 → 现象学</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>怎样保住客观性</td>
+<td>分析<strong>语言与逻辑</strong>的结构</td>
+<td>描述<strong>意识中事物如何被给予</strong></td>
+</tr>
+<tr>
+<td>基本工具</td>
+<td>形式逻辑、概念分析</td>
+<td>现象学描述、本质直观</td>
+</tr>
+<tr>
+<td>口号</td>
+<td>把思想说清楚</td>
+<td><a class="ref" href="https://plato.stanford.edu/entries/husserl/" target="_blank" rel="noopener" title="胡塞尔《逻辑研究》（Logische Untersuchungen）（1900）">回到事物本身</a></td>
+</tr>
+</tbody>
+</table></div>
+<div class="admonition analogy">
+<p class="admonition-title">一个比喻</p>
+<p>两人都想为大楼重新打地基。弗雷格去检查建筑图纸的语法（语言与逻辑），胡塞尔去检查人是怎么“看见”这栋楼的（经验的结构）。两种工作都必要，但工程队从此分成了两支。</p>
+</div>
+<details class="quiz"><summary><span class="qtag">自测</span>为什么说分析哲学和现象学有“共同起点”？</summary><p>二者都起源于对心理主义的反驳：都坚持逻辑与意义的客观性，不能还原为个人心理过程。区别在于，弗雷格把客观性落实在语言和逻辑形式上，胡塞尔则落实在意识对对象的意向结构上。</p></details>
+
+<h2 id="ch2">2. 语言转向：把话说清楚</h2>
+<h3 id="ch2-1">2.1 涵义与指称</h3>
+<p>“晨星”和“暮星”指的是同一颗星——金星。可是“晨星就是晨星”是废话，“晨星就是暮星”却是一个天文学发现。弗雷格在 <a class="ref" href="https://plato.stanford.edu/entries/frege/" target="_blank" rel="noopener" title="弗雷格《论涵义与指称》（Über Sinn und Bedeutung）（1892）">《论涵义与指称》</a> 里解释：一个词既有<strong>指称</strong>（它指向的对象），也有<strong>涵义</strong>（指向对象的方式）。意义问题从此成了哲学的中心问题。</p>
+<h3 id="ch2-2">2.2 当今的法国国王是秃头吗</h3>
+<p>法国早就没有国王了。那么“当今的法国国王是秃头”是真是假？说它真不对，说它假，似乎意味着他“不秃”，也不对。罗素在 <a class="ref" href="https://plato.stanford.edu/entries/russell/" target="_blank" rel="noopener" title="罗素《论指称》（On Denoting）（1905）">《论指称》</a> 里给出了一个漂亮的分析：这句话的真实逻辑形式是“存在一个且只有一个法国国王，并且他是秃头”——第一部分为假，所以整句为假。<strong>日常语法会误导我们，逻辑形式才揭示真相</strong>，这成了分析哲学的方法论信条。</p>
+<h3 id="ch2-3">2.3 早期维特根斯坦：凡不可说的</h3>
+<p>维特根斯坦在 <a class="ref" href="https://plato.stanford.edu/entries/wittgenstein/" target="_blank" rel="noopener" title="维特根斯坦《逻辑哲学论》（Tractatus Logico-Philosophicus）（1921）">《逻辑哲学论》</a>（1921）里提出“图像论”：有意义的命题就像一幅图画，用逻辑形式描摹世界中可能的事态。由此推出一个惊人的结论：伦理、美学、宗教、人生的意义——这些都不是事实，因而<strong>不能被有意义地说出</strong>，只能被“显示”。全书以一句话结尾：</p>
+<blockquote>
+<p>“凡不可说的，必须保持沉默。”</p>
+</blockquote>
+<h3 id="ch2-4">2.4 维也纳学派：清扫形而上学</h3>
+<p>1920 年代的维也纳，一群哲学家、科学家、数学家（石里克、卡尔纳普、纽拉特等）定期聚会，把这种思路推向极端，形成了<strong>逻辑实证主义</strong>（<a class="ref" href="https://plato.stanford.edu/entries/vienna-circle/" target="_blank" rel="noopener" title="《科学的世界观：维也纳学派》（Wissenschaftliche Weltauffassung）（1929）">维也纳学派宣言</a>）。他们提出<strong>可证实性原则</strong>：一个命题要么是逻辑真理，要么能被经验检验，否则就是<strong>无意义的</strong>——不是假，而是根本没说出什么。“绝对精神是无限的”“无本身在无化”，统统被判为伪命题。<a class="ref" href="https://plato.stanford.edu/entries/logical-empiricism/" target="_blank" rel="noopener" title="艾耶尔《语言、真理与逻辑》（Language, Truth and Logic）（1936）">艾耶尔</a> 把这套理论带到了英语世界。</p>
+<div class="admonition pitfall">
+<p class="admonition-title">这条原则自己可证实吗？</p>
+<p>“只有可经验证实的命题才有意义”——这句话本身既不是逻辑真理，也无法用经验证实。按它自己的标准，它是无意义的。这是逻辑实证主义最著名的困境，也是它在 1950 年代后迅速衰落的原因之一。</p>
+</div>
+<details class="quiz"><summary><span class="qtag">自测</span>罗素怎样处理“当今的法国国王是秃头”？</summary><p>把它分析为一个存在量化的合取：存在唯一的 x 是法国国王，且 x 是秃头。因为不存在这样的 x，整句为假；它的否定“当今的法国国王不是秃头”在“存在唯一的 x……且 x 不秃”的读法下同样为假。表面的主谓语法掩盖了真实的逻辑形式。</p></details>
+
+<h2 id="ch3">3. 现象学与存在主义：从经验出发</h2>
+<h3 id="ch3-1">3.1 胡塞尔：回到事物本身</h3>
+<p>你看着一个杯子，你说“我看到一个杯子”。但严格说来，落进你眼睛的只有它朝向你的一面；背面、底部、里面，你一样也没看见。可你看到的从来不是“一个侧面”，而是“一个完整的杯子”。多出来的部分从哪里来？</p>
+<p>胡塞尔的现象学就从这类问题出发：先不急着用理论解释经验，而是<strong>如实描述事物在意识中是怎样被给予的</strong>。几个核心概念：</p>
+<ul>
+<li><strong>意向性</strong>：意识总是关于某物的意识。看总是看着什么，怕总是怕着什么。</li>
+<li><strong>悬置</strong>：暂时给“世界独立存在”这个日常信念加上括号——不是否认它，而是把目光从“对象是什么”转到“对象如何显现”。</li>
+<li><strong>生活世界</strong>：晚年的胡塞尔在 <a class="ref" href="https://plato.stanford.edu/entries/husserl/" target="_blank" rel="noopener" title="胡塞尔《欧洲科学的危机与超越论的现象学》（1936）">《危机》</a> 中指出，数学化的科学建立在我们直接活在其中的前科学世界之上，忘记了这片土壤，科学就会失去对人的意义。</li>
+</ul>
+<h3 id="ch3-2">3.2 海德格尔：我们首先是在世界之中</h3>
+<p>胡塞尔的学生海德格尔在 <a class="ref" href="https://plato.stanford.edu/entries/heidegger/" target="_blank" rel="noopener" title="海德格尔《存在与时间》（Sein und Zeit）（1927）">《存在与时间》</a>（1927）里追问一个更古老的问题：“存在”是什么意思？他从人这种特殊的存在者——<strong>此在</strong>——开始。我们并不是先作为孤立的主体，再去认识外部世界；我们一开始就<strong>在世界之中</strong>，忙着用东西、操心事情。锤子在顺手使用时几乎“隐身”，只有坏了，才变成一个摆在眼前供人打量的物体。</p>
+<p>海德格尔还分析了<strong>畏</strong>（一种没有具体对象的不安）与<strong>向死而在</strong>：正因为人必死，人生才有“本真”与“非本真”的区别——是活出自己的可能性，还是随波逐流地活在“常人”里。</p>
+<div class="admonition pitfall">
+<p class="admonition-title">关于海德格尔的争议</p>
+<p>海德格尔 1933 年加入纳粹党并出任弗莱堡大学校长，战后对此几乎保持沉默。2014 年起陆续出版的《黑色笔记本》里有反犹段落。他的思想影响巨大，但这段历史是理解他时绕不开的一部分。</p>
+</div>
+<h3 id="ch3-3">3.3 存在主义：存在先于本质</h3>
+<p>二战期间与战后的巴黎，现象学变成了一种“生活哲学”。萨特在 <a class="ref" href="https://plato.stanford.edu/entries/sartre/" target="_blank" rel="noopener" title="萨特《存在与虚无》（L&#x27;Être et le néant）（1943）">《存在与虚无》</a> 里说：人不像一把裁纸刀那样先有设计图再被制造出来——<strong>人先存在，然后通过自己的选择成为什么样的人</strong>。所以人是“被判定为自由的”，也要为自己的选择负全部责任；用“我只是服从命令”“我天生如此”来推卸，就是<strong>自欺</strong>。</p>
+<ul>
+<li><strong>波伏瓦</strong>在 <a class="ref" href="https://plato.stanford.edu/entries/beauvoir/" target="_blank" rel="noopener" title="波伏瓦《第二性》（Le Deuxième Sexe）（1949）">《第二性》</a> 中写下“女人不是天生的，而是后天形成的”，把存在主义变成了女性主义的理论基础。</li>
+<li><strong>加缪</strong>在 <a class="ref" href="https://plato.stanford.edu/entries/camus/" target="_blank" rel="noopener" title="加缪《西西弗神话》（Le Mythe de Sisyphe）（1942）">《西西弗神话》</a> 中直面“荒诞”：人渴望意义，世界却沉默不语。他的回答是反抗而非逃避——“应该想象西西弗是幸福的”。</li>
+<li><strong>梅洛-庞蒂</strong>在 <a class="ref" href="https://plato.stanford.edu/entries/merleau-ponty/" target="_blank" rel="noopener" title="梅洛-庞蒂《知觉现象学》（Phénoménologie de la perception）（1945）">《知觉现象学》</a> 中把身体放回哲学中心：盲人的手杖、熟练的打字手指，说明身体不是我拥有的一个物体，而是我拥有世界的方式。</li>
+</ul>
+<h3 id="ch3-4">3.4 诠释学：理解总是从“成见”开始</h3>
+<p>海德格尔的另一个学生伽达默尔在 <a class="ref" href="https://plato.stanford.edu/entries/gadamer/" target="_blank" rel="noopener" title="伽达默尔《真理与方法》（Wahrheit und Methode）（1960）">《真理与方法》</a> 中指出：我们读一本书、理解一段历史，从来不是从零开始，而是带着自己的传统与“前见”。理解是一场<strong>视域融合</strong>——不是消除成见，而是在与文本的对话中修正它。</p>
+<details class="quiz"><summary><span class="qtag">自测</span>“存在先于本质”针对的是哪种看法？</summary><p>针对“人有一个预先给定的本性或用途（来自上帝、自然或社会），人生只是去实现它”的看法。萨特认为人没有预先给定的本质，人是什么由他的选择和行动决定，因此人也必须为自己是什么负责。</p></details>
+
+<h2 id="ch4">4. 后期维特根斯坦：意义即用法</h2>
+<h3 id="ch4-1">4.1 推翻自己</h3>
+<p>《逻辑哲学论》出版后，维特根斯坦认为哲学问题已经解决，跑去奥地利乡村当小学教师。十几年后，他回到剑桥，开始批判自己早年的理论。死后出版的 <a class="ref" href="https://plato.stanford.edu/entries/wittgenstein/" target="_blank" rel="noopener" title="维特根斯坦《哲学研究》（Philosophische Untersuchungen）（1953）">《哲学研究》</a>（1953）几乎是另一位哲学家的作品。</p>
+<h3 id="ch4-2">4.2 语言游戏与家族相似</h3>
+<p>早期维特根斯坦认为语言的本质是描摹事实。后期他说：看看语言实际是怎么被使用的——下命令、讲笑话、打招呼、祈祷、猜谜……这些都是不同的<strong>语言游戏</strong>，它们没有一个共同本质。<strong>一个词的意义，就是它在语言中的用法。</strong></p>
+<p>试着给“游戏”下定义：棋类有输赢，但抛接球没有；纸牌需要技巧，但掷骰子靠运气。找不到所有游戏共有的一个特征，只有一张交错重叠的相似之网——维特根斯坦称之为<strong>家族相似</strong>。很多哲学困惑，正是因为我们以为每个词背后必有一个唯一的本质。</p>
+<div class="admonition analogy">
+<p class="admonition-title">哲学是治疗</p>
+<p>后期维特根斯坦说，哲学的目的是“给苍蝇指出飞出捕蝇瓶的出路”。很多哲学问题不是需要回答的问题，而是语言在“休假”时制造的混乱；把词放回它日常的用法中，问题就消失了。</p>
+</div>
+<h3 id="ch4-3">4.3 日常语言学派</h3>
+<p>牛津的哲学家们接过了这条路线：</p>
+<ul>
+<li><strong>赖尔</strong>在 <a class="ref" href="https://plato.stanford.edu/entries/ryle/" target="_blank" rel="noopener" title="赖尔《心的概念》（The Concept of Mind）（1949）">《心的概念》</a> 中嘲笑笛卡尔式的心灵观是“机器中的幽灵”，认为它犯了“范畴错误”——就像参观完各个学院后问“那么大学在哪里？”</li>
+<li><strong>奥斯汀</strong>在 <a class="ref" href="https://plato.stanford.edu/entries/austin-jl/" target="_blank" rel="noopener" title="奥斯汀《如何以言行事》（How to Do Things with Words）（1962）">《如何以言行事》</a> 中发现，有些话不是在描述事实，而是在<strong>做事</strong>：“我愿意”（婚礼上）、“我道歉”、“我命名这艘船为……”。说出它们就是完成一个行为。言语行为理论后来深刻影响了语言学与法学。</li>
+</ul>
+<details class="quiz"><summary><span class="qtag">自测</span>“家族相似”想反对什么？</summary><p>反对“一个概念必须由所有成员共有的充分必要条件来定义”的本质主义看法。许多概念的成员之间只有交错重叠的相似，没有单一的共同本质；强行寻找本质会制造哲学困惑。</p></details>
+
+<h2 id="ch5">5. 战后分析哲学：拆掉地基，重建大厦</h2>
+<h3 id="ch5-1">5.1 蒯因：没有不可修改的信念</h3>
+<p>逻辑实证主义依赖一个区分：<strong>分析命题</strong>（凭意义就为真，如“单身汉是未婚的”）和<strong>综合命题</strong>（要靠经验检验）。蒯因在 <a class="ref" href="https://plato.stanford.edu/entries/quine/" target="_blank" rel="noopener" title="蒯因《经验论的两个教条》（Two Dogmas of Empiricism）（1951）">《经验论的两个教条》</a>（1951）里论证，这个区分并没有清晰的界限。</p>
+<p>他提出了一幅新图景：我们的全部知识像一张<strong>信念之网</strong>，只在边缘与经验接触。遇到反常的观察时，我们可以调整网中的任何一处——甚至逻辑和数学原则——只是通常选择改动最小的地方。哲学也不再站在科学之外为它奠基，而是科学的一部分（“自然化的认识论”）。</p>
+<h3 id="ch5-2">5.2 葛梯尔：三页纸的反例</h3>
+<p>从柏拉图起，“知识”常被定义为<strong>得到辩护的真信念</strong>。1963 年，葛梯尔发表了一篇不到三页的论文（<a class="ref" href="https://plato.stanford.edu/entries/knowledge-analysis/" target="_blank" rel="noopener" title="葛梯尔《得到辩护的真信念是知识吗？》（1963）">葛梯尔问题</a>），给出了反例。一个简化版本：</p>
+<blockquote>
+<p>你看了一眼墙上的钟，显示 3 点，于是你相信现在是 3 点。事实上现在确实是 3 点——但那只钟恰好在 12 小时前停了。</p>
+</blockquote>
+<p>你的信念是真的，也有理由，但你显然并不“知道”现在是 3 点——你只是走运。半个多世纪过去，给“知识”补上第四个条件的尝试仍没有公认的答案。</p>
+<h3 id="ch5-3">5.3 克里普克：形而上学的回归</h3>
+<p>1970 年，29 岁的克里普克在普林斯顿做了三次演讲，后来出版为 <a class="ref" href="https://plato.stanford.edu/entries/rigid-designators/" target="_blank" rel="noopener" title="克里普克《命名与必然性》（Naming and Necessity）（1972）">《命名与必然性》</a>。他论证：专名（如“亚里士多德”）是<strong>严格指示词</strong>，在所有可能世界中都指同一个人，而不是“一捆描述”的缩写。由此推出一个惊人结论：<strong>有些必然真理是经验中发现的</strong>——“水是 H₂O”一旦为真，就在所有可能世界都为真。</p>
+<p>同一时期，普特南用 <a class="ref" href="https://plato.stanford.edu/entries/content-externalism/" target="_blank" rel="noopener" title="普特南《“意义”的意义》（The Meaning of &#x27;Meaning&#x27;）——孪生地球思想实验（1975）">孪生地球</a> 思想实验说明“意义不在头脑中”：两个心理状态完全相同的人，一个生活在水是 H₂O 的地球，一个生活在“水”其实是 XYZ 的孪生地球，他们说“水”时指的是不同的东西。刘易斯则在 <a class="ref" href="https://plato.stanford.edu/entries/david-lewis/" target="_blank" rel="noopener" title="刘易斯《论世界的多元性》（On the Plurality of Worlds）（1986）">《论世界的多元性》</a> 里大胆主张，可能世界和现实世界一样真实。被逻辑实证主义判了“死刑”的形而上学，就这样在分析哲学内部复活了。</p>
+<details class="quiz"><summary><span class="qtag">自测</span>在钟表例子里，“得到辩护的真信念”的三个条件哪个没有满足？</summary><p>三个条件都满足了：信念为真，你也有理由（看钟通常可靠）。这正是葛梯尔反例的要点——三个条件都满足，却仍然不是知识，说明这个定义不充分。</p></details>
+
+<h2 id="ch6">6. 科学哲学：从证伪到范式</h2>
+<h3 id="ch6-1">6.1 波普尔：可证伪性</h3>
+<p>不管观察到多少只白天鹅，都不能证明“所有天鹅都是白的”；但只要看到一只黑天鹅，就能证明它是假的。波普尔在 <a class="ref" href="https://plato.stanford.edu/entries/popper/" target="_blank" rel="noopener" title="波普尔《科学发现的逻辑》（Logik der Forschung）（1934）">《科学发现的逻辑》</a> 里据此提出：科学理论的标志不是能被证实，而是<strong>可以被证伪</strong>——它冒着被经验驳倒的风险。按这个标准，爱因斯坦的相对论是科学（它做出了可能失败的预言），而某些“怎么说都对”的理论则不是。</p>
+<h3 id="ch6-2">6.2 库恩：科学革命的结构</h3>
+<p>库恩在 <a class="ref" href="https://plato.stanford.edu/entries/thomas-kuhn/" target="_blank" rel="noopener" title="库恩《科学革命的结构》（The Structure of Scientific Revolutions）（1962）">《科学革命的结构》</a>（1962）里用科学史给出了一幅更复杂的图景。大多数时候，科学家在一个<strong>范式</strong>（共享的理论、方法、典型问题）里做“常规科学”，遇到反常时通常会修补而不是推翻理论。直到反常积累成危机，才发生<strong>科学革命</strong>：范式转换，就像从托勒密到哥白尼、从牛顿到爱因斯坦。</p>
+<p>库恩还主张，不同范式之间存在某种<strong>不可通约性</strong>：它们用词的意义不同，评价标准也不同，没有一个中立的裁判。这让“科学是在一步步逼近真理”的信念第一次受到了严肃挑战。</p>
+<h3 id="ch6-3">6.3 之后</h3>
+<ul>
+<li><strong>拉卡托斯</strong>（<a class="ref" href="https://plato.stanford.edu/entries/lakatos/" target="_blank" rel="noopener" title="拉卡托斯《证伪与科学研究纲领方法论》（1970）">科学研究纲领</a>）试图调和两者：理论有一个不轻易放弃的“硬核”和一圈可以调整的“保护带”，好的纲领能预言新事实，退化的纲领只能事后修补。</li>
+<li><strong>费耶阿本德</strong>在 <a class="ref" href="https://plato.stanford.edu/entries/feyerabend/" target="_blank" rel="noopener" title="费耶阿本德《反对方法》（Against Method）（1975）">《反对方法》</a> 中走得更远：科学史上没有一条从未被打破的方法规则，“怎么都行”。</li>
+</ul>
+<div class="admonition pitfall">
+<p class="admonition-title">库恩不是相对主义者</p>
+<p>“范式转换”常被引申为“科学只是一种社会建构、所有观点同样有效”。库恩本人明确反对这种读法：后来的范式在解决问题的能力、准确性、广度等方面通常确实更好，只是这种比较不能还原为一条机械的规则。</p>
+</div>
+<details class="quiz"><summary><span class="qtag">自测</span>按波普尔的标准，“明天要么下雨，要么不下雨”是科学命题吗？</summary><p>不是。它在任何情况下都为真，不排除任何可能的观察，因此不可证伪；它是一个逻辑真理，而不是关于世界的经验断言。</p></details>
+
+<h2 id="ch7">7. 心灵哲学：从机器中的幽灵到意识难题</h2>
+<p>心灵和身体是什么关系？这个笛卡尔留下的老问题，在二十世纪下半叶因为神经科学和计算机的出现变得前所未有地紧迫。几个主要立场依次登场：</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>立场</th>
+<th>心灵状态是什么</th>
+<th>主要困难</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>行为主义</td>
+<td>做出某种行为的倾向</td>
+<td>忍痛不说的人仍然在痛</td>
+</tr>
+<tr>
+<td>心脑同一论（<a class="ref" href="https://plato.stanford.edu/entries/mind-identity/" target="_blank" rel="noopener" title="普莱斯《意识是一个大脑过程吗？》、斯玛特《感觉与大脑过程》（1959）（1956）">1950 年代</a>）</td>
+<td>就是某种大脑状态</td>
+<td>章鱼的大脑和人很不同，它也会痛吗？</td>
+</tr>
+<tr>
+<td>功能主义（<a class="ref" href="https://plato.stanford.edu/entries/functionalism/" target="_blank" rel="noopener" title="普特南《心理谓词》（Psychological Predicates）——功能主义的经典表述（1967）">普特南</a>）</td>
+<td>由因果角色定义，像软件之于硬件</td>
+<td>主观感受似乎被遗漏了</td>
+</tr>
+</tbody>
+</table></div>
+<p>功能主义一度成为主流：疼痛就是“由组织损伤引起、导致躲避行为与痛苦信念”的那种状态，至于它由神经元还是芯片实现，无关紧要。这直接为人工智能打开了大门——<a class="ref" href="https://plato.stanford.edu/entries/turing-test/" target="_blank" rel="noopener" title="图灵《计算机器与智能》（Computing Machinery and Intelligence）（1950）">图灵</a> 早在 1950 年就提议，用一场对话游戏（图灵测试）代替“机器能思考吗”这个含糊的问题。</p>
+<h3 id="ch7-1">7.1 三个著名的思想实验</h3>
+<ul>
+<li><strong>中文屋</strong>（<a class="ref" href="https://plato.stanford.edu/entries/chinese-room/" target="_blank" rel="noopener" title="塞尔《心灵、大脑与程序》（Minds, Brains, and Programs）——中文屋论证（1980）">塞尔，1980</a>）：一个不懂中文的人关在屋里，按一本规则手册处理递进来的中文字条，递出的回答流利得让屋外的人以为里面有人懂中文。塞尔说：他只是在操作符号，从未理解意义——程序也一样。<strong>语法不足以产生语义。</strong></li>
+<li><strong>蝙蝠</strong>（<a class="ref" href="https://plato.stanford.edu/entries/qualia/" target="_blank" rel="noopener" title="内格尔《成为一只蝙蝠是什么样子？》（What Is It Like to Be a Bat?）（1974）">内格尔，1974</a>）：我们可以知道蝙蝠回声定位的全部物理细节，却仍然不知道“作为一只蝙蝠是什么感觉”。主观视角似乎无法被客观描述穷尽。</li>
+<li><strong>玛丽的房间</strong>（<a class="ref" href="https://plato.stanford.edu/entries/qualia-knowledge/" target="_blank" rel="noopener" title="杰克逊《副现象的感质》（Epiphenomenal Qualia）——知识论证（1982）">杰克逊，1982</a>）：玛丽是视觉科学家，知道关于颜色的一切物理事实，却一辈子生活在黑白房间里。当她第一次走出房间看到红色时，她学到了新东西吗？如果学到了，物理事实就不是全部事实。</li>
+</ul>
+<h3 id="ch7-2">7.2 意识的难问题</h3>
+<p>1995 年，查默斯把问题分成两类（<a class="ref" href="https://plato.stanford.edu/entries/consciousness/" target="_blank" rel="noopener" title="查默斯《直面意识问题》（Facing Up to the Problem of Consciousness）（1995）">意识的难问题</a>）：解释大脑如何辨别、整合信息、控制行为，是“容易问题”——难在技术，不难在原理；而<strong>为什么这些过程会伴随着主观体验</strong>，是“难问题”。丹尼特（<a class="ref" href="https://plato.stanford.edu/entries/consciousness/" target="_blank" rel="noopener" title="丹尼特《意识的解释》（Consciousness Explained）（1991）">《意识的解释》</a>）则认为难问题是一种错觉，解决了所有容易问题，就没有剩下什么了。这场争论至今没有结束，而大语言模型的出现让它变得更加具体（见第 11 章）。</p>
+<div class="admonition key">
+<p class="admonition-title">另一条路：具身与延展</p>
+<p>1990 年代起，一批研究者（<a class="ref" href="https://plato.stanford.edu/entries/embodied-cognition/" target="_blank" rel="noopener" title="瓦雷拉、汤普森、罗施《具身心智》（The Embodied Mind）（1991）">瓦雷拉等</a>，<a class="ref" href="https://plato.stanford.edu/entries/content-externalism/" target="_blank" rel="noopener" title="克拉克、查默斯《延展心灵》（The Extended Mind）（1998）">克拉克与查默斯</a>）主张认知不只发生在颅骨之内，而是由身体、环境与工具共同构成——这条路线直接继承了梅洛-庞蒂和海德格尔，是分析与欧陆传统少见的汇流点。</p>
+</div>
+<details class="quiz"><summary><span class="qtag">自测</span>中文屋论证针对的是什么主张？</summary><p>针对“强人工智能”的主张：只要运行了正确的程序，计算机就真正拥有理解和心灵。塞尔并不否认机器可以模拟理解，他否认的是“仅凭符号操作（语法）就足以产生理解（语义）”。</p></details>
+
+<h2 id="ch8">8. 批判理论与后结构主义：理性、权力与文本</h2>
+<h3 id="ch8-1">8.1 法兰克福学派：启蒙为何走向野蛮</h3>
+<p>1923 年，法兰克福大学成立了社会研究所。一群主要是犹太裔的德国思想家（霍克海默、阿多诺、马尔库塞、本雅明等）结合马克思与弗洛伊德，发展出<strong>批判理论</strong>：理论的任务不只是描述社会，而是揭示其中的支配关系，服务于人的解放（<a class="ref" href="https://plato.stanford.edu/entries/critical-theory/" target="_blank" rel="noopener" title="霍克海默《传统理论与批判理论》（1937）">《传统理论与批判理论》</a>）。</p>
+<p>纳粹上台后他们流亡美国。在那里写成的 <a class="ref" href="https://plato.stanford.edu/entries/adorno/" target="_blank" rel="noopener" title="霍克海默、阿多诺《启蒙辩证法》（Dialektik der Aufklärung）（1944）">《启蒙辩证法》</a> 提出一个令人不安的问题：本该带来解放的理性，为什么造就了集中营？他们的回答是，启蒙理性在支配自然的过程中蜕变为<strong>工具理性</strong>——只问手段是否有效，不问目的是否正当。好莱坞与流行音乐构成的“文化工业”，则把人塑造成顺从的消费者。马尔库塞的 <a class="ref" href="https://plato.stanford.edu/entries/marcuse/" target="_blank" rel="noopener" title="马尔库塞《单向度的人》（One-Dimensional Man）（1964）">《单向度的人》</a> 后来成了 1960 年代学生运动的读物。</p>
+<p><strong>哈贝马斯</strong>作为第二代领军人物，转向了更积极的方向：除了工具理性，还有<strong>交往理性</strong>——人们通过不受强制的论辩达成共识（<a class="ref" href="https://plato.stanford.edu/entries/habermas/" target="_blank" rel="noopener" title="哈贝马斯《交往行为理论》（Theorie des kommunikativen Handelns）（1981）">《交往行为理论》</a>）。民主的正当性，就来自这种公共讨论。</p>
+<h3 id="ch8-2">8.2 结构主义：意义来自差异</h3>
+<p>索绪尔在 <a class="ref" href="https://en.wikipedia.org/wiki/Course_in_General_Linguistics" target="_blank" rel="noopener" title="索绪尔《普通语言学教程》（Cours de linguistique générale）（1916）">《普通语言学教程》</a> 中指出：“猫”这个词的意义不来自它和猫之间的天然联系，而来自它与“狗”“帽”等其他符号的<strong>差异</strong>。语言是一个差异的系统。1950—60 年代，列维-斯特劳斯、罗兰·巴特等人把这一思想推广到神话、亲属关系、时尚、广告，形成<strong>结构主义</strong>：主宰意义的不是个人，而是看不见的结构。</p>
+<h3 id="ch8-3">8.3 后结构主义：拆解中心</h3>
+<p>1960 年代末，一批法国思想家在结构主义基础上走得更远：</p>
+<ul>
+<li><strong>福柯</strong>：知识与权力不可分。他考察疯癫、医院、监狱、性的历史，揭示“正常”与“异常”是如何被历史地制造出来的。<a class="ref" href="https://plato.stanford.edu/entries/foucault/" target="_blank" rel="noopener" title="福柯《规训与惩罚》（Surveiller et punir）（1975）">《规训与惩罚》</a> 里那座<strong>圆形监狱</strong>——中央塔楼可以看见每个囚室，囚犯却不知道自己是否正被看着——成了现代社会自我规训的隐喻。</li>
+<li><strong>德里达</strong>：<strong>解构</strong>。文本总是依赖一组等级对立（言语/文字、男/女、理性/疯狂），解构就是显示这些对立如何不稳定、如何自我颠覆（<a class="ref" href="https://plato.stanford.edu/entries/derrida/" target="_blank" rel="noopener" title="德里达《论文字学》（De la grammatologie）（1967）">《论文字学》</a>）。</li>
+<li><strong>德勒兹</strong>（与加塔利）：用“块茎”“欲望机器”等概念，反对一切树状的、有中心的思维（<a class="ref" href="https://plato.stanford.edu/entries/deleuze/" target="_blank" rel="noopener" title="德勒兹、加塔利《反俄狄浦斯》（L&#x27;Anti-Œdipe）（1972）">《反俄狄浦斯》</a>）。</li>
+<li><strong>利奥塔</strong>把后现代定义为“对宏大叙事的怀疑”（<a class="ref" href="https://plato.stanford.edu/entries/lyotard/" target="_blank" rel="noopener" title="利奥塔《后现代状况》（La Condition postmoderne）（1979）">《后现代状况》</a>）；<strong>鲍德里亚</strong>则说，在媒体时代，拟像比真实更真实（<a class="ref" href="https://plato.stanford.edu/entries/baudrillard/" target="_blank" rel="noopener" title="鲍德里亚《拟像与仿真》（Simulacres et Simulation）（1981）">《拟像与仿真》</a>）。</li>
+</ul>
+<div class="admonition pitfall">
+<p class="admonition-title">“后现代”不等于“什么都行”</p>
+<p>这些思想家常被批评为相对主义和故弄玄虚（1996 年的“索卡尔事件”就是一次著名的嘲讽）。但他们的核心工作——追问看似自然的范畴从何而来、为谁服务——已经深刻地进入了社会学、文学研究、性别研究与法学。批评与借鉴最好建立在读过原文的基础上。</p>
+</div>
+<details class="quiz"><summary><span class="qtag">自测</span>“工具理性”和“交往理性”的区别是什么？</summary><p>工具理性只关心用什么手段最有效地达到给定目标，目标本身是否合理不在考虑之内；交往理性关心参与者如何通过不受强制的论辩，就什么是真的、对的达成相互理解与共识。前者是阿多诺、霍克海默的诊断，后者是哈贝马斯的补救。</p></details>
+
+<h2 id="ch9">9. 伦理学与政治哲学：重新谈论“应该”</h2>
+<h3 id="ch9-1">9.1 从元伦理学出发</h3>
+<p>二十世纪上半叶，英美伦理学主要在问一个“元”问题：“善”这个词是什么意思？摩尔在 <a class="ref" href="https://plato.stanford.edu/entries/moore-moral/" target="_blank" rel="noopener" title="摩尔《伦理学原理》（Principia Ethica）（1903）">《伦理学原理》</a> 中提出“开放问题论证”：无论你把善定义为快乐还是别的什么，“快乐是善的吗？”总还是一个有意义的问题——所以善不能被定义为任何自然属性。逻辑实证主义则更激进：“偷窃是错的”不陈述任何事实，只是在表达“呸！偷窃！”这样的情绪（情感主义）。</p>
+<h3 id="ch9-2">9.2 复兴：德性、案例与行动</h3>
+<p>1958 年，安斯康姆发表 <a class="ref" href="https://plato.stanford.edu/entries/anscombe/" target="_blank" rel="noopener" title="安斯康姆《现代道德哲学》（Modern Moral Philosophy）（1958）">《现代道德哲学》</a>，批评现代伦理学抽空了“义务”的基础，呼吁回到亚里士多德式的<strong>德性伦理</strong>：与其问“我该遵守哪条规则”，不如问“一个好人会怎么做，我想成为怎样的人”。麦金太尔的 <a class="ref" href="https://plato.stanford.edu/entries/ethics-virtue/" target="_blank" rel="noopener" title="麦金太尔《追寻美德》（After Virtue）（1981）">《追寻美德》</a> 把这一路线推向高潮。</p>
+<p>与此同时，伦理学开始讨论真实世界的难题：</p>
+<ul>
+<li><strong>电车难题</strong>（<a class="ref" href="https://plato.stanford.edu/entries/double-effect/" target="_blank" rel="noopener" title="富特《堕胎问题与双重效应学说》——电车难题的出处（1967）">富特，1967</a>）：失控的电车将撞死五个人，你可以扳道让它转向，撞死另一条轨道上的一个人。你该扳吗？如果不是扳道，而是把一个胖子推下桥挡住电车呢？大多数人对两种情况的直觉不同——解释这种差异，牵出了“做”与“允许”、意图与预见的区分。</li>
+<li><strong>辛格</strong>（<a class="ref" href="https://en.wikipedia.org/wiki/Famine,_Affluence,_and_Morality" target="_blank" rel="noopener" title="辛格《饥荒、富裕与道德》（Famine, Affluence, and Morality）（1972）">《饥荒、富裕与道德》</a>）：如果你路过一个溺水的孩子，你会弄脏衣服去救；那么远方因贫困而死的孩子，和眼前的孩子有道德上的区别吗？这篇文章后来成为“有效利他主义”运动的源头之一。</li>
+<li><strong>帕菲特</strong>（<a class="ref" href="https://plato.stanford.edu/entries/identity-ethics/" target="_blank" rel="noopener" title="帕菲特《理与人》（Reasons and Persons）（1984）">《理与人》</a>）用分裂人、远距传送等思想实验追问：人格同一性真的那么重要吗？</li>
+</ul>
+<h3 id="ch9-3">9.3 政治哲学：正义、自由与共同体</h3>
+<ul>
+<li><strong>阿伦特</strong>从极权主义的经验出发（<a class="ref" href="https://plato.stanford.edu/entries/arendt/" target="_blank" rel="noopener" title="阿伦特《极权主义的起源》（The Origins of Totalitarianism）（1951）">《极权主义的起源》</a>），在审判纳粹官员艾希曼时提出“平庸之恶”：巨大的罪行可以出自一个不思考的普通人。</li>
+<li><strong>伯林</strong>区分了两种自由（<a class="ref" href="https://plato.stanford.edu/entries/berlin/" target="_blank" rel="noopener" title="伯林《两种自由概念》（Two Concepts of Liberty）（1958）">《两种自由概念》</a>）：<strong>消极自由</strong>是免于干涉，<strong>积极自由</strong>是自我主宰；后者一旦被国家以“你真正的自我”之名推行，就可能变成压迫。</li>
+<li><strong>罗尔斯</strong>的 <a class="ref" href="https://plato.stanford.edu/entries/rawls/" target="_blank" rel="noopener" title="罗尔斯《正义论》（A Theory of Justice）（1971）">《正义论》</a>（1971）是二十世纪最有影响的政治哲学著作。</li>
+</ul>
+<div class="admonition analogy">
+<p class="admonition-title">无知之幕</p>
+<p>设想你要为一个社会设计规则，但你不知道自己将来会出生在哪个阶层、是什么性别、有什么天赋。罗尔斯认为，在这层“无知之幕”后面，理性的人会选择：每个人都享有尽可能广泛的平等基本自由；社会经济的不平等只有在对<strong>最不利者</strong>最有利时才被允许（差别原则）。</p>
+</div>
+<p>罗尔斯引来了两个方向的回应：<strong>诺齐克</strong>（<a class="ref" href="https://plato.stanford.edu/entries/nozick-political/" target="_blank" rel="noopener" title="诺齐克《无政府、国家与乌托邦》（1974）">《无政府、国家与乌托邦》</a>）从自由至上主义出发，认为只要财产是正当获得与转让的，再分配就侵犯了个人权利；<strong>社群主义者</strong>（<a class="ref" href="https://plato.stanford.edu/entries/communitarianism/" target="_blank" rel="noopener" title="桑德尔《自由主义与正义的局限》、泰勒、沃尔泽等的社群主义批评（1982）">桑德尔、泰勒、麦金太尔</a>）则批评罗尔斯设想的是一个脱离一切共同体与传统的“无负担的自我”。此后，森与努斯鲍姆的 <a class="ref" href="https://plato.stanford.edu/entries/capability-approach/" target="_blank" rel="noopener" title="森《什么的平等？》（Equality of What?）与努斯鲍姆的能力进路（1979）">能力进路</a>、巴特勒的 <a class="ref" href="https://plato.stanford.edu/entries/feminism-gender/" target="_blank" rel="noopener" title="巴特勒《性别麻烦》（Gender Trouble）（1990）">性别理论</a> 等，把正义的讨论扩展到发展、性别与承认。</p>
+<details class="quiz"><summary><span class="qtag">自测</span>为什么在“无知之幕”后面的人会关心最不利者？</summary><p>因为他们不知道自己会成为谁，自己完全可能就是社会中最不利的那个人。罗尔斯认为，在这种高度不确定、事关一生的选择中，理性的做法是确保最坏的处境也尽可能好。</p></details>
+
+<h2 id="ch10">10. 实用主义：哲学回到行动</h2>
+<p>美国本土诞生的实用主义，比分析哲学和存在主义都更早，也在二十世纪末迎来了复兴。</p>
+<h3 id="ch10-1">10.1 观念的“兑现价值”</h3>
+<p>皮尔士在 <a class="ref" href="https://plato.stanford.edu/entries/peirce/" target="_blank" rel="noopener" title="皮尔士《如何使我们的观念清楚》（How to Make Our Ideas Clear）（1878）">《如何使我们的观念清楚》</a> 里提出：一个概念的意义，就在于它对行动可能产生的全部实际效果。“硬”的意思是“很多东西都划不动它”；如果两个观念在任何可想象的实践中都没有区别，它们就是同一个观念。</p>
+<p><strong>詹姆斯</strong>（<a class="ref" href="https://plato.stanford.edu/entries/james/" target="_blank" rel="noopener" title="詹姆斯《实用主义》（Pragmatism）（1907）">《实用主义》</a>）把这一原则用到真理上：真观念就是那些我们能吸收、验证、并且在经验中“行得通”的观念。<strong>杜威</strong>则把它带进教育与民主（<a class="ref" href="https://plato.stanford.edu/entries/dewey/" target="_blank" rel="noopener" title="杜威《民主主义与教育》（Democracy and Education）（1916）">《民主主义与教育》</a>）：知识不是对世界的静观，而是解决问题的工具；学校应该“从做中学”，民主不只是一种政体，而是一种共同生活的方式。</p>
+<div class="admonition pitfall">
+<p class="admonition-title">实用主义不是“有用就是真”</p>
+<p>詹姆斯的一些说法确实容易被读成“对我有好处的就是真的”，罗素就这样批评过他。但实用主义的核心是：真理与探究、检验、经验的长期后果相连，而不是与个人一时的方便相连。皮尔士为了和这种通俗化划清界限，甚至把自己的立场改名为“实效主义”。</p>
+</div>
+<h3 id="ch10-2">10.2 新实用主义：放下“自然之镜”</h3>
+<p>1979 年，罗蒂在 <a class="ref" href="https://plato.stanford.edu/entries/rorty/" target="_blank" rel="noopener" title="罗蒂《哲学与自然之镜》（Philosophy and the Mirror of Nature）（1979）">《哲学与自然之镜》</a> 里宣布：从笛卡尔到分析哲学，哲学一直把心灵或语言想象成一面映照自然的镜子，并试图检验这面镜子是否准确——这个计划应该被放弃。知识不是“表象”与“实在”的对应，而是我们在对话中能够为之辩护的东西。罗蒂同时援引杜威、后期维特根斯坦、海德格尔与德里达，成为少数在分析与欧陆两边都有读者的哲学家。</p>
+<details class="quiz"><summary><span class="qtag">自测</span>按皮尔士的实用主义准则，怎样判断两个理论“其实是同一个理论”？</summary><p>看它们在一切可以设想的实际情境中是否导出不同的可观察后果或不同的行动。如果在任何经验与实践中都没有区别，那么它们的差别只是字面的，意义上是同一个。</p></details>
+
+<h2 id="ch11">11. 今天的哲学：几条正在进行的线索</h2>
+<h3 id="ch11-1">11.1 分裂的房子在打通</h3>
+<p>“分析 vs 欧陆”的对立在今天已经松动了很多。分析哲学家研究海德格尔与胡塞尔，现象学被用于认知科学；欧陆传统内部也越来越重视论证的清晰。真正的分界线，更多地变成了<strong>问题</strong>而不是<strong>流派</strong>。</p>
+<h3 id="ch11-2">11.2 人工智能把老问题变成了新问题</h3>
+<p>图灵测试、中文屋、意义与理解、意识难题——这些曾经纯属思想实验的问题，在大语言模型出现后变得具体而紧迫（<a class="ref" href="https://plato.stanford.edu/entries/artificial-intelligence/" target="_blank" rel="noopener" title="人工智能哲学：理解、意义与意识的争论（2023）">人工智能哲学</a>）：</p>
+<ul>
+<li>只通过预测文本训练出来的模型，算不算“理解”了语言？词语的意义需要与世界、身体、行动相连吗？（后期维特根斯坦与塞尔在这里重新相遇。）</li>
+<li>什么样的证据能表明一个系统有或没有主观体验？如果无法确定，我们应当怎样对待它？</li>
+<li>早在 1972 年，德雷福斯就引用海德格尔与梅洛-庞蒂批评符号主义 AI（<a class="ref" href="https://plato.stanford.edu/entries/artificial-intelligence/" target="_blank" rel="noopener" title="德雷福斯《计算机不能做什么》（What Computers Can&#x27;t Do）（1972）">《计算机不能做什么》</a>），认为人类的大部分智能是身体性的、熟练的、不可形式化的。今天的具身智能与机器人研究，某种程度上就是在回应这一批评。</li>
+</ul>
+<h3 id="ch11-3">11.3 其他活跃的方向</h3>
+<ul>
+<li><strong>实验哲学</strong>（<a class="ref" href="https://plato.stanford.edu/entries/experimental-philosophy/" target="_blank" rel="noopener" title="诺布等开创的实验哲学（Knobe effect, 2003 起）（2003）">实验哲学</a>）：用问卷和实验检验普通人的哲学直觉，发现直觉会受文化、语境、措辞的影响——这对依赖直觉的思想实验方法提出了挑战。</li>
+<li><strong>跨文化与全球哲学</strong>：以西田几多郎（<a class="ref" href="https://plato.stanford.edu/entries/kyoto-school/" target="_blank" rel="noopener" title="西田几多郎《善的研究》——京都学派的起点（1911）">《善的研究》</a>）为起点的京都学派，把禅与德国哲学结合；二十世纪的中国哲学家（如冯友兰、牟宗三）则在与西方哲学的对话中重建中国思想的体系。“哲学史”不再只有一条欧洲的主线。</li>
+<li><strong>应用与公共哲学</strong>：气候伦理、动物伦理、技术伦理、数据与隐私——哲学越来越多地直接参与公共决策。</li>
+</ul>
+<div class="admonition key">
+<p class="admonition-title">一百年后回看</p>
+<p>二十世纪开始于对确定性的寻找：弗雷格想要逻辑的确定，胡塞尔想要经验的确定，维也纳学派想要科学的确定。一百年后，几乎每一条路线都发现了自己的界限——不完全性、不可通约性、意识的难问题、理解的不可形式化。但这些界限本身，就是这一百年最重要的发现。</p>
+</div>
+<h2 id="ch12">12. 阅读路线</h2>
+<h3 id="ch12-1">12.1 先读什么</h3>
+<p>不必从大部头开始。下面这些原著篇幅短、可读性强，适合作为入门：</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>主题</th>
+<th>入门原著</th>
+<th>篇幅</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>存在主义</td>
+<td>萨特《存在主义是一种人道主义》、加缪《西西弗神话》</td>
+<td>一个下午</td>
+</tr>
+<tr>
+<td>科学哲学</td>
+<td>库恩《科学革命的结构》</td>
+<td>一周</td>
+</tr>
+<tr>
+<td>心灵哲学</td>
+<td>内格尔《成为一只蝙蝠是什么样子？》、塞尔《心灵、大脑与程序》</td>
+<td>各一小时</td>
+</tr>
+<tr>
+<td>知识论</td>
+<td>葛梯尔的三页论文</td>
+<td>十分钟</td>
+</tr>
+<tr>
+<td>伦理学</td>
+<td>辛格《饥荒、富裕与道德》</td>
+<td>一小时</td>
+</tr>
+<tr>
+<td>政治哲学</td>
+<td>伯林《两种自由概念》、罗尔斯《正义论》第一章</td>
+<td>一个周末</td>
+</tr>
+<tr>
+<td>语言哲学</td>
+<td>罗素《论指称》</td>
+<td>一个下午</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="ch12-2">12.2 再往深处走</h3>
+<ul>
+<li><strong>想读分析哲学的骨架</strong>：弗雷格、罗素 → 维特根斯坦《哲学研究》 → 蒯因 → 克里普克《命名与必然性》。</li>
+<li><strong>想读欧陆哲学的骨架</strong>：胡塞尔的入门讲演 → 海德格尔《存在与时间》导论部分 → 梅洛-庞蒂《知觉现象学》前言 → 福柯《规训与惩罚》。</li>
+<li><strong>找二手材料</strong>：斯坦福哲学百科（SEP）的条目由该领域的专家撰写并定期更新，是最可靠的免费入口；本页每个书名链接都指向相应条目。</li>
+</ul>
+<div class="admonition analogy">
+<p class="admonition-title">最后一句</p>
+<p>梅洛-庞蒂说：“真正的哲学，就是重新学会看世界。”读哲学史的意义，也许不在于记住谁说了什么，而在于借一百多年里最聪明的那些眼睛，把熟悉的世界重新看一遍。</p>
+</div>
+      <section id="refs" class="refs">
+        <h2>附录：本教程引用的经典文本（69 部）</h2>
+        <p>按章节、首次出现的顺序排列。链接指向斯坦福哲学百科（SEP）的相应条目，适合作为延伸阅读的入口。</p>
+        <h3>1. 世纪之交：危机与两个“回到”</h3><ul class="reflist"><li><a href="https://plato.stanford.edu/entries/nietzsche/" target="_blank" rel="noopener">《快乐的科学》</a><span class="rt"> · 尼采《快乐的科学》（Die fröhliche Wissenschaft）——“上帝死了”（1882）</span></li><li><a href="https://plato.stanford.edu/entries/principia-mathematica/" target="_blank" rel="noopener">《数学原理》</a><span class="rt"> · 怀特海、罗素《数学原理》（Principia Mathematica）（1910）</span></li><li><a href="https://plato.stanford.edu/entries/goedel-incompleteness/" target="_blank" rel="noopener">哥德尔不完全性定理</a><span class="rt"> · 哥德尔《论〈数学原理〉及有关系统的形式不可判定命题》（1931）</span></li><li><a href="https://plato.stanford.edu/entries/husserl/" target="_blank" rel="noopener">《逻辑研究》</a><span class="rt"> · 胡塞尔《逻辑研究》（Logische Untersuchungen）（1900）</span></li></ul><h3>2. 语言转向：把话说清楚</h3><ul class="reflist"><li><a href="https://plato.stanford.edu/entries/frege/" target="_blank" rel="noopener">《论涵义与指称》</a><span class="rt"> · 弗雷格《论涵义与指称》（Über Sinn und Bedeutung）（1892）</span></li><li><a href="https://plato.stanford.edu/entries/russell/" target="_blank" rel="noopener">《论指称》</a><span class="rt"> · 罗素《论指称》（On Denoting）（1905）</span></li><li><a href="https://plato.stanford.edu/entries/wittgenstein/" target="_blank" rel="noopener">《逻辑哲学论》</a><span class="rt"> · 维特根斯坦《逻辑哲学论》（Tractatus Logico-Philosophicus）（1921）</span></li><li><a href="https://plato.stanford.edu/entries/vienna-circle/" target="_blank" rel="noopener">维也纳学派宣言</a><span class="rt"> · 《科学的世界观：维也纳学派》（Wissenschaftliche Weltauffassung）（1929）</span></li><li><a href="https://plato.stanford.edu/entries/logical-empiricism/" target="_blank" rel="noopener">《语言、真理与逻辑》</a><span class="rt"> · 艾耶尔《语言、真理与逻辑》（Language, Truth and Logic）（1936）</span></li></ul><h3>3. 现象学与存在主义：从经验出发</h3><ul class="reflist"><li><a href="https://plato.stanford.edu/entries/husserl/" target="_blank" rel="noopener">《危机》</a><span class="rt"> · 胡塞尔《欧洲科学的危机与超越论的现象学》（1936）</span></li><li><a href="https://plato.stanford.edu/entries/heidegger/" target="_blank" rel="noopener">《存在与时间》</a><span class="rt"> · 海德格尔《存在与时间》（Sein und Zeit）（1927）</span></li><li><a href="https://plato.stanford.edu/entries/sartre/" target="_blank" rel="noopener">《存在与虚无》</a><span class="rt"> · 萨特《存在与虚无》（L&#x27;Être et le néant）（1943）</span></li><li><a href="https://plato.stanford.edu/entries/beauvoir/" target="_blank" rel="noopener">《第二性》</a><span class="rt"> · 波伏瓦《第二性》（Le Deuxième Sexe）（1949）</span></li><li><a href="https://plato.stanford.edu/entries/camus/" target="_blank" rel="noopener">《西西弗神话》</a><span class="rt"> · 加缪《西西弗神话》（Le Mythe de Sisyphe）（1942）</span></li><li><a href="https://plato.stanford.edu/entries/merleau-ponty/" target="_blank" rel="noopener">《知觉现象学》</a><span class="rt"> · 梅洛-庞蒂《知觉现象学》（Phénoménologie de la perception）（1945）</span></li><li><a href="https://plato.stanford.edu/entries/gadamer/" target="_blank" rel="noopener">《真理与方法》</a><span class="rt"> · 伽达默尔《真理与方法》（Wahrheit und Methode）（1960）</span></li></ul><h3>4. 后期维特根斯坦：意义即用法</h3><ul class="reflist"><li><a href="https://plato.stanford.edu/entries/wittgenstein/" target="_blank" rel="noopener">《哲学研究》</a><span class="rt"> · 维特根斯坦《哲学研究》（Philosophische Untersuchungen）（1953）</span></li><li><a href="https://plato.stanford.edu/entries/ryle/" target="_blank" rel="noopener">《心的概念》</a><span class="rt"> · 赖尔《心的概念》（The Concept of Mind）（1949）</span></li><li><a href="https://plato.stanford.edu/entries/austin-jl/" target="_blank" rel="noopener">《如何以言行事》</a><span class="rt"> · 奥斯汀《如何以言行事》（How to Do Things with Words）（1962）</span></li></ul><h3>5. 战后分析哲学：拆掉地基，重建大厦</h3><ul class="reflist"><li><a href="https://plato.stanford.edu/entries/quine/" target="_blank" rel="noopener">《经验论的两个教条》</a><span class="rt"> · 蒯因《经验论的两个教条》（Two Dogmas of Empiricism）（1951）</span></li><li><a href="https://plato.stanford.edu/entries/knowledge-analysis/" target="_blank" rel="noopener">《得到辩护的真信念是知识吗？》</a><span class="rt"> · 葛梯尔《得到辩护的真信念是知识吗？》（1963）</span></li><li><a href="https://plato.stanford.edu/entries/rigid-designators/" target="_blank" rel="noopener">《命名与必然性》</a><span class="rt"> · 克里普克《命名与必然性》（Naming and Necessity）（1972）</span></li><li><a href="https://plato.stanford.edu/entries/content-externalism/" target="_blank" rel="noopener">孪生地球</a><span class="rt"> · 普特南《“意义”的意义》（The Meaning of &#x27;Meaning&#x27;）——孪生地球思想实验（1975）</span></li><li><a href="https://plato.stanford.edu/entries/david-lewis/" target="_blank" rel="noopener">《论世界的多元性》</a><span class="rt"> · 刘易斯《论世界的多元性》（On the Plurality of Worlds）（1986）</span></li></ul><h3>6. 科学哲学：从证伪到范式</h3><ul class="reflist"><li><a href="https://plato.stanford.edu/entries/popper/" target="_blank" rel="noopener">《科学发现的逻辑》</a><span class="rt"> · 波普尔《科学发现的逻辑》（Logik der Forschung）（1934）</span></li><li><a href="https://plato.stanford.edu/entries/thomas-kuhn/" target="_blank" rel="noopener">《科学革命的结构》</a><span class="rt"> · 库恩《科学革命的结构》（The Structure of Scientific Revolutions）（1962）</span></li><li><a href="https://plato.stanford.edu/entries/lakatos/" target="_blank" rel="noopener">科学研究纲领</a><span class="rt"> · 拉卡托斯《证伪与科学研究纲领方法论》（1970）</span></li><li><a href="https://plato.stanford.edu/entries/feyerabend/" target="_blank" rel="noopener">《反对方法》</a><span class="rt"> · 费耶阿本德《反对方法》（Against Method）（1975）</span></li></ul><h3>7. 心灵哲学：从机器中的幽灵到意识难题</h3><ul class="reflist"><li><a href="https://plato.stanford.edu/entries/mind-identity/" target="_blank" rel="noopener">心脑同一论</a><span class="rt"> · 普莱斯《意识是一个大脑过程吗？》、斯玛特《感觉与大脑过程》（1959）（1956）</span></li><li><a href="https://plato.stanford.edu/entries/functionalism/" target="_blank" rel="noopener">功能主义</a><span class="rt"> · 普特南《心理谓词》（Psychological Predicates）——功能主义的经典表述（1967）</span></li><li><a href="https://plato.stanford.edu/entries/turing-test/" target="_blank" rel="noopener">《计算机器与智能》</a><span class="rt"> · 图灵《计算机器与智能》（Computing Machinery and Intelligence）（1950）</span></li><li><a href="https://plato.stanford.edu/entries/chinese-room/" target="_blank" rel="noopener">中文屋</a><span class="rt"> · 塞尔《心灵、大脑与程序》（Minds, Brains, and Programs）——中文屋论证（1980）</span></li><li><a href="https://plato.stanford.edu/entries/qualia/" target="_blank" rel="noopener">《成为一只蝙蝠是什么样子？》</a><span class="rt"> · 内格尔《成为一只蝙蝠是什么样子？》（What Is It Like to Be a Bat?）（1974）</span></li><li><a href="https://plato.stanford.edu/entries/qualia-knowledge/" target="_blank" rel="noopener">玛丽的黑白房间</a><span class="rt"> · 杰克逊《副现象的感质》（Epiphenomenal Qualia）——知识论证（1982）</span></li><li><a href="https://plato.stanford.edu/entries/consciousness/" target="_blank" rel="noopener">意识的难问题</a><span class="rt"> · 查默斯《直面意识问题》（Facing Up to the Problem of Consciousness）（1995）</span></li><li><a href="https://plato.stanford.edu/entries/consciousness/" target="_blank" rel="noopener">《意识的解释》</a><span class="rt"> · 丹尼特《意识的解释》（Consciousness Explained）（1991）</span></li><li><a href="https://plato.stanford.edu/entries/embodied-cognition/" target="_blank" rel="noopener">《具身心智》</a><span class="rt"> · 瓦雷拉、汤普森、罗施《具身心智》（The Embodied Mind）（1991）</span></li><li><a href="https://plato.stanford.edu/entries/content-externalism/" target="_blank" rel="noopener">《延展心灵》</a><span class="rt"> · 克拉克、查默斯《延展心灵》（The Extended Mind）（1998）</span></li></ul><h3>8. 批判理论与后结构主义：理性、权力与文本</h3><ul class="reflist"><li><a href="https://plato.stanford.edu/entries/critical-theory/" target="_blank" rel="noopener">《传统理论与批判理论》</a><span class="rt"> · 霍克海默《传统理论与批判理论》（1937）</span></li><li><a href="https://plato.stanford.edu/entries/adorno/" target="_blank" rel="noopener">《启蒙辩证法》</a><span class="rt"> · 霍克海默、阿多诺《启蒙辩证法》（Dialektik der Aufklärung）（1944）</span></li><li><a href="https://plato.stanford.edu/entries/marcuse/" target="_blank" rel="noopener">《单向度的人》</a><span class="rt"> · 马尔库塞《单向度的人》（One-Dimensional Man）（1964）</span></li><li><a href="https://plato.stanford.edu/entries/habermas/" target="_blank" rel="noopener">《交往行为理论》</a><span class="rt"> · 哈贝马斯《交往行为理论》（Theorie des kommunikativen Handelns）（1981）</span></li><li><a href="https://en.wikipedia.org/wiki/Course_in_General_Linguistics" target="_blank" rel="noopener">《普通语言学教程》</a><span class="rt"> · 索绪尔《普通语言学教程》（Cours de linguistique générale）（1916）</span></li><li><a href="https://plato.stanford.edu/entries/foucault/" target="_blank" rel="noopener">《规训与惩罚》</a><span class="rt"> · 福柯《规训与惩罚》（Surveiller et punir）（1975）</span></li><li><a href="https://plato.stanford.edu/entries/derrida/" target="_blank" rel="noopener">《论文字学》</a><span class="rt"> · 德里达《论文字学》（De la grammatologie）（1967）</span></li><li><a href="https://plato.stanford.edu/entries/deleuze/" target="_blank" rel="noopener">《反俄狄浦斯》</a><span class="rt"> · 德勒兹、加塔利《反俄狄浦斯》（L&#x27;Anti-Œdipe）（1972）</span></li><li><a href="https://plato.stanford.edu/entries/lyotard/" target="_blank" rel="noopener">《后现代状况》</a><span class="rt"> · 利奥塔《后现代状况》（La Condition postmoderne）（1979）</span></li><li><a href="https://plato.stanford.edu/entries/baudrillard/" target="_blank" rel="noopener">《拟像与仿真》</a><span class="rt"> · 鲍德里亚《拟像与仿真》（Simulacres et Simulation）（1981）</span></li></ul><h3>9. 伦理学与政治哲学：重新谈论“应该”</h3><ul class="reflist"><li><a href="https://plato.stanford.edu/entries/moore-moral/" target="_blank" rel="noopener">《伦理学原理》</a><span class="rt"> · 摩尔《伦理学原理》（Principia Ethica）（1903）</span></li><li><a href="https://plato.stanford.edu/entries/anscombe/" target="_blank" rel="noopener">《现代道德哲学》</a><span class="rt"> · 安斯康姆《现代道德哲学》（Modern Moral Philosophy）（1958）</span></li><li><a href="https://plato.stanford.edu/entries/ethics-virtue/" target="_blank" rel="noopener">《追寻美德》</a><span class="rt"> · 麦金太尔《追寻美德》（After Virtue）（1981）</span></li><li><a href="https://plato.stanford.edu/entries/double-effect/" target="_blank" rel="noopener">电车难题</a><span class="rt"> · 富特《堕胎问题与双重效应学说》——电车难题的出处（1967）</span></li><li><a href="https://en.wikipedia.org/wiki/Famine,_Affluence,_and_Morality" target="_blank" rel="noopener">《饥荒、富裕与道德》</a><span class="rt"> · 辛格《饥荒、富裕与道德》（Famine, Affluence, and Morality）（1972）</span></li><li><a href="https://plato.stanford.edu/entries/identity-ethics/" target="_blank" rel="noopener">《理与人》</a><span class="rt"> · 帕菲特《理与人》（Reasons and Persons）（1984）</span></li><li><a href="https://plato.stanford.edu/entries/arendt/" target="_blank" rel="noopener">《极权主义的起源》</a><span class="rt"> · 阿伦特《极权主义的起源》（The Origins of Totalitarianism）（1951）</span></li><li><a href="https://plato.stanford.edu/entries/berlin/" target="_blank" rel="noopener">《两种自由概念》</a><span class="rt"> · 伯林《两种自由概念》（Two Concepts of Liberty）（1958）</span></li><li><a href="https://plato.stanford.edu/entries/rawls/" target="_blank" rel="noopener">《正义论》</a><span class="rt"> · 罗尔斯《正义论》（A Theory of Justice）（1971）</span></li><li><a href="https://plato.stanford.edu/entries/nozick-political/" target="_blank" rel="noopener">《无政府、国家与乌托邦》</a><span class="rt"> · 诺齐克《无政府、国家与乌托邦》（1974）</span></li><li><a href="https://plato.stanford.edu/entries/communitarianism/" target="_blank" rel="noopener">社群主义</a><span class="rt"> · 桑德尔《自由主义与正义的局限》、泰勒、沃尔泽等的社群主义批评（1982）</span></li><li><a href="https://plato.stanford.edu/entries/capability-approach/" target="_blank" rel="noopener">能力进路</a><span class="rt"> · 森《什么的平等？》（Equality of What?）与努斯鲍姆的能力进路（1979）</span></li><li><a href="https://plato.stanford.edu/entries/feminism-gender/" target="_blank" rel="noopener">《性别麻烦》</a><span class="rt"> · 巴特勒《性别麻烦》（Gender Trouble）（1990）</span></li></ul><h3>10. 实用主义：哲学回到行动</h3><ul class="reflist"><li><a href="https://plato.stanford.edu/entries/peirce/" target="_blank" rel="noopener">《如何使我们的观念清楚》</a><span class="rt"> · 皮尔士《如何使我们的观念清楚》（How to Make Our Ideas Clear）（1878）</span></li><li><a href="https://plato.stanford.edu/entries/james/" target="_blank" rel="noopener">《实用主义》</a><span class="rt"> · 詹姆斯《实用主义》（Pragmatism）（1907）</span></li><li><a href="https://plato.stanford.edu/entries/dewey/" target="_blank" rel="noopener">《民主主义与教育》</a><span class="rt"> · 杜威《民主主义与教育》（Democracy and Education）（1916）</span></li><li><a href="https://plato.stanford.edu/entries/rorty/" target="_blank" rel="noopener">《哲学与自然之镜》</a><span class="rt"> · 罗蒂《哲学与自然之镜》（Philosophy and the Mirror of Nature）（1979）</span></li></ul><h3>11. 今天的哲学：几条正在进行的线索</h3><ul class="reflist"><li><a href="https://plato.stanford.edu/entries/artificial-intelligence/" target="_blank" rel="noopener">大模型与哲学</a><span class="rt"> · 人工智能哲学：理解、意义与意识的争论（2023）</span></li><li><a href="https://plato.stanford.edu/entries/artificial-intelligence/" target="_blank" rel="noopener">《计算机不能做什么》</a><span class="rt"> · 德雷福斯《计算机不能做什么》（What Computers Can&#x27;t Do）（1972）</span></li><li><a href="https://plato.stanford.edu/entries/experimental-philosophy/" target="_blank" rel="noopener">实验哲学</a><span class="rt"> · 诺布等开创的实验哲学（Knobe effect, 2003 起）（2003）</span></li><li><a href="https://plato.stanford.edu/entries/kyoto-school/" target="_blank" rel="noopener">《善的研究》</a><span class="rt"> · 西田几多郎《善的研究》——京都学派的起点（1911）</span></li></ul>
+      </section>
+    </article>
+  </main>
+</div>
+<footer>
+  <div class="wrap">
+    <p>一百多年的哲学：从 1900 到今天 · 截至 2026-10-24 · 由 Markdown 章节生成。</p>
+    <p>本页为科普性质的学习整理，对人物与学说的概括必然有所简化；严肃引用请回到原著与二手研究。</p>
+  </div>
+</footer>
+<script>
+"use strict";
+(function theme() {
+  const btn = document.getElementById("themeBtn");
+  const order = ["auto", "light", "dark"];
+  const label = { auto: "自动", light: "浅色", dark: "深色" };
+  let cur = "auto";
+  try { cur = localStorage.getItem("ea-theme") || "auto"; } catch (e) { /* storage unavailable */ }
+  function apply(t) {
+    cur = t;
+    if (t === "auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t);
+    btn.textContent = "◐ 主题：" + label[t];
+    try { localStorage.setItem("ea-theme", t); } catch (e) { /* ignore */ }
+  }
+  apply(order.includes(cur) ? cur : "auto");
+  btn.addEventListener("click", () => apply(order[(order.indexOf(cur) + 1) % order.length]));
+})();
+
+(function scrollspy() {
+  const side = document.querySelector(".sidebar");
+  const links = [...side.querySelectorAll("a[href^='#']")];
+  const byId = new Map(links.map(a => [decodeURIComponent(a.getAttribute("href").slice(1)), a]));
+  const heads = [...document.querySelectorAll(".prose h2[id], .prose h3[id], #refs")];
+  let current = null;
+  function activate(id) {
+    if (id === current) return;
+    current = id;
+    links.forEach(a => a.removeAttribute("aria-current"));
+    side.querySelectorAll("li.open").forEach(li => li.classList.remove("open"));
+    const a = byId.get(id);
+    if (!a) return;
+    a.setAttribute("aria-current", "true");
+    const top = a.closest(".toc-list > li");
+    if (top) top.classList.add("open");
+    if (getComputedStyle(side).display === "none") return;
+    const r = a.getBoundingClientRect(), s = side.getBoundingClientRect();
+    if (r.top < s.top + 30 || r.bottom > s.bottom - 30) side.scrollTo({ top: side.scrollTop + (r.top - s.top) - s.height / 3 });
+  }
+  function update() {
+    let id = heads.length ? heads[0].id : null;
+    for (const h of heads) {
+      if (h.getBoundingClientRect().top < 140) id = h.id; else break;
+    }
+    activate(id);
+  }
+  let queued = false;
+  window.addEventListener("scroll", () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; update(); });
+  }, { passive: true });
+  update();
+})();
+
+document.querySelectorAll(".codehilite").forEach(box => {
+  const pre = box.querySelector("pre");
+  if (!pre) return;
+  const text = pre.textContent;
+  const b = document.createElement("button");
+  b.className = "btn-small copy";
+  b.type = "button";
+  b.textContent = "复制";
+  b.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(text); b.textContent = "已复制"; }
+    catch (e) { b.textContent = "复制失败"; }
+    setTimeout(() => { b.textContent = "复制"; }, 1500);
+  });
+  box.append(b);
+});
+
+document.querySelectorAll(".toc-mobile a").forEach(a => a.addEventListener("click", () => { a.closest("details").open = false; }));
+
+(function fitEquations() {
+  // multi-part display formulas: use the stacked variant when the side-by-side one would need scrolling
+  const eqs = document.querySelectorAll(".eq.has-narrow");
+  function fit() {
+    eqs.forEach(e => {
+      e.classList.remove("narrow");
+      if (e.scrollWidth > e.clientWidth + 1) e.classList.add("narrow");
+    });
+  }
+  fit();
+  document.fonts.ready.then(fit);
+  let pending = false;
+  window.addEventListener("resize", () => {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(() => { pending = false; fit(); });
+  });
+})();
+</script>
+</body>
+</html>
