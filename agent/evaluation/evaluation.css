@@ -194,3 +194,4 @@ th,td{padding:7px}
 .glossary{margin-top:18px}
 .glossary summary{cursor:pointer;font-weight:600}
 .glossary[open] summary{margin-bottom:18px}
+main p a, main td a:not(.benchmark-name){text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
