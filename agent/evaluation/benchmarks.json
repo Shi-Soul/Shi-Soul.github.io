@@ -34,14 +34,27 @@
       "caution": "在已训练任务上成功，不等于能适应未见任务。",
       "source": {
         "url": "https://meta-world.github.io/",
-        "locator": "About；ML1 / MT1 / ML10 / ML45 / MT50"
+        "locator": "About；ML1 / MT1 / ML10 / ML45 / MT50",
+        "title": "Meta-World",
+        "authors": "Meta-World 项目维护者"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2019-10-24",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/1910.10897"
+      },
+      "updated": {
+        "date": "2021-06-14",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/1910.10897"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "rlbench",
       "name": "RLBench",
-      "year": 2020,
+      "year": 2019,
       "group": "闭环控制",
       "profiles": [
         {
@@ -72,9 +85,22 @@
       "caution": "常见的 18 任务实验只是子集；更换动作模式会改变控制难度。",
       "source": {
         "url": "https://github.com/stepjam/RLBench",
-        "locator": "README：Getting Started；Action modes；Swapping Arms；Tasks"
+        "locator": "README：Getting Started；Action modes；Swapping Arms；Tasks",
+        "title": "GitHub - stepjam/RLBench: A large-scale benchmark and learning environment. · GitHub",
+        "authors": "RLBench 项目维护者"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2019-09-26",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/1909.12271"
+      },
+      "updated": {
+        "date": "2019-09-26",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/1909.12271"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "libero",
@@ -109,9 +135,22 @@
       "caution": "LIBERO-10 与全部 130 任务的均分不是同一指标。",
       "source": {
         "url": "https://github.com/Lifelong-Robot-Learning/LIBERO",
-        "locator": "README：What is LIBERO；Task Suites；Evaluation"
+        "locator": "README：What is LIBERO；Task Suites；Evaluation",
+        "title": "GitHub - Lifelong-Robot-Learning/LIBERO: Benchmarking Knowledge Transfer in Lifelong Robot Learning · GitHub",
+        "authors": "LIBERO 项目维护者"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2023-06-05",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2306.03310"
+      },
+      "updated": {
+        "date": "2023-10-14",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2306.03310"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "libero-pro",
@@ -143,10 +182,23 @@
       "protocol": "固定原任务和策略，逐类改变测试条件；说明模型是否见过扰动训练数据。",
       "caution": "此条对应 2025 论文；不与 Pro2.0 的实例数和结果合并。",
       "source": {
-        "url": "https://arxiv.org/html/2510.03827v1",
-        "locator": "§3 benchmark design；§4 experiments"
+        "url": "https://arxiv.org/html/2510.03827v2",
+        "locator": "§3 benchmark design；§4 experiments",
+        "title": "LIBERO-PRO: Towards Robust and Fair Evaluation of Vision-Language-Action Models Beyond Memorization",
+        "authors": "Zhou, Xueyang; Xu, Yangming; Tie, Guiyao; Chen, Yongchao; Zhang, Guowen; Chu, Duanfeng; Zhou, Pan; Sun, Lichao"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2025-10-04",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2510.03827"
+      },
+      "updated": {
+        "date": "2026-05-25",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2510.03827"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "libero-pro2",
@@ -180,9 +232,22 @@
       "caution": "扰动种类、任务实例和训练轨迹是三种计数单位。",
       "source": {
         "url": "https://arxiv.org/html/2610.24587v1",
-        "locator": "§3；§4；Appendix C perturbation catalogue"
+        "locator": "§3；§4；Appendix C perturbation catalogue",
+        "title": "LIBERO-Pro2.0: A Benchmark for Evaluating the Robustness of Embodied Foundation Models",
+        "authors": "Zhou, Xueyang; Xu, Yangming; Li, Qianjiang; Tie, Guiyao; Wu, Junhao; Huang, Ziheng; Zhang, Guowen; Yuan, Zhijie; Wu, Di; Chu, Duanfeng; Zhou, Pan; Sun, Lichao; Chen, Yongchao"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2026-10-17",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2610.24587"
+      },
+      "updated": {
+        "date": "2026-10-17",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2610.24587"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "libero-recover",
@@ -206,7 +271,7 @@
       "difficulty": [
         "泛化与恢复"
       ],
-      "scale": "1,000 余个失败场景；四类恢复要求",
+      "scale": "2,000 余个失败场景；四类恢复要求（v3）",
       "setup": "从真实策略执行失败构建 LIBERO 仿真场景。",
       "observations": "视觉、指令与任务状态；按原协议开放。",
       "actions": "重试、动作调整及后续操作。",
@@ -214,15 +279,28 @@
       "protocol": "分别评估动作重试、动作适应、物体状态恢复与环境恢复。",
       "caution": "这里的“真实失败”指策略实际执行产生的失败，不表示实机评测。",
       "source": {
-        "url": "https://arxiv.org/html/2609.05178v1",
-        "locator": "Benchmark Construction；Recovery Levels；Experiments"
+        "url": "https://arxiv.org/html/2609.05178v3",
+        "locator": "Benchmark Construction；Recovery Levels；Experiments",
+        "title": "LIBERO-RECOVER: Beyond Task Success Towards Failure Recovery in Robotic Manipulation Models",
+        "authors": "Liu, Lin; Bao, Zhicheng; Zhang, Lu; Song, Ziying; Yang, Wu; Zhuang, Yuzheng; Tao, Shuai; Liu, Wulong; Jia, Caiyan; Lu, Huchuan"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2026-09-04",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2609.05178"
+      },
+      "updated": {
+        "date": "2026-09-28",
+        "kind": "论文修订 · v3",
+        "url": "https://arxiv.org/abs/2609.05178"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "calvin",
       "name": "CALVIN",
-      "year": 2022,
+      "year": 2021,
       "group": "闭环控制",
       "profiles": [
         {
@@ -252,9 +330,22 @@
       "caution": "链长度是连续成功的前缀长度，不是任意完成的子任务总数。",
       "source": {
         "url": "https://arxiv.org/html/2112.03227v4",
-        "locator": "§III-A environment；§III-C challenge and metrics"
+        "locator": "§III-A environment；§III-C challenge and metrics",
+        "title": "CALVIN: A Benchmark for Language-Conditioned Policy Learning for Long-Horizon Robot Manipulation Tasks",
+        "authors": "Mees, Oier; Hermann, Lukas; Rosete-Beas, Erick; Burgard, Wolfram"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2021-12-06",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2112.03227"
+      },
+      "updated": {
+        "date": "2022-07-13",
+        "kind": "论文修订 · v4",
+        "url": "https://arxiv.org/abs/2112.03227"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "maniskill",
@@ -294,9 +385,22 @@
       "caution": "ManiSkill 是框架和任务库；不能把任意任务组合的均分称为统一总成绩。",
       "source": {
         "url": "https://maniskill.readthedocs.io/en/latest/tasks/table_top_gripper/index.html",
-        "locator": "Task Table；individual task cards"
+        "locator": "Task Table；individual task cards",
+        "title": "Table-Top 2 Finger Gripper Tasks — ManiSkill 3.0.1 documentation",
+        "authors": "ManiSkill 3 · 夹爪任务 项目维护者"
       },
-      "origin": "灵巧手综述"
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2024-10-01",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2410.00425"
+      },
+      "updated": {
+        "date": "2025-05-30",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2410.00425"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "simpler",
@@ -335,9 +439,22 @@
       "caution": "环境本身提供仿真评测；论文的实机校准不代表新策略已获实机验证。Google Robot 的移动底盘也不等于该任务测试导航。",
       "source": {
         "url": "https://simpler-env.github.io/",
-        "locator": "Simulation Evaluation；Visual Matching；Variant Aggregation；MMRV"
+        "locator": "Simulation Evaluation；Visual Matching；Variant Aggregation；MMRV",
+        "title": "Evaluating Real-World Robot Manipulation Policies\nin Simulation",
+        "authors": "SIMPLER / SimplerEnv 项目维护者"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2024-05-09",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2405.05941"
+      },
+      "updated": {
+        "date": "2024-05-09",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2405.05941"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "furniture",
@@ -371,9 +488,22 @@
       "caution": "仿真装配与实机接触误差不同，成绩按环境分开。",
       "source": {
         "url": "https://clvrai.github.io/furniture-bench/",
-        "locator": "Furniture Assembly；Standardized Environment Setup；Simulator"
+        "locator": "Furniture Assembly；Standardized Environment Setup；Simulator",
+        "title": "FurnitureBench: Real-World Furniture Assembly Benchmark",
+        "authors": "FurnitureBench 项目维护者"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2023-05-22",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2305.12821"
+      },
+      "updated": {
+        "date": "2023-05-22",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2305.12821"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "robotwin",
@@ -409,9 +539,22 @@
       "caution": "Easy / Hard 是本基准的干净／随机化条件，不是跨基准难度等级。",
       "source": {
         "url": "https://robotwin-platform.github.io/leaderboard",
-        "locator": "Benchmark Setting；Submission & listing policy"
+        "locator": "Benchmark Setting；Submission & listing policy",
+        "title": "RoboTwin 2.0 Leaderboard",
+        "authors": "RoboTwin 2.0 项目维护者"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2025-06-22",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2506.18088"
+      },
+      "updated": {
+        "date": "2026-10-11",
+        "kind": "官方榜单更新",
+        "url": "https://robotwin-platform.github.io/leaderboard"
+      },
+      "dateNote": "论文首发 2025-06-22，v2 修订 2025-08-27；2026-10-11 是榜单页面标注的更新，不是 RoboTwin 2.0 首发。"
     },
     {
       "id": "robodojo",
@@ -447,10 +590,23 @@
       "protocol": "分别报告泛化、记忆、精度、长时程、开放任务，以及实机结果。",
       "caution": "60 是两个环境任务数之和；不是 60 对完全相同的仿真／实机任务。",
       "source": {
-        "url": "https://arxiv.org/html/2607.04434v1",
-        "locator": "§3.1–3.3；§4.2；Appendix I"
+        "url": "https://arxiv.org/html/2607.04434v3",
+        "locator": "§3.1–3.3；§4.2；Appendix I",
+        "title": "RoboDojo: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Generalist Robot Manipulation Policies",
+        "authors": "Chen, Tianxing; Chen, Yue; Li, Zixuan; Tang, Junyuan; Su, Kailun; Lu, Haoran; Wan, Weijie; Chen, Baijun; Liu, Songling; Yan, Haowen; Su, Honghao; Dou, Zhiyang; Wang, Kaixuan; Zhang, Dandan; Liu, Yunze; Qin, Yan; Liang, Qiwei; Wu, Qiwei; Lin, Zijian; Lin, Wenwei; Wang, Yuran; He, Minghua; Wu, Tianshu; Wu, Ruihai; Zhou, Jingquan; Lei, Kai-Chong; Yu, Haibao; Ji, Yuanfeng; Jin, Weiyang; Lin, Guanyu; Li, Xiaofan; Xiong, Qi; Xu, Renjing; Li, Zhongyu; Chai, Wenhao; Xie, Enze; Wang, Ziwei; Mu, Yao; Dong, Hao; Matusik, Wojciech; Ding, Mingyu; Ding, Wenbo; Luo, Ping; Tomizuka, Masayoshi"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2026-07-05",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2607.04434"
+      },
+      "updated": {
+        "date": "2026-07-08",
+        "kind": "论文修订 · v3",
+        "url": "https://arxiv.org/abs/2607.04434"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "roboarena",
@@ -484,15 +640,28 @@
       "protocol": "同一评测者、任务和场景成对比较策略；保留评测者与场景信息。",
       "caution": "排名来自相对偏好，不是固定任务集的绝对成功率；移动工作台不算自主移动操作。",
       "source": {
-        "url": "https://arxiv.org/html/2506.18123v1",
-        "locator": "§3 evaluation protocol；robot platform；ranking aggregation"
+        "url": "https://arxiv.org/html/2506.18123v2",
+        "locator": "§3 evaluation protocol；robot platform；ranking aggregation",
+        "title": "RoboArena: Distributed Real-World Evaluation of Generalist Robot Policies",
+        "authors": "Atreya, Pranav; Pertsch, Karl; Lee, Tony; Kim, Moo Jin; Jain, Arhan; Kuramshin, Artur; Eppner, Clemens; Neary, Cyrus; Hu, Edward; Ramos, Fabio; Tremblay, Jonathan; Arora, Kanav; Ellis, Kirsty; Macesanu, Luca; Villasevil, Marcel Torne; Leonard, Matthew; Cho, Meedeum; Aslan, Ozgur; Dass, Shivin; Wang, Jie; Reger, William; Yuan, Xingfang; Yang, Xuning; Gupta, Abhishek; Jayaraman, Dinesh; Berseth, Glen; Daniilidis, Kostas; Martin-Martin, Roberto; Lee, Youngwoon; Liang, Percy; Finn, Chelsea; Levine, Sergey"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2025-06-22",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2506.18123"
+      },
+      "updated": {
+        "date": "2025-11-29",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2506.18123"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "adroit",
       "name": "Adroit Hand",
-      "year": 2018,
+      "year": 2017,
       "group": "闭环控制",
       "profiles": [
         {
@@ -521,9 +690,22 @@
       "caution": "自由手腕的运动约束不同于安装在工业机械臂上的灵巧手。",
       "source": {
         "url": "https://robotics.farama.org/envs/adroit_hand/",
-        "locator": "Adroit Hand；four environment descriptions"
+        "locator": "Adroit Hand；four environment descriptions",
+        "title": "Adroit Hand - Gymnasium-Robotics Documentation",
+        "authors": "Adroit Hand 项目维护者"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2017-09-28",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/1709.10087"
+      },
+      "updated": {
+        "date": "2018-06-26",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/1709.10087"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "bidexhands",
@@ -557,9 +739,22 @@
       "caution": "双手模型不等于完整双机械臂；高回报不能替代物理成功判定。",
       "source": {
         "url": "https://github.com/PKU-MARL/DexterousHands",
-        "locator": "README：Tasks；Observation；Action Space；Benchmark"
+        "locator": "README：Tasks；Observation；Action Space；Benchmark",
+        "title": "GitHub - PKU-MARL/DexterousHands: This is a library that provides dual dexterous hand manipulation tasks through Isaac Gym · GitHub",
+        "authors": "Bi-DexHands 项目维护者"
       },
-      "origin": "灵巧手综述"
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2022-06-17",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2206.08686"
+      },
+      "updated": {
+        "date": "2022-10-11",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2206.08686"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "dexart",
@@ -584,17 +779,30 @@
         "泛化与恢复"
       ],
       "scale": "水龙头、桶、笔记本电脑、马桶四类任务",
-      "setup": "Allegro 手与机械臂；SAPIEN。",
+      "setup": "XArm6 + Allegro Hand；SAPIEN。",
       "observations": "点云与机器人状态。",
       "actions": "手臂与手部关节控制。",
       "metrics": "已见／未见物体上的成功率。",
       "protocol": "物体实例划分固定；报告视觉表征预训练与是否使用分割信息。",
       "caution": "评估同类新物体的泛化，不代表所有铰接类别的零样本迁移。",
       "source": {
-        "url": "https://arxiv.org/html/2305.05706",
-        "locator": "§3 task descriptions；Table 1；§4 experiments"
+        "url": "https://arxiv.org/html/2305.05706v1",
+        "locator": "§3 task descriptions；Table 1；§4 experiments",
+        "title": "DexArt: Benchmarking Generalizable Dexterous Manipulation with Articulated Objects",
+        "authors": "Bao, Chen; Xu, Helin; Qin, Yuzhe; Wang, Xiaolong"
       },
-      "origin": "灵巧手综述"
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2023-05-09",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2305.05706"
+      },
+      "updated": {
+        "date": "2023-05-09",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2305.05706"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "dexjoco",
@@ -634,10 +842,23 @@
       "protocol": "区分仅随机物体与完整视觉随机化；注明单任务／多任务训练。",
       "caution": "传感器和遥操作硬件用于采集，不表示榜单是实机闭环结果。",
       "source": {
-        "url": "https://arxiv.org/html/2605.16257v1",
-        "locator": "§3 benchmark；§4 evaluation；Table 2"
+        "url": "https://arxiv.org/html/2605.16257v2",
+        "locator": "§3 benchmark；§4 evaluation；Table 2",
+        "title": "DexJoCo: A Benchmark and Toolkit for Task-Oriented Dexterous Manipulation on MuJoCo",
+        "authors": "Wang, Hanwen; Zhao, Weizhi; Wang, Xiangyu; Huang, Siyuan; Lin, He; Zheng, Boyuan; Xu, Rongtao; Wang, Gang; Mu, Yao; Wang, He; Fan, Lue; Li, Hongsheng; Zhang, Zhaoxiang; Tan, Tieniu"
       },
-      "origin": "灵巧手综述"
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-05-15",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2605.16257"
+      },
+      "updated": {
+        "date": "2026-09-22",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2605.16257"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "dexverse",
@@ -680,9 +901,22 @@
       "caution": "支持多种硬件配置不表示每个任务都已在所有组合上验证。",
       "source": {
         "url": "https://arxiv.org/html/2607.08751v1",
-        "locator": "§3.2 robot embodiments；§4 evaluation；Appendix C"
+        "locator": "§3.2 robot embodiments；§4 evaluation；Appendix C",
+        "title": "DexVerse: A Modular Benchmark for Multi-Task, Multi-Embodiment Dexterous Manipulation",
+        "authors": "Yao, Yunchao; Xu, Zhuxiu; Zhang, Tianqi; Liu, Zixian; Li, Sikai; Wei, Zhenyu; Chen, Feng; Huang, Dihong; Wan, Kechang; Ma, Chenyang; Zhao, Shuqi; Gao, Shenghua; Tomizuka, Masayoshi; Ma, Yi; Ding, Mingyu"
       },
-      "origin": "灵巧手综述"
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-07-09",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2607.08751"
+      },
+      "updated": {
+        "date": "2026-07-09",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2607.08751"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "handson",
@@ -719,9 +953,22 @@
       "caution": "平台支持 5 种臂、6 种手，但论文成绩仅来自一套配置；实机视频属于定性展示。",
       "source": {
         "url": "https://arxiv.org/html/2610.26765v1",
-        "locator": "§3.1–3.4；§4.5–4.6；§5.1；Appendix F"
+        "locator": "§3.1–3.4；§4.5–4.6；§5.1；Appendix F",
+        "title": "HandsOn: A Large-Scale Simulation Benchmark for Generalizable Dexterous Manipulation",
+        "authors": "Luo, Tianwei; He, Yiming; Wu, Hongjin; Pan, Ting; Ren, Debin; Guo, Haorui; Yang, Junlin; Zuo, Yuxin; Kou, Zhehao; Yang, Kaisen; Lai, Zhuoqun; Ding, Yi; Yu, Jiale; Zhang, Yuchen; Qiu, Zijie; Li, Haozhan; Ding, Ning"
       },
-      "origin": "灵巧手综述"
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-10-19",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2610.26765"
+      },
+      "updated": {
+        "date": "2026-10-19",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2610.26765"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "bidex100",
@@ -757,9 +1004,22 @@
       "caution": "Astribot 配置评估上肢操作；不能据“人形”名称推断测试双足行走。",
       "source": {
         "url": "https://arxiv.org/html/2610.25459v1",
-        "locator": "§III-B–E；§V-B；Appendix XII"
+        "locator": "§III-B–E；§V-B；Appendix XII",
+        "title": "BiDex-100: A Comprehensive Benchmark for Bimanual Dexterous Manipulation Across 100+ Simulation Tasks",
+        "authors": "Wang, Yong; Zheng, Kecheng; Zhu, Xing; Xu, Chao; Shen, Yujun; Cai, Shengze"
       },
-      "origin": "灵巧手综述"
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-10-18",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2610.25459"
+      },
+      "updated": {
+        "date": "2026-10-18",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2610.25459"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "bench2dex",
@@ -795,9 +1055,22 @@
       "caution": "触觉由仿真接触表面重建；不等于真实触觉传感器的噪声和响应。",
       "source": {
         "url": "https://arxiv.org/html/2609.15726v1",
-        "locator": "§3.1–3.6；Appendix E metrics"
+        "locator": "§3.1–3.6；Appendix E metrics",
+        "title": "Bench2Dex: Benchmarking Visuo-Tactile Bimanual Dexterous Manipulation Across Dexterous Hands",
+        "authors": "Yang, Zhenjie; Zhang, Yideng; Zhang, Dongjie; Jiang, Chenyu; Liu, Xianshuai; Li, Yufeng; Ge, Zuhao; Jiao, Xingyu; Zhang, Zheng; He, Kaiyu; Wang, He; Zhong, Yuwen; Deng, Yi; Jiang, Muyun; Huang, Xianliang; Su, Haisheng; Zhang, Donghang; Zhang, Jian; Yang, Xue; Li, Hongyang; Wu, Zuxuan; Jiang, Yu-Gang; Jia, Xiaosong; Yan, Junchi"
       },
-      "origin": "灵巧手综述"
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-09-14",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2609.15726"
+      },
+      "updated": {
+        "date": "2026-09-14",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2609.15726"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "tactidex",
@@ -832,9 +1105,22 @@
       "caution": "标题中的 Real-World 不表示全部指标都来自实机在线触觉闭环。",
       "source": {
         "url": "https://arxiv.org/html/2607.09190v1",
-        "locator": "§5.1；§5.4；Appendix C.3 Command Mapping and Open-Loop Execution"
+        "locator": "§5.1；§5.4；Appendix C.3 Command Mapping and Open-Loop Execution",
+        "title": "TactiDex: A Real-World Tactile-Guided Benchmark for Human-Like Dexterous Manipulation",
+        "authors": "Ni, Suting; Zhang, Hanbing; Wei, Zhenyu; Chen, Guo; Zhang, Chixuan; Shi, Ye; Wang, Jingya"
       },
-      "origin": "灵巧手综述"
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-07-10",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2607.09190"
+      },
+      "updated": {
+        "date": "2026-07-10",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2607.09190"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "dexh2r",
@@ -866,10 +1152,23 @@
       "protocol": "区分离线轨迹预测和实机交接；控制物体、给物者运动及训练测试划分。",
       "caution": "离线轨迹误差低不能直接推出实机交接成功。",
       "source": {
-        "url": "https://arxiv.org/html/2506.23152v1",
-        "locator": "§3.1 hardware；§4 problem and evaluation；experiments"
+        "url": "https://arxiv.org/html/2506.23152v3",
+        "locator": "§3.1 hardware；§4 problem and evaluation；experiments",
+        "title": "DexH2R: A Benchmark for Dynamic Dexterous Grasping in Human-to-Robot Handover",
+        "authors": "Wang, Youzhuo; Ye, Jiayi; Xiao, Chuyang; Zhong, Yiming; Tao, Heng; Yu, Hang; Liu, Yumeng; Yu, Jingyi; Ma, Yuexin"
       },
-      "origin": "灵巧手综述"
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2025-06-29",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2506.23152"
+      },
+      "updated": {
+        "date": "2025-07-02",
+        "kind": "论文修订 · v3",
+        "url": "https://arxiv.org/abs/2506.23152"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "labdex",
@@ -904,9 +1203,22 @@
       "caution": "流程成功率不能用原子技能成功率直接替代；仿真和实机分别统计。",
       "source": {
         "url": "https://arxiv.org/html/2608.18618v1",
-        "locator": "Real-World and Simulation Platform；Task Taxonomy；Experiments"
+        "locator": "Real-World and Simulation Platform；Task Taxonomy；Experiments",
+        "title": "LabDex: A Hierarchical Benchmark for Dexterous Manipulation in Laboratories",
+        "authors": "Tang, Zhipeng; Chen, Sihang; Zhang, Sha; Yang, Peihao; Liu, Yan; Zhao, Wentao; Liu, Xinrui; Huang, Rui; Du, Wensheng; Huang, Yuting; Deng, Jiajun; Wang, Lidian; Zhang, Yuan; Zhang, Yanyong"
       },
-      "origin": "灵巧手综述"
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-08-19",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2608.18618"
+      },
+      "updated": {
+        "date": "2026-08-19",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2608.18618"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "htbench",
@@ -938,10 +1250,23 @@
       "protocol": "按四种评测分别报告；区分已见与未见任务。",
       "caution": "226 是数据采集任务数量，不是 226 个闭环机器人任务。",
       "source": {
-        "url": "https://arxiv.org/html/2606.19161v1",
-        "locator": "Benchmark Tasks；Evaluation Protocol；Experiments"
+        "url": "https://arxiv.org/html/2606.19161v2",
+        "locator": "Benchmark Tasks；Evaluation Protocol；Experiments",
+        "title": "HT-Bench: Benchmarking and Learning Dexterous Full-Hand Tactile Representations with Egocentric Vision",
+        "authors": "Huang, Yuzhe; Wu, Jiaping; Jiang, Jiaming; Lin, Hezhe; Aierken, Aikebaier; Wang, Yunlong; Cheng, Kun; Li, Wanlin; Xiao, Chenxi; Jiao, Ziyuan; Zhong, Yuanxin"
       },
-      "origin": "灵巧手综述"
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-06-17",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2606.19161"
+      },
+      "updated": {
+        "date": "2026-08-20",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2606.19161"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "objectnav",
@@ -974,9 +1299,22 @@
       "caution": "此条引用 2023 挑战协议；ObjectNav 测寻找物体，不测抓取。",
       "source": {
         "url": "https://aihabitat.org/challenge/2023/",
-        "locator": "Task 1 ObjectNav；Dataset；Evaluation"
+        "locator": "Task 1 ObjectNav；Dataset；Evaluation",
+        "title": "Habitat Navigation Challenge 2023 | AI Habitat",
+        "authors": "Habitat ObjectNav · 2023 项目维护者"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2023-03-13",
+        "kind": "挑战启动",
+        "url": "https://aihabitat.org/challenge/2023/"
+      },
+      "updated": {
+        "date": "",
+        "kind": "官方未标注更新时间",
+        "url": "https://aihabitat.org/challenge/2023/"
+      },
+      "dateNote": "日期来自官方赛期公告；报名截止和获奖公布日期不作为版本更新。"
     },
     {
       "id": "homerobot",
@@ -1012,9 +1350,22 @@
       "caution": "单独导航或抓取成功不能替代完整搬放成功。",
       "source": {
         "url": "https://ovmm.github.io/",
-        "locator": "Task Definition；Simulation Benchmark；Real-world Evaluation"
+        "locator": "Task Definition；Simulation Benchmark；Real-world Evaluation",
+        "title": "HomeRobot: Open Vocabulary Mobile Manipulation",
+        "authors": "HomeRobot / OVMM 项目维护者"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2023-06-20",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2306.11565"
+      },
+      "updated": {
+        "date": "2024-01-10",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2306.11565"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "robocasa",
@@ -1050,9 +1401,22 @@
       "caution": "2024 RoboCasa 与 2026 RoboCasa365 的任务总量和时限不同。",
       "source": {
         "url": "https://robocasa.ai/",
-        "locator": "Updates；Foundational Skills；Composite Tasks；Benchmarking"
+        "locator": "Updates；Foundational Skills；Composite Tasks；Benchmarking",
+        "title": "RoboCasa",
+        "authors": "RoboCasa365 项目维护者"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2026-02-18",
+        "kind": "365 版本发布",
+        "url": "https://robocasa.ai/"
+      },
+      "updated": {
+        "date": "2026-10-14",
+        "kind": "子任务标注功能更新",
+        "url": "https://robocasa.ai/"
+      },
+      "dateNote": "官方 v1.0 发布于 2026-02-18；论文首发 2026-03-04；v1.0.1 时限更新于 2026-05-12，子任务标注功能更新于 2026-10-14。"
     },
     {
       "id": "behavior",
@@ -1088,14 +1452,27 @@
       "caution": "100 是 2026 挑战任务数，不是 BEHAVIOR-1K 的全部活动；默认机器人是轮式双臂，不是双足。",
       "source": {
         "url": "https://behavior.stanford.edu/challenge/evaluation.html",
-        "locator": "Custom Robot Configuration；Metrics and Results；Evaluation Protocol"
+        "locator": "Custom Robot Configuration；Metrics and Results；Evaluation Protocol",
+        "title": "Evaluation and Rules - BEHAVIOR",
+        "authors": "BEHAVIOR Challenge · 2026 项目维护者"
       },
-      "origin": "具身智能综述（更新至 2026 规则）"
+      "origin": "具身智能综述（更新至 2026 规则）",
+      "published": {
+        "date": "2026-07-02",
+        "kind": "挑战启动",
+        "url": "https://behavior.stanford.edu/challenge/"
+      },
+      "updated": {
+        "date": "",
+        "kind": "官方未标注更新时间",
+        "url": "https://behavior.stanford.edu/challenge/evaluation.html"
+      },
+      "dateNote": "日期来自官方赛期公告；报名截止和获奖公布日期不作为版本更新。"
     },
     {
       "id": "alfred",
       "name": "ALFRED",
-      "year": 2020,
+      "year": 2019,
       "group": "综合代理",
       "profiles": [
         {
@@ -1125,9 +1502,22 @@
       "caution": "离散拿取指令省去了连续抓取控制，不能当成实机手臂控制结果。",
       "source": {
         "url": "https://askforalfred.com/",
-        "locator": "Task definition；paper evaluation section"
+        "locator": "Task definition；paper evaluation section",
+        "title": "ALFRED -- A Benchmark for Interpreting Grounded Instructions for Everyday Tasks",
+        "authors": "ALFRED 项目维护者"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2019-12-03",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/1912.01734"
+      },
+      "updated": {
+        "date": "2020-03-31",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/1912.01734"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "humanoidbench",
@@ -1162,9 +1552,22 @@
       "caution": "论文是仿真结果；不能把低层平衡策略的能力归给高层规划器。",
       "source": {
         "url": "https://humanoid-bench.github.io/",
-        "locator": "HumanoidBench；Simulation Environment；Observation Space；Hierarchical RL"
+        "locator": "HumanoidBench；Simulation Environment；Observation Space；Hierarchical RL",
+        "title": "HumanoidBench",
+        "authors": "HumanoidBench 项目维护者"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2024-03-15",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2403.10506"
+      },
+      "updated": {
+        "date": "2024-06-18",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2403.10506"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "locomujoco",
@@ -1202,9 +1605,22 @@
       "caution": "轨迹相似度衡量运动复现；不能替代复杂操作成功率。",
       "source": {
         "url": "https://loco-mujoco.readthedocs.io/en/latest/",
-        "locator": "Overview；Key Advantages；environment and metric documentation"
+        "locator": "Overview；Key Advantages；environment and metric documentation",
+        "title": "Welcome to LocoMuJoCo! — LocoMuJoCo v1.1.0 documentation",
+        "authors": "LocoMuJoCo 项目维护者"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2023-11-04",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2311.02496"
+      },
+      "updated": {
+        "date": "2023-11-30",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2311.02496"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "barkour",
@@ -1237,9 +1653,22 @@
       "caution": "此条的成绩指实机障碍路线；训练用仿真不使它成为仿真榜单。",
       "source": {
         "url": "https://sites.google.com/view/barkour",
-        "locator": "The Barkour Benchmark for Robot Agility；Scoring script"
+        "locator": "The Barkour Benchmark for Robot Agility；Scoring script",
+        "title": "Barkour: Benchmarking Animal-level Agility with Quadruped Robots",
+        "authors": "Barkour 项目维护者"
       },
-      "origin": "补充检索"
+      "origin": "补充检索",
+      "published": {
+        "date": "2023-05-24",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2305.14654"
+      },
+      "updated": {
+        "date": "2023-05-24",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2305.14654"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "capbench",
@@ -1266,18 +1695,31 @@
         "多步协作",
         "泛化与恢复"
       ],
-      "scale": "CaP-Gym 39 任务；S1–S4、M1–M4 共 8 种接口条件",
+      "scale": "CaP-Bench：7 个环境 × 8 种接口条件；CaP-Gym 框架整合 187 任务（v2）",
       "setup": "编码代理通过 Python 感知与控制接口操作机械臂。",
       "observations": "按条件提供真值／视觉、文本执行反馈或视觉差分。",
       "actions": "生成代码调用高层技能或低层控制原语。",
       "metrics": "各接口条件下任务成功率；单轮与多轮分别比较。",
       "protocol": "固定接口抽象、文档示例、反馈模态与交互预算。",
-      "caution": "CaP-X 包含实机展示；此条 CaP-Bench 的标准条件是仿真，展示不并入成绩。",
+      "caution": "基准 7 个环境与框架整合的 187 个任务应分开计数；实机展示不并入 CaP-Bench 仿真成绩。",
       "source": {
-        "url": "https://arxiv.org/html/2603.22435v1",
-        "locator": "§2 CaP-Gym；§3.1–3.2 CaP-Bench"
+        "url": "https://arxiv.org/html/2603.22435v2",
+        "locator": "§2 CaP-Gym；§3.1–3.2 CaP-Bench",
+        "title": "CaP-X: A Framework for Benchmarking andImproving Coding Agents for Robot Manipulation",
+        "authors": "Fu, Letian; Yu, Justin; El-Refai, Karim; Kou, Ethan; Xue, Haoru; Huang, Huang; Xiao, Wenli; Wang, Guanzhi; Niu, Dantong; Li, Fei-Fei; Shi, Guanya; Wu, Jiajun; Sastry, Shankar; Zhu, Yuke; Goldberg, Ken; Fan, Linxi \"Jim\""
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2026-03-23",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2603.22435"
+      },
+      "updated": {
+        "date": "2026-07-02",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2603.22435"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "embodiedbench",
@@ -1317,10 +1759,23 @@
       "protocol": "保留各环境的动作抽象层级、预算与观测配置。",
       "caution": "四环境平均值混合不同接口；解释模型能力时先看分项。",
       "source": {
-        "url": "https://arxiv.org/html/2502.09560v1",
-        "locator": "§3 benchmark；environments；capability subsets；evaluation"
+        "url": "https://arxiv.org/html/2502.09560v3",
+        "locator": "§3 benchmark；environments；capability subsets；evaluation",
+        "title": "EmbodiedBench: Comprehensive Benchmarking Multi-modal Large Language Models for Vision-Driven Embodied Agents",
+        "authors": "Yang, Rui; Chen, Hanyang; Zhang, Junyu; Zhao, Mark; Qian, Cheng; Wang, Kangrui; Wang, Qineng; Koripella, Teja Venkat; Movahedi, Marziyeh; Li, Manling; Ji, Heng; Zhang, Huan; Zhang, Tong"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2025-02-13",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2502.09560"
+      },
+      "updated": {
+        "date": "2025-06-05",
+        "kind": "论文修订 · v3",
+        "url": "https://arxiv.org/abs/2502.09560"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "eai",
@@ -1353,10 +1808,23 @@
       "protocol": "逐模块固定输入输出；同时报告端到端结果与错误来源。",
       "caution": "形式化状态与高层动作能诊断推理，但省略了部分感知和控制问题。",
       "source": {
-        "url": "https://arxiv.org/html/2410.07166v1",
-        "locator": "Embodied Agent Interface；Benchmark Construction；Metrics"
+        "url": "https://arxiv.org/html/2410.07166v3",
+        "locator": "Embodied Agent Interface；Benchmark Construction；Metrics",
+        "title": "Embodied Agent Interface: Benchmarking LLMs for Embodied Decision Making",
+        "authors": "Li, Manling; Zhao, Shiyu; Wang, Qineng; Wang, Kangrui; Zhou, Yu; Srivastava, Sanjana; Gokmen, Cem; Lee, Tony; Li, Li Erran; Zhang, Ruohan; Liu, Weiyu; Liang, Percy; Fei-Fei, Li; Mao, Jiayuan; Wu, Jiajun"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2024-10-09",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2410.07166"
+      },
+      "updated": {
+        "date": "2025-01-19",
+        "kind": "论文修订 · v3",
+        "url": "https://arxiv.org/abs/2410.07166"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "erqa",
@@ -1388,9 +1856,22 @@
       "caution": "答对空间问题不等于能闭环操控机器人。",
       "source": {
         "url": "https://github.com/embodiedreasoning/ERQA",
-        "locator": "README：Benchmark；Data Format；Evaluation"
+        "locator": "README：Benchmark；Data Format；Evaluation",
+        "title": "GitHub - embodiedreasoning/ERQA: Embodied Reasoning Question Answer (ERQA) Benchmark · GitHub",
+        "authors": "ERQA 项目维护者"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2025-03-25",
+        "kind": "关联报告首发",
+        "url": "https://arxiv.org/abs/2503.20020"
+      },
+      "updated": {
+        "date": "2025-03-25",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2503.20020"
+      },
+      "dateNote": "关联 Gemini Robotics 报告于 2025-03-25 首次提交；此处不推断 ERQA 代码的首次公开日。"
     },
     {
       "id": "asimov",
@@ -1423,9 +1904,22 @@
       "caution": "语义安全判断不是物理接触力、急停或硬件安全认证。",
       "source": {
         "url": "https://asimov-benchmark.github.io/v2/",
-        "locator": "Abstract；Benchmark design；Constraint satisfaction evaluation"
+        "locator": "Abstract；Benchmark design；Constraint satisfaction evaluation",
+        "title": "ASIMOV Benchmark v2",
+        "authors": "ASIMOV 2.0 项目维护者"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2025-09-25",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2509.21651"
+      },
+      "updated": {
+        "date": "2025-11-21",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2509.21651"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "robotworld",
@@ -1444,13 +1938,18 @@
           "base": "固定"
         },
         {
+          "end": "灵巧手",
+          "arms": "双臂",
+          "base": "固定"
+        },
+        {
           "end": "夹爪",
           "arms": "单臂",
           "base": "轮式移动"
         },
         {
-          "end": "灵巧手",
-          "arms": "双臂",
+          "end": "未限定",
+          "arms": "未限定",
           "base": "双足"
         },
         {
@@ -1484,7 +1983,7 @@
         "泛化与恢复"
       ],
       "scale": "84 任务；操作、移动操作、运动、驾驶、飞行五领域",
-      "setup": "多种本体；沿用任务原生控制器。",
+      "setup": "含 DROID、RoboDojo、Bench2Dex、PandaOmron、G1、Booster T1 等配置；沿用各任务原生控制器。",
       "observations": "任务允许的视觉、状态与执行反馈；可用分析工作区。",
       "actions": "数值动作；部分任务允许在控制循环中执行代码。",
       "metrics": "任务成功；分领域统计，另报调用数、用时与消耗。",
@@ -1492,9 +1991,22 @@
       "caution": "各本体动作难度不同；暂停仿真得到的成绩不等于满足实机实时要求。",
       "source": {
         "url": "https://arxiv.org/html/2610.10409v1",
-        "locator": "§3 environment；§4 task scope；§5.2 protocol；Appendix A"
+        "locator": "§3 environment；§4 task scope；§5.2 protocol；Appendix A",
+        "title": "RobotWorld: Benchmarking Multimodal Agents for Robot Use Across Diverse Tasks and Embodiments",
+        "authors": "Yang, Zhiqin; Li, Chenxin; Hu, Xiaomeng; Liu, Yibin; Huang, Weidong; Sun, Jiankai; Li, Haitao; Wu, Zijian; Huang, Yuzhi; Huang, Fanding; Sun, Hanwen; Liu, Jiashun; Tong, Jingqi; Huang, Mingxin; Hu, Shaoli; Huang, Shijue; Bai, Tianyi; Wang, Xinyuan; Lin, Yunlong; Tang, Zhengyang; Zhang, Zhexin; Chen, Zhuo; Song, Xierui; Dai, Juntao; Chen, Boyuan; Ji, Jiaming; Zhan, Fangneng; Hu, Mengkang; Xue, Wei; Zhang, Yonggang; Hu, Han; Ho, Tsung-Yi; Guo, Yike"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2026-10-07",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2610.10409"
+      },
+      "updated": {
+        "date": "2026-10-07",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2610.10409"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     },
     {
       "id": "roboquest",
@@ -1529,9 +2041,22 @@
       "caution": "隐含信息已知的技能测试用于定位失败原因，不能当成完整探索任务成绩。",
       "source": {
         "url": "https://arxiv.org/html/2610.10388v1",
-        "locator": "Task design；Environment；Agent interface；Appendix B"
+        "locator": "Task design；Environment；Agent interface；Appendix B",
+        "title": "RoboQuest: Generalist Physical Agents that Search, Inspect and Test",
+        "authors": "Renhang, Liu; Majumder, Navonil; Pala, Tej Deep; Poria, Soujanya"
       },
-      "origin": "具身智能综述"
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2026-10-07",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2610.10388"
+      },
+      "updated": {
+        "date": "2026-10-07",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2610.10388"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
     }
   ]
 }
