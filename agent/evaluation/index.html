@@ -45,7 +45,7 @@
   <p class="note">“仿真 + 实机”表示来源分别包含两类实验，具体覆盖见详情。日期显示官方披露的精度；没有更新记录时显示“未注明”。</p>
   <div id="load-error" class="callout" hidden></div>
   <div id="empty" class="empty" hidden><h3>没有符合这些条件的条目</h3><p>可减少一项结构或任务条件，再查看目录。</p><button type="button" id="clear-empty">清除筛选</button></div>
-  <div class="table-wrap catalog-table"><table><caption class="sr-only">机器人评测目录，选择条目后可查看详情或并排比较。</caption><thead><tr><th scope="col">比较</th><th scope="col">基准与日期</th><th scope="col">本体配置</th><th scope="col">任务与难度</th><th scope="col">环境</th><th scope="col">评测重点</th></tr></thead><tbody id="catalog-body"></tbody></table></div>
+  <div class="table-wrap catalog-table" tabindex="0"><table><caption class="sr-only">机器人评测目录，选择条目后可查看详情或并排比较。</caption><thead><tr><th scope="col">比较</th><th scope="col">基准与日期</th><th scope="col">本体配置</th><th scope="col">任务与难度</th><th scope="col">环境</th><th scope="col">评测重点</th></tr></thead><tbody id="catalog-body"></tbody></table></div>
   <noscript><p class="callout">启用 JavaScript 后可以筛选和比较。也可直接下载<a href="benchmarks.json">完整基准数据</a>和<a href="research/source-ledger.csv">来源表</a>。</p></noscript>
 </section>
 <section id="structure" aria-labelledby="structure-title">
@@ -57,7 +57,7 @@
     <article class="card"><span class="index">C</span><h3>基座：怎样到达工作位置</h3><p><b>固定、轮式移动、双足、四足</b>承担不同的运动约束。双足操作还要维持支撑与平衡。</p><p class="note">有轮子不代表任务测试导航；人形上身不代表测试双足。目录按实际评测配置标注。</p></article>
   </div>
   <h3>四种难度来源</h3><p class="note">以下是本页的编辑归类，不是原作者提供的统一等级。一个任务可包含多种要求；“精细接触”和“多步协作”之间没有固定的难易顺序。</p>
-  <div class="table-wrap"><table><thead><tr><th scope="col">要求</th><th scope="col">增加的困难</th><th scope="col">应控制的变量</th><th scope="col">代表条目</th></tr></thead><tbody>
+  <div class="table-wrap" tabindex="0"><table><thead><tr><th scope="col">要求</th><th scope="col">增加的困难</th><th scope="col">应控制的变量</th><th scope="col">代表条目</th></tr></thead><tbody>
     <tr><th scope="row">基础技能</th><td>在给定环境完成抓取、放置、到达等单项技能。</td><td>初始位姿、物体种类、观测和成功容差。</td><td><a href="#benchmark-metaworld" data-open="metaworld">Meta-World</a>、<a href="#benchmark-maniskill" data-open="maniskill">ManiSkill</a></td></tr>
     <tr><th scope="row">精细接触</th><td>对齐、插入、多指接触切换，或动态支撑中的精确控制。</td><td>位置／角度误差、摩擦、柔顺性、接触反馈。</td><td><a href="#benchmark-furniture" data-open="furniture">FurnitureBench</a>、<a href="#benchmark-dexart" data-open="dexart">DexArt</a></td></tr>
     <tr><th scope="row">多步协作</th><td>连续完成依赖前序状态的步骤，或协调多个肢体。</td><td>子任务数量、顺序、双臂耦合、记忆与时间预算。</td><td><a href="#benchmark-calvin" data-open="calvin">CALVIN</a>、<a href="#benchmark-behavior" data-open="behavior">BEHAVIOR</a></td></tr>
@@ -71,7 +71,7 @@
 </section>
 <section id="design" aria-labelledby="design-title">
   <p class="eyebrow">04 / 组织实验</p><h2 id="design-title">围绕一个问题搭配评测</h2><p class="section-lede">下表是本页的实验设计建议。每组先测目标技能，再加能检验研究结论的变化；实机结果单独报告。</p>
-  <div class="table-wrap"><table><thead><tr><th scope="col">研究问题</th><th scope="col">起点</th><th scope="col">追加检验</th><th scope="col">解释结果时要保留的条件</th></tr></thead><tbody>
+  <div class="table-wrap" tabindex="0"><table><thead><tr><th scope="col">研究问题</th><th scope="col">起点</th><th scope="col">追加检验</th><th scope="col">解释结果时要保留的条件</th></tr></thead><tbody>
     <tr><th scope="row">单臂策略能否泛化</th><td><a href="#benchmark-libero" data-open="libero">LIBERO</a></td><td><a href="#benchmark-libero-pro2" data-open="libero-pro2">LIBERO-Pro2.0</a>；实机可参照 <a href="#benchmark-roboarena" data-open="roboarena">RoboArena</a></td><td>原始成功、扰动后成功、是否使用额外训练数据。</td></tr>
     <tr><th scope="row">双臂是否形成协作</th><td><a href="#benchmark-robotwin" data-open="robotwin">RoboTwin 2.0</a></td><td><a href="#benchmark-robodojo" data-open="robodojo">RoboDojo</a> 的记忆、精度与实机任务</td><td>同时执行、交接、共同持物分别统计。</td></tr>
     <tr><th scope="row">多指控制能否完成接触操作</th><td><a href="#benchmark-adroit" data-open="adroit">Adroit</a>、<a href="#benchmark-dexart" data-open="dexart">DexArt</a></td><td><a href="#benchmark-handson" data-open="handson">HandsOn</a>、<a href="#benchmark-bidex100" data-open="bidex100">BiDex-100</a>；实机交接看 <a href="#benchmark-dexh2r" data-open="dexh2r">DexH2R</a></td><td>自由手腕／完整手臂、手型、传感器和接触条件。</td></tr>
@@ -88,8 +88,18 @@
     <article class="card"><h3>泛化与恢复</h3><p>分别留出物体实例、类别、场景、指令和本体。执行中施加扰动时，记录触发条件、幅度与可用恢复时间，同时报告初次成功率、恢复成功率和人工干预次数。</p><p class="note">训练中见过新场景的示范，与完全未见场景的测试应分开。</p></article>
     <article class="card"><h3>物理质量</h3><p>操作任务记录掉落、滑移、位置误差和接触力；运动任务记录跌倒、速度跟踪和碰撞。只汇总成功试验会隐藏失败代价，应同时报告全部试验与成功试验的统计。</p><p class="note">指标必须有单位、采样方式和阈值；安全问答准确率不能代替这些物理记录。</p></article>
   </div>
+  <details class="card glossary"><summary>指标与术语说明</summary><dl class="detail-grid">
+    <div><dt>闭环／开环执行</dt><dd>闭环策略用动作后的新观测修正后续动作。开环轨迹执行期间不据新观测重新规划；机器人内部仍可有位置伺服。</dd></div>
+    <div><dt>本体状态／特权状态</dt><dd>本体状态是机器人自身的关节位置、速度等信息。特权状态是评测中额外提供、实际部署传感器不能直接取得的真值，例如精确物体位姿。</dd></div>
+    <div><dt>RGB-D 与自由度</dt><dd>RGB-D 同时包含彩色图像与深度。自由度是描述可独立变化运动所需的变量数量；关节数和执行器数不必相同。</dd></div>
+    <div><dt>分布内／分布外</dt><dd>前者使用训练设定覆盖的对象与条件；后者在明确留出的对象、场景、指令或本体上测试。须写明具体留出了什么。</dd></div>
+    <div><dt>置信区间</dt><dd>由抽样方法构造的参数估计区间。95% 的含义是：在重复抽样下，该构造方法有 95% 的覆盖率；应注明计算方法与独立抽样单位。</dd></div>
+    <div><dt>SPL</dt><dd>每次试验将成功指示值乘以“最短路径长度除以实际路径与最短路径的较大值”，再求平均。它同时考虑导航是否成功和路径是否绕远。</dd></div>
+    <div><dt>Recall@K、RMSE、接触区域交并比</dt><dd>Recall@K 记录正确目标是否进入前 K 个检索结果；RMSE 是误差平方的均值再开平方根；接触区域交并比是预测与真值接触区域的交集面积除以并集面积。</dd></div>
+    <div><dt>DTW 与 Fréchet 距离</dt><dd>DTW 允许时间轴对齐后比较序列差异。Fréchet 距离在保序遍历两条曲线的所有对应方式中，取最大对应点距离的最小值。</dd></div>
+  </dl></details>
   <h3>一份可以复核的实验记录</h3>
-  <div class="table-wrap"><table><thead><tr><th scope="col">记录项</th><th scope="col">需要写明的内容</th></tr></thead><tbody>
+  <div class="table-wrap" tabindex="0"><table><thead><tr><th scope="col">记录项</th><th scope="col">需要写明的内容</th></tr></thead><tbody>
     <tr><th scope="row">版本与任务</th><td>基准版本、代码提交、任务清单、训练测试划分、策略权重、提示词和依赖版本。</td></tr>
     <tr><th scope="row">本体与控制</th><td>臂／手／底盘型号；关节限制；控制器；动作单位、坐标系、频率及底层技能。</td></tr>
     <tr><th scope="row">可用信息</th><td>相机位置与分辨率、深度、触觉、本体状态；是否使用物体真值、分割、地图或特权信息。</td></tr>
@@ -100,7 +110,7 @@
 </section>
 <section id="sources" aria-labelledby="sources-title">
   <p class="eyebrow">06 / 可追溯资料</p><h2 id="sources-title">时间口径与来源</h2>
-  <div class="grid-2"><article class="card"><h3>三个日期分别表示什么</h3><p><b>首次公开</b>优先采用 arXiv 首次提交日期；明确的基准版本以官方发布日为准。会议年份另有含义，不能代替首发日期。</p><p><b>来源更新</b>记录论文最后修订或官方明确标注的版本／文档更新，并注明类型。论文只有初版时显示“仅初版”；未披露时显示“未注明”。</p><p><b>本页核对</b>是检查资料的日期。本次为 2026-10-26，不表示每个项目在这一天更新。</p></article>
+  <div class="grid-2"><article class="card"><h3>三个日期分别表示什么</h3><p><b>首次公开</b>优先采用 arXiv 首次提交日期；明确的基准版本以官方发布日为准。会议年份另有含义，不能代替首发日期。</p><p><b>来源更新</b>记录论文最后修订或官方明确标注的版本／文档更新，并注明类型。论文只有初版时显示“仅初版”；未披露时显示“未注明”。arXiv 日期按其 UTC 提交记录保留。</p><p><b>本页核对</b>是检查资料的日期。本次为 2026-10-26，不表示每个项目在这一天更新。</p></article>
   <article class="card"><h3>收录和证据边界</h3><p>本页从本站<a href="../embodied_agent_survey/">具身智能综述</a>与<a href="../dexhand_survey/">灵巧手综述</a>提取线索，补充导航、装配与运动控制基准。每项详情链接到原始论文或官方资料，并标出所依据的章节。</p><p>本体标签限定到条目描述的评测配置；框架支持范围另行说明。难度分类、评测组合和追加报告规范属于本页的整理判断。训练数据集、模拟器和方法演示不自动作为独立闭环基准收录。</p></article></div>
   <div class="downloads"><a href="benchmarks.json" download>完整数据 JSON ↓</a><a href="research/source-ledger.csv" download>来源与日期表 CSV ↓</a><a href="research/claim-evidence-matrix.csv" download>论断与证据表 CSV ↓</a><a href="research/review-plan.md">收录范围</a></div>
 </section>

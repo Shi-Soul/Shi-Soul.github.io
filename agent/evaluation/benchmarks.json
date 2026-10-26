@@ -434,7 +434,7 @@
       "setup": "对真实机器人外观和控制特性作仿真匹配。",
       "observations": "相机图像与机器人状态。",
       "actions": "与被评策略对应的末端控制。",
-      "metrics": "仿真成功率；配对研究中的仿真与实机排序一致性、MMRV。",
+      "metrics": "仿真成功率；配对研究中的仿真与实机排序一致性，以及错误排序对应的实机性能差距。",
       "protocol": "区分 Visual Matching 与 Variant Aggregation；固定机器人与任务变体。",
       "caution": "环境本身提供仿真评测；论文的实机校准不代表新策略已获实机验证。Google Robot 的移动底盘也不等于该任务测试导航。",
       "source": {

@@ -114,7 +114,7 @@ function syncSelection() {
     ['观测', b => b.observations], ['动作', b => b.actions],
     ['指标', b => b.metrics], ['比较条件', b => b.protocol], ['解释边界', b => b.caution]
   ];
-  document.querySelector('#comparison-content').innerHTML = chosen.length === 0 ? '' : `<div class="table-wrap"><table class="comparison-table"><caption class="sr-only">所选基准的实验条件比较</caption><thead><tr><th scope="col">比较维度</th>${chosen.map(b => `<th scope="col">${escapeHTML(b.name)}<button type="button" class="compare-remove" data-remove="${b.id}" aria-label="从比较中移除 ${escapeHTML(b.name)}">移除</button></th>`).join('')}</tr></thead><tbody>${columns.map(([label, read]) => `<tr><th scope="row">${label}</th>${chosen.map(b => `<td>${escapeHTML(read(b))}</td>`).join('')}</tr>`).join('')}<tr><th scope="row">来源</th>${chosen.map(b => `<td>${link(b.source.url, '技术资料')}<br>${link(b.published.url, '首发记录')}<br>${link(b.updated.url, '更新记录')}</td>`).join('')}</tr></tbody></table></div>`;
+  document.querySelector('#comparison-content').innerHTML = chosen.length === 0 ? '' : `<div class="table-wrap" tabindex="0"><table class="comparison-table"><caption class="sr-only">所选基准的实验条件比较</caption><thead><tr><th scope="col">比较维度</th>${chosen.map(b => `<th scope="col">${escapeHTML(b.name)}<button type="button" class="compare-remove" data-remove="${b.id}" aria-label="从比较中移除 ${escapeHTML(b.name)}">移除</button></th>`).join('')}</tr></thead><tbody>${columns.map(([label, read]) => `<tr><th scope="row">${label}</th>${chosen.map(b => `<td>${escapeHTML(read(b))}</td>`).join('')}</tr>`).join('')}<tr><th scope="row">来源</th>${chosen.map(b => `<td>${link(b.source.url, '技术资料')}<br>${link(b.published.url, '首发记录')}<br>${link(b.updated.url, '更新记录')}</td>`).join('')}</tr></tbody></table></div>`;
 }
 
 function render() {
