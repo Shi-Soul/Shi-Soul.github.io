@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="机器人评测基准汇总：按夹爪、灵巧手、单臂、双臂、移动底盘、人形双足及任务、难度、仿真与实机筛选，核对发布时间、更新时间、指标和评测协议。">
+  <meta name="theme-color" content="#f9f9f7">
+  <title>机器人评测：基准、任务与实验协议 · Weiji Xie</title>
+  <link rel="canonical" href="https://shi-soul.github.io/agent/evaluation/">
+  <link rel="stylesheet" href="evaluation.css">
+  <script src="evaluation.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#catalog">跳到基准目录</a>
+<header class="site-header">
+  <div class="wrap topbar"><a class="site-name" href="/agent/">Weiji Xie <span>／ 阅读与研究</span></a><button type="button" id="theme" aria-label="切换颜色主题">主题：自动</button></div>
+  <div class="wrap intro">
+    <p class="eyebrow">机器人研究 · 评测参考</p>
+    <h1>机器人评测<br><span>基准、任务与实验协议</span></h1>
+    <p class="lede">从机器人结构出发，找到适合实验的基准。看清任务要求、控制接口和评分条件，再比较策略的能力。</p>
+    <p class="meta">依据本站两份机器人综述整理，并核对原始资料。资料核对日期：<time datetime="2026-10-26">2026-10-26</time>。</p>
+    <div class="intro-links"><a href="../embodied_agent_survey/">具身智能综述 ↗</a><a href="../dexhand_survey/">灵巧手综述 ↗</a><a href="benchmarks.json" download>下载完整数据 ↓</a></div>
+    <div class="stats" aria-label="收录范围"><div><strong id="total-count">40</strong><span>基准与诊断条目</span></div><div><strong>3</strong><span>结构维度：末端、上肢、基座</span></div><div><strong>4</strong><span>难度来源，支持组合查看</span></div><div><strong>逐项可查</strong><span>首发、修订与版本日期</span></div></div>
+  </div>
+</header>
+<nav class="toc" aria-label="本页导航"><div class="wrap"><a href="#catalog">基准目录</a><a href="#structure">本体与难度</a><a href="#comparison">并排比较</a><a href="#design">评测组合</a><a href="#protocol">指标与协议</a><a href="#sources">来源与日期</a></div></nav>
+<main class="wrap">
+<section id="catalog" aria-labelledby="catalog-title">
+  <div class="section-heading"><div><p class="eyebrow">01 / 选择基准</p><h2 id="catalog-title">按实验条件查找</h2></div><a class="quiet-link" href="#structure">先看分类说明 →</a></div>
+  <p class="section-lede">结构条件须在同一套机器人配置中成立。不同筛选条件取交集；搜索可匹配名称、硬件、任务和指标。</p>
+  <div class="presets" aria-label="快捷筛选"><span>快速查看</span><button type="button" data-preset="single">单臂夹爪</button><button type="button" data-preset="dual">双臂夹爪</button><button type="button" data-preset="dex">灵巧手</button><button type="button" data-preset="mobile">轮式移动</button><button type="button" data-preset="humanoid">人形双足</button><button type="button" data-preset="real">实机评测</button></div>
+  <form id="filters" class="filters" role="search">
+    <label class="search-label">搜索<input id="q" name="q" type="search" placeholder="例如：Franka、触觉、记忆、装配" autocomplete="off"></label>
+    <label>环境<select id="environment" name="environment"><option value="">全部环境</option></select></label>
+    <label>评测形式<select id="group" name="group"><option value="">全部形式</option></select></label>
+    <label>末端结构<select id="end" name="end"><option value="">全部末端</option></select></label>
+    <label>上肢配置<select id="arms" name="arms"><option value="">全部上肢</option></select></label>
+    <label>基座与移动方式<select id="base" name="base"><option value="">全部基座</option></select></label>
+    <label>任务类型<select id="tasks" name="tasks"><option value="">全部任务</option></select></label>
+    <label>难度来源<select id="difficulty" name="difficulty"><option value="">全部要求</option></select></label>
+    <label>排序<select id="sort" name="sort"><option value="published">首次公开：新 → 旧</option><option value="updated">来源更新：新 → 旧</option><option value="name">名称：A → Z</option></select></label>
+    <div class="filter-actions"><button type="reset" class="text-button">清除筛选</button><button type="button" id="export">导出筛选结果</button></div>
+  </form>
+  <div class="results-heading"><p id="result-count" role="status" aria-live="polite">正在读取 40 个条目…</p><a href="#comparison" id="compare-link">并排比较 <span id="selected-count">0 / 3</span></a></div>
+  <p class="note">“仿真 + 实机”表示来源分别包含两类实验，具体覆盖见详情。日期显示官方披露的精度；没有更新记录时显示“未注明”。</p>
+  <div id="load-error" class="callout" hidden></div>
+  <div id="empty" class="empty" hidden><h3>没有符合这些条件的条目</h3><p>可减少一项结构或任务条件，再查看目录。</p><button type="button" id="clear-empty">清除筛选</button></div>
+  <div class="table-wrap catalog-table" tabindex="0"><table><caption class="sr-only">机器人评测目录，选择条目后可查看详情或并排比较。</caption><thead><tr><th scope="col">比较</th><th scope="col">基准与日期</th><th scope="col">本体配置</th><th scope="col">任务与难度</th><th scope="col">环境</th><th scope="col">评测重点</th></tr></thead><tbody id="catalog-body"></tbody></table></div>
+  <noscript><p class="callout">启用 JavaScript 后可以筛选和比较。也可直接下载<a href="benchmarks.json">完整基准数据</a>和<a href="research/source-ledger.csv">来源表</a>。</p></noscript>
+</section>
+<section id="structure" aria-labelledby="structure-title">
+  <p class="eyebrow">02 / 分类依据</p><h2 id="structure-title">本体要拆开看，难度要说明来源</h2>
+  <p class="section-lede">机器人本体指执行任务的机械结构。夹爪、单臂和移动底盘可以出现在同一台机器人上，因此采用三个独立维度。</p>
+  <div class="grid-3 anatomy">
+    <article class="card"><span class="index">A</span><h3>末端：怎样接触物体</h3><p><b>夹爪</b>通过开合夹持；<b>灵巧手</b>用多个关节控制手指，可改变接触位置和抓型。</p><p class="note">“无操作末端”表示该评测不控制抓取末端；“未限定”表示协议未绑定一种末端结构。</p></article>
+    <article class="card"><span class="index">B</span><h3>上肢：怎样协同操作</h3><p><b>单臂／双臂</b>记录参与操作的机械臂。两只手有时只有可移动的手腕模型，需要与完整双臂区分。</p><p class="note">双臂任务还须区分独立操作、交接，以及共同约束同一物体。</p></article>
+    <article class="card"><span class="index">C</span><h3>基座：怎样到达工作位置</h3><p><b>固定、轮式移动、双足、四足</b>承担不同的运动约束。双足操作还要维持支撑与平衡。</p><p class="note">有轮子不代表任务测试导航；人形上身不代表测试双足。目录按实际评测配置标注。</p></article>
+  </div>
+  <h3>四种难度来源</h3><p class="note">以下是本页的编辑归类，不是原作者提供的统一等级。一个任务可包含多种要求；“精细接触”和“多步协作”之间没有固定的难易顺序。</p>
+  <div class="table-wrap" tabindex="0"><table><thead><tr><th scope="col">要求</th><th scope="col">增加的困难</th><th scope="col">应控制的变量</th><th scope="col">代表条目</th></tr></thead><tbody>
+    <tr><th scope="row">基础技能</th><td>在给定环境完成抓取、放置、到达等单项技能。</td><td>初始位姿、物体种类、观测和成功容差。</td><td><a href="#benchmark-metaworld" data-open="metaworld">Meta-World</a>、<a href="#benchmark-maniskill" data-open="maniskill">ManiSkill</a></td></tr>
+    <tr><th scope="row">精细接触</th><td>对齐、插入、多指接触切换，或动态支撑中的精确控制。</td><td>位置／角度误差、摩擦、柔顺性、接触反馈。</td><td><a href="#benchmark-furniture" data-open="furniture">FurnitureBench</a>、<a href="#benchmark-dexart" data-open="dexart">DexArt</a></td></tr>
+    <tr><th scope="row">多步协作</th><td>连续完成依赖前序状态的步骤，或协调多个肢体。</td><td>子任务数量、顺序、双臂耦合、记忆与时间预算。</td><td><a href="#benchmark-calvin" data-open="calvin">CALVIN</a>、<a href="#benchmark-behavior" data-open="behavior">BEHAVIOR</a></td></tr>
+    <tr><th scope="row">泛化与恢复</th><td>处理未见对象或场景、隐藏信息、运行扰动和失败状态。</td><td>训练测试划分、扰动幅度、恢复机会和可用信息。</td><td><a href="#benchmark-libero-recover" data-open="libero-recover">LIBERO-RECOVER</a>、<a href="#benchmark-roboquest" data-open="roboquest">RoboQuest</a></td></tr>
+  </tbody></table></div>
+</section>
+<section id="comparison" aria-labelledby="comparison-title">
+  <div class="section-heading"><div><p class="eyebrow">03 / 核对可比性</p><h2 id="comparison-title">把实验条件并排放在一起</h2></div><button type="button" id="clear-comparison">清空比较</button></div>
+  <p class="section-lede">从目录勾选最多三项。先核对本体和动作接口，再比较任务、指标与时间信息。</p>
+  <p id="compare-message" role="status" aria-live="polite">尚未选择条目。</p><div id="comparison-content"></div>
+</section>
+<section id="design" aria-labelledby="design-title">
+  <p class="eyebrow">04 / 组织实验</p><h2 id="design-title">围绕一个问题搭配评测</h2><p class="section-lede">下表是本页的实验设计建议。每组先测目标技能，再加能检验研究结论的变化；实机结果单独报告。</p>
+  <div class="table-wrap" tabindex="0"><table><thead><tr><th scope="col">研究问题</th><th scope="col">起点</th><th scope="col">追加检验</th><th scope="col">解释结果时要保留的条件</th></tr></thead><tbody>
+    <tr><th scope="row">单臂策略能否泛化</th><td><a href="#benchmark-libero" data-open="libero">LIBERO</a></td><td><a href="#benchmark-libero-pro2" data-open="libero-pro2">LIBERO-Pro2.0</a>；实机可参照 <a href="#benchmark-roboarena" data-open="roboarena">RoboArena</a></td><td>原始成功、扰动后成功、是否使用额外训练数据。</td></tr>
+    <tr><th scope="row">双臂是否形成协作</th><td><a href="#benchmark-robotwin" data-open="robotwin">RoboTwin 2.0</a></td><td><a href="#benchmark-robodojo" data-open="robodojo">RoboDojo</a> 的记忆、精度与实机任务</td><td>同时执行、交接、共同持物分别统计。</td></tr>
+    <tr><th scope="row">多指控制能否完成接触操作</th><td><a href="#benchmark-adroit" data-open="adroit">Adroit</a>、<a href="#benchmark-dexart" data-open="dexart">DexArt</a></td><td><a href="#benchmark-handson" data-open="handson">HandsOn</a>、<a href="#benchmark-bidex100" data-open="bidex100">BiDex-100</a>；实机交接看 <a href="#benchmark-dexh2r" data-open="dexh2r">DexH2R</a></td><td>自由手腕／完整手臂、手型、传感器和接触条件。</td></tr>
+    <tr><th scope="row">移动机器人能否完成家务</th><td><a href="#benchmark-objectnav" data-open="objectnav">ObjectNav</a>、<a href="#benchmark-homerobot" data-open="homerobot">HomeRobot</a></td><td><a href="#benchmark-robocasa" data-open="robocasa">RoboCasa365</a>、<a href="#benchmark-behavior" data-open="behavior">BEHAVIOR</a></td><td>导航、抓取、放置、完整流程分别计分。</td></tr>
+    <tr><th scope="row">双足能否边平衡边操作</th><td><a href="#benchmark-locomujoco" data-open="locomujoco">LocoMuJoCo</a> 的运动任务</td><td><a href="#benchmark-humanoidbench" data-open="humanoidbench">HumanoidBench</a> 的全身任务</td><td>固定底层技能；另记跌倒、支撑丢失与操作失败。</td></tr>
+    <tr><th scope="row">代理的推理是否帮助执行</th><td><a href="#benchmark-capbench" data-open="capbench">CaP-Bench</a> 的接口对照</td><td><a href="#benchmark-roboquest" data-open="roboquest">RoboQuest</a>、<a href="#benchmark-robotworld" data-open="robotworld">RobotWorld</a></td><td>固定执行器与观测；计入推理等待、调用和人工帮助。</td></tr>
+  </tbody></table></div>
+</section>
+<section id="protocol" aria-labelledby="protocol-title">
+  <p class="eyebrow">05 / 记录结果</p><h2 id="protocol-title">成功率之外，还要记录什么</h2><p class="section-lede">以下报告规范是本页的建议。基准规定的官方指标应原样保留，追加指标单独列出。</p>
+  <div class="grid-2">
+    <article class="card"><h3>完成与进度</h3><p>报告成功次数和有效试验总数，再给成功率及置信区间。超时、碰撞、求助和重置都要保留记录。完整任务成功与子任务进度分开，注明成功判定是否要求持续保持目标状态。</p><p class="note">例如 BEHAVIOR 的 Q-score 给目标条件部分得分；CALVIN 记录连续任务链长度。两者不能换算成同一种成功率。</p></article>
+    <article class="card"><h3>时间与资源</h3><p>分别记录物理执行时间、模型推理等待和总耗时。报告动作频率、每次预测包含的动作数、重新观测频率，以及模型调用和推理消耗。</p><p class="note">RobotWorld 会在代理推理时暂停仿真；这种条件须与连续运行的真实机器人区分。</p></article>
+    <article class="card"><h3>泛化与恢复</h3><p>分别留出物体实例、类别、场景、指令和本体。执行中施加扰动时，记录触发条件、幅度与可用恢复时间，同时报告初次成功率、恢复成功率和人工干预次数。</p><p class="note">训练中见过新场景的示范，与完全未见场景的测试应分开。</p></article>
+    <article class="card"><h3>物理质量</h3><p>操作任务记录掉落、滑移、位置误差和接触力；运动任务记录跌倒、速度跟踪和碰撞。只汇总成功试验会隐藏失败代价，应同时报告全部试验与成功试验的统计。</p><p class="note">指标必须有单位、采样方式和阈值；安全问答准确率不能代替这些物理记录。</p></article>
+  </div>
+  <details class="card glossary"><summary>指标与术语说明</summary><dl class="detail-grid">
+    <div><dt>闭环／开环执行</dt><dd>闭环策略用动作后的新观测修正后续动作。开环轨迹执行期间不据新观测重新规划；机器人内部仍可有位置伺服。</dd></div>
+    <div><dt>本体状态／特权状态</dt><dd>本体状态是机器人自身的关节位置、速度等信息。特权状态是评测中额外提供、实际部署传感器不能直接取得的真值，例如精确物体位姿。</dd></div>
+    <div><dt>RGB-D 与自由度</dt><dd>RGB-D 同时包含彩色图像与深度。自由度是描述可独立变化运动所需的变量数量；关节数和执行器数不必相同。</dd></div>
+    <div><dt>分布内／分布外</dt><dd>前者使用训练设定覆盖的对象与条件；后者在明确留出的对象、场景、指令或本体上测试。须写明具体留出了什么。</dd></div>
+    <div><dt>置信区间</dt><dd>由抽样方法构造的参数估计区间。95% 的含义是：在重复抽样下，该构造方法有 95% 的覆盖率；应注明计算方法与独立抽样单位。</dd></div>
+    <div><dt>SPL</dt><dd>每次试验将成功指示值乘以“最短路径长度除以实际路径与最短路径的较大值”，再求平均。它同时考虑导航是否成功和路径是否绕远。</dd></div>
+    <div><dt>Recall@K、RMSE、接触区域交并比</dt><dd>Recall@K 记录正确目标是否进入前 K 个检索结果；RMSE 是误差平方的均值再开平方根；接触区域交并比是预测与真值接触区域的交集面积除以并集面积。</dd></div>
+    <div><dt>DTW 与 Fréchet 距离</dt><dd>DTW 允许时间轴对齐后比较序列差异。Fréchet 距离在保序遍历两条曲线的所有对应方式中，取最大对应点距离的最小值。</dd></div>
+  </dl></details>
+  <h3>一份可以复核的实验记录</h3>
+  <div class="table-wrap" tabindex="0"><table><thead><tr><th scope="col">记录项</th><th scope="col">需要写明的内容</th></tr></thead><tbody>
+    <tr><th scope="row">版本与任务</th><td>基准版本、代码提交、任务清单、训练测试划分、策略权重、提示词和依赖版本。</td></tr>
+    <tr><th scope="row">本体与控制</th><td>臂／手／底盘型号；关节限制；控制器；动作单位、坐标系、频率及底层技能。</td></tr>
+    <tr><th scope="row">可用信息</th><td>相机位置与分辨率、深度、触觉、本体状态；是否使用物体真值、分割、地图或特权信息。</td></tr>
+    <tr><th scope="row">试验与统计</th><td>每任务试验数、随机种子、训练种子、失败与无效试验规则、任务平均方式、置信区间。</td></tr>
+    <tr><th scope="row">实机与证据</th><td>布置与重置流程、校准、测试日期、操作者、人工协助、完整日志与成功／失败视频。</td></tr>
+  </tbody></table></div>
+  <p class="note">每个任务先求平均、再对任务求平均，可以避免试验次数多的任务支配总分。若原基准采用其他统计方式，应同时保留其官方结果。</p>
+</section>
+<section id="sources" aria-labelledby="sources-title">
+  <p class="eyebrow">06 / 可追溯资料</p><h2 id="sources-title">时间口径与来源</h2>
+  <div class="grid-2"><article class="card"><h3>三个日期分别表示什么</h3><p><b>首次公开</b>优先采用 arXiv 首次提交日期；明确的基准版本以官方发布日为准。会议年份另有含义，不能代替首发日期。</p><p><b>来源更新</b>记录论文最后修订或官方明确标注的版本／文档更新，并注明类型。论文只有初版时显示“仅初版”；未披露时显示“未注明”。arXiv 日期按其 UTC 提交记录保留。</p><p><b>本页核对</b>是检查资料的日期。本次为 2026-10-26，不表示每个项目在这一天更新。</p></article>
+  <article class="card"><h3>收录和证据边界</h3><p>本页从本站<a href="../embodied_agent_survey/">具身智能综述</a>与<a href="../dexhand_survey/">灵巧手综述</a>提取线索，补充导航、装配与运动控制基准。每项详情链接到原始论文或官方资料，并标出所依据的章节。</p><p>本体标签限定到条目描述的评测配置；框架支持范围另行说明。难度分类、评测组合和追加报告规范属于本页的整理判断。训练数据集、模拟器和方法演示不自动作为独立闭环基准收录。</p></article></div>
+  <div class="downloads"><a href="benchmarks.json" download>完整数据 JSON ↓</a><a href="research/source-ledger.csv" download>来源与日期表 CSV ↓</a><a href="research/claim-evidence-matrix.csv" download>论断与证据表 CSV ↓</a><a href="research/review-plan.md">收录范围</a></div>
+</section>
+</main>
+<footer><div class="wrap"><span>Weiji Xie · 机器人评测参考</span><a href="/agent/">返回阅读目录 ↑</a></div></footer>
+</body>
+</html>

@@ -1,0 +1,2062 @@
+{
+  "updated": "2026-10-26",
+  "scope": "按任务协议收录；结构标签表示此条评测配置。难度标签为编辑归类。",
+  "benchmarks": [
+    {
+      "id": "metaworld",
+      "name": "Meta-World",
+      "year": 2019,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "抓取放置",
+        "铰接操作"
+      ],
+      "difficulty": [
+        "基础技能",
+        "泛化与恢复"
+      ],
+      "scale": "50 种操作任务",
+      "setup": "Sawyer 单臂；MuJoCo。",
+      "observations": "机器人与物体状态；视觉配置须另行说明。",
+      "actions": "末端位移与夹爪开合。",
+      "metrics": "各任务成功率；跨任务平均成功率。",
+      "protocol": "区分 MT10、MT50 多任务训练与 ML10、ML45 新任务适应；固定版本与目标可见性。",
+      "caution": "在已训练任务上成功，不等于能适应未见任务。",
+      "source": {
+        "url": "https://meta-world.github.io/",
+        "locator": "About；ML1 / MT1 / ML10 / ML45 / MT50",
+        "title": "Meta-World",
+        "authors": "Meta-World 项目维护者"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2019-10-24",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/1910.10897"
+      },
+      "updated": {
+        "date": "2021-06-14",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/1910.10897"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "rlbench",
+      "name": "RLBench",
+      "year": 2019,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "抓取放置",
+        "铰接操作",
+        "接触装配"
+      ],
+      "difficulty": [
+        "基础技能",
+        "精细接触",
+        "多步协作"
+      ],
+      "scale": "任务库；论文子集须逐项列出",
+      "setup": "默认 Franka Panda；CoppeliaSim。",
+      "observations": "多视角 RGB-D、分割与机器人状态，按配置开放。",
+      "actions": "关节控制或末端位姿；可接运动规划器。",
+      "metrics": "任务成功率；按任务与变体分别报告。",
+      "protocol": "固定任务清单、演示数、相机、动作模式、是否使用关键帧及运动规划。",
+      "caution": "常见的 18 任务实验只是子集；更换动作模式会改变控制难度。",
+      "source": {
+        "url": "https://github.com/stepjam/RLBench",
+        "locator": "README：Getting Started；Action modes；Swapping Arms；Tasks",
+        "title": "GitHub - stepjam/RLBench: A large-scale benchmark and learning environment. · GitHub",
+        "authors": "RLBench 项目维护者"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2019-09-26",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/1909.12271"
+      },
+      "updated": {
+        "date": "2019-09-26",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/1909.12271"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "libero",
+      "name": "LIBERO",
+      "year": 2023,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "抓取放置",
+        "铰接操作"
+      ],
+      "difficulty": [
+        "基础技能",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "130 任务；Spatial / Object / Goal 各 10，LIBERO-100 含 90 + 10",
+      "setup": "Franka Panda；robosuite / MuJoCo。",
+      "observations": "图像、语言指令与机器人状态。",
+      "actions": "末端增量与夹爪控制。",
+      "metrics": "成功率；终身学习实验还报告迁移与遗忘。",
+      "protocol": "注明使用的套件、训练任务顺序、演示数量与初始状态。",
+      "caution": "LIBERO-10 与全部 130 任务的均分不是同一指标。",
+      "source": {
+        "url": "https://github.com/Lifelong-Robot-Learning/LIBERO",
+        "locator": "README：What is LIBERO；Task Suites；Evaluation",
+        "title": "GitHub - Lifelong-Robot-Learning/LIBERO: Benchmarking Knowledge Transfer in Lifelong Robot Learning · GitHub",
+        "authors": "LIBERO 项目维护者"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2023-06-05",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2306.03310"
+      },
+      "updated": {
+        "date": "2023-10-14",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2306.03310"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "libero-pro",
+      "name": "LIBERO-PRO",
+      "year": 2025,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "抓取放置",
+        "指令与推理"
+      ],
+      "difficulty": [
+        "泛化与恢复"
+      ],
+      "scale": "物体、初始状态、指令、环境四类扰动",
+      "setup": "基于 LIBERO 的单臂操作。",
+      "observations": "视觉、语言与机器人状态。",
+      "actions": "沿用 LIBERO 动作接口。",
+      "metrics": "各类扰动下成功率；与原始条件对照。",
+      "protocol": "固定原任务和策略，逐类改变测试条件；说明模型是否见过扰动训练数据。",
+      "caution": "此条对应 2025 论文；不与 Pro2.0 的实例数和结果合并。",
+      "source": {
+        "url": "https://arxiv.org/html/2510.03827v2",
+        "locator": "§3 benchmark design；§4 experiments",
+        "title": "LIBERO-PRO: Towards Robust and Fair Evaluation of Vision-Language-Action Models Beyond Memorization",
+        "authors": "Zhou, Xueyang; Xu, Yangming; Tie, Guiyao; Chen, Yongchao; Zhang, Guowen; Chu, Duanfeng; Zhou, Pan; Sun, Lichao"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2025-10-04",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2510.03827"
+      },
+      "updated": {
+        "date": "2026-05-25",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2510.03827"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "libero-pro2",
+      "name": "LIBERO-Pro2.0",
+      "year": 2026,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "抓取放置",
+        "指令与推理",
+        "失败恢复"
+      ],
+      "difficulty": [
+        "泛化与恢复"
+      ],
+      "scale": "22 类静态扰动、20 类运行时干预；1,648 个有效变体",
+      "setup": "LIBERO 扩展；测试过程中也可施加干预。",
+      "observations": "图像、语言与机器人状态；包含观测扰动。",
+      "actions": "操作策略输出；执行与反馈条件也被干预。",
+      "metrics": "扰动后成功率、性能降幅与恢复表现。",
+      "protocol": "区分静态变化、运行时变化及组合变化；声明是否使用其训练轨迹。",
+      "caution": "扰动种类、任务实例和训练轨迹是三种计数单位。",
+      "source": {
+        "url": "https://arxiv.org/html/2610.24587v1",
+        "locator": "§3；§4；Appendix C perturbation catalogue",
+        "title": "LIBERO-Pro2.0: A Benchmark for Evaluating the Robustness of Embodied Foundation Models",
+        "authors": "Zhou, Xueyang; Xu, Yangming; Li, Qianjiang; Tie, Guiyao; Wu, Junhao; Huang, Ziheng; Zhang, Guowen; Yuan, Zhijie; Wu, Di; Chu, Duanfeng; Zhou, Pan; Sun, Lichao; Chen, Yongchao"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2026-10-17",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2610.24587"
+      },
+      "updated": {
+        "date": "2026-10-17",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2610.24587"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "libero-recover",
+      "name": "LIBERO-RECOVER",
+      "year": 2026,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "失败恢复",
+        "抓取放置"
+      ],
+      "difficulty": [
+        "泛化与恢复"
+      ],
+      "scale": "2,000 余个失败场景；四类恢复要求（v3）",
+      "setup": "从真实策略执行失败构建 LIBERO 仿真场景。",
+      "observations": "视觉、指令与任务状态；按原协议开放。",
+      "actions": "重试、动作调整及后续操作。",
+      "metrics": "失败起点上的任务恢复成功率；按恢复类别分解。",
+      "protocol": "分别评估动作重试、动作适应、物体状态恢复与环境恢复。",
+      "caution": "这里的“真实失败”指策略实际执行产生的失败，不表示实机评测。",
+      "source": {
+        "url": "https://arxiv.org/html/2609.05178v3",
+        "locator": "Benchmark Construction；Recovery Levels；Experiments",
+        "title": "LIBERO-RECOVER: Beyond Task Success Towards Failure Recovery in Robotic Manipulation Models",
+        "authors": "Liu, Lin; Bao, Zhicheng; Zhang, Lu; Song, Ziying; Yang, Wu; Zhuang, Yuzheng; Tao, Shuai; Liu, Wulong; Jia, Caiyan; Lu, Huchuan"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2026-09-04",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2609.05178"
+      },
+      "updated": {
+        "date": "2026-09-28",
+        "kind": "论文修订 · v3",
+        "url": "https://arxiv.org/abs/2609.05178"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "calvin",
+      "name": "CALVIN",
+      "year": 2021,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "抓取放置",
+        "铰接操作",
+        "指令与推理"
+      ],
+      "difficulty": [
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "34 种技能；连续 5 条语言指令",
+      "setup": "Franka Panda 桌面场景；PyBullet。",
+      "observations": "固定与腕部相机、机器人状态；其他传感器按协议选择。",
+      "actions": "连续末端或关节动作与夹爪。",
+      "metrics": "连续完成 1 至 5 个子任务的成功率；平均完成链长度。",
+      "protocol": "注明 ABC→D、ABCD→D 或 D→D；按标准序列评估。",
+      "caution": "链长度是连续成功的前缀长度，不是任意完成的子任务总数。",
+      "source": {
+        "url": "https://arxiv.org/html/2112.03227v4",
+        "locator": "§III-A environment；§III-C challenge and metrics",
+        "title": "CALVIN: A Benchmark for Language-Conditioned Policy Learning for Long-Horizon Robot Manipulation Tasks",
+        "authors": "Mees, Oier; Hermann, Lukas; Rosete-Beas, Erick; Burgard, Wolfram"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2021-12-06",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2112.03227"
+      },
+      "updated": {
+        "date": "2022-07-13",
+        "kind": "论文修订 · v4",
+        "url": "https://arxiv.org/abs/2112.03227"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "maniskill",
+      "name": "ManiSkill 3 · 夹爪任务",
+      "year": 2024,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        },
+        {
+          "end": "夹爪",
+          "arms": "双臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "抓取放置",
+        "接触装配",
+        "双手协作"
+      ],
+      "difficulty": [
+        "基础技能",
+        "精细接触"
+      ],
+      "scale": "按任务卡选择；含 PickCube、PegInsertionSide、双机械臂任务",
+      "setup": "SAPIEN；此条限定桌面夹爪任务。",
+      "observations": "状态、RGB-D 或点云，按观测模式配置。",
+      "actions": "关节或末端控制，按控制器配置。",
+      "metrics": "各任务成功条件、成功率；奖励单独报告。",
+      "protocol": "固定环境 ID、机器人、最大步数、控制器、观测模式与物体划分。",
+      "caution": "ManiSkill 是框架和任务库；不能把任意任务组合的均分称为统一总成绩。",
+      "source": {
+        "url": "https://maniskill.readthedocs.io/en/latest/tasks/table_top_gripper/index.html",
+        "locator": "Task Table；individual task cards",
+        "title": "Table-Top 2 Finger Gripper Tasks — ManiSkill 3.0.1 documentation",
+        "authors": "ManiSkill 3 · 夹爪任务 项目维护者"
+      },
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2024-10-01",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2410.00425"
+      },
+      "updated": {
+        "date": "2025-05-30",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2410.00425"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "simpler",
+      "name": "SIMPLER / SimplerEnv",
+      "year": 2024,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        },
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "轮式移动"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "抓取放置",
+        "铰接操作"
+      ],
+      "difficulty": [
+        "基础技能",
+        "泛化与恢复"
+      ],
+      "scale": "Google Robot 与 WidowX 对应操作环境",
+      "setup": "对真实机器人外观和控制特性作仿真匹配。",
+      "observations": "相机图像与机器人状态。",
+      "actions": "与被评策略对应的末端控制。",
+      "metrics": "仿真成功率；配对研究中的仿真与实机排序一致性，以及错误排序对应的实机性能差距。",
+      "protocol": "区分 Visual Matching 与 Variant Aggregation；固定机器人与任务变体。",
+      "caution": "环境本身提供仿真评测；论文的实机校准不代表新策略已获实机验证。Google Robot 的移动底盘也不等于该任务测试导航。",
+      "source": {
+        "url": "https://simpler-env.github.io/",
+        "locator": "Simulation Evaluation；Visual Matching；Variant Aggregation；MMRV",
+        "title": "Evaluating Real-World Robot Manipulation Policies\nin Simulation",
+        "authors": "SIMPLER / SimplerEnv 项目维护者"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2024-05-09",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2405.05941"
+      },
+      "updated": {
+        "date": "2024-05-09",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2405.05941"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "furniture",
+      "name": "FurnitureBench",
+      "year": 2023,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "实机",
+        "仿真"
+      ],
+      "tasks": [
+        "接触装配"
+      ],
+      "difficulty": [
+        "精细接触",
+        "多步协作"
+      ],
+      "scale": "家具装配任务；标准零件与初始布置",
+      "setup": "Franka Panda；实机基准及配套仿真环境。",
+      "observations": "相机图像、机器人状态；物体状态是否供策略使用须声明。",
+      "actions": "连续末端位姿与夹爪动作。",
+      "metrics": "完整装配成功率、完成的装配步骤。",
+      "protocol": "按低、中、高初始随机化条件分组；固定零件、重置方式与试验次数。",
+      "caution": "仿真装配与实机接触误差不同，成绩按环境分开。",
+      "source": {
+        "url": "https://clvrai.github.io/furniture-bench/",
+        "locator": "Furniture Assembly；Standardized Environment Setup；Simulator",
+        "title": "FurnitureBench: Real-World Furniture Assembly Benchmark",
+        "authors": "FurnitureBench 项目维护者"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2023-05-22",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2305.12821"
+      },
+      "updated": {
+        "date": "2023-05-22",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2305.12821"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "robotwin",
+      "name": "RoboTwin 2.0",
+      "year": 2025,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "双臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "双手协作",
+        "抓取放置",
+        "工具使用"
+      ],
+      "difficulty": [
+        "基础技能",
+        "精细接触",
+        "泛化与恢复"
+      ],
+      "scale": "50 个任务；套件支持 5 种机器人平台",
+      "setup": "官方榜单使用 Aloha-AgileX；SAPIEN。",
+      "observations": "头部与左右腕部相机、关节状态、语言。",
+      "actions": "双臂关节位置与夹爪。",
+      "metrics": "clean2clean 与 clean2random 成功率。",
+      "protocol": "榜单协议为每任务 50 条干净示范、100 次测试；区分联合训练和单任务训练。",
+      "caution": "Easy / Hard 是本基准的干净／随机化条件，不是跨基准难度等级。",
+      "source": {
+        "url": "https://robotwin-platform.github.io/leaderboard",
+        "locator": "Benchmark Setting；Submission & listing policy",
+        "title": "RoboTwin 2.0 Leaderboard",
+        "authors": "RoboTwin 2.0 项目维护者"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2025-06-22",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2506.18088"
+      },
+      "updated": {
+        "date": "2026-10-11",
+        "kind": "官方榜单更新",
+        "url": "https://robotwin-platform.github.io/leaderboard"
+      },
+      "dateNote": "论文首发 2025-06-22，v2 修订 2025-08-27；2026-10-11 是榜单页面标注的更新，不是 RoboTwin 2.0 首发。"
+    },
+    {
+      "id": "robodojo",
+      "name": "RoboDojo",
+      "year": 2026,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "双臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真",
+        "实机"
+      ],
+      "tasks": [
+        "双手协作",
+        "接触装配",
+        "指令与推理"
+      ],
+      "difficulty": [
+        "精细接触",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "42 个仿真任务 + 18 个实机任务",
+      "setup": "仿真使用 ARX X5 双臂；实机按 RealEval 配置。",
+      "observations": "视觉、机器人状态与语言；记忆任务依赖观测历史。",
+      "actions": "通过 XPolicyLab 接入策略；控制接口按平台声明。",
+      "metrics": "任务成功率与分阶段得分；五种能力分别统计。",
+      "protocol": "分别报告泛化、记忆、精度、长时程、开放任务，以及实机结果。",
+      "caution": "60 是两个环境任务数之和；不是 60 对完全相同的仿真／实机任务。",
+      "source": {
+        "url": "https://arxiv.org/html/2607.04434v3",
+        "locator": "§3.1–3.3；§4.2；Appendix I",
+        "title": "RoboDojo: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Generalist Robot Manipulation Policies",
+        "authors": "Chen, Tianxing; Chen, Yue; Li, Zixuan; Tang, Junyuan; Su, Kailun; Lu, Haoran; Wan, Weijie; Chen, Baijun; Liu, Songling; Yan, Haowen; Su, Honghao; Dou, Zhiyang; Wang, Kaixuan; Zhang, Dandan; Liu, Yunze; Qin, Yan; Liang, Qiwei; Wu, Qiwei; Lin, Zijian; Lin, Wenwei; Wang, Yuran; He, Minghua; Wu, Tianshu; Wu, Ruihai; Zhou, Jingquan; Lei, Kai-Chong; Yu, Haibao; Ji, Yuanfeng; Jin, Weiyang; Lin, Guanyu; Li, Xiaofan; Xiong, Qi; Xu, Renjing; Li, Zhongyu; Chai, Wenhao; Xie, Enze; Wang, Ziwei; Mu, Yao; Dong, Hao; Matusik, Wojciech; Ding, Mingyu; Ding, Wenbo; Luo, Ping; Tomizuka, Masayoshi"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2026-07-05",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2607.04434"
+      },
+      "updated": {
+        "date": "2026-07-08",
+        "kind": "论文修订 · v3",
+        "url": "https://arxiv.org/abs/2607.04434"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "roboarena",
+      "name": "RoboArena",
+      "year": 2025,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "实机"
+      ],
+      "tasks": [
+        "抓取放置",
+        "铰接操作"
+      ],
+      "difficulty": [
+        "基础技能",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "分布式实机成对评测；任务由评测者选择",
+      "setup": "DROID 平台：Franka Panda + Robotiq 2F-85。",
+      "observations": "腕部与外部相机、机器人状态、任务指令。",
+      "actions": "在统一平台上调用待比较策略。",
+      "metrics": "双盲成对偏好与聚合排名。",
+      "protocol": "同一评测者、任务和场景成对比较策略；保留评测者与场景信息。",
+      "caution": "排名来自相对偏好，不是固定任务集的绝对成功率；移动工作台不算自主移动操作。",
+      "source": {
+        "url": "https://arxiv.org/html/2506.18123v2",
+        "locator": "§3 evaluation protocol；robot platform；ranking aggregation",
+        "title": "RoboArena: Distributed Real-World Evaluation of Generalist Robot Policies",
+        "authors": "Atreya, Pranav; Pertsch, Karl; Lee, Tony; Kim, Moo Jin; Jain, Arhan; Kuramshin, Artur; Eppner, Clemens; Neary, Cyrus; Hu, Edward; Ramos, Fabio; Tremblay, Jonathan; Arora, Kanav; Ellis, Kirsty; Macesanu, Luca; Villasevil, Marcel Torne; Leonard, Matthew; Cho, Meedeum; Aslan, Ozgur; Dass, Shivin; Wang, Jie; Reger, William; Yuan, Xingfang; Yang, Xuning; Gupta, Abhishek; Jayaraman, Dinesh; Berseth, Glen; Daniilidis, Kostas; Martin-Martin, Roberto; Lee, Youngwoon; Liang, Percy; Finn, Chelsea; Levine, Sergey"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2025-06-22",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2506.18123"
+      },
+      "updated": {
+        "date": "2025-11-29",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2506.18123"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "adroit",
+      "name": "Adroit Hand",
+      "year": 2017,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "手腕模型",
+          "base": "自由手腕"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "手内操作",
+        "工具使用",
+        "铰接操作"
+      ],
+      "difficulty": [
+        "精细接触"
+      ],
+      "scale": "Door、Hammer、Pen、Relocate 四任务",
+      "setup": "多指手与可运动手腕／手臂模型；MuJoCo。",
+      "observations": "关节与任务状态。",
+      "actions": "连续执行器控制。",
+      "metrics": "任务回报与任务成功判定；二者分别报告。",
+      "protocol": "固定环境版本、奖励类型、状态可见性与成功阈值。",
+      "caution": "自由手腕的运动约束不同于安装在工业机械臂上的灵巧手。",
+      "source": {
+        "url": "https://robotics.farama.org/envs/adroit_hand/",
+        "locator": "Adroit Hand；four environment descriptions",
+        "title": "Adroit Hand - Gymnasium-Robotics Documentation",
+        "authors": "Adroit Hand 项目维护者"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2017-09-28",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/1709.10087"
+      },
+      "updated": {
+        "date": "2018-06-26",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/1709.10087"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "bidexhands",
+      "name": "Bi-DexHands",
+      "year": 2022,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "双手模型",
+          "base": "自由手腕"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "双手协作",
+        "手内操作"
+      ],
+      "difficulty": [
+        "精细接触",
+        "多步协作"
+      ],
+      "scale": "双手任务库：交接、开合、搬运等",
+      "setup": "双 Shadow Hand；Isaac Gym。",
+      "observations": "任务状态；提供视觉输入配置。",
+      "actions": "双手关节及手腕控制；支持多智能体拆分。",
+      "metrics": "任务回报、任务成功率；按任务分别统计。",
+      "protocol": "固定任务、观测、奖励、训练交互量与智能体拆分。",
+      "caution": "双手模型不等于完整双机械臂；高回报不能替代物理成功判定。",
+      "source": {
+        "url": "https://github.com/PKU-MARL/DexterousHands",
+        "locator": "README：Tasks；Observation；Action Space；Benchmark",
+        "title": "GitHub - PKU-MARL/DexterousHands: This is a library that provides dual dexterous hand manipulation tasks through Isaac Gym · GitHub",
+        "authors": "Bi-DexHands 项目维护者"
+      },
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2022-06-17",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2206.08686"
+      },
+      "updated": {
+        "date": "2022-10-11",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2206.08686"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "dexart",
+      "name": "DexArt",
+      "year": 2023,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "铰接操作"
+      ],
+      "difficulty": [
+        "精细接触",
+        "泛化与恢复"
+      ],
+      "scale": "水龙头、桶、笔记本电脑、马桶四类任务",
+      "setup": "XArm6 + Allegro Hand；SAPIEN。",
+      "observations": "点云与机器人状态。",
+      "actions": "手臂与手部关节控制。",
+      "metrics": "已见／未见物体上的成功率。",
+      "protocol": "物体实例划分固定；报告视觉表征预训练与是否使用分割信息。",
+      "caution": "评估同类新物体的泛化，不代表所有铰接类别的零样本迁移。",
+      "source": {
+        "url": "https://arxiv.org/html/2305.05706v1",
+        "locator": "§3 task descriptions；Table 1；§4 experiments",
+        "title": "DexArt: Benchmarking Generalizable Dexterous Manipulation with Articulated Objects",
+        "authors": "Bao, Chen; Xu, Helin; Qin, Yuzhe; Wang, Xiaolong"
+      },
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2023-05-09",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2305.05706"
+      },
+      "updated": {
+        "date": "2023-05-09",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2305.05706"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "dexjoco",
+      "name": "DexJoCo",
+      "year": 2026,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "单臂",
+          "base": "固定"
+        },
+        {
+          "end": "灵巧手",
+          "arms": "双臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "双手协作",
+        "工具使用",
+        "接触装配"
+      ],
+      "difficulty": [
+        "精细接触",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "11 个功能任务；1,100 条轨迹",
+      "setup": "Franka + Allegro；MuJoCo；含双臂任务。",
+      "observations": "图像与机器人状态，按模型输入设置。",
+      "actions": "手臂与手部目标；动作表示按实验配置。",
+      "metrics": "任务成功率；随机化条件分组。",
+      "protocol": "区分仅随机物体与完整视觉随机化；注明单任务／多任务训练。",
+      "caution": "传感器和遥操作硬件用于采集，不表示榜单是实机闭环结果。",
+      "source": {
+        "url": "https://arxiv.org/html/2605.16257v2",
+        "locator": "§3 benchmark；§4 evaluation；Table 2",
+        "title": "DexJoCo: A Benchmark and Toolkit for Task-Oriented Dexterous Manipulation on MuJoCo",
+        "authors": "Wang, Hanwen; Zhao, Weizhi; Wang, Xiangyu; Huang, Siyuan; Lin, He; Zheng, Boyuan; Xu, Rongtao; Wang, Gang; Mu, Yao; Wang, He; Fan, Lue; Li, Hongsheng; Zhang, Zhaoxiang; Tan, Tieniu"
+      },
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-05-15",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2605.16257"
+      },
+      "updated": {
+        "date": "2026-09-22",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2605.16257"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "dexverse",
+      "name": "DexVerse",
+      "year": 2026,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "单臂",
+          "base": "固定"
+        },
+        {
+          "end": "灵巧手",
+          "arms": "双臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "抓取放置",
+        "铰接操作",
+        "工具使用",
+        "双手协作"
+      ],
+      "difficulty": [
+        "基础技能",
+        "精细接触",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "100 个任务；支持 3 种臂、6 种手",
+      "setup": "模块化臂手组合；含单手与双手任务。",
+      "observations": "视觉与本体状态；观测模式见附录 C。",
+      "actions": "按臂手组合执行关节或末端控制。",
+      "metrics": "任务成功率；按任务、本体与视觉变化分组。",
+      "protocol": "区分框架支持的本体、实际收集示范的本体与实际测试的本体。",
+      "caution": "支持多种硬件配置不表示每个任务都已在所有组合上验证。",
+      "source": {
+        "url": "https://arxiv.org/html/2607.08751v1",
+        "locator": "§3.2 robot embodiments；§4 evaluation；Appendix C",
+        "title": "DexVerse: A Modular Benchmark for Multi-Task, Multi-Embodiment Dexterous Manipulation",
+        "authors": "Yao, Yunchao; Xu, Zhuxiu; Zhang, Tianqi; Liu, Zixian; Li, Sikai; Wei, Zhenyu; Chen, Feng; Huang, Dihong; Wan, Kechang; Ma, Chenyang; Zhao, Shuqi; Gao, Shenghua; Tomizuka, Masayoshi; Ma, Yi; Ding, Mingyu"
+      },
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-07-09",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2607.08751"
+      },
+      "updated": {
+        "date": "2026-07-09",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2607.08751"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "handson",
+      "name": "HandsOn",
+      "year": 2026,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "双臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "工具使用",
+        "接触装配",
+        "双手协作",
+        "可变形物体"
+      ],
+      "difficulty": [
+        "精细接触",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "Core-50 + Transfer-16；18,000 条示范",
+      "setup": "论文评测固定 ROKAE AR5-08 + 第一代 Wuji Hand；PhysX。",
+      "observations": "RGB 与本体状态；模型接口分别披露。",
+      "actions": "训练策略动作；另有 move_eef 手掌与手指接口。",
+      "metrics": "完整成功率、有序阶段进度、完成时间与失败分类。",
+      "protocol": "Core-50 训练后在 Transfer-16 测迁移；分别注明试验数、物理时限与模型调用预算。",
+      "caution": "平台支持 5 种臂、6 种手，但论文成绩仅来自一套配置；实机视频属于定性展示。",
+      "source": {
+        "url": "https://arxiv.org/html/2610.26765v1",
+        "locator": "§3.1–3.4；§4.5–4.6；§5.1；Appendix F",
+        "title": "HandsOn: A Large-Scale Simulation Benchmark for Generalizable Dexterous Manipulation",
+        "authors": "Luo, Tianwei; He, Yiming; Wu, Hongjin; Pan, Ting; Ren, Debin; Guo, Haorui; Yang, Junlin; Zuo, Yuxin; Kou, Zhehao; Yang, Kaisen; Lai, Zhuoqun; Ding, Yi; Yu, Jiale; Zhang, Yuchen; Qiu, Zijie; Li, Haozhan; Ding, Ning"
+      },
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-10-19",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2610.26765"
+      },
+      "updated": {
+        "date": "2026-10-19",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2610.26765"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "bidex100",
+      "name": "BiDex-100",
+      "year": 2026,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "双臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "双手协作",
+        "工具使用",
+        "指令与推理"
+      ],
+      "difficulty": [
+        "精细接触",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "106 任务；8,080 条示范",
+      "setup": "96 任务用双 Franka，10 任务用 Astribot S1；同款 22 自由度手；MuJoCo。",
+      "observations": "三视角 RGB-D、本体状态与语言。",
+      "actions": "58 维臂手关节目标；另提供末端接口。",
+      "metrics": "任务成功率、子任务进度；分布内／分布外配对比较。",
+      "protocol": "分解泛化、指令遵循、少示范、长时程与记忆五种能力。",
+      "caution": "Astribot 配置评估上肢操作；不能据“人形”名称推断测试双足行走。",
+      "source": {
+        "url": "https://arxiv.org/html/2610.25459v1",
+        "locator": "§III-B–E；§V-B；Appendix XII",
+        "title": "BiDex-100: A Comprehensive Benchmark for Bimanual Dexterous Manipulation Across 100+ Simulation Tasks",
+        "authors": "Wang, Yong; Zheng, Kecheng; Zhu, Xing; Xu, Chao; Shen, Yujun; Cai, Shengze"
+      },
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-10-18",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2610.25459"
+      },
+      "updated": {
+        "date": "2026-10-18",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2610.25459"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "bench2dex",
+      "name": "Bench2Dex",
+      "year": 2026,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "双臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "双手协作",
+        "工具使用",
+        "铰接操作"
+      ],
+      "difficulty": [
+        "精细接触",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "跨灵巧手视触觉任务；支持 12 种手的遥操作接口",
+      "setup": "Isaac Lab 中的双臂灵巧手。",
+      "observations": "多视角 RGB-D、表面对齐触觉图与机器人状态。",
+      "actions": "绝对关节位置目标。",
+      "metrics": "到达并停止的成功率、阶段进度、时间与安全诊断。",
+      "protocol": "固定接触深度编码、手型及视觉／物理扰动；分别报告跨条件结果。",
+      "caution": "触觉由仿真接触表面重建；不等于真实触觉传感器的噪声和响应。",
+      "source": {
+        "url": "https://arxiv.org/html/2609.15726v1",
+        "locator": "§3.1–3.6；Appendix E metrics",
+        "title": "Bench2Dex: Benchmarking Visuo-Tactile Bimanual Dexterous Manipulation Across Dexterous Hands",
+        "authors": "Yang, Zhenjie; Zhang, Yideng; Zhang, Dongjie; Jiang, Chenyu; Liu, Xianshuai; Li, Yufeng; Ge, Zuhao; Jiao, Xingyu; Zhang, Zheng; He, Kaiyu; Wang, He; Zhong, Yuwen; Deng, Yi; Jiang, Muyun; Huang, Xianliang; Su, Haisheng; Zhang, Donghang; Zhang, Jian; Yang, Xue; Li, Hongyang; Wu, Zuxuan; Jiang, Yu-Gang; Jia, Xiaosong; Yan, Junchi"
+      },
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-09-14",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2609.15726"
+      },
+      "updated": {
+        "date": "2026-09-14",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2609.15726"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "tactidex",
+      "name": "TactiDex / TactiSkill",
+      "year": 2026,
+      "group": "迁移研究",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "双臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真",
+        "实机"
+      ],
+      "tasks": [
+        "双手协作",
+        "手内操作"
+      ],
+      "difficulty": [
+        "精细接触",
+        "泛化与恢复"
+      ],
+      "scale": "真实人手触觉数据、仿真迁移评估与实机回放",
+      "setup": "实机为双 Franka + 双 Inspire Hand。",
+      "observations": "人类触觉参考、运动捕捉与仿真状态；实机回放按附录 C。",
+      "actions": "仿真残差关节控制；实机重定向后的轨迹执行。",
+      "metrics": "运动与触觉对齐指标；实机部署结果单独阅读。",
+      "protocol": "区分数据采集、仿真策略评估、实机开环执行三部分。",
+      "caution": "标题中的 Real-World 不表示全部指标都来自实机在线触觉闭环。",
+      "source": {
+        "url": "https://arxiv.org/html/2607.09190v1",
+        "locator": "§5.1；§5.4；Appendix C.3 Command Mapping and Open-Loop Execution",
+        "title": "TactiDex: A Real-World Tactile-Guided Benchmark for Human-Like Dexterous Manipulation",
+        "authors": "Ni, Suting; Zhang, Hanbing; Wei, Zhenyu; Chen, Guo; Zhang, Chixuan; Shi, Ye; Wang, Jingya"
+      },
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-07-10",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2607.09190"
+      },
+      "updated": {
+        "date": "2026-07-10",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2607.09190"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "dexh2r",
+      "name": "DexH2R",
+      "year": 2025,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "实机"
+      ],
+      "tasks": [
+        "人机交接"
+      ],
+      "difficulty": [
+        "精细接触",
+        "泛化与恢复"
+      ],
+      "scale": "动态人到机器人交接；含真实交互数据",
+      "setup": "UR10e + 右 Shadow Hand。",
+      "observations": "多视角与腕部视觉、机器人状态；数据含人手与物体标注。",
+      "actions": "动态接近与多指抓取轨迹。",
+      "metrics": "交接成功、运动安全、轨迹精度与抓取稳定性。",
+      "protocol": "区分离线轨迹预测和实机交接；控制物体、给物者运动及训练测试划分。",
+      "caution": "离线轨迹误差低不能直接推出实机交接成功。",
+      "source": {
+        "url": "https://arxiv.org/html/2506.23152v3",
+        "locator": "§3.1 hardware；§4 problem and evaluation；experiments",
+        "title": "DexH2R: A Benchmark for Dynamic Dexterous Grasping in Human-to-Robot Handover",
+        "authors": "Wang, Youzhuo; Ye, Jiayi; Xiao, Chuyang; Zhong, Yiming; Tao, Heng; Yu, Hang; Liu, Yumeng; Yu, Jingyi; Ma, Yuexin"
+      },
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2025-06-29",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2506.23152"
+      },
+      "updated": {
+        "date": "2025-07-02",
+        "kind": "论文修订 · v3",
+        "url": "https://arxiv.org/abs/2506.23152"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "labdex",
+      "name": "LabDex",
+      "year": 2026,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真",
+        "实机"
+      ],
+      "tasks": [
+        "接触装配",
+        "工具使用"
+      ],
+      "difficulty": [
+        "精细接触",
+        "多步协作"
+      ],
+      "scale": "原子技能、组合技能、长时程实验三层",
+      "setup": "Franka Research 3 + XHand；实验室器具。",
+      "observations": "腕部与外部相机、机器人状态。",
+      "actions": "机械臂与灵巧手动作。",
+      "metrics": "各层任务成功率；完整流程与原子技能分别报告。",
+      "protocol": "固定器具、任务层级和环境；比较同一技能如何影响完整流程。",
+      "caution": "流程成功率不能用原子技能成功率直接替代；仿真和实机分别统计。",
+      "source": {
+        "url": "https://arxiv.org/html/2608.18618v1",
+        "locator": "Real-World and Simulation Platform；Task Taxonomy；Experiments",
+        "title": "LabDex: A Hierarchical Benchmark for Dexterous Manipulation in Laboratories",
+        "authors": "Tang, Zhipeng; Chen, Sihang; Zhang, Sha; Yang, Peihao; Liu, Yan; Zhao, Wentao; Liu, Xinrui; Huang, Rui; Du, Wensheng; Huang, Yuting; Deng, Jiajun; Wang, Lidian; Zhang, Yuan; Zhang, Yanyong"
+      },
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-08-19",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2608.18618"
+      },
+      "updated": {
+        "date": "2026-08-19",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2608.18618"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "htbench",
+      "name": "HT-Bench",
+      "year": 2026,
+      "group": "离线诊断",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "未限定",
+          "base": "不适用"
+        }
+      ],
+      "environment": [
+        "离线"
+      ],
+      "tasks": [
+        "触觉表征"
+      ],
+      "difficulty": [
+        "精细接触",
+        "泛化与恢复"
+      ],
+      "scale": "来自 226 类交互的数据；四项表征评测",
+      "setup": "全手触觉与第一视角视觉数据；不执行机器人控制。",
+      "observations": "视觉与触觉帧。",
+      "actions": "输出检索、补全、生成或预测结果。",
+      "metrics": "检索 Recall@K、重建 RMSE、接触区域交并比等。",
+      "protocol": "按四种评测分别报告；区分已见与未见任务。",
+      "caution": "226 是数据采集任务数量，不是 226 个闭环机器人任务。",
+      "source": {
+        "url": "https://arxiv.org/html/2606.19161v2",
+        "locator": "Benchmark Tasks；Evaluation Protocol；Experiments",
+        "title": "HT-Bench: Benchmarking and Learning Dexterous Full-Hand Tactile Representations with Egocentric Vision",
+        "authors": "Huang, Yuzhe; Wu, Jiaping; Jiang, Jiaming; Lin, Hezhe; Aierken, Aikebaier; Wang, Yunlong; Cheng, Kun; Li, Wanlin; Xiao, Chenxi; Jiao, Ziyuan; Zhong, Yuanxin"
+      },
+      "origin": "灵巧手综述",
+      "published": {
+        "date": "2026-06-17",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2606.19161"
+      },
+      "updated": {
+        "date": "2026-08-20",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2606.19161"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "objectnav",
+      "name": "Habitat ObjectNav · 2023",
+      "year": 2023,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "无操作末端",
+          "arms": "无机械臂",
+          "base": "轮式移动"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "导航"
+      ],
+      "difficulty": [
+        "基础技能",
+        "泛化与恢复"
+      ],
+      "scale": "HM3D 场景；6 个目标类别",
+      "setup": "按 Hello Robot Stretch 建模的导航代理；手臂不参与任务。",
+      "observations": "RGB-D、目标类别与 GPS / Compass。",
+      "actions": "底盘移动与 STOP。",
+      "metrics": "成功率、按路径长度加权的成功率 SPL。",
+      "protocol": "固定未见场景划分、停止距离、传感器与碰撞设置。",
+      "caution": "此条引用 2023 挑战协议；ObjectNav 测寻找物体，不测抓取。",
+      "source": {
+        "url": "https://aihabitat.org/challenge/2023/",
+        "locator": "Task 1 ObjectNav；Dataset；Evaluation",
+        "title": "Habitat Navigation Challenge 2023 | AI Habitat",
+        "authors": "Habitat ObjectNav · 2023 项目维护者"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2023-03-13",
+        "kind": "挑战启动",
+        "url": "https://aihabitat.org/challenge/2023/"
+      },
+      "updated": {
+        "date": "",
+        "kind": "官方未标注更新时间",
+        "url": "https://aihabitat.org/challenge/2023/"
+      },
+      "dateNote": "日期来自官方赛期公告；报名截止和获奖公布日期不作为版本更新。"
+    },
+    {
+      "id": "homerobot",
+      "name": "HomeRobot / OVMM",
+      "year": 2023,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "轮式移动"
+        }
+      ],
+      "environment": [
+        "仿真",
+        "实机"
+      ],
+      "tasks": [
+        "导航",
+        "移动操作",
+        "抓取放置"
+      ],
+      "difficulty": [
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "在未见环境寻找、抓取并搬放指定物体",
+      "setup": "Hello Robot Stretch；仿真与真实家庭环境。",
+      "observations": "RGB-D、语言目标与本体状态。",
+      "actions": "底盘、机械臂与夹爪动作；可按技能拆分。",
+      "metrics": "完整任务成功率；导航、抓取、放置分阶段成功率。",
+      "protocol": "分别固定物体词汇、场景划分、技能接口与实机重置条件。",
+      "caution": "单独导航或抓取成功不能替代完整搬放成功。",
+      "source": {
+        "url": "https://ovmm.github.io/",
+        "locator": "Task Definition；Simulation Benchmark；Real-world Evaluation",
+        "title": "HomeRobot: Open Vocabulary Mobile Manipulation",
+        "authors": "HomeRobot / OVMM 项目维护者"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2023-06-20",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2306.11565"
+      },
+      "updated": {
+        "date": "2024-01-10",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2306.11565"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "robocasa",
+      "name": "RoboCasa365",
+      "year": 2026,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "轮式移动"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "移动操作",
+        "铰接操作",
+        "工具使用"
+      ],
+      "difficulty": [
+        "基础技能",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "365 任务：65 原子任务 + 300 组合任务",
+      "setup": "厨房移动操作；本条记录单臂基准配置，框架另支持其他本体。",
+      "observations": "视觉、语言与本体状态。",
+      "actions": "底盘、机械臂与夹爪控制。",
+      "metrics": "原子／组合任务成功率；按场景和任务划分统计。",
+      "protocol": "使用 RoboCasa365 版本；固定布局、风格与物体划分，注明时限版本。",
+      "caution": "2024 RoboCasa 与 2026 RoboCasa365 的任务总量和时限不同。",
+      "source": {
+        "url": "https://robocasa.ai/",
+        "locator": "Updates；Foundational Skills；Composite Tasks；Benchmarking",
+        "title": "RoboCasa",
+        "authors": "RoboCasa365 项目维护者"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2026-02-18",
+        "kind": "365 版本发布",
+        "url": "https://robocasa.ai/"
+      },
+      "updated": {
+        "date": "2026-10-14",
+        "kind": "子任务标注功能更新",
+        "url": "https://robocasa.ai/"
+      },
+      "dateNote": "官方 v1.0 发布于 2026-02-18；论文首发 2026-03-04；v1.0.1 时限更新于 2026-05-12，子任务标注功能更新于 2026-10-14。"
+    },
+    {
+      "id": "behavior",
+      "name": "BEHAVIOR Challenge · 2026",
+      "year": 2026,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "双臂",
+          "base": "轮式移动"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "移动操作",
+        "双手协作",
+        "可变形物体"
+      ],
+      "difficulty": [
+        "精细接触",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "100 个完整家务任务；7 个场景",
+      "setup": "OmniGibson；默认 R1Pro，2026 规则允许声明其他本体。",
+      "observations": "官方赛道：RGB、深度、本体状态。",
+      "actions": "底盘、躯干、双臂、夹爪；需提交机器人和控制器配置。",
+      "metrics": "Q-score：终止时满足的目标条件比例；另报时间、底盘距离与末端位移。",
+      "protocol": "按官方实例与时限评估；每任务先平均再跨 100 任务平均。",
+      "caution": "100 是 2026 挑战任务数，不是 BEHAVIOR-1K 的全部活动；默认机器人是轮式双臂，不是双足。",
+      "source": {
+        "url": "https://behavior.stanford.edu/challenge/evaluation.html",
+        "locator": "Custom Robot Configuration；Metrics and Results；Evaluation Protocol",
+        "title": "Evaluation and Rules - BEHAVIOR",
+        "authors": "BEHAVIOR Challenge · 2026 项目维护者"
+      },
+      "origin": "具身智能综述（更新至 2026 规则）",
+      "published": {
+        "date": "2026-07-02",
+        "kind": "挑战启动",
+        "url": "https://behavior.stanford.edu/challenge/"
+      },
+      "updated": {
+        "date": "",
+        "kind": "官方未标注更新时间",
+        "url": "https://behavior.stanford.edu/challenge/evaluation.html"
+      },
+      "dateNote": "日期来自官方赛期公告；报名截止和获奖公布日期不作为版本更新。"
+    },
+    {
+      "id": "alfred",
+      "name": "ALFRED",
+      "year": 2019,
+      "group": "综合代理",
+      "profiles": [
+        {
+          "end": "未限定",
+          "arms": "未限定",
+          "base": "虚拟代理"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "导航",
+        "指令与推理",
+        "移动操作"
+      ],
+      "difficulty": [
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "语言指令驱动的家庭任务",
+      "setup": "AI2-THOR 虚拟代理；动作带预定义交互语义。",
+      "observations": "第一视角图像与语言。",
+      "actions": "导航及拿取、打开、切割等离散交互动作。",
+      "metrics": "任务成功率、目标条件成功率及路径加权指标。",
+      "protocol": "区分已见／未见环境；固定视觉模型与可用交互接口。",
+      "caution": "离散拿取指令省去了连续抓取控制，不能当成实机手臂控制结果。",
+      "source": {
+        "url": "https://askforalfred.com/",
+        "locator": "Task definition；paper evaluation section",
+        "title": "ALFRED -- A Benchmark for Interpreting Grounded Instructions for Everyday Tasks",
+        "authors": "ALFRED 项目维护者"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2019-12-03",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/1912.01734"
+      },
+      "updated": {
+        "date": "2020-03-31",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/1912.01734"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "humanoidbench",
+      "name": "HumanoidBench",
+      "year": 2024,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "灵巧手",
+          "arms": "双臂",
+          "base": "双足"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "运动控制",
+        "双手协作",
+        "移动操作"
+      ],
+      "difficulty": [
+        "精细接触",
+        "多步协作"
+      ],
+      "scale": "27 个全身任务",
+      "setup": "论文使用 Unitree H1 + 双 Shadow Hand；MuJoCo。",
+      "observations": "本体状态、任务状态；支持头部视觉与全身触觉。",
+      "actions": "全身控制；分层基线还提供行走或到达技能。",
+      "metrics": "任务回报、任务成功；按运动与操作任务分别统计。",
+      "protocol": "固定本体、观测和是否提供低层技能；注明站立、行走与操作是否由同一策略负责。",
+      "caution": "论文是仿真结果；不能把低层平衡策略的能力归给高层规划器。",
+      "source": {
+        "url": "https://humanoid-bench.github.io/",
+        "locator": "HumanoidBench；Simulation Environment；Observation Space；Hierarchical RL",
+        "title": "HumanoidBench",
+        "authors": "HumanoidBench 项目维护者"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2024-03-15",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2403.10506"
+      },
+      "updated": {
+        "date": "2024-06-18",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2403.10506"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "locomujoco",
+      "name": "LocoMuJoCo",
+      "year": 2023,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "无操作末端",
+          "arms": "未限定",
+          "base": "双足"
+        },
+        {
+          "end": "无操作末端",
+          "arms": "无机械臂",
+          "base": "四足"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "运动控制"
+      ],
+      "difficulty": [
+        "基础技能",
+        "泛化与恢复"
+      ],
+      "scale": "人形、四足与人体模型的模仿学习环境",
+      "setup": "MuJoCo / MJX；具体机器人与动作数据需指定。",
+      "observations": "本体状态与运动参考；按环境配置。",
+      "actions": "关节／执行器控制。",
+      "metrics": "任务回报、轨迹相似性；当前工具提供 DTW 与 Fréchet 距离。",
+      "protocol": "固定机器人、示范数据、控制频率、地形与随机化。",
+      "caution": "轨迹相似度衡量运动复现；不能替代复杂操作成功率。",
+      "source": {
+        "url": "https://loco-mujoco.readthedocs.io/en/latest/",
+        "locator": "Overview；Key Advantages；environment and metric documentation",
+        "title": "Welcome to LocoMuJoCo! — LocoMuJoCo v1.1.0 documentation",
+        "authors": "LocoMuJoCo 项目维护者"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2023-11-04",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2311.02496"
+      },
+      "updated": {
+        "date": "2023-11-30",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2311.02496"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "barkour",
+      "name": "Barkour",
+      "year": 2023,
+      "group": "闭环控制",
+      "profiles": [
+        {
+          "end": "无操作末端",
+          "arms": "无机械臂",
+          "base": "四足"
+        }
+      ],
+      "environment": [
+        "实机"
+      ],
+      "tasks": [
+        "运动控制"
+      ],
+      "difficulty": [
+        "精细接触",
+        "多步协作"
+      ],
+      "scale": "四类障碍组成的敏捷运动路线",
+      "setup": "Google 自研四足机器人；仿真训练后实机测试。",
+      "observations": "本体状态与地形感知；按控制方案披露。",
+      "actions": "四足运动控制；可组合专门技能。",
+      "metrics": "路线用时与漏过障碍的惩罚得分。",
+      "protocol": "固定障碍尺寸、路线、计时与判罚规则。",
+      "caution": "此条的成绩指实机障碍路线；训练用仿真不使它成为仿真榜单。",
+      "source": {
+        "url": "https://sites.google.com/view/barkour",
+        "locator": "The Barkour Benchmark for Robot Agility；Scoring script",
+        "title": "Barkour: Benchmarking Animal-level Agility with Quadruped Robots",
+        "authors": "Barkour 项目维护者"
+      },
+      "origin": "补充检索",
+      "published": {
+        "date": "2023-05-24",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2305.14654"
+      },
+      "updated": {
+        "date": "2023-05-24",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2305.14654"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "capbench",
+      "name": "CaP-Bench / CaP-X",
+      "year": 2026,
+      "group": "综合代理",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "指令与推理",
+        "抓取放置",
+        "接触装配"
+      ],
+      "difficulty": [
+        "基础技能",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "CaP-Bench：7 个环境 × 8 种接口条件；CaP-Gym 框架整合 187 任务（v2）",
+      "setup": "编码代理通过 Python 感知与控制接口操作机械臂。",
+      "observations": "按条件提供真值／视觉、文本执行反馈或视觉差分。",
+      "actions": "生成代码调用高层技能或低层控制原语。",
+      "metrics": "各接口条件下任务成功率；单轮与多轮分别比较。",
+      "protocol": "固定接口抽象、文档示例、反馈模态与交互预算。",
+      "caution": "基准 7 个环境与框架整合的 187 个任务应分开计数；实机展示不并入 CaP-Bench 仿真成绩。",
+      "source": {
+        "url": "https://arxiv.org/html/2603.22435v2",
+        "locator": "§2 CaP-Gym；§3.1–3.2 CaP-Bench",
+        "title": "CaP-X: A Framework for Benchmarking andImproving Coding Agents for Robot Manipulation",
+        "authors": "Fu, Letian; Yu, Justin; El-Refai, Karim; Kou, Ethan; Xue, Haoru; Huang, Huang; Xiao, Wenli; Wang, Guanzhi; Niu, Dantong; Li, Fei-Fei; Shi, Guanya; Wu, Jiajun; Sastry, Shankar; Zhu, Yuke; Goldberg, Ken; Fan, Linxi \"Jim\""
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2026-03-23",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2603.22435"
+      },
+      "updated": {
+        "date": "2026-07-02",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2603.22435"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "embodiedbench",
+      "name": "EmbodiedBench",
+      "year": 2025,
+      "group": "综合代理",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        },
+        {
+          "end": "未限定",
+          "arms": "未限定",
+          "base": "虚拟代理"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "指令与推理",
+        "导航",
+        "抓取放置"
+      ],
+      "difficulty": [
+        "基础技能",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "1,128 个测试实例；4 环境、6 能力子集",
+      "setup": "包含 EB-ALFRED、EB-Habitat、EB-Navigation、EB-Manipulation。",
+      "observations": "图像、语言与按环境提供的反馈。",
+      "actions": "从高层语义技能到低层移动／操作接口。",
+      "metrics": "按环境与能力子集报告任务成功率。",
+      "protocol": "保留各环境的动作抽象层级、预算与观测配置。",
+      "caution": "四环境平均值混合不同接口；解释模型能力时先看分项。",
+      "source": {
+        "url": "https://arxiv.org/html/2502.09560v3",
+        "locator": "§3 benchmark；environments；capability subsets；evaluation",
+        "title": "EmbodiedBench: Comprehensive Benchmarking Multi-modal Large Language Models for Vision-Driven Embodied Agents",
+        "authors": "Yang, Rui; Chen, Hanyang; Zhang, Junyu; Zhao, Mark; Qian, Cheng; Wang, Kangrui; Wang, Qineng; Koripella, Teja Venkat; Movahedi, Marziyeh; Li, Manling; Ji, Heng; Zhang, Huan; Zhang, Tong"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2025-02-13",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2502.09560"
+      },
+      "updated": {
+        "date": "2025-06-05",
+        "kind": "论文修订 · v3",
+        "url": "https://arxiv.org/abs/2502.09560"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "eai",
+      "name": "Embodied Agent Interface",
+      "year": 2024,
+      "group": "综合代理",
+      "profiles": [
+        {
+          "end": "未限定",
+          "arms": "未限定",
+          "base": "虚拟代理"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "指令与推理",
+        "失败恢复"
+      ],
+      "difficulty": [
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "目标解释、子目标分解、动作排序、状态转移四模块",
+      "setup": "统一任务与符号接口，连接 VirtualHome 和 BEHAVIOR。",
+      "observations": "任务指令、形式化状态与模块指定输入。",
+      "actions": "目标／子目标／动作序列／状态转移预测。",
+      "metrics": "可执行性、目标达成及幻觉、可供性、规划等错误分类。",
+      "protocol": "逐模块固定输入输出；同时报告端到端结果与错误来源。",
+      "caution": "形式化状态与高层动作能诊断推理，但省略了部分感知和控制问题。",
+      "source": {
+        "url": "https://arxiv.org/html/2410.07166v3",
+        "locator": "Embodied Agent Interface；Benchmark Construction；Metrics",
+        "title": "Embodied Agent Interface: Benchmarking LLMs for Embodied Decision Making",
+        "authors": "Li, Manling; Zhao, Shiyu; Wang, Qineng; Wang, Kangrui; Zhou, Yu; Srivastava, Sanjana; Gokmen, Cem; Lee, Tony; Li, Li Erran; Zhang, Ruohan; Liu, Weiyu; Liang, Percy; Fei-Fei, Li; Mao, Jiayuan; Wu, Jiajun"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2024-10-09",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2410.07166"
+      },
+      "updated": {
+        "date": "2025-01-19",
+        "kind": "论文修订 · v3",
+        "url": "https://arxiv.org/abs/2410.07166"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "erqa",
+      "name": "ERQA",
+      "year": 2025,
+      "group": "离线诊断",
+      "profiles": [
+        {
+          "end": "未限定",
+          "arms": "未限定",
+          "base": "不适用"
+        }
+      ],
+      "environment": [
+        "离线"
+      ],
+      "tasks": [
+        "指令与推理"
+      ],
+      "difficulty": [
+        "泛化与恢复"
+      ],
+      "scale": "图文多项选择题",
+      "setup": "机器人场景中的空间推理与常识问答。",
+      "observations": "交错图像与文本。",
+      "actions": "输出 A / B / C / D 选项。",
+      "metrics": "选择题准确率。",
+      "protocol": "固定题集、提示与模型版本；与机器人执行结果分开报告。",
+      "caution": "答对空间问题不等于能闭环操控机器人。",
+      "source": {
+        "url": "https://github.com/embodiedreasoning/ERQA",
+        "locator": "README：Benchmark；Data Format；Evaluation",
+        "title": "GitHub - embodiedreasoning/ERQA: Embodied Reasoning Question Answer (ERQA) Benchmark · GitHub",
+        "authors": "ERQA 项目维护者"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2025-03-25",
+        "kind": "关联报告首发",
+        "url": "https://arxiv.org/abs/2503.20020"
+      },
+      "updated": {
+        "date": "2025-03-25",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2503.20020"
+      },
+      "dateNote": "关联 Gemini Robotics 报告于 2025-03-25 首次提交；此处不推断 ERQA 代码的首次公开日。"
+    },
+    {
+      "id": "asimov",
+      "name": "ASIMOV 2.0",
+      "year": 2025,
+      "group": "离线诊断",
+      "profiles": [
+        {
+          "end": "未限定",
+          "arms": "未限定",
+          "base": "不适用"
+        }
+      ],
+      "environment": [
+        "离线"
+      ],
+      "tasks": [
+        "安全",
+        "指令与推理"
+      ],
+      "difficulty": [
+        "泛化与恢复"
+      ],
+      "scale": "风险感知、干预判断与约束遵循评测",
+      "setup": "来自伤害叙事和操作约束的图像／视频场景。",
+      "observations": "图像、视频、指令与本体相关约束。",
+      "actions": "风险判断、解释或干预决策。",
+      "metrics": "按子任务的风险识别与约束遵循指标。",
+      "protocol": "固定安全约束、提示、模态和评分方式。",
+      "caution": "语义安全判断不是物理接触力、急停或硬件安全认证。",
+      "source": {
+        "url": "https://asimov-benchmark.github.io/v2/",
+        "locator": "Abstract；Benchmark design；Constraint satisfaction evaluation",
+        "title": "ASIMOV Benchmark v2",
+        "authors": "ASIMOV 2.0 项目维护者"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2025-09-25",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2509.21651"
+      },
+      "updated": {
+        "date": "2025-11-21",
+        "kind": "论文修订 · v2",
+        "url": "https://arxiv.org/abs/2509.21651"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "robotworld",
+      "name": "RobotWorld",
+      "year": 2026,
+      "group": "综合代理",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "固定"
+        },
+        {
+          "end": "夹爪",
+          "arms": "双臂",
+          "base": "固定"
+        },
+        {
+          "end": "灵巧手",
+          "arms": "双臂",
+          "base": "固定"
+        },
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "轮式移动"
+        },
+        {
+          "end": "未限定",
+          "arms": "未限定",
+          "base": "双足"
+        },
+        {
+          "end": "无操作末端",
+          "arms": "无机械臂",
+          "base": "四足"
+        },
+        {
+          "end": "无操作末端",
+          "arms": "无机械臂",
+          "base": "轮式移动"
+        },
+        {
+          "end": "无操作末端",
+          "arms": "无机械臂",
+          "base": "飞行"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "抓取放置",
+        "移动操作",
+        "运动控制",
+        "指令与推理"
+      ],
+      "difficulty": [
+        "精细接触",
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "84 任务；操作、移动操作、运动、驾驶、飞行五领域",
+      "setup": "含 DROID、RoboDojo、Bench2Dex、PandaOmron、G1、Booster T1 等配置；沿用各任务原生控制器。",
+      "observations": "任务允许的视觉、状态与执行反馈；可用分析工作区。",
+      "actions": "数值动作；部分任务允许在控制循环中执行代码。",
+      "metrics": "任务成功；分领域统计，另报调用数、用时与消耗。",
+      "protocol": "分别固定控制步数、模型调用、观测与代码权限；物理在推理时暂停。",
+      "caution": "各本体动作难度不同；暂停仿真得到的成绩不等于满足实机实时要求。",
+      "source": {
+        "url": "https://arxiv.org/html/2610.10409v1",
+        "locator": "§3 environment；§4 task scope；§5.2 protocol；Appendix A",
+        "title": "RobotWorld: Benchmarking Multimodal Agents for Robot Use Across Diverse Tasks and Embodiments",
+        "authors": "Yang, Zhiqin; Li, Chenxin; Hu, Xiaomeng; Liu, Yibin; Huang, Weidong; Sun, Jiankai; Li, Haitao; Wu, Zijian; Huang, Yuzhi; Huang, Fanding; Sun, Hanwen; Liu, Jiashun; Tong, Jingqi; Huang, Mingxin; Hu, Shaoli; Huang, Shijue; Bai, Tianyi; Wang, Xinyuan; Lin, Yunlong; Tang, Zhengyang; Zhang, Zhexin; Chen, Zhuo; Song, Xierui; Dai, Juntao; Chen, Boyuan; Ji, Jiaming; Zhan, Fangneng; Hu, Mengkang; Xue, Wei; Zhang, Yonggang; Hu, Han; Ho, Tsung-Yi; Guo, Yike"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2026-10-07",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2610.10409"
+      },
+      "updated": {
+        "date": "2026-10-07",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2610.10409"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    },
+    {
+      "id": "roboquest",
+      "name": "RoboQuest",
+      "year": 2026,
+      "group": "综合代理",
+      "profiles": [
+        {
+          "end": "夹爪",
+          "arms": "单臂",
+          "base": "轮式移动"
+        }
+      ],
+      "environment": [
+        "仿真"
+      ],
+      "tasks": [
+        "移动操作",
+        "指令与推理",
+        "失败恢复"
+      ],
+      "difficulty": [
+        "多步协作",
+        "泛化与恢复"
+      ],
+      "scale": "10 个主动探索任务；搜索、检查、试验三类",
+      "setup": "RoboCasa365 厨房；移动底盘上的 Franka Panda；MuJoCo。",
+      "observations": "两路场景图像、腕部图像、本体状态与剩余预算。",
+      "actions": "ARM、BASE、WAIT、STOP；无自动定位和抓取工具。",
+      "metrics": "完整任务成功；获取证据、探索与扰动恢复的失败分析。",
+      "protocol": "目标指令隐藏任务关键信息；固定 200 次决策预算与动作持续时间。",
+      "caution": "隐含信息已知的技能测试用于定位失败原因，不能当成完整探索任务成绩。",
+      "source": {
+        "url": "https://arxiv.org/html/2610.10388v1",
+        "locator": "Task design；Environment；Agent interface；Appendix B",
+        "title": "RoboQuest: Generalist Physical Agents that Search, Inspect and Test",
+        "authors": "Renhang, Liu; Majumder, Navonil; Pala, Tej Deep; Poria, Soujanya"
+      },
+      "origin": "具身智能综述",
+      "published": {
+        "date": "2026-10-07",
+        "kind": "论文首发",
+        "url": "https://arxiv.org/abs/2610.10388"
+      },
+      "updated": {
+        "date": "2026-10-07",
+        "kind": "仅初版 · v1",
+        "url": "https://arxiv.org/abs/2610.10388"
+      },
+      "dateNote": "论文日期取自 arXiv 提交记录；不代表代码库或数据集的最后修改日期。"
+    }
+  ]
+}
