@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><a class="nm" href="#top">Weiji Xie</a><nav aria-label="Site"><a href="#news">News</a><a href="#publications">Publications</a><a href="cv.html">CV</a></nav></header>
+
+  <section class="hero" id="top">
+    <div>
+      <div class="who" data-reveal><div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div><div><h1>Weiji Xie</h1><div class="tg" id="tagline"></div></div></div>
+      <p class="st" data-reveal style="--d:1" id="statement"></p>
+      <p class="aff" data-reveal style="--d:2" id="aff"></p>
+      <div class="contacts" data-reveal style="--d:3" id="contacts"></div>
+    </div>
+    <div class="map" id="map" data-reveal style="--d:2">
+      <div class="hd"><span><b>research embedding</b> · 2-D, illustrative</span><span>iter <span id="iter">0</span> / 1000</span></div>
+      <svg role="img" aria-label="Papers placed in a 2-D map, clustered by research topic"></svg>
+      <div class="legend"></div>
+      <div class="tip" id="tip"></div>
+    </div>
+  </section>
+
+  <section class="blk" id="news"><div class="sh" data-reveal><h2>News</h2></div><div class="news" id="news-list"></div></section>
+
+  <section class="blk" id="publications">
+    <div class="sh" data-reveal><h2>Publications</h2><span>click a cluster above to filter · * equal contribution · † corresponding</span></div>
+    <div class="tabs" id="tabs" data-reveal></div>
+    <div class="pubs" id="pubs"></div>
+  </section>
+
+  <section class="blk"><div class="sh" data-reveal><h2>Path</h2><a href="cv.html">Full CV →</a></div>
+    <div class="path"><div data-reveal><h3>Education</h3><div id="edu"></div></div><div data-reveal style="--d:1"><h3>Experience</h3><div id="exp"></div></div></div></section>
+
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><span>hand-built, no template</span></footer>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="latent.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, media, links, rest, catName } = Site, $ = (id) => document.getElementById(id);
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("tagline").textContent = P.tagline;
+  $("statement").textContent = P.statement;
+  $("aff").innerHTML = P.affiliation;
+  $("contacts").innerHTML = Site.contacts({ labels: true });
+  $("news-list").innerHTML = S.news.map((n, i) => `<div data-reveal style="--d:${i}"><time>${n.date}</time>${esc(n.text)}</div>`).join("");
+  const r = (e) => `<div class="r"><time>${e.when}</time>${esc(e.title)}<br><small>${esc(e.org)}</small></div>`;
+  $("edu").innerHTML = S.education.map(r).join(""); $("exp").innerHTML = S.experience.map(r).join("");
+  $("yr").textContent = new Date().getFullYear();
+  const dots = (p) => (p.cats || []).map((c) => `<i style="background:${Latent.color(Latent.catIndex(c))}" title="${esc(catName(c))}"></i>`).join("");
+  const card = (p) => `<article class="pub" data-hover data-short="${esc(p.short)}">${media(p)}<div class="b"><div class="dots">${dots(p)}<span>${(p.cats || []).map(catName).join(" · ")}</span><b>${esc(venue(p))}</b></div>
+    <h3>${esc(p.short)}</h3><p class="full">${esc(rest(p))}</p><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="ln">${links(p)}</div></div></article>`;
+  let map;
+  const setTab = Site.tabs($("tabs"), (f) => { Site.renderPubs($("pubs"), f, card); map && map.highlight(f); });
+  // 分类标签上的颜色点
+  document.querySelectorAll("#tabs [data-f]").forEach((b) => { const i = Latent.catIndex(b.dataset.f); if (i >= 0) b.style.setProperty("--dot", Latent.color(i)); });
+  map = Latent.draw($("map"), $("tip"),
+    (cat) => { setTab(cat); $("publications").scrollIntoView({ behavior: "smooth" }); },
+    (p, on) => { const c = document.querySelector(`.pub[data-short="${p.short}"]`); c && c.classList.toggle("hot", on); });
+  map.highlight("selected");
+  Site.init();
+  Site.reveal();
+})();
+</script>
+</body>
+</html>

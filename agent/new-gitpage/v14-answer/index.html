@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="col">
+  <header class="top"><a class="nm" href="index.html"><i id="av" aria-hidden="true"></i>Weiji Xie</a><nav aria-label="Site"><a href="#research">Research</a><a href="cv.html">CV</a></nav></header>
+
+  <h1 class="q" id="q" aria-label="Who is Weiji Xie?"></h1>
+  <div class="meta" id="meta"></div>
+
+  <div class="lbl"><i class="fa-solid fa-layer-group"></i>Sources</div>
+  <div class="sources" id="sources"></div>
+
+  <div class="lbl"><i class="fa-solid fa-align-left"></i>Answer</div>
+  <div class="ans" id="ans">
+    <p id="lead"></p>
+    <blockquote id="statement"></blockquote>
+    <h3 id="news">Recent updates</h3>
+    <ul id="news-list"></ul>
+    <h3 id="research">Research</h3>
+    <div><div class="tabs" id="tabs"></div><div class="works" id="pubs"></div></div>
+    <h3>Background</h3>
+    <ul id="bg"></ul>
+    <h3>Getting in touch</h3>
+    <div><p id="note" style="margin-bottom:8px"></p><div class="contacts" id="contacts"></div></div>
+    <div class="follow">
+      <div class="lbl" style="margin:12px 0 4px"><i class="fa-solid fa-arrow-turn-down"></i>Related</div>
+      <button type="button" id="f-all">Show every publication<i class="fa-solid fa-plus"></i></button>
+      <a href="cv.html">Open the full CV<i class="fa-solid fa-arrow-right"></i></a>
+      <button type="button" id="f-md">Copy this profile as Markdown (for LLMs)<i class="fa-regular fa-copy"></i></button>
+      <button type="button" data-wechat>Add on WeChat<i class="fa-brands fa-weixin"></i></button>
+    </div>
+  </div>
+
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><span>hand-built, no template · answers are written from this site's own data</span></footer>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="answer.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, media, links } = Site, $ = (id) => document.getElementById(id);
+  $("av").style.backgroundImage = `url(${P.photo})`;
+  const d = new Date();
+  $("meta").textContent = `${S.publications.length} sources · updated ${d.toLocaleDateString("en-GB", { month: "short", year: "numeric" })}`;
+  Answer.sources($("sources"));
+  // 首段按分类自动生成引用
+  const lc = (n) => n.split(" ").map((w) => (w === w.toUpperCase() ? w : w.toLowerCase())).join(" "); // 保留 RL 这类缩写
+  const topics = S.categories.map((c) => `${lc(c.name)} ${Site.filter(c.id).map(Answer.cite).join("")}`);
+  $("lead").innerHTML = `<b>Weiji Xie</b> is a robot learning researcher: an M.S. student at <a href="https://www.sjtu.edu.cn/">Shanghai Jiao Tong University</a>'s <a href="https://apex.sjtu.edu.cn/">APEX Lab</a>, advised by <a href="https://wnzhang.net/">Prof. Weinan Zhang</a>, and a research intern at <a href="https://www.teleai.com.cn/">TeleAI</a> working with <a href="https://baichenjia.github.io/">Dr. Chenjia Bai</a>. The work so far covers ${topics.slice(0, -1).join(", ")} and ${topics[topics.length - 1]}.`;
+  $("statement").textContent = P.statement;
+  $("news-list").innerHTML = S.news.map((n) => `<li><time>${n.date}</time>${esc(n.text)}</li>`).join("");
+  $("bg").innerHTML = S.education.concat(S.experience).map((e) => `<li><time>${e.when}</time>${esc(e.title)}, ${esc(e.org)}${e.detail ? ` <span style="color:var(--muted)">(${esc(e.detail)})</span>` : ""}</li>`).join("");
+  $("note").textContent = P.contactNote;
+  $("contacts").innerHTML = Site.contacts({ labels: true });
+  $("yr").textContent = d.getFullYear();
+  const card = (p) => `<div class="w" data-hover>${media(p)}<div><span class="v">[${Answer.num(p)}] ${esc(venue(p))}</span><b class="t">${esc(p.short)}</b><p>${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="ln">${links(p)}</div></div></div>`;
+  const setTab = Site.tabs($("tabs"), (f) => Site.renderPubs($("pubs"), f, card));
+  $("f-all").addEventListener("click", () => { setTab("all"); $("research").scrollIntoView({ behavior: "smooth" }); });
+  $("f-md").addEventListener("click", (e) => Site.copyMarkdown(e.currentTarget));
+  Answer.popovers();
+  Site.init();
+  Answer.play($("q"), "Who is Weiji Xie?", $("sources"), $("ans"));
+})();
+</script>
+</body>
+</html>

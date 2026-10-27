@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CV · Weiji Xie</title>
+<meta name="description" content="Curriculum vitae of Weiji Xie.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="col">
+  <header class="top"><a class="nm" href="index.html"><i id="av" aria-hidden="true"></i>Weiji Xie</a><nav aria-label="Site"><a href="index.html#research">Research</a><a href="cv.html" aria-current="page">CV</a></nav></header>
+
+  <h1 class="q" id="q" aria-label="Weiji Xie, full CV"></h1>
+  <div class="meta">structured from this site's own data</div>
+  <div class="lbl"><i class="fa-solid fa-layer-group"></i>Sources</div>
+  <div class="sources" id="sources"></div>
+
+  <div class="lbl"><i class="fa-solid fa-align-left"></i>Answer</div>
+  <div class="ans" id="ans">
+    <div class="contacts" id="contacts"></div>
+    <h3>Education</h3><table class="cv"><tbody id="edu"></tbody></table>
+    <h3>Experience</h3><table class="cv"><tbody id="exp"></tbody></table>
+    <h3>Publications</h3><table class="cv"><tbody id="pubs"></tbody></table>
+    <h3>Honors &amp; awards</h3><table class="cv"><tbody id="honors"></tbody></table>
+    <h3>Service &amp; misc</h3><table class="cv"><tbody id="misc"></tbody></table>
+    <div class="follow"><a href="index.html">Back to the overview<i class="fa-solid fa-arrow-left"></i></a><button type="button" id="f-md">Copy this profile as Markdown (for LLMs)<i class="fa-regular fa-copy"></i></button></div>
+  </div>
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><span>hand-built, no template</span></footer>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="answer.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, links } = Site, $ = (id) => document.getElementById(id);
+  $("av").style.backgroundImage = `url(${P.photo})`;
+  Answer.sources($("sources"));
+  $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true });
+  const row = (k, v) => `<tr><td>${esc(k)}</td><td>${v}</td></tr>`;
+  const ent = (e) => row(e.when, `${esc(e.title)}<small>${esc(e.org)}${e.detail ? " · " + esc(e.detail) : ""}</small>`);
+  $("edu").innerHTML = S.education.map(ent).join("");
+  $("exp").innerHTML = S.experience.map(ent).join("");
+  $("pubs").innerHTML = S.publications.map((p) => row(venue(p), `${Answer.cite(p)} ${esc(p.title)}<small>${me(p.authors)}</small><small style="font:12px var(--mono)">${links(p).replace(/<\/a><a/g, "</a> · <a")}</small>`)).join("");
+  $("honors").innerHTML = S.honors.map((h) => row(String(h.year), esc(h.text))).join("");
+  $("misc").innerHTML = S.service.map((s) => row("Service", esc(s))).join("") + S.misc.map((m) => row(m.k, esc(m.v))).join("");
+  $("f-md").addEventListener("click", (e) => Site.copyMarkdown(e.currentTarget));
+  $("yr").textContent = new Date().getFullYear();
+  Answer.popovers();
+  Site.init();
+  Answer.play($("q"), "Weiji Xie, full CV", $("sources"), $("ans"));
+})();
+</script>
+</body>
+</html>
