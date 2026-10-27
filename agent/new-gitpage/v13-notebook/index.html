@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar"><div class="in">
+  <span class="file"><i class="fa-solid fa-book"></i>weiji_xie.ipynb</span><span class="ck" id="ck"></span>
+  <nav aria-label="Site"><a href="index.html" aria-current="page">weiji_xie.ipynb</a><a href="cv.html">cv.ipynb</a></nav>
+  <span class="kernel" id="kernel"><i aria-hidden="true"></i> idle</span>
+</div></header>
+
+<main class="nb">
+  <div class="cell md-cell"><div class="prompt"></div><div class="md">
+    <h1>Weiji Xie</h1><div class="tag" id="tagline"></div><p id="statement"></p>
+  </div></div>
+
+  <div class="cell" data-code><div class="prompt">In [ ]:</div><div class="src">from weiji import me
+display(Image("weiji.jpg")); me.profile()</div>
+    <div class="prompt o"></div><div class="out"><div class="profile"><div><div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div><div class="imgcap">&lt;Image 720×1008&gt;</div></div>
+      <div><table class="kv"><tbody id="kv"></tbody></table><div class="contacts" id="contacts"></div></div></div></div></div>
+
+  <div class="cell" data-code id="news"><div class="prompt">In [ ]:</div><div class="src">me.news(last=5)</div>
+    <div class="prompt o"></div><div class="out" id="news-out"></div></div>
+
+  <div class="cell" data-code id="publications"><div class="prompt">In [ ]:</div><div class="src">me.papers(view="selected")   # widget: pick a view</div>
+    <div class="prompt o"></div><div class="out"><div class="tabs" id="tabs"></div><div class="figs" id="pubs"></div></div></div>
+
+  <div class="cell" data-code><div class="prompt">In [ ]:</div><div class="src">me.path()</div>
+    <div class="prompt o"></div><div class="out" id="path-out"></div></div>
+
+  <div class="cell" data-code><div class="prompt">In [ ]:</div><div class="src">print(me.cv)            # full CV lives in cv.ipynb
+me.to_markdown()        # for LLMs / agents</div>
+    <div class="prompt o"></div><div class="out"><div class="stdout">→ <a href="cv.html">cv.ipynb</a></div><button class="btn" type="button" id="md" style="margin-top:8px">Copy profile as Markdown</button></div></div>
+</main>
+<footer><span>© <span id="yr"></span> Weiji Xie</span><span>hand-built, no template</span></footer>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="nb.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, isTop, media, links, rest, catName } = Site, $ = (id) => document.getElementById(id);
+  const d = new Date(); $("ck").textContent = "Last checkpoint: " + d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  $("tagline").textContent = P.tagline;
+  $("statement").textContent = P.statement;
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("kv").innerHTML = [["name", P.name], ["affiliation", P.affiliation], ["location", P.location], ["objective", "general-purpose robots"]].map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
+  $("contacts").innerHTML = Site.contacts({ labels: true });
+  $("news-out").innerHTML = NB.df(["date", "event"], S.news.map((n) => [n.date, esc(n.text)]));
+  $("path-out").innerHTML = NB.df(["period", "role", "where"], S.education.concat(S.experience).map((e) => [e.when, esc(e.title) + (e.detail ? `<small>${esc(e.detail)}</small>` : ""), esc(e.org)]));
+  $("md").addEventListener("click", (e) => Site.copyMarkdown(e.target));
+  $("yr").textContent = d.getFullYear();
+  const card = (p) => `<div class="fig" data-hover>${media(p)}<div class="ttl">${esc(p.short)}<span>${esc(venue(p))}</span></div><p class="full">${esc(rest(p))}</p><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="ln">${links(p)}</div></div>`;
+  const src = document.querySelector("#publications .src");
+  Site.tabs($("tabs"), (f) => { Site.renderPubs($("pubs"), f, card); src.innerHTML = NB.hl(`me.papers(view="${f}")   # widget: pick a view`); });
+  NB.fill();
+  Site.init();
+  NB.run($("kernel"));
+})();
+</script>
+</body>
+</html>

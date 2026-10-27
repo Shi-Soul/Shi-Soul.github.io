@@ -84,6 +84,36 @@
       els.forEach((e) => io.observe(e));
     },
 
+    // 给 LLM / agent 读的 Markdown 资料（llms.txt 风格），由 data.js 生成
+    markdown() {
+      const strip = (h) => String(h).replace(/<[^>]+>/g, "");
+      const abs = (u) => (/^https?:/.test(u) ? u : new URL(u, location.href).href);
+      const L = P.links;
+      return [
+        `# ${P.name}`, "", `> ${P.statement}`, "", strip(P.affiliation), "",
+        "## Contact", `- Email: ${P.email}`, `- Google Scholar: ${L.scholar}`, `- GitHub: ${L.github}`, `- LinkedIn: ${L.linkedin}`, `- X: ${L.x}`, "",
+        "## News", ...S.news.map((n) => `- ${n.date}: ${n.text}`), "",
+        "## Publications", ...S.publications.map((p) => `- ${p.title}. ${p.authors}. ${Site.venue(p)}. ${Object.entries(p.links).map(([k, u]) => `[${k}](${abs(u)})`).join(" ")}`), "",
+        "## Education", ...S.education.map((e) => `- ${e.when}: ${e.title}, ${e.org}${e.detail ? ` (${e.detail})` : ""}`), "",
+        "## Experience", ...S.experience.map((e) => `- ${e.when}: ${e.title}, ${e.org}`), "",
+        "## Honors", ...S.honors.map((h) => `- ${h.year}: ${h.text}`), "",
+      ].join("\n");
+    },
+    copyMarkdown(btn) {
+      const txt = Site.markdown(), label = btn.textContent;
+      const done = () => { btn.textContent = "Copied ✓"; setTimeout(() => (btn.textContent = label), 1600); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, () => Site.showText(txt));
+      else Site.showText(txt);
+    },
+    // 剪贴板不可用时，弹出可选中的文本
+    showText(txt) {
+      const m = document.createElement("div");
+      m.className = "wx-modal open";
+      m.innerHTML = `<div class="wx-card" style="max-width:640px;text-align:left"><textarea readonly style="width:100%;height:50vh;font:12px ui-monospace,monospace">${esc(txt)}</textarea><button type="button" class="wx-close" aria-label="Close">×</button></div>`;
+      m.addEventListener("click", (e) => { if (e.target === m || e.target.closest(".wx-close")) m.remove(); });
+      document.body.appendChild(m);
+    },
+
     // CV 页的分节数据
     cvBlocks() {
       return [

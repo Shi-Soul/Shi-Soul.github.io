@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><a class="nm" href="#top">Weiji Xie</a><nav aria-label="Site"><a href="#rewards">Rewards</a><a href="#rollouts">Rollouts</a><a href="cv.html">CV</a></nav></header>
+
+  <section class="hero" id="top">
+    <div>
+      <h1 data-reveal>Weiji Xie</h1>
+      <p class="credo" data-reveal style="--d:1">Learn from interaction. Improve from feedback. <b>Repeat.</b></p>
+      <p class="st" data-reveal style="--d:2" id="statement"></p>
+      <p class="aff" data-reveal style="--d:3" id="aff"></p>
+      <div class="contacts" data-reveal style="--d:4" id="contacts"></div>
+    </div>
+    <div class="loop" id="loop" data-reveal style="--d:2"><svg role="img" aria-label="Reinforcement learning loop: Weiji Xie as the agent, acting in the real world and learning from reward"></svg></div>
+  </section>
+
+  <section class="blk" id="rewards">
+    <div class="sh" data-reveal><h2>Reward signals</h2><span class="m">news · <i>r</i> = what worked recently</span></div>
+    <div class="signals" id="news" data-reveal></div>
+  </section>
+
+  <section class="blk" id="rollouts">
+    <div class="sh" data-reveal><h2>Rollouts</h2><span class="m">publications · * equal contribution · † corresponding</span></div>
+    <div class="tabs" id="tabs" data-reveal></div>
+    <div class="rolls" id="pubs"></div>
+  </section>
+
+  <section class="blk" id="updates">
+    <div class="sh" data-reveal><h2>Policy updates</h2><span class="m">θ ← θ + α∇J · education &amp; experience · <a href="cv.html">full CV →</a></span></div>
+    <div class="updates" id="path" data-reveal></div>
+  </section>
+
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><i>reinforcement learning, self-improvement, and robots that keep getting better</i></footer>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="loop.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, isTop, media, links, rest } = Site, $ = (id) => document.getElementById(id);
+  $("statement").textContent = P.statement;
+  $("aff").innerHTML = P.affiliation;
+  $("contacts").innerHTML = Site.contacts({ labels: true });
+  Loop.draw($("loop"), P.photo);
+  $("news").innerHTML = S.news.map((n) => { const r = /accepted|released/i.test(n.text); return `<div><time>${n.date}</time><span class="k ${r ? "r" : "t"}">${r ? "reward" : "transition"}</span><span>${esc(n.text)}</span></div>`; }).join("");
+  // 履历按时间正序，像一次次参数更新
+  const ups = S.education.concat(S.experience).slice().sort((a, b) => a.when.localeCompare(b.when));
+  $("path").innerHTML = ups.map((e, i) => `<div><span class="eq">θ${String(i + 1).replace(/\d/g, (d) => "₀₁₂₃₄₅₆₇₈₉"[d])} ← update</span><time>${e.when}</time><b>${esc(e.title)}</b><small>${esc(e.org)}${e.detail ? " · " + esc(e.detail) : ""}</small></div>`).join("");
+  $("yr").textContent = new Date().getFullYear();
+  const card = (p) => `<article class="roll" data-hover>${media(p)}<div class="b"><div class="hd"><span>rollout · ${p.date || p.year}</span><b>${esc(venue(p))}</b></div>
+    <h3>${esc(p.short)}</h3><p class="full">${esc(rest(p))}</p><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="ln">${links(p)}</div></div></article>`;
+  Site.tabs($("tabs"), (f) => Site.renderPubs($("pubs"), f, card));
+  Site.init();
+  Site.reveal();
+})();
+</script>
+</body>
+</html>

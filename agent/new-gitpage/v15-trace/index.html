@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="col">
+  <header class="top"><span>Weiji Xie · trace</span><nav aria-label="Site"><a href="#publications">publications</a><a href="cv.html">cv</a></nav></header>
+
+  <div class="task"><div class="t"><span>task</span>Introduce Weiji Xie to a visitor</div><span class="status" id="status"><i aria-hidden="true"></i> waiting</span></div>
+
+  <div class="trace">
+    <div class="step user"><details open><summary><span class="kind">user</span><span class="sig">visitor</span><span class="dur">now</span></summary>
+      <div class="body"><div class="msg">Who is Weiji Xie, and what is the research about?</div></div></details></div>
+
+    <div class="step call" data-run><details open><summary><span class="kind">tool call</span><span class="sig" id="s1"></span><span class="dur">…</span></summary><div class="spin">running…</div>
+      <div class="body"><div class="profile"><div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div>
+        <div><h1>Weiji Xie</h1><div class="tg" id="tagline"></div><p id="statement"></p><p class="aff" id="aff"></p><div class="contacts" id="contacts"></div></div></div></div></details></div>
+
+    <div class="step call" data-run id="news"><details open><summary><span class="kind">tool call</span><span class="sig" id="s2"></span><span class="dur">…</span></summary><div class="spin">running…</div>
+      <div class="body"><ol class="list" id="news-list"></ol></div></details></div>
+
+    <div class="step call" data-run id="publications"><details open><summary><span class="kind">tool call</span><span class="sig" id="s3"></span><span class="dur">…</span></summary><div class="spin">running…</div>
+      <div class="body"><div class="tabs" id="tabs"></div><div class="res" id="pubs"></div></div></details></div>
+
+    <div class="step call" data-run><details open><summary><span class="kind">tool call</span><span class="sig" id="s4"></span><span class="dur">…</span></summary><div class="spin">running…</div>
+      <div class="body"><ol class="list" id="bg"></ol></div></details></div>
+
+    <div class="step ans" data-run><details open><summary><span class="kind">answer</span><span class="sig">final response</span><span class="dur">…</span></summary><div class="spin">writing…</div>
+      <div class="body final"><p id="final"></p><div class="btns"><a href="cv.html">Open full CV</a><button type="button" class="ghost" id="md">Copy profile as Markdown</button><button type="button" class="ghost" data-wechat>WeChat</button></div></div></details></div>
+  </div>
+
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><span>hand-built, no template · every result comes from this site's own data</span></footer>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="trace.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, isTop, media, links, catName } = Site, $ = (id) => document.getElementById(id);
+  $("s1").innerHTML = Trace.sig("get_profile", { id: "weiji-xie" });
+  $("s2").innerHTML = Trace.sig("list_updates", { limit: S.news.length });
+  $("s4").innerHTML = Trace.sig("get_background", {});
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("tagline").textContent = P.tagline;
+  $("statement").textContent = P.statement;
+  $("aff").innerHTML = P.affiliation;
+  $("contacts").innerHTML = Site.contacts({ labels: true });
+  $("news-list").innerHTML = S.news.map((n) => `<li><time>${n.date}</time><span>${esc(n.text)}</span></li>`).join("");
+  $("bg").innerHTML = S.education.concat(S.experience).map((e) => `<li><time>${e.when}</time><span>${esc(e.title)}<small>${esc(e.org)}${e.detail ? " · " + esc(e.detail) : ""}</small></span></li>`).join("");
+  const pubs = S.publications, top = pubs.filter(isTop).length;
+  $("final").innerHTML = `Weiji Xie is a robot learning researcher at SJTU and TeleAI, with ${pubs.length} papers so far (${top} accepted at NeurIPS, IROS and AAAI) on ${S.categories.map((c) => c.name.toLowerCase().replace("rl", "RL")).join(", ")}. The long-term goal is general-purpose robots. The quickest way to reach out is email or WeChat.`;
+  $("yr").textContent = new Date().getFullYear();
+  $("md").addEventListener("click", (e) => Site.copyMarkdown(e.currentTarget));
+  const card = (p) => `<div class="r" data-hover>${media(p)}<div class="b"><span class="v">${esc(venue(p))}</span><h3>${esc(p.short)}</h3><p>${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="ln">${links(p)}</div></div></div>`;
+  Site.tabs($("tabs"), (f) => { Site.renderPubs($("pubs"), f, card); $("s3").innerHTML = Trace.sig("search_publications", { filter: f }); });
+  Site.init();
+  Trace.run($("status"));
+})();
+</script>
+</body>
+</html>

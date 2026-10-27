@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CV · Weiji Xie</title>
+<meta name="description" content="Curriculum vitae of Weiji Xie.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="col">
+  <header class="top"><span>Weiji Xie · trace</span><nav aria-label="Site"><a href="index.html">overview</a><a href="cv.html" aria-current="page">cv</a></nav></header>
+  <div class="task"><div class="t"><span>task</span>Compile the full CV of Weiji Xie</div><span class="status" id="status"><i aria-hidden="true"></i> waiting</span></div>
+  <div class="trace" id="trace">
+    <div class="step user"><details open><summary><span class="kind">user</span><span class="sig">visitor</span><span class="dur">now</span></summary>
+      <div class="body"><div class="msg">Can I see the full CV?</div><div class="contacts" id="contacts"></div></div></details></div>
+  </div>
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><a href="index.html">← back to overview</a></footer>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="trace.js"></script>
+<script>
+(function () {
+  const { S, esc, me, venue, links } = Site, $ = (id) => document.getElementById(id);
+  $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true });
+  const li = (when, main, sub) => `<li><time>${esc(when)}</time><span>${main}${sub ? `<small>${sub}</small>` : ""}</span></li>`;
+  const ent = (e) => li(e.when, esc(e.title), esc(e.org) + (e.detail ? " · " + esc(e.detail) : ""));
+  const step = (fn, args, body) => `<div class="step call" data-run><details open><summary><span class="kind">tool call</span><span class="sig">${Trace.sig(fn, args)}</span><span class="dur">…</span></summary><div class="spin">running…</div><div class="body"><ol class="list">${body}</ol></div></details></div>`;
+  $("trace").insertAdjacentHTML("beforeend",
+    step("get_education", {}, S.education.map(ent).join("")) +
+    step("get_experience", {}, S.experience.map(ent).join("")) +
+    step("list_publications", { filter: "all" }, S.publications.map((p) => li(venue(p), esc(p.title), `${me(p.authors)}<br><span style="font:12px var(--mono)">${links(p).replace(/<\/a><a/g, "</a> · <a")}</span>`)).join("")) +
+    step("get_honors", {}, S.honors.map((h) => li(String(h.year), esc(h.text))).join("")) +
+    step("get_misc", {}, S.service.map((s) => li("service", esc(s))).concat(S.misc.map((m) => li(m.k.toLowerCase(), esc(m.v)))).join("")));
+  $("yr").textContent = new Date().getFullYear();
+  Site.init();
+  Trace.run($("status"));
+})();
+</script>
+</body>
+</html>

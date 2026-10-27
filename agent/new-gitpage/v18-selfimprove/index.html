@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><a class="nm" href="#top">weiji-xie</a><nav aria-label="Site"><a href="#tags">tags</a><a href="#log">log</a><a href="cv.html">cv</a></nav></header>
+
+  <section class="hero" id="top">
+    <div>
+      <div class="who" data-reveal><div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div><h1>Weiji Xie</h1></div>
+      <p class="credo" data-reveal style="--d:1">Build, evaluate, keep what works, <b>improve</b>. Then do it again.</p>
+      <p class="st" data-reveal style="--d:2" id="statement"></p>
+      <p class="aff" data-reveal style="--d:3" id="aff"></p>
+      <div class="contacts" data-reveal style="--d:4" id="contacts"></div>
+    </div>
+    <pre class="loop" data-reveal style="--d:2" aria-label="Self-improvement loop as pseudocode"><span class="k">policy</span> = init(<span class="s">"curiosity"</span>)
+<span class="k">while</span> <span class="n">True</span>:
+    data   = <span class="f">rollout</span>(policy, world)   <span class="c"># act</span>
+    reward = <span class="f">evaluate</span>(data)          <span class="c"># real-world test</span>
+<span class="hl">    policy = <span class="f">improve</span>(policy, data, reward)</span>
+    <span class="f">log</span>(<span class="s">"iteration"</span>, <span class="n" id="iter"></span>)</pre>
+  </section>
+
+  <section class="blk" id="tags">
+    <p class="cmd" data-reveal>$ <b>git tag -n --sort=-date</b>   <span># news</span></p>
+    <div class="tags" id="news" data-reveal></div>
+  </section>
+
+  <section class="blk" id="log">
+    <p class="cmd" data-reveal>$ <b>git log --graph</b>   <span># research (left lane) and path (right lane) · * equal contribution · † corresponding</span></p>
+    <div class="tabs" id="tabs" data-reveal></div>
+    <div class="graph" id="graph"></div>
+    <p class="cmd" style="margin-top:12px">$ <b>git show <a href="cv.html">cv</a></b></p>
+  </section>
+
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><span>reinforcement learning · self-improvement · robots</span></footer>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="git.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, isTop, media, links, rest, catName } = Site, $ = (id) => document.getElementById(id);
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("statement").textContent = P.statement;
+  $("aff").innerHTML = P.affiliation;
+  $("contacts").innerHTML = Site.contacts({ labels: true });
+  const d = new Date(); $("iter").textContent = `"${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}"`;
+  $("news").innerHTML = S.news.map((n) => `<div><code>v${n.date}</code><span>${esc(n.text)}</span></div>`).join("");
+  $("yr").textContent = d.getFullYear();
+  // 渲染提交图（筛选只作用于论文，履历泳道一直在）
+  const newest = S.publications.slice().sort((a, b) => Git.key(b.date || b.year).localeCompare(Git.key(a.date || a.year)))[0];
+  const row = (x, i) => {
+    if (x.t === "p") { const e = x.e; return `<div class="cm p" style="--i:${i}"><div class="g"><i></i></div><div><div class="meta"><span class="h">${Git.hash(e.title + e.org)}</span><span>${x.d}</span><span class="ref car">career</span></div><div class="msg">${esc(e.title)} <span>· ${esc(e.org)}</span></div></div></div>`; }
+    const p = x.p, top = isTop(p);
+    const refs = (p === newest ? `<span class="ref head">HEAD → main</span>` : "") + (top ? `<span class="ref tag">tag: ${esc(p.venue)}-${p.year}</span>` : "") + (p.cats || []).map((c) => `<span class="ref cat">${esc(catName(c).toLowerCase())}</span>`).join("");
+    return `<div class="cm r ${p === newest ? "head" : ""}" style="--i:${i}" data-hover><div class="g"><i></i></div>
+      <div><div class="meta"><span class="h">${Git.hash(p.title)}</span><span>${x.d}</span>${refs}</div>
+        <div class="msg">${esc(p.short)}: <span>${esc(p.note)}</span></div><p class="full">${esc(rest(p))} · ${esc(venue(p))}</p>
+        <div class="au">${me(p.authors)}</div><div class="ln">${links(p)}</div></div>${media(p)}</div>`;
+  };
+  Site.tabs($("tabs"), (f) => { $("graph").innerHTML = Git.rows(f).map(row).join(""); Site.bindMedia($("graph")); });
+  Site.init();
+  Site.reveal();
+})();
+</script>
+</body>
+</html>

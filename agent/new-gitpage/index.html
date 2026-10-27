@@ -41,10 +41,18 @@ code { font-size: 13px; background: var(--bg); padding: 1px 5px; border-radius: 
 </head>
 <body>
 <main class="wrap">
-  <h1>新主页草稿 · 第四轮</h1>
+  <h1>新主页草稿 · 第五轮</h1>
+  <p class="lede">定位：AI 时代的 robotic scientist，相信强化学习与 self-improvement。这一轮的七个方案都从“AI 研究者每天面对的东西”出发：模型卡、notebook、带引用的回答、agent 轨迹、嵌入空间，以及以 RL 循环和自我改进为骨架的两版。每个都带 “Copy profile as Markdown（for LLMs）”，并有风格一致的 CV 页。之前的版本都没动，在下面。</p>
+
+  <h2>RL / self-improvement 为骨架</h2>
+  <div class="grid" id="rl"></div>
+  <h2>AI 时代的研究者媒介</h2>
+  <div class="grid" id="ai"></div>
+
+  <h2 style="margin-top:56px">第四轮</h2>
   <p class="lede">这一轮的方向：冷静、克制、有 researcher / geek 的味道，创新体现在“形式”而不是视觉刺激。三个新想法各借用一种研究者熟悉的媒介；之前的版本保持不动，放在下面。</p>
 
-  <h2>新想法</h2>
+  <h2>第四轮 · 新想法</h2>
   <div class="grid" id="fresh"></div>
 
   <h2 style="margin-top:56px">第三轮 · 之前的版本</h2>
@@ -69,6 +77,17 @@ code { font-size: 13px; background: var(--bg); padding: 1px 5px; border-radius: 
 </main>
 <script>
 (function () {
+  const rl = [
+    ["v17-loop", "V17 · Agent–Environment Loop", "RL · calm", "首屏是 agent ↔ environment 的 RL 循环：你（证件照）是 agent π<sub>θ</sub>，action / state / reward 三条弧，一个点缓慢绕圈，每圈 t+1。News 是 reward signals，论文是 rollouts，履历是 policy updates（θ ← θ + α∇J）。"],
+    ["v18-selfimprove", "V18 · Self-Improvement Log", "self-improvement · geek", "研究写成不断自我改进的循环：右侧是 build → evaluate → improve 的伪代码；论文和履历按日期排成 git log --graph 的两条泳道，带提交哈希、HEAD → main、tag: NeurIPS-2025 等 ref 和缩略图。News 是 git tag。"],
+  ];
+  const ai = [
+    ["v12-modelcard", "V12 · Model Card", "AI-native · calm", "把人写成一张模型卡：Model details、Quick start（Researcher.from_pretrained）、Changelog、Evaluation results（论文）、Training details（履历）、Intended use &amp; limitations、Citation（自己的 BibTeX）；侧栏把项目主页列为 Spaces。"],
+    ["v13-notebook", "V13 · Notebook", "AI-native · geek", "主页是一个 notebook：滚动到单元格时依次执行（In [*] → In [n]，内核 idle/busy），输出是 display(Image) 的证件照、pandas 风格表格、切换按钮式的论文筛选。CV 是 cv.ipynb。"],
+    ["v14-answer", "V14 · Answer", "AI-native · calm", "主页是一份带引用的检索回答：问题打出来，来源卡片依次出现，正文里 [n] 悬停预览论文，首段的引用按分类从数据自动生成；结尾的 follow-up 按钮都能用。"],
+    ["v15-trace", "V15 · Agent Trace", "AI-native · technical", "一个 agent 完成“介绍 Weiji Xie”的执行轨迹：user → get_profile() → list_updates() → search_publications(filter) → get_background() → answer；按顺序执行、显示耗时，每步可折叠。"],
+    ["v16-latent", "V16 · Latent Space", "AI-native · calm", "论文在二维“嵌入空间”中按方向成簇，跨方向的论文落在簇之间；加载时像 t-SNE 一样从随机位置收敛到最终位置，然后静止。点簇筛选论文，悬停看缩略图。"],
+  ];
   const fresh = [
     ["v9-preprint", "V9 · Preprint", "researcher · geek", "整个主页排成一篇 arXiv 论文：Computer Modern 字体、侧边 arXiv 戳、Abstract 是个人陈述、研究目标写成公式 (1)、工作是带引用的 Figure（悬停 [n] 预览参考文献）、booktabs 表格、文末是 IEEE 式作者简介配证件照。CV 是 Supplementary Material。"],
     ["v10-run", "V10 · Training Run", "technical · calm", "把研究画成一条训练曲线：平滑曲线 + ±std 带缓慢画出，论文是曲线上的 checkpoint（悬停看缩略图，点击跳到卡片），履历节点标在 x 轴，虚线外推到 general-purpose robots?。News 是日志，履历是 config.yaml。"],
@@ -82,6 +101,10 @@ code { font-size: 13px; background: var(--bg); padding: 1px 5px; border-radius: 
   ];
   const old = [["v1-console", "V1 · Control Room"], ["v2-editorial", "V2 · Research Review"], ["v3-atlas", "V3 · Atlas"], ["v7-manpage", "V7 · man weiji"]];
   const shot = (d, t) => `<div class="shot"><iframe src="${d}/index.html" title="${t} preview" loading="lazy" tabindex="-1"></iframe><a href="${d}/index.html" aria-label="Open ${t}"></a></div>`;
+  const newCard = ([d, t, s, p]) => `<article class="v new">${shot(d, t)}
+    <div class="body"><h3>${t}<small>${s}</small></h3><p>${p}</p><p><a href="${d}/index.html">首页 →</a> &nbsp; <a href="${d}/cv.html">CV 页 →</a></p></div></article>`;
+  document.getElementById("rl").innerHTML = rl.map(newCard).join("");
+  document.getElementById("ai").innerHTML = ai.map(newCard).join("");
   document.getElementById("fresh").innerHTML = fresh.map(([d, t, s, p]) => `<article class="v new">${shot(d, t)}
     <div class="body"><h3>${t}<small>${s}</small></h3><p>${p}</p><p><a href="${d}/index.html">首页 →</a> &nbsp; <a href="${d}/cv.html">CV 页 →</a></p></div></article>`).join("");
   document.getElementById("grid").innerHTML = cur.map(([d, t, s, p, isNew]) => `<article class="v ${isNew ? "new" : ""}">${shot(d, t)}

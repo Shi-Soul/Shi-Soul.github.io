@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="head" id="head"></header>
+<div class="wrap layout">
+  <main class="md">
+    <h1>Weiji Xie</h1>
+    <blockquote id="statement"></blockquote>
+    <p class="tagline" id="tagline" style="font:13px var(--mono);color:var(--muted)"></p>
+
+    <h2>Model details</h2>
+    <table><tbody id="details"></tbody></table>
+
+    <h2>Quick start</h2>
+    <pre class="code" id="qs"><button type="button">Copy</button><span class="k">from</span> people <span class="k">import</span> Researcher
+
+weiji = Researcher.<span class="f">from_pretrained</span>(<span class="s">"weiji-xie"</span>)
+weiji.<span class="f">collaborate</span>(topic=<span class="s">"robot learning"</span>)   <span class="c"># → xieweiji249@sjtu.edu.cn</span></pre>
+
+    <h2 id="news">Changelog</h2>
+    <ul class="log" id="news-list"></ul>
+
+    <h2 id="publications">Evaluation results</h2>
+    <p style="color:var(--muted);font-size:14px">Peer-reviewed and preprint results. * equal contribution · † corresponding.</p>
+    <div class="tabs" id="tabs"></div>
+    <div class="evals" id="pubs"></div>
+
+    <h2>Training details</h2>
+    <table><tbody id="training"></tbody></table>
+    <p style="margin-top:10px"><a href="cv.html">Full training details (CV) →</a></p>
+
+    <h2>Intended use &amp; limitations</h2>
+    <p><b>Intended use.</b> Collaboration and discussion on robot learning, reinforcement learning and embodied AI. Students getting into robotics are welcome to reach out.</p>
+    <p><b>Limitations.</b> Replies may be slower around conference deadlines. Hardware experiments take longer than simulation.</p>
+
+    <h2>Citation</h2>
+    <pre class="code" id="bib"><button type="button">Copy</button>@misc{xie_weiji,
+  author = {Weiji Xie},
+  title  = {Toward General-Purpose Robots that Learn},
+  note   = {M.S. student, SJTU APEX Lab; research intern, TeleAI},
+  year   = {<span id="by"></span>}
+}</pre>
+  </main>
+  <aside class="side" id="side" aria-label="Profile"></aside>
+</div>
+<div class="wrap"><footer><span>© <span id="yr"></span> Weiji Xie</span><span>hand-built, no template</span></footer></div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="card.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, isTop, media, links, rest, catName } = Site, $ = (id) => document.getElementById(id);
+  Card.head($("head"), "card"); Card.side($("side"));
+  $("statement").textContent = P.statement;
+  $("tagline").textContent = P.tagline;
+  const pubs = S.publications;
+  $("details").innerHTML = [
+    ["Developed by", P.name], ["Affiliation", P.affiliation], ["Model type", "Robot learning researcher"],
+    ["Objective", "General-purpose robots"], ["Results", `${pubs.length} papers · ${pubs.filter(isTop).length} accepted (NeurIPS, IROS, AAAI)`], ["Location", P.location],
+  ].map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("");
+  $("news-list").innerHTML = S.news.map((n) => `<li><time>${n.date}</time><span>${esc(n.text)}</span></li>`).join("");
+  $("training").innerHTML = S.education.concat(S.experience).map((e) => `<tr><th style="font:13px var(--mono)">${e.when}</th><td>${esc(e.title)}<small>${esc(e.org)}${e.detail ? " · " + esc(e.detail) : ""}</small></td></tr>`).join("");
+  $("by").textContent = new Date().getFullYear(); $("yr").textContent = new Date().getFullYear();
+  Card.code($("qs")); Card.code($("bib"));
+  const card = (p) => `<article class="ev" data-hover>${media(p)}<div class="b">
+      <div class="row"><span class="v ${isTop(p) ? "" : "ur"}">${esc(venue(p))}</span><span class="cats">${(p.cats || []).map(catName).join(" · ")}</span></div>
+      <h3>${esc(p.short)}</h3><p class="full">${esc(rest(p))}</p><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="ln">${links(p)}</div></div></article>`;
+  Site.tabs($("tabs"), (f) => Site.renderPubs($("pubs"), f, card));
+  Site.init();
+})();
+</script>
+</body>
+</html>
