@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas class="flock" id="flock" aria-hidden="true"></canvas>
+<div class="page">
+  <header class="top"><span>Weiji Xie</span><nav aria-label="Site"><a href="#now">Now</a><a href="#work">Work</a><a href="cv.html">CV</a></nav></header>
+  <div class="col">
+    <section class="hero">
+      <div class="who" data-reveal><div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div><div class="tg" id="tagline"></div></div>
+      <h1 data-reveal style="--d:1">Weiji Xie</h1>
+      <p class="st" data-reveal style="--d:2" id="statement"></p>
+      <p class="aff" data-reveal style="--d:3" id="aff"></p>
+      <div class="contacts" data-reveal style="--d:4" id="contacts"></div>
+    </section>
+    <section class="blk now" id="now"><p class="lbl" data-reveal>Now</p><div id="news"></div></section>
+    <section class="blk" id="work"><p class="lbl" data-reveal>Work</p><div class="tabs" id="tabs"></div><div class="index" id="pubs"></div></section>
+    <section class="blk path"><p class="lbl" data-reveal>Path</p><div id="path"></div><p style="margin-top:16px"><a href="cv.html">Full CV</a></p></section>
+    <footer>© <span id="yr"></span> Weiji Xie · hand-built, no template</footer>
+  </div>
+</div>
+<div class="frame" id="frame" aria-hidden="true"></div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="flock.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, media, links, rest } = Site, $ = (id) => document.getElementById(id);
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("tagline").textContent = P.tagline;
+  $("statement").textContent = P.statement;
+  $("aff").innerHTML = P.affiliation;
+  $("contacts").innerHTML = Site.contacts({ labels: true });
+  $("news").innerHTML = S.news.map((n, i) => `<div data-reveal style="--d:${i}"><time>${n.date}</time><span>${esc(n.text)}</span></div>`).join("");
+  $("path").innerHTML = S.education.concat(S.experience).map((e) => `<div><time>${e.when}</time><span>${esc(e.title)}, ${esc(e.org)}</span></div>`).join("");
+  $("yr").textContent = new Date().getFullYear();
+  const card = (p) => `<div class="w" data-short="${esc(p.short)}" tabindex="0"><div class="row"><h3>${esc(p.short)}</h3><span class="v">${esc(venue(p))}</span></div>
+    <p class="note">${esc(p.note)}</p><div class="ln">${links(p)}</div><div class="inline" data-hover>${media(p)}</div></div>`;
+  // 悬停 / 聚焦：右侧浮现图像，群体缓缓聚过去
+  const frame = $("frame");
+  const show = (p) => {
+    if (!p) { frame.classList.remove("on"); Flock.attract(null); document.querySelectorAll(".w.on").forEach((w) => w.classList.remove("on")); return; }
+    frame.innerHTML = `${media(p)}<div class="cap">${esc(rest(p))}<br>${me(p.authors)}</div>`;
+    Site.bindMedia(frame);
+    frame.classList.add("on");
+    const r = frame.getBoundingClientRect(); Flock.attract(r.left + r.width / 2, innerHeight / 2);
+  };
+  Site.tabs($("tabs"), (f) => {
+    Site.renderPubs($("pubs"), f, card);
+    document.querySelectorAll(".w").forEach((w) => {
+      const p = S.publications.find((q) => q.short === w.dataset.short);
+      w.addEventListener("mouseenter", () => { w.classList.add("on"); show(p); });
+      w.addEventListener("mouseleave", () => show(null));
+      w.addEventListener("focusin", () => { w.classList.add("on"); show(p); });
+      w.addEventListener("focusout", () => show(null));
+    });
+  });
+  Site.init();
+  Site.reveal();
+  Flock.start($("flock"));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><a class="nm" href="#">Weiji Xie</a><nav aria-label="Site"><a href="cv.html">CV</a></nav></header>
+
+<div class="journey" id="journey">
+  <div class="viewport">
+    <div class="track" id="track">
+      <section class="panel p-intro">
+        <div class="row"><div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div><div class="k" id="tagline"></div></div>
+        <h1>Weiji Xie</h1>
+        <p class="st" id="statement"></p>
+        <p class="aff" id="aff"></p>
+        <div class="contacts" id="contacts"></div>
+        <div class="hint">scroll, and the day moves along <i>→</i></div>
+      </section>
+      <section class="panel p-news"><p class="lbl">Lately</p><ul id="news"></ul></section>
+      <section class="panel p-head" id="research"><p class="lbl">Research</p><h2>Things I've built</h2><div class="tabs" id="tabs"></div><small>* equal contribution · † corresponding</small></section>
+      <div id="pubs" style="display:contents"></div>
+      <section class="panel p-path"><p class="lbl">Path</p><div id="path"></div><p style="margin-top:18px"><a href="cv.html">The full CV →</a></p></section>
+      <section class="panel p-end"><p class="lbl">Night</p><h2>Let's build robots that learn.</h2><p id="note"></p><div class="contacts" id="contacts2"></div></section>
+    </div>
+  </div>
+</div>
+<div class="sun" id="sun" aria-hidden="true"><div class="line"></div><span style="left:0">dawn</span><span style="left:50%">noon</span><span style="left:82%">dusk</span><span style="left:100%">night</span><div class="dot"></div></div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="day.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, media, links } = Site, $ = (id) => document.getElementById(id);
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("tagline").textContent = P.tagline;
+  $("statement").textContent = P.statement;
+  $("aff").innerHTML = P.affiliation;
+  $("contacts").innerHTML = Site.contacts({ labels: true });
+  $("contacts2").innerHTML = Site.contacts({ labels: true });
+  $("note").textContent = P.contactNote;
+  $("news").innerHTML = S.news.map((n) => `<li><time>${n.date}</time>${esc(n.text)}</li>`).join("");
+  $("path").innerHTML = S.education.concat(S.experience).map((e) => `<div class="r"><time>${e.when}</time>${esc(e.title)}<small>${esc(e.org)}</small></div>`).join("");
+  const measure = Day.init($("journey"), $("track"), $("sun"));
+  const card = (p) => `<section class="panel p-pub" data-hover>${media(p)}<div class="m"><span>${esc(venue(p))}</span><span>${p.date || p.year}</span></div><h3>${esc(p.short)}</h3><p>${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="ln">${links(p)}</div></section>`;
+  Site.tabs($("tabs"), (f) => { Site.renderPubs($("pubs"), f, card); requestAnimationFrame(measure); });
+  Site.init();
+})();
+</script>
+</body>
+</html>

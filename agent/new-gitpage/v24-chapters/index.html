@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas class="sky" id="sky" aria-hidden="true"></canvas>
+<header class="top"><span>Weiji Xie</span><nav aria-label="Site"><a href="cv.html">CV</a></nav></header>
+<nav class="dots" id="dots" aria-label="Chapters"><a href="#c1"><span>Hello</span><i></i></a><a href="#c2"><span>Statement</span><i></i></a><a href="#c3"><span>Lately</span><i></i></a><a href="#c4"><span>Research</span><i></i></a><a href="#c5"><span>Path</span><i></i></a></nav>
+
+<section class="ch c1" id="c1">
+  <div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div>
+  <h1>Weiji Xie</h1>
+  <div class="tg" id="tagline"></div>
+  <div class="cue">scroll</div>
+</section>
+<section class="ch c2" id="c2">
+  <p class="lbl">Statement</p>
+  <p class="st" id="statement"></p>
+  <p class="aff" id="aff"></p>
+  <div class="contacts" id="contacts"></div>
+</section>
+<section class="ch c3" id="c3"><p class="lbl">Lately</p><ul id="news"></ul></section>
+<section class="ch c4" id="c4">
+  <p class="lbl">Research</p>
+  <div class="tabs" id="tabs"></div>
+  <div class="slides" id="pubs"></div>
+  <div class="ctrl"><button type="button" id="prev" aria-label="Previous">←</button><span id="count"></span><button type="button" id="next" aria-label="Next">→</button></div>
+</section>
+<section class="ch c5" id="c5">
+  <p class="lbl">Path</p>
+  <div class="path" id="path"></div>
+  <p style="margin-top:22px"><a href="cv.html">Full curriculum vitae</a></p>
+  <p class="end">Toward robots that learn, and keep learning.</p>
+</section>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="sky.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, media, links, rest } = Site, $ = (id) => document.getElementById(id);
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("tagline").textContent = P.tagline;
+  $("statement").textContent = P.statement;
+  $("aff").innerHTML = P.affiliation;
+  $("contacts").innerHTML = Site.contacts({ labels: true });
+  $("news").innerHTML = S.news.map((n) => `<li><time>${n.date}</time><span>${esc(n.text)}</span></li>`).join("");
+  $("path").innerHTML = S.education.concat(S.experience).map((e) => `<div><time>${e.when}</time><span>${esc(e.title)}, ${esc(e.org)}</span></div>`).join("");
+  // 幻灯：一次一篇
+  let cur = 0;
+  const show = (i, dir) => {
+    const sl = [...document.querySelectorAll(".slide")]; if (!sl.length) return;
+    cur = (i + sl.length) % sl.length;
+    sl.forEach((s, k) => { s.classList.toggle("cur", k === cur); s.style.setProperty("--from", (dir || 1) * 30 + "px"); });
+    $("count").textContent = `${String(cur + 1).padStart(2, "0")} / ${String(sl.length).padStart(2, "0")}`;
+  };
+  const card = (p) => `<article class="slide" data-hover>${media(p)}<div><div class="v">${esc(venue(p))} · ${p.date || p.year}</div><h3>${esc(p.short)}</h3><p>${esc(p.note)}</p><p class="full">${esc(rest(p))}</p><div class="au">${me(p.authors)}</div><div class="ln">${links(p)}</div></div></article>`;
+  Site.tabs($("tabs"), (f) => { Site.renderPubs($("pubs"), f, card); show(0); });
+  $("prev").addEventListener("click", () => show(cur - 1, -1));
+  $("next").addEventListener("click", () => show(cur + 1, 1));
+  let inResearch = false;
+  addEventListener("keydown", (e) => { if (!inResearch) return; if (e.key === "ArrowRight") show(cur + 1, 1); if (e.key === "ArrowLeft") show(cur - 1, -1); });
+  let sx = null; $("pubs").addEventListener("pointerdown", (e) => (sx = e.clientX)); $("pubs").addEventListener("pointerup", (e) => { if (sx != null && Math.abs(e.clientX - sx) > 50) show(cur + (e.clientX < sx ? 1 : -1), e.clientX < sx ? 1 : -1); sx = null; });
+  // 章节入场与右侧圆点
+  const dots = [...document.querySelectorAll("#dots a")];
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add("in");
+    dots.forEach((d) => d.classList.toggle("on", d.getAttribute("href") === "#" + e.target.id));
+    inResearch = e.target.id === "c4";
+  }), { threshold: 0.5 });
+  document.querySelectorAll(".ch").forEach((c) => io.observe(c));
+  Site.init();
+  Sky($("sky"));
+})();
+</script>
+</body>
+</html>

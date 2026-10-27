@@ -41,7 +41,12 @@ code { font-size: 13px; background: var(--bg); padding: 1px 5px; border-radius: 
 </head>
 <body>
 <main class="wrap">
-  <h1>新主页草稿 · 第五轮</h1>
+  <h1>新主页草稿 · 第六轮</h1>
+  <p class="lede">这一轮只讲整体感觉和氛围，不再借用任何学术元素做隐喻。六个方案在布局、色调、节奏、动效上都彼此不同；共同点只有内容和“learning / self-improvement”的精神，它藏在动效里：会学习的东西从笨拙变得流畅。</p>
+  <h2>第六轮 · 氛围</h2>
+  <div class="grid" id="atmo"></div>
+
+  <h2 style="margin-top:56px">第五轮</h2>
   <p class="lede">定位：AI 时代的 robotic scientist，相信强化学习与 self-improvement。这一轮的七个方案都从“AI 研究者每天面对的东西”出发：模型卡、notebook、带引用的回答、agent 轨迹、嵌入空间，以及以 RL 循环和自我改进为骨架的两版。每个都带 “Copy profile as Markdown（for LLMs）”，并有风格一致的 CV 页。之前的版本都没动，在下面。</p>
 
   <h2>RL / self-improvement 为骨架</h2>
@@ -77,6 +82,14 @@ code { font-size: 13px; background: var(--bg); padding: 1px 5px; border-radius: 
 </main>
 <script>
 (function () {
+  const atmo = [
+    ["v19-letter", "V19 · Letter", "静谧 · 暖灰纸色 · 单栏", "像一封信：窄单栏、大量留白、衬线正文。页面上唯一会动的是一个小光点：起初在页边乱游，跟着你的光标越久就越稳，学会了跟随。"],
+    ["v20-gallery", "V20 · Gallery", "安静 · 展厅 · 双栏", "左侧固定展签栏（简介、联系方式、筛选），右侧是一件件大图展品。背景里几支淡墨线一开始抖动，慢慢学会顺着流场画出流畅的线。"],
+    ["v21-day", "V21 · A Day", "光 · 横向旅程", "向下滚动，内容横向移动；底色从黎明、正午、黄昏走到深夜，底部一颗小太阳标出时间。论文是一帧帧大图。"],
+    ["v22-mosaic", "V22 · Mosaic", "明亮 · 玻璃 · 无分节", "没有分节，所有内容都是大小不一的玻璃砖，铺在一片缓慢游移的柔光上；其中一团光会慢慢移向你的鼠标，砖块被轻轻吸引。"],
+    ["v23-field", "V23 · Field", "深邃 · 群体涌现", "深色背景里一群小光点，从无序逐渐学会结队流动。前景是大字号的论文索引，悬停标题时右侧浮现图像，光点群也缓缓聚过去。"],
+    ["v24-chapters", "V24 · Chapters", "深邃 · 电影式", "整屏分章、吸附翻页；地平线微光和极慢的极光贯穿全站。论文一次一篇，像幻灯片左右切换（按钮、方向键或滑动）。"],
+  ];
   const rl = [
     ["v17-loop", "V17 · Agent–Environment Loop", "RL · calm", "首屏是 agent ↔ environment 的 RL 循环：你（证件照）是 agent π<sub>θ</sub>，action / state / reward 三条弧，一个点缓慢绕圈，每圈 t+1。News 是 reward signals，论文是 rollouts，履历是 policy updates（θ ← θ + α∇J）。"],
     ["v18-selfimprove", "V18 · Self-Improvement Log", "self-improvement · geek", "研究写成不断自我改进的循环：右侧是 build → evaluate → improve 的伪代码；论文和履历按日期排成 git log --graph 的两条泳道，带提交哈希、HEAD → main、tag: NeurIPS-2025 等 ref 和缩略图。News 是 git tag。"],
@@ -103,6 +116,7 @@ code { font-size: 13px; background: var(--bg); padding: 1px 5px; border-radius: 
   const shot = (d, t) => `<div class="shot"><iframe src="${d}/index.html" title="${t} preview" loading="lazy" tabindex="-1"></iframe><a href="${d}/index.html" aria-label="Open ${t}"></a></div>`;
   const newCard = ([d, t, s, p]) => `<article class="v new">${shot(d, t)}
     <div class="body"><h3>${t}<small>${s}</small></h3><p>${p}</p><p><a href="${d}/index.html">首页 →</a> &nbsp; <a href="${d}/cv.html">CV 页 →</a></p></div></article>`;
+  document.getElementById("atmo").innerHTML = atmo.map(newCard).join("");
   document.getElementById("rl").innerHTML = rl.map(newCard).join("");
   document.getElementById("ai").innerHTML = ai.map(newCard).join("");
   document.getElementById("fresh").innerHTML = fresh.map(([d, t, s, p]) => `<article class="v new">${shot(d, t)}

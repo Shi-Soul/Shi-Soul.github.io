@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" style="scroll-snap-type:none">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CV · Weiji Xie</title>
+<meta name="description" content="Curriculum vitae of Weiji Xie.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas class="sky" id="sky" aria-hidden="true"></canvas>
+<header class="top"><a href="index.html" style="margin:0">Weiji Xie</a><nav aria-label="Site"><a href="index.html">Home</a></nav></header>
+<main class="cvpage">
+  <p class="lbl">Curriculum vitae</p>
+  <h1>Weiji Xie</h1>
+  <p id="aff" style="color:var(--ink2)"></p>
+  <div class="contacts" id="contacts" style="justify-content:flex-start"></div>
+  <div class="cvl" id="cv"></div>
+</main>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="sky.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, links } = Site, $ = (id) => document.getElementById(id);
+  $("aff").innerHTML = P.affiliation;
+  $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true });
+  const row = (k, v) => `<div class="row"><time>${esc(k)}</time><div>${v}</div></div>`;
+  const ent = (e) => row(e.when, `${esc(e.title)}<small>${esc(e.org)}${e.detail ? " · " + esc(e.detail) : ""}</small>`);
+  $("cv").innerHTML = `<h2>Education</h2>${S.education.map(ent).join("")}<h2>Experience</h2>${S.experience.map(ent).join("")}` +
+    `<h2>Publications</h2>${S.publications.map((p) => row(venue(p), `${esc(p.title)}<small>${me(p.authors)}</small><small>${links(p).replace(/<\/a><a/g, "</a> · <a")}</small>`)).join("")}` +
+    `<h2>Honors</h2>${S.honors.map((h) => row(String(h.year), esc(h.text))).join("")}<h2>Service &amp; misc</h2>${S.service.map((s) => row("Service", esc(s))).join("")}${S.misc.map((m) => row(m.k, esc(m.v))).join("")}`;
+  Site.init();
+  Sky($("sky"));
+})();
+</script>
+</body>
+</html>
