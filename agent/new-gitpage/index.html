@@ -18,7 +18,7 @@ a { color: var(--accent); }
 h1 { font-size: clamp(26px, 4vw, 36px); margin: 0 0 6px; letter-spacing: -.02em; }
 h2 { font-size: 18px; margin: 40px 0 12px; }
 .lede { color: var(--ink2); max-width: 820px; margin: 0; }
-.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
 .v { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
 .v.new { box-shadow: 0 0 0 2px var(--accent); }
 .shot { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--bg); }
@@ -41,58 +41,39 @@ code { font-size: 13px; background: var(--bg); padding: 1px 5px; border-radius: 
 </head>
 <body>
 <main class="wrap">
-  <h1>新主页草稿 · 第二轮</h1>
-  <p class="lede">按反馈改过：文字大幅精简；论文分<b>主要工作</b>（一作/共一，带缩略图卡片）和<b>参与的工作</b>（紧凑列表）两档，加一篇只需在 <code>shared/data.js</code> 里加一条；缩略图用的是各项目主页上的真实图片，有视频的悬停才加载播放；联系方式与原站一致（邮箱、Scholar、GitHub、LinkedIn、X、微信二维码）；不再出现 /agent 下的任何内容或链接。</p>
+  <h1>新主页草稿 · 第三轮</h1>
+  <p class="lede">保留并迭代 V4 / V5 / V6，新增 V8。每个版本都有风格一致的 <b>CV 子页</b>；News 在论文前；论文按分类筛选（默认 Selected），所有工作都带图；定位改为 robot learning，不再绑定 humanoid whole-body control；单一主题、全英文；页面里不再出现 handle。</p>
 
-  <h2>我的推荐</h2>
-  <div class="box">
-    <ol>
-      <li><b>V5 Lab Badge</b>：证件照放在工牌上最自然，个人味和记忆点都强，信息量也最克制。现在这张照片就能直接用。</li>
-      <li><b>V1 Control Room</b>：最“硬核”，首屏可以打字指挥机器人，直接呼应 TextOp。</li>
-      <li><b>V6 Swiss</b>：最正式、最干净，适合偏学术的观感，也能直接用证件照。</li>
-    </ol>
-    <p style="margin:10px 0 0">换了生活照之后，V2 / V3 / V4 会好看很多；V7 适合喜欢极客趣味的话做备选。</p>
-  </div>
-
-  <h2>七个版本 <span style="font-weight:400;color:var(--muted);font-size:14px">（蓝框为新增）</span></h2>
+  <h2>当前版本</h2>
   <div class="grid" id="grid"></div>
 
-  <h2>照片建议</h2>
-  <div class="box">
-    <p style="margin:0">现在的证件照适合 V5 / V6 / V7（工牌、证件格式、像素化）。其他版本建议换一张，按优先级：</p>
-    <ol>
-      <li><b>和机器人的合影</b>：实验室里站在 G1 旁边，半身、自然光、表情放松。最贴合研究方向，也能直接当首屏大图。</li>
-      <li><b>工作中的抓拍</b>：调机器人、拿着遥控器、在白板前推公式。体现 hands-on 和 technical hardcore。</li>
-      <li><b>户外/校园的生活照</b>：柔和光线、背景简单、人不必居中，留出一侧空间方便排版。</li>
-      <li><b>有趣一点的</b>：模仿机器人做同一个功夫动作的对比照，很适合 V1 / V4。</li>
-    </ol>
-    <p style="margin:8px 0 0">规格：长边 ≥ 1500px，横版、竖版各一张（横版做首屏，竖版裁头像），不要重滤镜。</p>
-  </div>
+  <h2>归档 <span style="font-weight:400;color:var(--muted);font-size:14px">（不再更新，供参考）</span></h2>
+  <div class="grid" id="old"></div>
 
   <h2>说明</h2>
   <div class="box">
     <ul>
-      <li><b>加一篇论文</b>：在 <code>shared/data.js</code> 的 publications 里复制一条，改标题/作者/会议/链接；<code>tier: "main"</code> 进主卡片，否则进列表；有缩略图就放进 <code>media/</code> 填 <code>image</code>，没有会自动显示文字占位；<code>video</code> 可直接填项目主页的视频地址。</li>
-      <li><b>待核对</b>：新闻日期、每篇一句话说明（<code>note</code>）是我写的草稿。</li>
-      <li><b>缩略图来源</b>：TextOp / KungfuBot / KungfuBot2 / LoopSR 取自各自项目主页，Narrow Terrain 取自 arXiv；OFSP 和轨迹模型暂无图。</li>
+      <li><b>加一篇论文</b>：在 <code>shared/data.js</code> 的 publications 里复制一条；<code>selected</code> 决定是否出现在默认标签，<code>cats</code> 决定分类，<code>image</code> 放进 <code>media/</code>，<code>video</code> 可填项目主页视频地址（悬停才加载）。</li>
+      <li><b>改分类</b>：<code>categories</code> 里增删即可，筛选标签自动生成。</li>
+      <li><b>待核对</b>：新闻日期、每篇一句话 <code>note</code>、个人陈述 <code>statement</code> 是草稿。</li>
+      <li><b>照片</b>：V5 / V6 用证件照最自然；V4 是回形针一寸照；V8 是带光环的圆形头像，换生活照会更好。</li>
       <li>右下角的版本切换条只存在于草稿，定稿时会去掉。</li>
     </ul>
   </div>
 </main>
 <script>
 (function () {
-  const V = [
-    ["v1-console", "V1 · Control Room", "technical hardcore", "深色控制台，首屏可打字指挥的人形机器人。", ["证件照：小尺寸「操作员证件」"]],
-    ["v2-editorial", "V2 · Research Review", "researcher · taste", "杂志排版、朱红印章。彩色照片，白底用正片叠底融进纸色。", ["换生活照更好"]],
-    ["v3-atlas", "V3 · Atlas", "innovative · clear", "明亮现代、bento 速览，信息最好扫读。", ["证件照：圆形头像"]],
-    ["v4-notebook", "V4 · Notebook", "creative · open-mind", "方格纸笔记本、手写批注、中英切换。", ["证件照：回形针别着的一寸照"]],
-    ["v5-badge", "V5 · Lab Badge", "creative · personal", "首屏是一张随指针摆动的实验室工牌。", ["证件照：最契合"], true],
-    ["v6-swiss", "V6 · Swiss", "researcher · formal", "瑞士网格排版，黑白红，极简正式。", ["证件照：35×45 证件格式"], true],
-    ["v7-manpage", "V7 · man weiji", "technical · geeky", "Unix man page 形式，照片做成 1-bit 像素抖动。", ["证件照：像素化"], true],
+  const cur = [
+    ["v5-badge", "V5 · Lab Badge", "creative · personal", "可拖拽甩动的弹簧工牌、标题轮换词、卡片 3D 倾斜、扫描线。证件照最契合。"],
+    ["v6-swiss", "V6 · Swiss", "researcher · formal", "名字逐字升起、红点光标、关键词跑马灯、分隔线滚动绘出。"],
+    ["v4-notebook", "V4 · Notebook", "creative · open-mind", "荧光笔涂抹、手绘下划线、便利贴分类标签、胶带卡片、摆动的回形针照片。"],
+    ["v8-flow", "V8 · Flow", "innovative · technical", "首屏是跟随鼠标形成涡旋的粒子流场，聚光卡片、旋转光环头像。新增。", true],
   ];
-  document.getElementById("grid").innerHTML = V.map(([d, t, s, p, tags, isNew]) => `<article class="v ${isNew ? "new" : ""}">
-    <div class="shot"><iframe src="${d}/index.html" title="${t} preview" loading="lazy" tabindex="-1"></iframe><a href="${d}/index.html" aria-label="Open ${t}"></a></div>
-    <div class="body"><h3>${t}<small>${s}</small></h3><p>${p}</p>${tags.map((x) => `<span class="tag photo">${x}</span>`).join("")}<p><a href="${d}/index.html">打开 →</a></p></div></article>`).join("");
+  const old = [["v1-console", "V1 · Control Room"], ["v2-editorial", "V2 · Research Review"], ["v3-atlas", "V3 · Atlas"], ["v7-manpage", "V7 · man weiji"]];
+  const shot = (d, t) => `<div class="shot"><iframe src="${d}/index.html" title="${t} preview" loading="lazy" tabindex="-1"></iframe><a href="${d}/index.html" aria-label="Open ${t}"></a></div>`;
+  document.getElementById("grid").innerHTML = cur.map(([d, t, s, p, isNew]) => `<article class="v ${isNew ? "new" : ""}">${shot(d, t)}
+    <div class="body"><h3>${t}<small>${s}</small></h3><p>${p}</p><p><a href="${d}/index.html">首页 →</a> &nbsp; <a href="${d}/cv.html">CV 页 →</a></p></div></article>`).join("");
+  document.getElementById("old").innerHTML = old.map(([d, t]) => `<article class="v" style="opacity:.75">${shot(d, t)}<div class="body"><h3>${t}</h3><p><a href="${d}/index.html">打开 →</a></p></div></article>`).join("");
   const fit = () => document.querySelectorAll(".shot").forEach((s) => { s.querySelector("iframe").style.transform = `scale(${s.clientWidth / 1440})`; });
   fit(); window.addEventListener("resize", fit);
 })();

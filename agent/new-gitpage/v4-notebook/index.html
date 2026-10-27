@@ -1,136 +1,83 @@
 <!doctype html>
-<html lang="en" data-lang="en">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Weiji Xie · Notebook</title>
-<meta name="description" content="Weiji Xie 谢炜基: humanoid whole-body control, reinforcement learning, robotics.">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
 <link rel="stylesheet" href="../shared/site.css">
-<style>
-:root {
-  --paper: #fbfaf4; --grid: #e6ebf2; --ink: #1f2328; --ink2: #4b5058; --muted: #868b92; --rule: #d9dde3; --pen: #2457c5; --red: #d9412f; --hl: #ffe36e;
-  --serif: "Source Serif 4", "Noto Serif SC", Georgia, serif; --hand: "Caveat", "Noto Serif SC", cursive; --mono: "IBM Plex Mono", ui-monospace, monospace;
-  --pm-bg: #fff; --pm-ph-bg: repeating-linear-gradient(135deg, var(--paper) 0 8px, var(--grid) 8px 9px); --pm-ph-ink: var(--red);
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --paper: #15171a; --grid: #1f242b; --ink: #e9e7e1; --ink2: #c3c1bb; --muted: #8a8d93; --rule: #30353d; --pen: #8fb1ff; --red: #ff7b6b; --hl: #6b5a12; color-scheme: dark; }
-}
-:root[data-theme="dark"] { --paper: #15171a; --grid: #1f242b; --ink: #e9e7e1; --ink2: #c3c1bb; --muted: #8a8d93; --rule: #30353d; --pen: #8fb1ff; --red: #ff7b6b; --hl: #6b5a12; color-scheme: dark; }
-* { box-sizing: border-box; }
-body { margin: 0; background-color: var(--paper); color: var(--ink); font: 18px/1.7 var(--serif); background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 26px 26px; -webkit-font-smoothing: antialiased; }
-html[data-lang="en"] [lang="zh"], html[data-lang="zh"] [lang="en"]:not(html) { display: none !important; }
-a { color: var(--pen); text-underline-offset: 3px; }
-:focus-visible { outline: 2px dashed var(--pen); outline-offset: 3px; }
-.page { max-width: 860px; margin: 0 auto; padding: 0 24px; }
-mark { background: linear-gradient(100deg, transparent 2%, var(--hl) 4%, var(--hl) 96%, transparent 98%); color: inherit; padding: 0 .15em; }
-
-.top { display: flex; justify-content: space-between; align-items: center; padding: 22px 0 0; }
-.sig { font: 700 30px var(--hand); color: var(--ink); text-decoration: none; }
-.seg { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; background: var(--paper); margin-left: 8px; }
-.seg button { border: 0; background: transparent; color: var(--ink); font: 500 13px var(--mono); padding: 6px 12px; cursor: pointer; }
-.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
-
-.hello { display: grid; grid-template-columns: minmax(0, 1fr) 170px; gap: 36px; padding: 48px 0 12px; align-items: start; }
-h1 { font: 700 clamp(40px, 6vw, 58px)/1.05 var(--serif); margin: 0 0 16px; letter-spacing: -.02em; }
-h1 small { font-size: .5em; font-weight: 600; color: var(--muted); margin-left: 8px; }
-.contacts { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px; font-size: 20px; }
-.contacts a, .contacts button { color: var(--ink2); text-decoration: none; }
-.contacts a:hover, .contacts button:hover { color: var(--pen); }
-/* 证件照就当证件照用：回形针别在笔记本上的“一寸照” */
-.passport { position: relative; background: #fff; padding: 7px; border: 1px solid #ddd; transform: rotate(2.5deg); box-shadow: 0 8px 18px -10px rgba(0,0,0,.35); margin-top: 10px; }
-.passport .img { aspect-ratio: 5 / 7; background: #fff center 25% / cover; }
-.passport::before { content: ""; position: absolute; top: -18px; left: 22px; width: 16px; height: 46px; border: 3px solid #9aa0a6; border-radius: 10px; border-bottom-color: transparent; }
-.passport-note { font: 700 21px/1.1 var(--hand); color: var(--red); margin-top: 12px; transform: rotate(-3deg); text-align: center; }
-
-h2 { font: 700 26px var(--serif); margin: 44px 0 14px; }
-h2 .hand { font: 700 22px var(--hand); color: var(--red); margin-left: 10px; }
-.paper { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 22px; padding: 18px 0; border-top: 1.5px dashed var(--rule); }
-.paper .pm { aspect-ratio: 4 / 3; border: 1.5px solid var(--ink); border-radius: 4px; box-shadow: 4px 4px 0 var(--ink); }
-.paper h3 { font: 700 21px/1.3 var(--serif); margin: 0; }
-.paper .venue { font: 500 12.5px var(--mono); color: var(--red); }
-.paper .venue b { background: var(--hl); color: var(--ink); padding: 0 5px; font-weight: 500; }
-.paper p { margin: 4px 0 6px; color: var(--ink2); font-size: 16.5px; }
-.paper .acts, .olist .acts { font: 13px var(--mono); display: inline-flex; gap: 14px; }
-.olist { list-style: none; margin: 8px 0 0; padding: 0; }
-.olist li { padding: 10px 0; border-top: 1px solid var(--rule); font-size: 16px; }
-.olist .v { font: 12.5px var(--mono); color: var(--red); margin-right: 8px; }
-.olist .note { color: var(--muted); font-size: 15px; }
-.tl { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 2px solid var(--ink); }
-.tl li { position: relative; padding: 4px 0 10px 16px; font-size: 16.5px; }
-.tl li::before { content: ""; position: absolute; left: -25px; top: 11px; width: 10px; height: 10px; border-radius: 50%; background: var(--red); }
-.tl time { font: 500 13px var(--mono); color: var(--muted); margin-right: 10px; }
-footer { padding: 48px 0 64px; font: 14px var(--mono); color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-@media (max-width: 640px) {
-  .page { padding: 0 16px; }
-  .hello { grid-template-columns: 1fr 110px; gap: 18px; padding-top: 32px; }
-  .paper { grid-template-columns: 1fr; }
-  .sig { font-size: 24px; }
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="page">
-  <header class="top">
-    <a class="sig" href="#top">Weiji Xie ✎</a>
-    <div><div class="seg" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="zh" aria-pressed="false">中文</button></div><div class="seg"><button type="button" id="theme" aria-label="Toggle dark mode">◐</button></div></div>
-  </header>
+<header class="top"><div class="page">
+  <a class="sig" href="#top">Weiji Xie ✎</a>
+  <nav aria-label="Site"><a href="#news">news</a><a href="#publications">publications</a><a href="cv.html">cv</a></nav>
+</div></header>
 
-  <section class="hello" id="top">
+<main class="page" id="top">
+  <section class="hello">
     <div>
-      <h1>Weiji Xie<small>谢炜基</small></h1>
-      <p lang="en">I teach <mark>humanoid robots</mark> to control their whole body with reinforcement learning.</p>
-      <p lang="zh">我用强化学习教<mark>人形机器人</mark>控制全身。</p>
-      <p style="font-size:16px;color:var(--ink2)"><span lang="en" id="bio-en"></span><span lang="zh" id="bio-zh"></span></p>
-      <div class="contacts" id="contacts"></div>
+      <div class="tagline" data-reveal id="tagline"></div>
+      <h1 data-reveal style="--d:1">Weiji Xie</h1>
+      <p class="statement" data-reveal style="--d:2" id="statement"></p>
+      <p class="aff" data-reveal style="--d:3" id="aff"></p>
+      <div class="contacts" data-reveal style="--d:4" id="contacts"></div>
     </div>
     <div>
       <div class="passport"><div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div></div>
-      <div class="passport-note"><span lang="en">official photo ✓</span><span lang="zh">一寸照 ✓</span></div>
+      <div class="passport-note">official photo ✓</div>
     </div>
   </section>
 
-  <h2><span lang="en">Main work</span><span lang="zh">主要工作</span><span class="hand" lang="en">first author</span><span class="hand" lang="zh">一作</span></h2>
-  <div id="mains"></div>
+  <section id="news">
+    <h2 data-reveal><span class="u">News<svg viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2 9 C 25 3, 50 13, 98 5"/></svg></span></h2>
+    <ul class="news" id="news-list"></ul>
+  </section>
 
-  <h2><span lang="en">Also involved</span><span lang="zh">参与的工作</span></h2>
-  <ul class="olist" id="others"></ul>
+  <section id="publications">
+    <h2 data-reveal><span class="u">Publications<svg viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2 6 C 30 12, 60 2, 98 8"/></svg></span></h2>
+    <div class="tabs" id="tabs" data-reveal></div>
+    <div class="pubs" id="pubs"></div>
+  </section>
 
-  <h2><span lang="en">Lately</span><span lang="zh">近况</span></h2>
-  <ul class="tl" id="news"></ul>
+  <section id="path">
+    <h2 data-reveal><span class="u">Path<svg viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2 8 C 30 3, 70 12, 98 6"/></svg></span></h2>
+    <div class="path">
+      <div data-reveal><h3>education</h3><ul id="edu"></ul></div>
+      <div data-reveal style="--d:1"><h3>experience</h3><ul id="exp"></ul></div>
+    </div>
+    <a class="more" href="cv.html">→ full CV</a>
+  </section>
 
-  <footer><span id="cv"></span><span>✎ hand-written, no template</span></footer>
-</div>
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><span>✎ hand-written, no template</span></footer>
+</main>
 
 <script src="../shared/data.js"></script>
 <script src="../shared/site.js"></script>
 <script src="../shared/switcher.js"></script>
 <script>
 (function () {
-  const { S, P, esc, me, venue, isTop, media, links } = Site, $ = (id) => document.getElementById(id);
-  const bi = (en, zh) => `<span lang="en">${en}</span><span lang="zh">${zh || en}</span>`;
+  const { S, P, esc, me, venue, isTop, media, links, catName } = Site, $ = (id) => document.getElementById(id);
   $("photo").style.backgroundImage = `url(${P.photo})`;
-  $("bio-en").innerHTML = P.bio; $("bio-zh").innerHTML = P.bioZh;
-  $("contacts").innerHTML = Site.contacts();
-  const v = (p) => (isTop(p) ? `<b>${esc(venue(p))}</b>` : bi("under review", "审稿中"));
-  const L = { project: bi("project ↗", "主页 ↗"), pdf: bi("paper ↗", "论文 ↗") };
-  $("mains").innerHTML = Site.main().map((p) => `<article class="paper" data-hover>${media(p)}<div><div class="venue">${v(p)}</div><h3>${esc(p.title)}</h3><p>${bi(esc(p.note), esc(p.noteZh))}</p><div class="acts">${links(p, L)}</div></div></article>`).join("");
-  $("others").innerHTML = Site.others().map((p) => `<li><span class="v">${isTop(p) ? esc(venue(p)) : bi("preprint", "预印本")}</span><b>${esc(p.short)}</b> · <span class="note">${bi(esc(p.note), esc(p.noteZh))}</span> <span class="acts">${links(p, L)}</span></li>`).join("");
-  $("news").innerHTML = S.news.map((n) => `<li><time>${n.date}</time>${bi(esc(n.text), esc(n.textZh))}</li>`).join("");
-  $("cv").innerHTML = `<a href="${P.cv}">${bi("full CV →", "完整简历 →")}</a>`;
+  $("tagline").textContent = P.tagline.toLowerCase();
+  $("aff").innerHTML = P.affiliation;
+  $("statement").innerHTML = esc(P.statement).replace(/physical skills|general-purpose robots/g, "<mark>$&</mark>"); // 荧光笔标出关键词
+  $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true });
+  $("news-list").innerHTML = S.news.map((n, i) => `<li data-reveal style="--d:${i}"><time>${n.date}</time>${esc(n.text)}</li>`).join("");
+  const li = (r) => `<li><time>${r.when}</time>${esc(r.title)}<small>${esc(r.org)}</small></li>`;
+  $("edu").innerHTML = S.education.map(li).join(""); $("exp").innerHTML = S.experience.map(li).join("");
+  $("yr").textContent = new Date().getFullYear();
+  const card = (p) => `<article class="pub" data-hover>${media(p)}
+    <div class="venue">${isTop(p) ? `<b>${esc(venue(p))}</b>` : "under review"}<span>${(p.cats || []).map(catName).join(", ").toLowerCase()}</span></div>
+    <h3>${esc(p.title)}</h3><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="acts">${links(p, { project: "project ↗", pdf: "paper ↗" })}</div></article>`;
+  Site.tabs($("tabs"), (f) => Site.renderPubs($("pubs"), f, card));
   Site.init();
-  Site.themeToggle($("theme"));
-
-  const root = document.documentElement;
-  const setLang = (l) => { root.dataset.lang = l; root.lang = l === "zh" ? "zh-CN" : "en"; document.querySelectorAll("button[data-lang]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.lang === l)); try { localStorage.setItem("wx-lang", l); } catch (e) {} };
-  document.querySelectorAll("button[data-lang]").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
-  let saved = null; try { saved = localStorage.getItem("wx-lang"); } catch (e) {}
-  setLang(saved || (/^zh/i.test(navigator.language) ? "zh" : "en"));
+  Site.reveal();
 })();
 </script>
 </body>
