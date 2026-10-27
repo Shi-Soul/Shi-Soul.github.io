@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New Homepage Drafts</title>
+<meta name="description" content="谢炜基新个人主页的四个设计草稿。">
+<meta name="robots" content="noindex">
+<style>
+:root { --bg: #f6f6f3; --card: #fff; --ink: #151515; --ink2: #4a4a46; --muted: #85857f; --line: #e3e3dd; --accent: #2b4cff; color-scheme: light; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #101113; --card: #18191c; --ink: #f0f0ec; --ink2: #c4c4be; --muted: #8a8a84; --line: #2a2b2f; --accent: #8a9dff; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #101113; --card: #18191c; --ink: #f0f0ec; --ink2: #c4c4be; --muted: #8a8a84; --line: #2a2b2f; --accent: #8a9dff; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15.5px/1.7 system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+a { color: var(--accent); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 48px 24px 72px; }
+h1 { font-size: clamp(28px, 4vw, 40px); margin: 0 0 8px; letter-spacing: -.02em; }
+.lede { color: var(--ink2); max-width: 760px; margin: 0; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 36px; }
+.v { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+.shot { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--bg); }
+.shot iframe { position: absolute; top: 0; left: 0; width: 1440px; height: 900px; border: 0; transform-origin: 0 0; pointer-events: none; }
+.shot a { position: absolute; inset: 0; }
+.body { padding: 18px 20px 20px; }
+.body h2 { margin: 0; font-size: 20px; }
+.body h2 span { color: var(--muted); font-weight: 500; font-size: 14px; margin-left: 6px; }
+.body p { margin: 8px 0; color: var(--ink2); font-size: 14.5px; }
+.body ul { margin: 8px 0 0; padding-left: 18px; color: var(--ink2); font-size: 14px; }
+.go { display: inline-block; margin-top: 12px; font-weight: 600; text-decoration: none; }
+.notes { margin-top: 40px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 22px 26px; font-size: 14.5px; color: var(--ink2); }
+.notes h2 { font-size: 17px; margin: 0 0 8px; color: var(--ink); }
+.notes code { font-size: 13px; background: var(--bg); padding: 1px 5px; border-radius: 4px; }
+@media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .wrap { padding: 32px 16px 56px; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>新主页 · 四个方向的草稿</h1>
+  <p class="lede">同一份内容、四种性格。每个版本都把 selected publications 做成了“一眼看懂”的动态示意（目前是代码画的占位动画，换上真实 demo 视频/GIF 即可），并补上了研究脉络、动态、长文、近况等简历之外的信息。点开任一版本，右下角浮条可以随时切换对比。</p>
+
+  <div class="grid">
+    <article class="v">
+      <div class="shot"><iframe src="v1-console/index.html" title="V1 preview" loading="lazy" tabindex="-1"></iframe><a href="v1-console/index.html" aria-label="Open V1"></a></div>
+      <div class="body">
+        <h2>V1 · Control Room <span>technical hardcore</span></h2>
+        <p>深色控制台 / HUD 风格。首屏是一个可以<b>直接打字指挥</b>的人形机器人沙盒（呼应 TextOp），带实时关节遥测。论文是“实验日志”，新闻是 changelog。</p>
+        <ul><li>最“硬核”、最有记忆点</li><li>风险：偏冷，审美偏工程师</li></ul>
+        <a class="go" href="v1-console/index.html">打开 V1 →</a>
+      </div>
+    </article>
+    <article class="v">
+      <div class="shot"><iframe src="v2-editorial/index.html" title="V2 preview" loading="lazy" tabindex="-1"></iframe><a href="v2-editorial/index.html" aria-label="Open V2"></a></div>
+      <div class="body">
+        <h2>V2 · Research Review <span>researcher · taste</span></h2>
+        <p>杂志 / 期刊排版：大号衬线字、朱红印章“谢炜基”、带脚注的研究陈述长文（把五篇工作串成一条线），每篇论文是一个大图专题。</p>
+        <ul><li>最有“研究者气质”和个人品味，叙事感强</li><li>风险：信息密度略低，需要好的真实 demo 图撑场</li></ul>
+        <a class="go" href="v2-editorial/index.html">打开 V2 →</a>
+      </div>
+    </article>
+    <article class="v">
+      <div class="shot"><iframe src="v3-atlas/index.html" title="V3 preview" loading="lazy" tabindex="-1"></iframe><a href="v3-atlas/index.html" aria-label="Open V3"></a></div>
+      <div class="body">
+        <h2>V3 · Research Atlas <span>innovative · clear</span></h2>
+        <p>现代、明亮的产品化风格。可交互的<b>研究地图</b>（按方向分泳道的时间线，悬停看论文之间的继承关系，点泳道筛选），bento 速览格，论文卡片悬停播放 demo。</p>
+        <ul><li>信息最全、最好扫读，招生/合作方最友好</li><li>风险：风格相对“常见”，个人味靠内容</li></ul>
+        <a class="go" href="v3-atlas/index.html">打开 V3 →</a>
+      </div>
+    </article>
+    <article class="v">
+      <div class="shot"><iframe src="v4-notebook/index.html" title="V4 preview" loading="lazy" tabindex="-1"></iframe><a href="v4-notebook/index.html" aria-label="Open V4"></a></div>
+      <div class="body">
+        <h2>V4 · Notebook <span>creative · open-mind</span></h2>
+        <p>方格纸实验笔记本：手写批注、拍立得照片、<b>中英一键切换</b>。每篇论文附“背后的故事”，另有“反复在想的问题”、书架、写给入门者的长文。</p>
+        <ul><li>最有人味、最体现 open-mind 和哲学兴趣</li><li>风险：手写风不够“正式”，需要拿捏</li></ul>
+        <a class="go" href="v4-notebook/index.html">打开 V4 →</a>
+      </div>
+    </article>
+  </div>
+
+  <section class="notes">
+    <h2>说明</h2>
+    <p><b>占位内容：</b>论文 demo 是程序化动画（<code>shared/demos.js</code>）；“Now”、书架、论文背后的故事、部分新闻日期、TL;DR 措辞都是我先写的草稿，需要你改成真实的。所有内容集中在 <code>shared/data.js</code>，改一处四个版本同步。</p>
+    <p><b>换真实素材：</b>把视频/GIF 放到 <code>agent/new-gitpage/media/</code>，在 <code>data.js</code> 对应论文填 <code>media: "../media/xxx.mp4"</code>。</p>
+    <p><b>混搭也可以：</b>比如 V2 的排版 + V1 的交互沙盒 + V3 的研究地图。选定方向后再精修、接入 Jekyll、替换主页。</p>
+  </section>
+</main>
+<script>
+// iframe 按卡片宽度缩放
+(function () {
+  const fit = () => document.querySelectorAll(".shot").forEach((s) => { const f = s.querySelector("iframe"); f.style.transform = `scale(${s.clientWidth / 1440})`; });
+  fit(); window.addEventListener("resize", fit);
+})();
+</script>
+</body>
+</html>

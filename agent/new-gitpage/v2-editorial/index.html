@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie · Research Review</title>
+<meta name="description" content="Weiji Xie: humanoid whole-body control, reinforcement learning, robotics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #f6f2ea; --paper2: #efe9de; --ink: #1c1915; --ink2: #4a443c; --muted: #857c70; --rule: #d9d1c3;
+  --red: #c8381c; --red-ink: #a52c14;
+  --serif: "Fraunces", "Noto Serif SC", Georgia, serif;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "PingFang SC", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --paper: #15130f; --paper2: #1d1a15; --ink: #efe9dd; --ink2: #c8c0b2; --muted: #8f8676; --rule: #3a342b; --red: #ff6a45; --red-ink: #ff8a6b; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --paper: #15130f; --paper2: #1d1a15; --ink: #efe9dd; --ink2: #c8c0b2; --muted: #8f8676; --rule: #3a342b; --red: #ff6a45; --red-ink: #ff8a6b; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.62 var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+a:hover { color: var(--red-ink); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+.kicker { font: 500 11.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+
+/* masthead */
+.mast { border-bottom: 3px double var(--ink); }
+.mast .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; gap: 20px; }
+.mast .title { font: italic 600 19px var(--serif); text-decoration: none; }
+.mast nav { display: flex; gap: 22px; }
+.mast nav a { text-decoration: none; font: 500 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); }
+.mast nav a:hover { color: var(--red-ink); }
+.theme { background: none; border: 1px solid var(--rule); border-radius: 50%; width: 30px; height: 30px; color: var(--ink2); cursor: pointer; font-size: 14px; }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 56px; padding: 56px 0 48px; border-bottom: 1px solid var(--rule); }
+.hero h1 { font: 700 clamp(64px, 12.5vw, 176px)/.86 var(--serif); letter-spacing: -.055em; margin: 22px 0 0; font-variation-settings: "opsz" 144; position: relative; }
+.hero h1 i { font-weight: 300; color: var(--red); }
+.seal { position: absolute; right: 2%; top: 4%; writing-mode: vertical-rl; font: 900 30px/1.05 "Noto Serif SC", serif; color: var(--paper); background: var(--red); padding: 12px 8px; border-radius: 4px; letter-spacing: .08em; transform: rotate(4deg); box-shadow: inset 0 0 0 3px var(--red), inset 0 0 0 5px var(--paper); }
+.dek { font: italic 400 clamp(22px, 2.6vw, 31px)/1.3 var(--serif); color: var(--ink2); max-width: 760px; margin: 30px 0 0; }
+.byline { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 28px; font: 13px var(--mono); color: var(--muted); }
+.byline a { color: var(--ink); }
+.portrait { margin: 0; align-self: end; }
+.portrait .img { aspect-ratio: 4 / 5; background: var(--paper2) center / cover; filter: grayscale(1) contrast(1.05); border: 1px solid var(--rule); position: relative; }
+.portrait .img::after { content: ""; position: absolute; inset: 0; background: var(--red); mix-blend-mode: screen; opacity: .18; }
+.portrait figcaption { font: italic 14px var(--serif); color: var(--muted); margin-top: 10px; }
+
+/* essay */
+.essay { display: grid; grid-template-columns: 200px minmax(0, 680px) minmax(0, 1fr); gap: 40px; padding: 64px 0; border-bottom: 1px solid var(--rule); }
+.essay h2, .sec-title { font: 600 15px var(--mono); letter-spacing: .14em; text-transform: uppercase; margin: 6px 0 0; color: var(--red-ink); }
+.essay .body p { font: 400 21px/1.6 var(--serif); margin: 0 0 1.1em; font-variation-settings: "opsz" 24; }
+.essay .body p:first-child::first-letter { float: left; font: 700 92px/.8 var(--serif); margin: 8px 12px 0 0; color: var(--red); }
+.essay sup a { font: 600 12px var(--mono); text-decoration: none; color: var(--red-ink); padding: 0 2px; }
+.notes { font: 14px/1.5 var(--sans); color: var(--muted); border-left: 1px solid var(--rule); padding-left: 20px; }
+.notes p { margin: 0 0 18px; }
+.notes b { font: 600 12px var(--mono); color: var(--red-ink); margin-right: 6px; }
+.notes a { color: var(--ink2); }
+
+/* features */
+.features { padding: 40px 0 20px; }
+.feat { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 48px; padding: 48px 0; border-bottom: 1px solid var(--rule); align-items: center; }
+.feat:nth-child(even) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); }
+.feat:nth-child(even) .media-wrap { order: 2; }
+.media-wrap figure { margin: 0; }
+.media { --demo-fg: var(--ink); --demo-accent: var(--red); --demo-muted: var(--muted); --demo-grid: var(--rule); --demo-font: "IBM Plex Mono", monospace; aspect-ratio: 16 / 10; background: var(--paper2); border: 1px solid var(--rule); overflow: hidden; }
+.media-wrap figcaption { font: italic 13.5px var(--serif); color: var(--muted); margin-top: 8px; }
+.feat .no { font: 300 64px/1 var(--serif); color: var(--red); font-variation-settings: "opsz" 144; }
+.feat .venue { font: 500 11.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink2); margin-top: 8px; }
+.feat .venue b { background: var(--ink); color: var(--paper); padding: 2px 7px; margin-right: 8px; font-weight: 500; }
+.feat h3 { font: 600 clamp(26px, 2.8vw, 36px)/1.12 var(--serif); letter-spacing: -.02em; margin: 14px 0 6px; }
+.feat h3 span { display: block; font: 400 17px/1.4 var(--serif); letter-spacing: 0; color: var(--ink2); margin-top: 8px; font-style: italic; }
+.feat blockquote { margin: 18px 0; padding: 0 0 0 18px; border-left: 3px solid var(--red); font: 400 18px/1.55 var(--serif); }
+.feat .authors { font-size: 13.5px; color: var(--muted); }
+.feat .authors b { color: var(--ink); font-weight: 600; }
+.feat .acts { display: flex; gap: 20px; margin-top: 18px; font: 500 13px var(--mono); }
+.feat .acts a { text-decoration: none; border-bottom: 1.5px solid var(--red); padding-bottom: 2px; }
+
+.also { padding: 28px 0 56px; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 200px 1fr; gap: 40px; }
+.also ul { list-style: none; margin: 0; padding: 0; }
+.also li { padding: 10px 0; border-bottom: 1px dotted var(--rule); font: 17px var(--serif); }
+.also li small { display: block; font: 13px var(--sans); color: var(--muted); }
+
+/* lower: news + writing */
+.lower { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 64px; padding: 64px 0; border-bottom: 1px solid var(--rule); }
+.disp { list-style: none; padding: 0; margin: 20px 0 0; }
+.disp li { display: grid; grid-template-columns: 82px 1fr; gap: 14px; padding: 12px 0; border-top: 1px solid var(--rule); font-size: 15.5px; }
+.disp time { font: 12.5px var(--mono); color: var(--red-ink); padding-top: 3px; }
+.essays { margin-top: 20px; }
+.essays a { display: grid; grid-template-columns: 1fr auto; gap: 4px 20px; padding: 16px 0; border-top: 1px solid var(--rule); text-decoration: none; }
+.essays a:hover h4 { color: var(--red-ink); }
+.essays h4 { margin: 0; font: 600 21px/1.3 var(--serif); }
+.essays p { margin: 0; color: var(--muted); font-size: 14px; grid-column: 1; }
+.essays .rt { grid-row: 1 / 3; grid-column: 2; font: 12px var(--mono); color: var(--muted); align-self: center; text-align: right; }
+
+/* currently */
+.currently { padding: 56px 0; border-bottom: 1px solid var(--rule); }
+.cur-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 24px; }
+.cur-grid .k { font: 500 11.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--red-ink); }
+.cur-grid p { font: italic 400 21px/1.4 var(--serif); margin: 10px 0 0; }
+
+/* cv */
+.cv { display: grid; grid-template-columns: 200px repeat(3, minmax(0, 1fr)); gap: 40px; padding: 56px 0; }
+.cv h4 { font: 500 11.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+.cv dl { margin: 0; }
+.cv dt { font: 12.5px var(--mono); color: var(--red-ink); }
+.cv dd { margin: 0 0 14px; font-size: 15px; }
+.cv dd small { color: var(--muted); display: block; }
+
+footer { border-top: 3px double var(--ink); padding: 26px 0 60px; }
+footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; font: italic 14px var(--serif); color: var(--muted); }
+
+@media (max-width: 1000px) {
+  .hero { grid-template-columns: 1fr; }
+  .portrait { max-width: 300px; }
+  .essay { grid-template-columns: 1fr; gap: 20px; }
+  .notes { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 18px; }
+  .feat, .feat:nth-child(even) { grid-template-columns: 1fr; gap: 24px; }
+  .feat:nth-child(even) .media-wrap { order: 0; }
+  .lower { grid-template-columns: 1fr; gap: 48px; }
+  .cv { grid-template-columns: 1fr 1fr; }
+  .also { grid-template-columns: 1fr; gap: 12px; }
+  .mast nav { display: none; }
+}
+@media (max-width: 600px) {
+  .wrap { padding: 0 16px; }
+  .seal { font-size: 20px; padding: 8px 5px; right: 0; top: -6px; }
+  .cur-grid { grid-template-columns: 1fr; gap: 24px; }
+  .cv { grid-template-columns: 1fr; gap: 24px; }
+  .essay .body p { font-size: 19px; }
+}
+</style>
+</head>
+<body>
+<header class="mast">
+  <div class="wrap">
+    <a class="title" href="#top">Weiji Xie, <span style="font-weight:400">a research review</span></a>
+    <nav aria-label="Sections"><a href="#arc">The arc</a><a href="#work">Work</a><a href="#dispatches">Dispatches</a><a href="#essays">Essays</a><a href="#cv">CV</a></nav>
+    <button class="theme" id="theme" type="button" aria-label="Toggle dark mode">◐</button>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+  <section class="hero">
+    <div>
+      <div class="kicker">Robotics · Reinforcement Learning · Shanghai</div>
+      <h1>Weiji<br><i>Xie</i><span class="seal" aria-label="谢炜基">谢炜基</span></h1>
+      <p class="dek">builds bodies that learn: humanoids that keep their balance, throw a kick, dance, and do what you tell them.</p>
+      <div class="byline" id="byline"></div>
+    </div>
+    <figure class="portrait">
+      <div class="img" id="photo" role="img" aria-label="Portrait of Weiji Xie"></div>
+      <figcaption>Fig. 0 · The author. M.S. student at SJTU, research intern at TeleAI.</figcaption>
+    </figure>
+  </section>
+
+  <section class="essay" id="arc">
+    <h2>The long arc</h2>
+    <div class="body">
+      <p>I want robots that can do anything a person asks of them. That is a long way off, so I work on the part that seems most stubborn to me: a body that can actually move. Not a scripted walker, but a humanoid that controls all of its joints at once, under real physics, and learns that control by reinforcement.</p>
+      <p>The work has gone in stages. First, staying upright where there is almost no room for error, walking a beam no wider than a foot<sup><a href="#f-narrow">1</a></sup>, and keeping a policy improving after it leaves the simulator<sup><a href="#f-loopsr">2</a></sup>. Then moving like a person, through fast and acrobatic human motion such as kung fu and dance<sup><a href="#f-kungfubot">3</a></sup>. Then many skills in one controller instead of one per policy<sup><a href="#f-kungfubot2">4</a></sup>, and finally language as the interface: you type, it moves<sup><a href="#f-textop">5</a></sup>.</p>
+      <p>Each step gives the robot more ways to move and a more natural way for people to ask. I think general-purpose robots will come from this kind of stacking, with good priors from human motion and a body that keeps learning, more than from any single big model.</p>
+    </div>
+    <aside class="notes" aria-label="Notes">
+      <p><b>1</b><a href="#f-narrow">Narrow-terrain locomotion</a>, IROS 2025.</p>
+      <p><b>2</b><a href="#f-loopsr">LoopSR</a>, IROS 2025.</p>
+      <p><b>3</b><a href="#f-kungfubot">KungfuBot</a>, NeurIPS 2025.</p>
+      <p><b>4</b><a href="#f-kungfubot2">KungfuBot2</a>, under review.</p>
+      <p><b>5</b><a href="#f-textop">TextOp</a>, under review.</p>
+      <p style="margin-top:28px">Earlier I also worked on game theory: <a href="#f-ofsp">offline self-play</a> for competitive games (AAAI 2026).</p>
+    </aside>
+  </section>
+
+  <section class="features" id="work" aria-label="Selected work"></section>
+  <div class="also"><div class="sec-title">Also</div><ul id="also"></ul></div>
+
+  <section class="lower">
+    <div id="dispatches"><div class="sec-title">Dispatches</div><ul class="disp" id="news"></ul></div>
+    <div id="essays"><div class="sec-title">Essays &amp; guides <span class="kicker" style="margin-left:8px">in Chinese</span></div><div class="essays" id="writing"></div></div>
+  </section>
+
+  <section class="currently">
+    <div class="sec-title">Currently</div>
+    <div class="cur-grid" id="now"></div>
+  </section>
+
+  <section class="cv" id="cv">
+    <div class="sec-title">Curriculum<br><a class="kicker" id="cv-link" href="#">full CV →</a></div>
+    <div><h4>Education</h4><dl id="edu"></dl><h4 style="margin-top:22px">Experience</h4><dl id="exp"></dl></div>
+    <div><h4>Honors</h4><dl id="awards"></dl></div>
+    <div><h4>Service</h4><dl id="service"></dl><h4 style="margin-top:22px">Off duty</h4><dl id="off"></dl></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Set in Fraunces &amp; IBM Plex. Hand-built, no template.</span>
+    <span id="foot"></span>
+  </div>
+</footer>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/demos.js"></script>
+<script src="../shared/switcher.js"></script>
+<script>
+(function () {
+  const S = window.SITE, P = S.profile, $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const me = (a) => esc(a).replace(/Weiji Xie/g, "<b>$&</b>");
+  const L = P.links;
+
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("byline").innerHTML = `<a href="mailto:${P.email}">${P.email}</a><a href="${L.scholar}">Scholar</a><a href="${L.github}">GitHub</a><a href="${L.x}">X</a><a href="${L.linkedin}">LinkedIn</a>`;
+  $("cv-link").href = L.cv;
+
+  const roman = ["I", "II", "III", "IV", "V", "VI", "VII"];
+  const sel = S.publications.filter((p) => p.selected);
+  $("work").innerHTML = sel.map((p, i) => {
+    const colon = p.title.indexOf(":");
+    const head = colon > 0 ? p.title.slice(0, colon) : p.short;
+    const sub = colon > 0 ? p.title.slice(colon + 1).trim() : p.title;
+    const venue = /review/i.test(p.venue) ? `<b>Preprint</b>Under review, ${p.year}` : `<b>${esc(p.venue)}</b>${p.year}`;
+    const acts = Object.entries(p.links).map(([k, v]) => `<a href="${v}">${k === "project" ? "Project page →" : "Read the paper →"}</a>`).join("");
+    return `<article class="feat" id="f-${p.id}">
+      <div class="media-wrap"><figure><div class="media" data-pub="${p.id}"></div><figcaption>Fig. ${i + 1} · ${esc(p.short)}${p.media ? "" : ", sketched in code until the real footage is in"}.</figcaption></figure></div>
+      <div>
+        <div class="no">${roman[i]}.</div>
+        <div class="venue">${venue}</div>
+        <h3>${esc(head)}<span>${esc(sub)}</span></h3>
+        <blockquote>${esc(p.tldr)}</blockquote>
+        <div class="authors">${me(p.authors)}</div>
+        <div class="acts">${acts}</div>
+      </div>
+    </article>`;
+  }).join("");
+  document.querySelectorAll(".media[data-pub]").forEach((el) => Demos.media(el, S.publications.find((p) => p.id === el.dataset.pub)));
+  $("also").innerHTML = S.publications.filter((p) => !p.selected).map((p) => `<li><a href="${p.links.pdf || p.links.project}">${esc(p.title)}</a><small>${me(p.authors)} · ${esc(p.venue)} ${p.year}</small></li>`).join("");
+
+  const mon = (d) => { const [y, m] = d.split("-"); return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][+m - 1] + " " + y; };
+  $("news").innerHTML = S.news.map((n) => `<li><time datetime="${n.date}">${mon(n.date)}</time><span>${esc(n.text)}</span></li>`).join("");
+  $("writing").innerHTML = S.writing.map((w) => `<a href="${w.url}"><h4>${esc(w.title)}</h4><p>${esc(w.en)} · ${w.kind}</p><span class="rt">${w.minutes} min</span></a>`).join("");
+  $("now").innerHTML = [["Building", S.now.building], ["Reading", S.now.reading], ["Thinking about", S.now.thinking]].map(([k, v]) => `<div><div class="k">${k}</div><p>${esc(v)}</p></div>`).join("");
+  const dl = (rows) => rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${v}</dd>`).join("");
+  $("edu").innerHTML = dl(S.education.map((e) => [e.when, `${esc(e.what)}<small>${esc(e.where)}</small>`]));
+  $("exp").innerHTML = dl(S.experience.map((e) => [e.when, `${esc(e.what)}<small>${esc(e.where)}</small>`]));
+  $("awards").innerHTML = dl(S.awards.map((a) => [String(a.year), esc(a.text)]));
+  $("service").innerHTML = dl(S.service.map((s) => ["Reviewer", esc(s.replace(/^Reviewer:\s*/, ""))]));
+  $("off").innerHTML = dl(S.offduty.map((o) => [o.k, esc(o.v)]));
+  $("foot").innerHTML = `© ${new Date().getFullYear()} Weiji Xie · <a href="mailto:${P.email}">write to me</a>`;
+
+  // 主题切换（只记在本浏览器）
+  const root = document.documentElement;
+  try { const t = localStorage.getItem("wx-theme"); if (t) root.dataset.theme = t; } catch (e) {}
+  $("theme").addEventListener("click", () => {
+    const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    try { localStorage.setItem("wx-theme", root.dataset.theme); } catch (e) {}
+    Demos.refresh();
+  });
+})();
+</script>
+</body>
+</html>
