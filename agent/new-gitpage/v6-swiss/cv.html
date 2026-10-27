@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CV · Weiji Xie</title>
+<meta name="description" content="Curriculum vitae of Weiji Xie.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="dot" id="dot" aria-hidden="true"></div>
+<header class="top"><div class="wrap g"><a class="nm" href="index.html">Weiji Xie</a><nav aria-label="Site"><a href="index.html#news">News</a><a href="index.html#publications">Publications</a><a href="cv.html" aria-current="page">CV</a></nav></div></header>
+
+<main>
+  <section class="wrap cvh g">
+    <div class="side" data-reveal><div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div></div>
+    <h1 id="h1" aria-label="Curriculum Vitae"></h1>
+    <div class="info"><p data-reveal id="aff"></p><ul data-reveal style="--d:1" id="contacts"></ul></div>
+  </section>
+  <div id="cv"></div>
+</main>
+<footer><div class="wrap g"><span>© <span id="yr"></span> Weiji Xie</span><a href="index.html">← Home</a></div></footer>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="swiss.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, media, links } = Site, $ = (id) => document.getElementById(id);
+  let k = 0;
+  const word = (t, dot) => `<span class="ln">${[...t].map((c) => `<span class="ch" style="--k:${k++}">${c}</span>`).join("")}${dot ? `<span class="ch" style="--k:${k++};color:var(--red)">.</span>` : ""}</span>`;
+  $("h1").innerHTML = word("Curriculum") + word("Vitae", true);
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("aff").innerHTML = P.affiliation;
+  $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true }).split(/(?=<a |<button )/).map((x) => `<li>${x}</li>`).join("");
+  const row = (r) => `<div class="cvrow"><time>${esc(r.when || "")}</time><div><b>${esc(r.title)}</b>${r.org ? `<small>${esc(r.org)}</small>` : ""}${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</div></div>`;
+  const sec = (n, title, body) => `<div class="wrap"><div class="rule" data-rule></div></div><section class="wrap sec g"><div class="head" data-reveal><b>${String(n).padStart(2, "0")}</b><h2>${title}</h2></div><div class="body" data-reveal style="--d:1">${body}</div></section>`;
+  const b = Site.cvBlocks();
+  const pubs = S.publications.map((p, i) => `<div class="cvpub" data-hover><span class="n">${i + 1}</span>${media(p)}<div><b>${esc(p.title)}</b><small>${me(p.authors)}</small><small>${esc(venue(p))}<span class="lk">${links(p)}</span></small></div></div>`).join("");
+  $("cv").innerHTML = sec(1, b[0].title, b[0].rows.map(row).join("")) + sec(2, b[1].title, b[1].rows.map(row).join("")) + sec(3, "Publications", pubs) +
+    b.slice(2).map((x, i) => sec(i + 4, x.title, x.rows.map(row).join(""))).join("");
+  $("yr").textContent = new Date().getFullYear();
+  Site.init();
+  Site.reveal();
+  Swiss.rules();
+  Swiss.cursor($("dot"));
+})();
+</script>
+</body>
+</html>

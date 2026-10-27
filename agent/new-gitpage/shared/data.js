@@ -1,21 +1,23 @@
 /*
- * 所有版本共用的一份内容。改这里，所有版本同时更新。
+ * 所有版本共用的一份内容。改这里，所有版本（含 CV 页）同时更新。
  *
  * 新加一篇论文 = 在 publications 里复制一条改字段：
- *   tier:  "main"（主：一作/共一的代表作，带缩略图大卡片） | "other"（次：紧凑列表）
- *   image: 缩略图（放进 ../media/，没有就留空，会自动生成文字占位）
- *   video: 可选，鼠标悬停时才加载播放（可以直接填项目主页上的视频地址）
- *   note:  一句话说明（一行以内）
+ *   selected: 是否出现在默认的 "Selected" 标签下
+ *   cats:     所属分类（见 categories），决定出现在哪些筛选标签里
+ *   image:    缩略图（放进 ../media/，没有就留空，会自动生成文字占位）
+ *   video:    可选，鼠标悬停时才加载播放（可以直接填项目主页上的视频地址）
+ *   note:     一句话说明
  */
 window.SITE = {
   profile: {
     name: "Weiji Xie",
     nameZh: "谢炜基",
     role: "M.S. student · SJTU",
-    tagline: "Humanoid whole-body control · Reinforcement learning",
-    taglineZh: "人形机器人全身控制 · 强化学习",
+    tagline: "Robot learning · Reinforcement learning · Embodied AI",
+    statement: "I study how robots can learn physical skills from data, simulation and interaction, and carry them reliably into the real world. Long term, I want to build general-purpose robots that can do anything for people.",
+    affiliation: 'M.S. student at <a href="https://www.sjtu.edu.cn/">SJTU</a>, <a href="https://apex.sjtu.edu.cn/">APEX Lab</a> (advisor <a href="https://wnzhang.net/">Prof. Weinan Zhang</a>) · Research intern at <a href="https://www.teleai.com.cn/">TeleAI</a> with <a href="https://baichenjia.github.io/">Dr. Chenjia Bai</a>',
+    // 旧版本（V1–V3、V7）用的简介
     bio: 'M.S. student at <a href="https://www.sjtu.edu.cn/">SJTU</a> (<a href="https://apex.sjtu.edu.cn/">APEX Lab</a>, advised by <a href="https://wnzhang.net/">Prof. Weinan Zhang</a>) and research intern at <a href="https://www.teleai.com.cn/">TeleAI</a> with <a href="https://baichenjia.github.io/">Dr. Chenjia Bai</a>. I want to build general-purpose robots.',
-    bioZh: '<a href="https://www.sjtu.edu.cn/">上海交通大学</a>计算机硕士生（<a href="https://apex.sjtu.edu.cn/">APEX 实验室</a>，导师<a href="https://wnzhang.net/">张伟楠</a>教授），在 <a href="https://www.teleai.com.cn/">TeleAI</a> 实习，与<a href="https://baichenjia.github.io/">白辰甲</a>老师合作。目标是造出通用机器人。',
     location: "Shanghai, China",
     photo: "../media/photo.jpg",
     email: "xieweiji249@sjtu.edu.cn",
@@ -27,80 +29,109 @@ window.SITE = {
     },
     wechatQR: "../../../assets/img/wechat-qr.png",
     contactNote: "Feel free to add my WeChat or drop an email.",
-    cv: "../../../cv/",
+    cv: "../../../cv/", // 旧版本用；新版本链接到各自的 cv.html
   },
+
+  categories: [
+    { id: "tracking", name: "Motion Tracking" },
+    { id: "loco", name: "Locomotion" },
+    { id: "s2r", name: "Sim-to-Real" },
+    { id: "gen", name: "Generative Models" },
+    { id: "marl", name: "Multi-Agent RL" },
+  ],
 
   publications: [
     {
-      short: "TextOp", tier: "main", venue: "Under review", year: 2026,
+      short: "TextOp", venue: "Under review", year: 2026, selected: true, cats: ["tracking", "gen"], tier: "main",
       title: "TextOp: Real-time Interactive Text-Driven Humanoid Robot Motion Generation and Control",
       authors: "Weiji Xie*, Jiakun Zheng*, Jinrui Han, Jiyuan Shi, Weinan Zhang†, Chenjia Bai†, Xuelong Li",
-      note: "Type a sentence; the humanoid moves, in real time.", noteZh: "边打字，机器人边动。",
+      note: "Type a sentence; the robot moves, in real time.",
       links: { project: "https://text-op.github.io/" },
       image: "../media/textop.jpg", video: "https://text-op.github.io/static/videos/demo_big.mp4",
     },
     {
-      short: "KungfuBot", tier: "main", venue: "NeurIPS", year: 2025,
+      short: "KungfuBot", venue: "NeurIPS", year: 2025, selected: true, cats: ["tracking", "s2r"], tier: "main",
       title: "KungfuBot: Physics-Based Humanoid Whole-Body Control for Learning Highly-Dynamic Skills",
       authors: "Weiji Xie*, Jinrui Han*, Jiakun Zheng*, Huanyu Li, Xinzhe Liu, Jiyuan Shi, Weinan Zhang, Chenjia Bai†, Xuelong Li†",
-      note: "Kung fu and dance on a real humanoid.", noteZh: "让人形机器人打功夫、跳舞。",
+      note: "Kung fu and dance on a real humanoid.",
       links: { project: "https://kungfubot.github.io/", pdf: "https://arxiv.org/pdf/2506.12851" },
       image: "../media/kungfubot.jpg", video: "https://kungfubot.github.io/static/videos/360%20spin.mp4",
     },
     {
-      short: "Narrow Terrain", tier: "main", venue: "IROS", year: 2025,
-      title: "Humanoid Whole-Body Locomotion on Narrow Terrain via Dynamic Balance and Reinforcement Learning",
-      authors: "Weiji Xie, Chenjia Bai†, Jiyuan Shi, Junkai Yang, Yunfei Ge, Weinan Zhang†, Xuelong Li",
-      note: "Whole-body balance on terrain as narrow as a foot.", noteZh: "在一脚宽的地形上保持全身平衡。",
-      links: { project: "https://whole-body-loco.github.io/", pdf: "https://arxiv.org/pdf/2502.17219" },
-      image: "../media/narrow.jpg",
-    },
-    {
-      short: "KungfuBot2", tier: "other", venue: "Under review", year: 2025,
+      short: "KungfuBot2", venue: "Under review", year: 2025, selected: true, cats: ["tracking"],
       title: "KungfuBot2: Learning Versatile Motion Skills for Humanoid Whole-Body Control",
       authors: "Jinrui Han, Weiji Xie, Jiakun Zheng, Jiyuan Shi, Weinan Zhang, Ting Xiao, Chenjia Bai",
-      note: "One policy, many motion skills.", noteZh: "一个策略，多种动作技能。",
+      note: "One policy, many motion skills.",
       links: { project: "https://kungfubot2-humanoid.github.io/", pdf: "https://arxiv.org/pdf/2509.16638" },
       image: "../media/kungfubot2.jpg",
     },
     {
-      short: "LoopSR", tier: "other", venue: "IROS", year: 2025,
+      short: "Narrow Terrain", venue: "IROS", year: 2025, selected: true, cats: ["loco"], tier: "main",
+      title: "Humanoid Whole-Body Locomotion on Narrow Terrain via Dynamic Balance and Reinforcement Learning",
+      authors: "Weiji Xie, Chenjia Bai†, Jiyuan Shi, Junkai Yang, Yunfei Ge, Weinan Zhang†, Xuelong Li",
+      note: "Whole-body balance on terrain as narrow as a foot.",
+      links: { project: "https://whole-body-loco.github.io/", pdf: "https://arxiv.org/pdf/2502.17219" },
+      image: "../media/narrow.jpg",
+    },
+    {
+      short: "LoopSR", venue: "IROS", year: 2025, selected: true, cats: ["loco", "s2r"],
       title: "LoopSR: Looping Sim-and-Real for Lifelong Policy Adaptation of Legged Robots",
       authors: "Peilin Wu, Weiji Xie, Jiahang Cao, Hang Lai, Weinan Zhang",
-      note: "Lifelong sim-and-real adaptation for legged robots.", noteZh: "仿真与真实循环，终身适应。",
+      note: "Real-world experience flows back into simulation, for life.",
       links: { project: "https://peilinwu.site/looping-sim-and-real.github.io/", pdf: "https://arxiv.org/pdf/2409.17992" },
       image: "../media/loopsr.jpg",
     },
     {
-      short: "OFSP", tier: "other", venue: "AAAI", year: 2026,
+      short: "OFF-FSP", venue: "AAAI", year: 2026, selected: true, cats: ["marl"],
       title: "Offline Fictitious Self-Play for Competitive Games",
       authors: "Jingxiao Chen, Weiji Xie, Weinan Zhang†, Yong Yu, Ying Wen†",
-      note: "Nash equilibria from offline data.", noteZh: "只用离线数据逼近纳什均衡。",
+      note: "Self-play from cheap offline data, tested on a real robot game.",
       links: { pdf: "https://arxiv.org/pdf/2403.00841" },
+      image: "../media/ofsp.jpg",
     },
     {
-      short: "TrajGen", tier: "other", venue: "Under review", year: 2024,
+      short: "TrajGen", venue: "Under review", year: 2024, selected: false, cats: ["gen"],
       title: "A Pre-Trained Trajectory Generative Model on Road Network",
       authors: "Weiji Xie, Yufan Zhang, Rui Zhang, Zhouyue Sun, Tianyu Liu, Guanjie Zheng, Zhenhui Li, Weinan Zhang",
-      note: "Pre-trained generative model for road-network trajectories.", noteZh: "路网上的预训练轨迹生成模型。",
+      note: "A pre-trained generative model for city-scale vehicle trajectories.",
       links: { pdf: "../../../assets/pdf/traffic_model.pdf" },
+      image: "../media/trajgen.jpg",
     },
   ],
 
   // TODO: 日期请核对
   news: [
-    { date: "2026.01", text: "TextOp released.", textZh: "TextOp 发布。" },
-    { date: "2025.11", text: "OFSP accepted to AAAI 2026.", textZh: "OFSP 被 AAAI 2026 接收。" },
-    { date: "2025.09", text: "KungfuBot accepted to NeurIPS 2025.", textZh: "KungfuBot 被 NeurIPS 2025 接收。" },
-    { date: "2025.09", text: "Started M.S. at SJTU.", textZh: "开始在上海交大读硕士。" },
-    { date: "2025.06", text: "Two papers accepted to IROS 2025.", textZh: "两篇论文被 IROS 2025 接收。" },
+    { date: "2026.01", text: "TextOp released: real-time text-driven humanoid control." },
+    { date: "2025.11", text: "OFF-FSP accepted to AAAI 2026." },
+    { date: "2025.09", text: "KungfuBot accepted to NeurIPS 2025." },
+    { date: "2025.09", text: "Started my M.S. at SJTU." },
+    { date: "2025.06", text: "Two papers accepted to IROS 2025." },
   ],
 
-  cv: [
-    { when: "2025 –", what: "M.S. Computer Science, SJTU" },
-    { when: "2024 –", what: "Research Intern, TeleAI" },
-    { when: "2021 – 25", what: "B.Eng. Artificial Intelligence, SJTU" },
+  education: [
+    { when: "2025.09 – now", title: "M.S. in Computer Science and Technology", org: "Shanghai Jiao Tong University", detail: "APEX Lab, advised by Prof. Weinan Zhang" },
+    { when: "2021.09 – 2025.06", title: "B.Eng. in Artificial Intelligence", org: "Shanghai Jiao Tong University", detail: "GPA 4.03 / 4.30 · Rank top 5%" },
   ],
-  awards: ["ASC Student Supercomputer Challenge, First Prize (2024)", "SJTU Excellent Scholarship (2023, 2024)"],
-  service: "Reviewer: TPAMI, ICRA",
+  experience: [
+    { when: "2024.10 – now", title: "Research Intern", org: "TeleAI, China Telecom", detail: "With Dr. Chenjia Bai" },
+    { when: "2024.06 – 2024.08", title: "Research Intern", org: "Yunqi Academy of Engineering" },
+  ],
+  honors: [
+    { year: 2024, text: "ASC Student Supercomputer Challenge, First Prize & Application Innovation Award" },
+    { year: 2024, text: "SJTU B-Class Excellent Scholarship" },
+    { year: 2023, text: "SJTU B-Class Excellent Scholarship" },
+    { year: 2023, text: "Outstanding Youth League Member, SJTU" },
+  ],
+  service: ["Reviewer: TPAMI, ICRA"],
+  misc: [
+    { k: "Languages", v: "Chinese, English" },
+    { k: "Hobbies", v: "Reading math, philosophy and social science; badminton." },
+  ],
 };
+
+// 旧版本（V1–V3、V7）用的精简履历
+window.SITE.cv = [
+  { when: "2025 –", what: "M.S. Computer Science, SJTU" },
+  { when: "2024 –", what: "Research Intern, TeleAI" },
+  { when: "2021 – 25", what: "B.Eng. Artificial Intelligence, SJTU" },
+];

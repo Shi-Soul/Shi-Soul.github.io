@@ -3,156 +3,109 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Weiji Xie · Lab Badge</title>
-<meta name="description" content="Weiji Xie: humanoid whole-body control, reinforcement learning, robotics.">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=Archivo+Narrow:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Archivo+Narrow:wght@500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
 <link rel="stylesheet" href="../shared/site.css">
-<style>
-:root {
-  --bg: #eef0ec; --card: #fff; --ink: #141614; --ink2: #464a46; --muted: #80857f; --line: #d8dbd5; --acc: #00a86b; --acc2: #c6f432;
-  --sans: "Archivo", system-ui, -apple-system, "PingFang SC", sans-serif; --narrow: "Archivo Narrow", "Archivo", sans-serif; --mono: "JetBrains Mono", ui-monospace, monospace;
-  --pm-bg: #e3e6e0; --pm-ph-bg: repeating-linear-gradient(45deg, #e3e6e0 0 12px, #dde0da 12px 24px); --pm-ph-ink: var(--muted);
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --bg: #121412; --card: #1b1e1b; --ink: #eef0ec; --ink2: #c3c7c1; --muted: #888d86; --line: #2c302c; --pm-bg: #222622; color-scheme: dark; }
-}
-:root[data-theme="dark"] { --bg: #121412; --card: #1b1e1b; --ink: #eef0ec; --ink2: #c3c7c1; --muted: #888d86; --line: #2c302c; --pm-bg: #222622; color-scheme: dark; }
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
-a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--acc); text-decoration-thickness: 2px; text-underline-offset: 3px; }
-a:hover { color: var(--acc); }
-:focus-visible { outline: 2px solid var(--acc); outline-offset: 3px; }
-.wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-.theme { position: fixed; top: 16px; right: 16px; z-index: 5; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
-
-.hero { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 64px; align-items: center; min-height: 88vh; padding: 0 0 40px; }
-/* 挂绳工牌 */
-.lanyard { position: relative; display: flex; flex-direction: column; align-items: center; perspective: 900px; }
-.strap { width: 34px; height: 30vh; min-height: 140px; background: repeating-linear-gradient(90deg, var(--acc) 0 6px, #009660 6px 8px); position: relative; }
-.strap::after { content: "SHI-SOUL · SHI-SOUL · SHI-SOUL"; position: absolute; left: 50%; top: 10px; transform: translateX(-50%) rotate(90deg); transform-origin: center; white-space: nowrap; font: 700 9px var(--mono); color: rgba(255,255,255,.75); letter-spacing: .2em; }
-.clip { width: 54px; height: 22px; border-radius: 6px 6px 3px 3px; background: linear-gradient(#cfd3cd, #9ea39c); margin-top: -2px; box-shadow: inset 0 -3px 0 rgba(0,0,0,.15); }
-.badge { width: 300px; margin-top: -4px; background: var(--card); border-radius: 18px; box-shadow: 0 30px 60px -25px rgba(0,0,0,.4), 0 0 0 1px var(--line); overflow: hidden; transform-origin: 50% -40px; transition: transform .25s ease-out; color: var(--ink); }
-.badge .slot { width: 64px; height: 10px; border-radius: 6px; background: var(--bg); margin: 12px auto 0; box-shadow: inset 0 1px 2px rgba(0,0,0,.2); }
-.badge .org { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px 10px; font: 700 11px var(--narrow); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-.badge .org b { color: var(--acc); }
-.badge .photo { width: 150px; height: 196px; margin: 4px auto 0; background: #fff center 22% / cover; border-radius: 8px; border: 1px solid var(--line); }
-.badge .nm { text-align: center; margin-top: 14px; font: 800 30px/1 var(--sans); letter-spacing: -.02em; }
-.badge .zh { text-align: center; font: 500 14px var(--sans); color: var(--muted); letter-spacing: .3em; margin-top: 6px; }
-.badge .role { margin: 14px 20px 0; padding: 8px 0; text-align: center; background: var(--acc2); color: #10200a; font: 700 12px var(--narrow); letter-spacing: .16em; text-transform: uppercase; border-radius: 6px; }
-.badge .foot { display: flex; justify-content: space-between; align-items: flex-end; padding: 14px 20px 18px; }
-.badge .meta { font: 10.5px/1.5 var(--mono); color: var(--muted); }
-.badge .meta b { color: var(--ink); font-weight: 500; }
-.barcode { width: 96px; height: 34px; background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 4px, var(--ink) 4px 5px, transparent 5px 8px, var(--ink) 8px 11px, transparent 11px 12px); }
-
-.intro .kick { font: 600 13px var(--mono); color: var(--acc); }
-.intro h1 { font: 800 clamp(40px, 5.6vw, 68px)/1.02 var(--sans); letter-spacing: -.035em; margin: 12px 0 18px; }
-.intro p { color: var(--ink2); font-size: 17px; max-width: 560px; margin: 0; }
-.contacts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-.contacts a, .contacts button { display: inline-flex; gap: 8px; align-items: center; text-decoration: none; padding: 9px 14px; border-radius: 10px; background: var(--card); border: 1px solid var(--line); font: 500 14px var(--sans); color: var(--ink); }
-.contacts a:hover, .contacts button:hover { border-color: var(--acc); color: var(--acc); }
-
-section { padding: 40px 0; border-top: 2px solid var(--ink); }
-.sh { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
-.sh h2 { margin: 0; font: 800 28px var(--sans); letter-spacing: -.02em; }
-.sh span { font: 12px var(--mono); color: var(--muted); }
-.mains { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-.m .pm { aspect-ratio: 4 / 3; border-radius: 12px; }
-.m .row { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; gap: 10px; }
-.m h3 { margin: 0; font: 800 21px var(--sans); letter-spacing: -.01em; }
-.tagv { font: 600 11px var(--mono); padding: 2px 7px; border-radius: 5px; background: var(--acc2); color: #10200a; white-space: nowrap; }
-.tagv.ur { background: transparent; border: 1px solid var(--line); color: var(--muted); }
-.m p { margin: 4px 0 8px; color: var(--ink2); font-size: 14.5px; }
-.m .ln, .o .ln { display: flex; gap: 14px; font: 500 13px var(--mono); }
-.olist { margin-top: 26px; }
-.o { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); align-items: baseline; }
-.o .v { font: 12px var(--mono); color: var(--muted); }
-.o .t { font-weight: 600; }
-.o .au { display: block; font-size: 13px; color: var(--muted); }
-.o .me { color: var(--ink); }
-.news { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
-.news div { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14.5px; }
-.news time { display: block; font: 12px var(--mono); color: var(--acc); }
-footer { padding: 26px 0 60px; font: 13px var(--mono); color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-top: 1px solid var(--line); }
-footer .cv span { margin-right: 16px; }
-
-@media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; gap: 24px; min-height: 0; padding-bottom: 48px; }
-  .strap { height: 70px; min-height: 0; }
-  .mains { grid-template-columns: 1fr 1fr; }
-  .o { grid-template-columns: 1fr; gap: 2px; }
-}
-@media (max-width: 560px) { .wrap { padding: 0 16px; } .mains { grid-template-columns: 1fr; } .badge { width: 270px; } }
-@media (prefers-reduced-motion: reduce) { .badge { transition: none; } }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<button class="theme" id="theme" type="button" aria-label="Toggle dark mode">◐</button>
-<main class="wrap">
+<header class="nav"><div class="wrap">
+  <a class="mark" href="#top"><i aria-hidden="true"></i>Weiji Xie</a>
+  <nav aria-label="Site"><a href="#news">News</a><a href="#publications">Publications</a><a href="cv.html">CV</a></nav>
+</div></header>
+
+<main class="wrap" id="top">
   <div class="hero">
-    <div class="lanyard" aria-label="Lab badge">
-      <div class="strap" aria-hidden="true"></div><div class="clip" aria-hidden="true"></div>
-      <div class="badge" id="badge">
+    <div class="lanyard" id="lanyard">
+      <div class="strap" aria-hidden="true"><span>WEIJI XIE · ROBOT LEARNING · WEIJI XIE · ROBOT LEARNING · WEIJI XIE · ROBOT LEARNING · </span></div>
+      <div class="clip" aria-hidden="true"></div>
+      <div class="badge" id="badge" aria-label="Lab badge of Weiji Xie">
         <div class="slot" aria-hidden="true"></div>
         <div class="org"><span>SJTU · <b>APEX</b></span><span>TeleAI</span></div>
         <div class="photo" id="photo" role="img" aria-label="Photo of Weiji Xie"></div>
         <div class="nm">Weiji Xie</div>
         <div class="zh">谢炜基</div>
-        <div class="role">Humanoid · RL · Researcher</div>
-        <div class="foot"><div class="meta">ID <b>SHI-SOUL</b><br>ACCESS <b>ROBOT BAY</b><br>SINCE <b>2021</b></div><div class="barcode" aria-hidden="true"></div></div>
+        <div class="role">Robot Learning · Researcher</div>
+        <div class="foot"><div class="meta">DEPT <b>CS</b><br>LAB <b>APEX · TeleAI</b><br>SINCE <b>2021</b></div><div class="barcode" aria-hidden="true"></div></div>
       </div>
     </div>
     <div class="intro">
-      <div class="kick">// humanoid whole-body control</div>
-      <h1>I teach humanoid robots to move.</h1>
-      <p id="bio"></p>
-      <div class="contacts" id="contacts"></div>
+      <div class="kick" data-reveal id="tagline"></div>
+      <h1 data-reveal style="--d:1">Building robots that <span class="rot" id="rot"><span class="on">learn.</span><span>adapt.</span><span>move.</span><span>listen.</span><span>help.</span></span></h1>
+      <p class="aff" data-reveal style="--d:2" id="aff"></p>
+      <p class="statement" data-reveal style="--d:3" id="statement"></p>
+      <div class="contacts" data-reveal style="--d:4" id="contacts"></div>
     </div>
   </div>
 
-  <section id="work">
-    <div class="sh"><h2>Main work</h2><span>* equal contribution · † corresponding</span></div>
-    <div class="mains" id="mains"></div>
-    <div class="olist" id="others"></div>
+  <section class="blk" id="news">
+    <div class="sh" data-reveal><h2>News</h2></div>
+    <div class="news" id="news-list"></div>
   </section>
 
-  <section>
-    <div class="sh"><h2>News</h2></div>
-    <div class="news" id="news"></div>
+  <section class="blk" id="publications">
+    <div class="sh" data-reveal><h2>Publications</h2><span class="aside">* equal contribution · † corresponding</span></div>
+    <div class="tabs" id="tabs" data-reveal></div>
+    <div class="pubs" id="pubs"></div>
   </section>
 
-  <footer><span class="cv" id="cv"></span><span>hand-built, no template</span></footer>
+  <section class="blk" id="path">
+    <div class="sh" data-reveal><h2>Path</h2></div>
+    <div class="path">
+      <div class="col" data-reveal><h3>Education</h3><ul class="tl" id="edu"></ul></div>
+      <div class="col" data-reveal style="--d:1"><h3>Experience</h3><ul class="tl" id="exp"></ul></div>
+    </div>
+    <a class="more" href="cv.html">Full CV →</a>
+  </section>
+
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><div class="contacts" id="contacts2"></div></footer>
 </main>
 
 <script src="../shared/data.js"></script>
 <script src="../shared/site.js"></script>
 <script src="../shared/switcher.js"></script>
+<script src="badge.js"></script>
 <script>
 (function () {
-  const { S, P, esc, me, venue, isTop, media, links } = Site, $ = (id) => document.getElementById(id);
+  const { S, P, esc, me, venue, isTop, media, links, rest, catName } = Site, $ = (id) => document.getElementById(id);
   $("photo").style.backgroundImage = `url(${P.photo})`;
-  $("bio").innerHTML = P.bio;
+  $("tagline").textContent = "// " + P.tagline.toLowerCase();
+  $("aff").innerHTML = P.affiliation;
+  $("statement").textContent = P.statement;
   $("contacts").innerHTML = Site.contacts({ labels: true });
-  const tv = (p) => `<span class="tagv ${isTop(p) ? "" : "ur"}">${esc(venue(p))}</span>`;
-  $("mains").innerHTML = Site.main().map((p) => `<article class="m" data-hover>${media(p)}<div class="row"><h3 title="${esc(p.title)}">${esc(p.short)}</h3>${tv(p)}</div><p>${esc(p.note)}</p><div class="ln">${links(p)}</div></article>`).join("");
-  $("others").innerHTML = Site.others().map((p) => `<div class="o"><span class="v">${esc(venue(p))}</span><span><span class="t">${esc(p.title)}</span><span class="au">${me(p.authors)}</span></span><span class="ln">${links(p)}</span></div>`).join("");
-  $("news").innerHTML = S.news.map((n) => `<div><time>${n.date}</time>${esc(n.text)}</div>`).join("");
-  $("cv").innerHTML = S.cv.map((c) => `<span>${c.when} ${esc(c.what)}</span>`).join("") + `<a href="${P.cv}">full CV →</a>`;
-  Site.init();
-  Site.themeToggle($("theme"));
+  $("contacts2").innerHTML = Site.contacts();
+  $("news-list").innerHTML = S.news.map((n, i) => `<div data-reveal style="--d:${i}"><time>${n.date}</time>${esc(n.text)}</div>`).join("");
+  const tl = (rows) => rows.map((r) => `<li><time>${r.when}</time><b>${esc(r.title)}</b><span>${esc(r.org)}</span></li>`).join("");
+  $("edu").innerHTML = tl(S.education); $("exp").innerHTML = tl(S.experience);
+  $("yr").textContent = new Date().getFullYear();
 
-  // 工牌随指针轻微摆动
-  const badge = $("badge");
-  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    window.addEventListener("pointermove", (e) => {
-      const r = badge.getBoundingClientRect(), dx = (e.clientX - (r.left + r.width / 2)) / window.innerWidth, dy = (e.clientY - (r.top + r.height / 2)) / window.innerHeight;
-      badge.style.transform = `rotateY(${dx * 18}deg) rotateX(${-dy * 10}deg) rotateZ(${-dx * 4}deg)`;
+  const card = (p) => `<article class="pub" data-hover>${media(p)}<div class="body">
+      <div class="row"><span class="tagv ${isTop(p) ? "" : "ur"}">${esc(venue(p))}</span><span class="cats">${(p.cats || []).map(catName).join(" · ")}</span></div>
+      <h3>${esc(p.short)}</h3><p class="full">${esc(rest(p))}</p><p class="note">${esc(p.note)}</p>
+      <div class="au">${me(p.authors)}</div><div class="ln">${links(p)}</div></div></article>`;
+  Site.tabs($("tabs"), (f) => { Site.renderPubs($("pubs"), f, card); tilt(); });
+
+  // 卡片随指针 3D 倾斜
+  function tilt() {
+    if (Site.calm) return;
+    document.querySelectorAll(".pub").forEach((c) => {
+      c.addEventListener("pointermove", (e) => { const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; c.style.transform = `rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateY(-3px)`; });
+      c.addEventListener("pointerleave", () => (c.style.transform = ""));
     });
   }
+  // 标题轮换词
+  if (!Site.calm) {
+    const words = [...$("rot").children]; let k = 0;
+    setInterval(() => { const a = words[k]; k = (k + 1) % words.length; const b = words[k]; a.classList.remove("on"); a.classList.add("out"); b.classList.remove("out"); b.classList.add("on"); setTimeout(() => a.classList.remove("out"), 600); }, 2200);
+  }
+  Site.init();
+  Site.reveal();
+  Badge($("lanyard"), $("badge"));
 })();
 </script>
 </body>
