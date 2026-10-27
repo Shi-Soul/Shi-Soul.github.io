@@ -1,0 +1,86 @@
+/* V21 A Day：横向旅程，底色从黎明走到深夜 */
+:root {
+  --bg: #f3ebef; --ink: #23222a; --ink2: #55535e; --muted: #8c8a95; --line: rgba(35,34,42,.14); --acc: #c26b3c; --card: rgba(255,255,255,.55);
+  --sans: "Figtree", system-ui, sans-serif;
+  --pm-bg: rgba(255,255,255,.5); --pm-ph-bg: rgba(255,255,255,.5); --pm-ph-ink: var(--muted);
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased; transition: color .4s; }
+a { color: inherit; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; }
+a:hover { text-decoration-color: var(--acc); color: var(--acc); }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 3px; }
+
+.top { position: fixed; top: 0; left: 0; right: 0; z-index: 10; display: flex; justify-content: space-between; padding: 22px 34px; font-size: 14px; pointer-events: none; }
+.top > * { pointer-events: auto; }
+.top a { text-decoration: none; color: var(--ink2); margin-left: 20px; }
+.top .nm { margin: 0; font-weight: 600; color: var(--ink); }
+
+/* 横向旅程：外层高度 = 轨道宽度，内层 sticky，按滚动进度平移 */
+.journey { position: relative; }
+.viewport { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+.track { display: flex; height: 100%; will-change: transform; }
+.panel { flex: none; height: 100%; padding: 110px 56px 90px; display: flex; flex-direction: column; justify-content: center; }
+.p-intro { width: 74vw; }
+.p-intro h1 { margin: 0 0 22px; font: 300 clamp(60px, 9vw, 132px)/.92 var(--sans); letter-spacing: -.05em; }
+.p-intro .st { font-size: 21px; line-height: 1.55; max-width: 640px; margin: 0 0 16px; }
+.p-intro .aff { font-size: 14.5px; color: var(--ink2); margin: 0; max-width: 640px; }
+.p-intro .row { display: flex; gap: 26px; align-items: center; margin-bottom: 30px; }
+.p-intro .img { width: 70px; height: 70px; border-radius: 50%; background: #fff center 18% / 150% no-repeat; box-shadow: 0 8px 24px -12px rgba(0,0,0,.3); }
+.p-intro .k { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink2); }
+.contacts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+.contacts a, .contacts button { display: inline-flex; gap: 8px; align-items: center; padding: 8px 14px; border-radius: 999px; background: var(--card); backdrop-filter: blur(6px); text-decoration: none; font-size: 14px; color: var(--ink); }
+.contacts a:hover, .contacts button:hover { color: var(--acc); }
+.hint { margin-top: 40px; font-size: 13px; color: var(--muted); }
+.hint i { display: inline-block; animation: nudge 2.4s ease-in-out infinite; }
+@keyframes nudge { 50% { transform: translateX(6px); } }
+.lbl { font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin: 0 0 18px; }
+.p-news { width: 44vw; }
+.p-news ul { list-style: none; margin: 0; padding: 0; }
+.p-news li { padding: 12px 0; border-top: 1px solid var(--line); font-size: 17px; }
+.p-news time { display: block; font-size: 12.5px; color: var(--muted); }
+.p-head { width: 32vw; }
+.p-head h2 { font: 300 56px/1 var(--sans); letter-spacing: -.03em; margin: 0 0 22px; }
+.tabs { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; position: relative; }
+.tabs button { border: 0; background: none; padding: 3px 0; font: 400 16px var(--sans); color: var(--ink2); cursor: pointer; }
+.tabs button[aria-selected="true"] { color: var(--acc); font-weight: 600; }
+.tabs button sup { font-size: 10.5px; color: var(--muted); margin-left: 3px; }
+.tab-ind { display: none; }
+.p-head small { margin-top: 18px; color: var(--muted); font-size: 12.5px; }
+.p-pub { width: 46vw; }
+.p-pub .pm { aspect-ratio: 16 / 10; border-radius: 10px; box-shadow: 0 30px 60px -36px rgba(0,0,0,.45); max-height: 52vh; }
+.p-pub .m { display: flex; justify-content: space-between; margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+.p-pub h3 { margin: 6px 0 4px; font: 600 26px/1.15 var(--sans); letter-spacing: -.02em; }
+.p-pub p { margin: 0 0 6px; color: var(--ink2); }
+.p-pub .au { font-size: 13px; color: var(--muted); }
+.p-pub .au .me, .cvlist .me { color: var(--ink); font-weight: 600; }
+.p-pub .ln { display: flex; gap: 16px; font-size: 14px; margin-top: 8px; }
+.p-path { width: 44vw; }
+.p-path div.r { padding: 12px 0; border-top: 1px solid var(--line); }
+.p-path time { display: block; font-size: 12.5px; color: var(--muted); }
+.p-path small { display: block; color: var(--ink2); }
+.p-end { width: 62vw; }
+.p-end h2 { font: 300 clamp(44px, 6vw, 84px)/1 var(--sans); letter-spacing: -.04em; margin: 0 0 18px; }
+.p-end p { color: var(--ink2); max-width: 520px; }
+
+/* 一天的进度 */
+.sun { position: fixed; left: 34px; right: 34px; bottom: 22px; z-index: 10; height: 20px; font-size: 11.5px; color: var(--muted); }
+.sun .line { position: absolute; left: 0; right: 0; top: 9px; height: 1px; background: var(--line); }
+.sun .dot { position: absolute; top: 3px; width: 13px; height: 13px; margin-left: -6px; border-radius: 50%; background: var(--acc); box-shadow: 0 0 16px var(--acc); }
+.sun span { position: absolute; top: -14px; transform: translateX(-50%); }
+
+.cvpage { max-width: 760px; margin: 0 auto; padding: 120px 24px 80px; }
+.cvpage h1 { font: 300 64px/1 var(--sans); letter-spacing: -.04em; margin: 0 0 16px; }
+.cvlist h2 { font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin: 44px 0 8px; font-weight: 500; }
+.cvlist .row { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; padding: 10px 0; border-top: 1px solid var(--line); }
+.cvlist time { font-size: 13px; color: var(--muted); padding-top: 2px; }
+.cvlist small { display: block; color: var(--ink2); font-size: 14px; }
+
+/* 窄屏 / 减少动效：退回竖向 */
+.vertical .journey { height: auto !important; }
+.vertical .viewport { position: static; height: auto; overflow: visible; }
+.vertical .track { flex-direction: column; transform: none !important; }
+.vertical .panel { width: auto !important; height: auto; padding: 48px 20px; }
+.vertical .p-intro { padding-top: 110px; min-height: 92vh; }
+.vertical .sun { display: none; }
+@media (max-width: 600px) { .cvlist .row { grid-template-columns: 1fr; gap: 0; } .top { padding: 18px 20px; } .p-intro .row { flex-wrap: wrap; } }
+@media (prefers-reduced-motion: reduce) { .hint i { animation: none; } }
