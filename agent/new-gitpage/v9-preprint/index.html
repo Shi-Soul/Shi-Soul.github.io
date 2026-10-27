@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/computer-modern@0.1.2/cmu-serif.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/computer-modern@0.1.2/cmu-typewriter-text.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<article class="sheet">
+  <div class="stamp" id="stamp" aria-hidden="true"></div>
+  <header class="runhead"><span>Preprint. Work in progress since 2021.</span><nav aria-label="Site"><a href="#updates">Updates</a><a href="#work">Work</a><a href="cv.html">Supplementary (CV)</a></nav></header>
+
+  <h1 class="title">Toward General-Purpose Robots that Learn</h1>
+  <div class="authors">Weiji Xie<sup>1,2</sup></div>
+  <div class="affil"><sup>1</sup>APEX Lab, Shanghai Jiao Tong University &nbsp; <sup>2</sup>TeleAI, China Telecom</div>
+  <div class="contacts" id="contacts"></div>
+
+  <section class="abstract"><h2>Abstract</h2><p id="statement"></p></section>
+  <p class="kw"><b>Keywords:</b> robot learning, reinforcement learning, embodied AI, sim-to-real.</p>
+
+  <h2 class="sec"><span>1</span>Introduction</h2>
+  <p>The author is an M.S. student in computer science at <a href="https://www.sjtu.edu.cn/">Shanghai Jiao Tong University</a> (<a href="https://apex.sjtu.edu.cn/">APEX Lab</a>, advised by <a href="https://wnzhang.net/">Prof. Weinan Zhang</a>) and a research intern at <a href="https://www.teleai.com.cn/">TeleAI</a>, China Telecom, working with <a href="https://baichenjia.github.io/">Dr. Chenjia Bai</a>. Prior work spans motion tracking, locomotion, sim-to-real transfer, generative models and multi-agent learning <span id="allcites"></span>.</p>
+  <p>Stated as an objective, the research program is</p>
+  <div class="eq-wrap"><div class="eq" id="eq"></div><span class="no">(1)</span></div>
+  <p>where the hard part is that 𝒯 should eventually contain every task people care about. Section 3 reports progress so far.</p>
+
+  <h2 class="sec" id="updates"><span>2</span>Recent Updates</h2>
+  <dl class="updates" id="news"></dl>
+
+  <h2 class="sec" id="work"><span>3</span>Work</h2>
+  <div class="tabs" id="tabs"></div>
+  <div class="figs" id="pubs"></div>
+
+  <h2 class="sec"><span>4</span>Education and Experience</h2>
+  <table class="bt"><caption>Table 1: Path so far. Full details in the <a href="cv.html">supplementary material</a>.</caption>
+    <thead><tr><th>Period</th><th>Position</th><th>Institution</th></tr></thead><tbody id="path"></tbody></table>
+
+  <h2 class="sec"><span></span>References</h2>
+  <ol class="refs" id="refs"></ol>
+
+  <h2 class="sec"><span></span>Author Biography</h2>
+  <div class="bio" id="bio"></div>
+
+  <div class="pageno">1</div>
+</article>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="paper.js"></script>
+<script>
+(function () {
+  const { S, P, esc, venue, isTop, media, links, catName } = Site, $ = (id) => document.getElementById(id);
+  Paper.stamp($("stamp"));
+  Paper.contacts($("contacts"));
+  $("statement").textContent = P.statement;
+  const pubs = S.publications; $("allcites").innerHTML = Paper.cite(pubs[0]) + "–" + Paper.cite(pubs[pubs.length - 1]); // 像 cite 宏包一样压缩成 [1]–[7]
+  const tex = String.raw`\pi^\star \;=\; \arg\max_{\pi}\; \mathbb{E}_{\,\tau \sim \mathcal{T}}\!\left[\, R_\tau(\pi) \,\right], \qquad \mathcal{T} = \{\text{tasks people care about}\}`;
+  if (window.katex) katex.render(tex, $("eq"), { displayMode: true, throwOnError: false }); else $("eq").textContent = "π* = argmax_π E_{τ∼T}[R_τ(π)]";
+  $("news").innerHTML = S.news.map((n) => `<dt>${n.date}</dt><dd>${esc(n.text)}</dd>`).join("");
+  let fig = 0;
+  const card = (p) => { fig++; return `<figure class="fig" data-hover>${media(p)}<figcaption>Figure ${fig}: <b>${esc(p.short)}</b> ${Paper.cite(p)}. ${esc(p.note)} <span class="v">${esc(venue(p).toLowerCase())}</span>. <span class="ln">${links(p, { project: "[project]", pdf: "[pdf]" })}</span></figcaption></figure>`; };
+  Site.tabs($("tabs"), (f) => { fig = 0; Site.renderPubs($("pubs"), f, card); });
+  $("path").innerHTML = S.education.map((e) => `<tr><td class="t">${e.when}</td><td>${esc(e.title)}${e.detail ? `<br><small>${esc(e.detail)}</small>` : ""}</td><td>${esc(e.org)}</td></tr>`).join("") +
+    S.experience.map((e) => `<tr><td class="t">${e.when}</td><td>${esc(e.title)}</td><td>${esc(e.org)}</td></tr>`).join("");
+  Paper.refs($("refs"));
+  Paper.bio($("bio"));
+  Paper.popovers();
+  Site.init();
+})();
+</script>
+</body>
+</html>

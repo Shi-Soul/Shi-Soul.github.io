@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="frame" id="frame" aria-hidden="true"></div>
+<main class="page">
+  <header class="topline"><a class="nm" href="#top">Weiji Xie</a><nav aria-label="Site"><a href="#revisions">Revisions</a><a href="#details">Publications</a><a href="cv.html">CV · Sheet 2</a></nav></header>
+
+  <section class="hero" id="top">
+    <div class="detail" data-reveal>
+      <svg id="dims" aria-hidden="true"></svg>
+      <div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div>
+      <div class="cap">DETAIL A <span>· SCALE 1:1</span></div>
+    </div>
+    <div>
+      <div class="lbl" data-reveal id="tagline"></div>
+      <h1 data-reveal style="--d:1">Weiji Xie</h1>
+      <p class="st" data-reveal style="--d:2" id="statement"></p>
+      <p class="aff" data-reveal style="--d:3" id="aff"></p>
+      <div class="contacts" data-reveal style="--d:4" id="contacts"></div>
+    </div>
+    <div class="tbwrap" data-reveal style="--d:2"><div class="tb" id="tb"></div></div>
+  </section>
+
+  <section class="blk" id="revisions">
+    <div class="sh" data-reveal><span class="no">1</span><h2>Revision History</h2><span class="lbl">news</span></div>
+    <table class="eng" data-reveal><thead><tr><th>Rev</th><th>Date</th><th>Description</th></tr></thead><tbody id="news"></tbody></table>
+  </section>
+
+  <section class="blk" id="details">
+    <div class="sh" data-reveal><span class="no">2</span><h2>Details</h2><span class="lbl">publications · * equal contribution · † corresponding</span></div>
+    <div class="tabs" id="tabs" data-reveal></div>
+    <div class="dets" id="pubs"></div>
+  </section>
+
+  <section class="blk" id="parts">
+    <div class="sh" data-reveal><span class="no">3</span><h2>Parts List</h2><span class="lbl">education &amp; experience · <a href="cv.html">full CV on sheet 2</a></span></div>
+    <table class="eng" data-reveal><thead><tr><th>Item</th><th>Description</th><th>Source</th><th>Period</th></tr></thead><tbody id="path"></tbody></table>
+  </section>
+
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><span>Sheet 1 of 2 · do not scale drawing</span></footer>
+</main>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="drawing.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, isTop, media, links, rest, catName } = Site, $ = (id) => document.getElementById(id);
+  Drawing.frame($("frame"));
+  Drawing.titleBlock($("tb"), "1 of 2", "Research overview");
+  Drawing.detail($("dims"));
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("tagline").textContent = P.tagline;
+  $("statement").textContent = P.statement;
+  $("aff").innerHTML = P.affiliation;
+  $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true });
+  const N = S.news.length;
+  $("news").innerHTML = S.news.map((n, i) => `<tr><td class="rev">${"ABCDEFGHIJ"[N - 1 - i]}</td><td class="c">${n.date}</td><td>${esc(n.text)}</td></tr>`).join("");
+  $("path").innerHTML = S.education.concat(S.experience).map((e, i) => `<tr><td class="c">${String(i + 1).padStart(2, "0")}</td><td>${esc(e.title)}${e.detail ? `<small>${esc(e.detail)}</small>` : ""}</td><td>${esc(e.org)}</td><td class="c">${e.when}</td></tr>`).join("");
+  $("yr").textContent = new Date().getFullYear();
+  const card = (p, i) => `<article class="det" data-hover><div class="box"><span class="ball">${i + 1}</span>${media(p)}</div>
+    <div class="cap"><h3>${esc(p.short)}</h3><span class="v">${esc(venue(p))}</span></div>
+    <p class="full">${esc(rest(p))}</p><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="cats">${(p.cats || []).map(catName).join(" · ")}</div><div class="ln">${links(p)}</div></article>`;
+  Site.tabs($("tabs"), (f) => Site.renderPubs($("pubs"), f, card));
+  Site.init();
+  Site.reveal();
+})();
+</script>
+</body>
+</html>
