@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CV · Weiji Xie</title>
+<meta name="description" content="Curriculum vitae of Weiji Xie.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="frame" id="frame" aria-hidden="true"></div>
+<main class="page">
+  <header class="topline"><a class="nm" href="index.html">Weiji Xie</a><nav aria-label="Site"><a href="index.html#revisions">Revisions</a><a href="index.html#details">Publications</a><a href="cv.html" aria-current="page">CV · Sheet 2</a></nav></header>
+
+  <section class="hero">
+    <div class="detail" data-reveal>
+      <svg id="dims" aria-hidden="true"></svg>
+      <div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div>
+      <div class="cap">DETAIL A <span>· SCALE 1:1</span></div>
+    </div>
+    <div>
+      <div class="lbl" data-reveal>Curriculum vitae</div>
+      <h1 data-reveal style="--d:1">Weiji Xie</h1>
+      <p class="aff" data-reveal style="--d:2" id="aff"></p>
+      <div class="contacts" data-reveal style="--d:3" id="contacts"></div>
+    </div>
+    <div class="tbwrap" data-reveal style="--d:2"><div class="tb" id="tb"></div></div>
+  </section>
+  <div id="cv"></div>
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><span>Sheet 2 of 2 · <a href="index.html">back to sheet 1</a></span></footer>
+</main>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="drawing.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, media, links } = Site, $ = (id) => document.getElementById(id);
+  Drawing.frame($("frame"));
+  Drawing.titleBlock($("tb"), "2 of 2", "Curriculum vitae");
+  Drawing.detail($("dims"));
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("aff").innerHTML = P.affiliation;
+  $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true });
+  const sec = (n, t, head, rows) => `<section class="blk"><div class="sh" data-reveal><span class="no">${n}</span><h2>${t}</h2></div><table class="eng" data-reveal><thead><tr>${head.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></section>`;
+  const r2 = (r) => `<tr><td class="c">${esc(r.when || "")}</td><td>${esc(r.title)}</td></tr>`;
+  const r3 = (r) => `<tr><td class="c">${esc(r.when || "")}</td><td>${esc(r.title)}${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</td><td>${esc(r.org || "")}</td></tr>`;
+  const b = Site.cvBlocks();
+  const pubs = S.publications.map((p, i) => `<tr data-hover><td class="c">${String(i + 1).padStart(2, "0")}</td><td class="cvthumb">${media(p)}</td><td>${esc(p.title)}<small>${me(p.authors)}</small><small>${links(p)}</small></td><td class="c">${esc(venue(p))}</td></tr>`).join("");
+  $("cv").innerHTML = sec(1, "Education", ["Period", "Degree", "Institution"], b[0].rows.map(r3).join("")) +
+    sec(2, "Experience", ["Period", "Position", "Institution"], b[1].rows.map(r3).join("")) +
+    sec(3, "Publications", ["Item", "Fig.", "Title / authors", "Venue"], pubs) +
+    sec(4, "Honors & Awards", ["Year", "Honor"], b[2].rows.map(r2).join("")) +
+    sec(5, "Service & Misc", ["Item", "Detail"], b[3].rows.map((r) => r2({ when: "Service", title: r.title })).concat(b[4].rows.map(r2)).join(""));
+  $("yr").textContent = new Date().getFullYear();
+  Site.init();
+  Site.reveal();
+})();
+</script>
+</body>
+</html>

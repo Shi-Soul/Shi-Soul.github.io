@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CV · Weiji Xie</title>
+<meta name="description" content="Curriculum vitae of Weiji Xie.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/computer-modern@0.1.2/cmu-serif.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/computer-modern@0.1.2/cmu-typewriter-text.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<article class="sheet">
+  <div class="stamp" id="stamp" aria-hidden="true"></div>
+  <header class="runhead"><span>Supplementary material</span><nav aria-label="Site"><a href="index.html">Main text</a><a href="index.html#work">Work</a><a href="cv.html" aria-current="page">Supplementary (CV)</a></nav></header>
+
+  <h1 class="title">Supplementary Material:<br>Curriculum Vitae</h1>
+  <div class="authors">Weiji Xie<sup>1,2</sup></div>
+  <div class="affil"><sup>1</sup>APEX Lab, Shanghai Jiao Tong University &nbsp; <sup>2</sup>TeleAI, China Telecom</div>
+  <div class="contacts" id="contacts"></div>
+
+  <h2 class="sec"><span>A</span>Education</h2>
+  <table class="bt"><thead><tr><th>Period</th><th>Degree</th><th>Institution</th></tr></thead><tbody id="edu"></tbody></table>
+
+  <h2 class="sec"><span>B</span>Experience</h2>
+  <table class="bt"><thead><tr><th>Period</th><th>Position</th><th>Institution</th></tr></thead><tbody id="exp"></tbody></table>
+
+  <h2 class="sec"><span>C</span>Publications</h2>
+  <ol class="refs" id="refs"></ol>
+
+  <h2 class="sec"><span>D</span>Honors and Awards</h2>
+  <table class="bt"><thead><tr><th>Year</th><th>Honor</th></tr></thead><tbody id="honors"></tbody></table>
+
+  <h2 class="sec"><span>E</span>Service and Misc</h2>
+  <table class="bt"><tbody id="misc"></tbody></table>
+
+  <h2 class="sec"><span></span>Author Biography</h2>
+  <div class="bio" id="bio"></div>
+
+  <div class="pageno">S1</div>
+</article>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="paper.js"></script>
+<script>
+(function () {
+  const { S, esc } = Site, $ = (id) => document.getElementById(id);
+  Paper.stamp($("stamp"));
+  Paper.contacts($("contacts"));
+  const tr = (r) => `<tr><td class="t">${esc(r.when || "")}</td><td>${esc(r.title)}${r.detail ? `<br><small>${esc(r.detail)}</small>` : ""}</td><td>${esc(r.org || "")}</td></tr>`;
+  $("edu").innerHTML = S.education.map(tr).join("");
+  $("exp").innerHTML = S.experience.map(tr).join("");
+  $("honors").innerHTML = S.honors.map((h) => `<tr><td class="t">${h.year}</td><td>${esc(h.text)}</td></tr>`).join("");
+  $("misc").innerHTML = S.service.map((s) => `<tr><td class="t">Service</td><td>${esc(s)}</td></tr>`).join("") + S.misc.map((m) => `<tr><td class="t">${esc(m.k)}</td><td>${esc(m.v)}</td></tr>`).join("");
+  Paper.refs($("refs"));
+  Paper.bio($("bio"));
+  Site.init();
+})();
+</script>
+</body>
+</html>

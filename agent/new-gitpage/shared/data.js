@@ -7,6 +7,7 @@
  *   image:    缩略图（放进 ../media/，没有就留空，会自动生成文字占位）
  *   video:    可选，鼠标悬停时才加载播放（可以直接填项目主页上的视频地址）
  *   note:     一句话说明
+ *   date:     首次公开的年月（V10 的时间轴用；TextOp、TrajGen 的月份待核对）
  */
 window.SITE = {
   profile: {
@@ -42,7 +43,7 @@ window.SITE = {
 
   publications: [
     {
-      short: "TextOp", venue: "Under review", year: 2026, selected: true, cats: ["tracking", "gen"], tier: "main",
+      short: "TextOp", date: "2026.01", venue: "Under review", year: 2026, selected: true, cats: ["tracking", "gen"], tier: "main",
       title: "TextOp: Real-time Interactive Text-Driven Humanoid Robot Motion Generation and Control",
       authors: "Weiji Xie*, Jiakun Zheng*, Jinrui Han, Jiyuan Shi, Weinan Zhang†, Chenjia Bai†, Xuelong Li",
       note: "Type a sentence; the robot moves, in real time.",
@@ -50,7 +51,7 @@ window.SITE = {
       image: "../media/textop.jpg", video: "https://text-op.github.io/static/videos/demo_big.mp4",
     },
     {
-      short: "KungfuBot", venue: "NeurIPS", year: 2025, selected: true, cats: ["tracking", "s2r"], tier: "main",
+      short: "KungfuBot", date: "2025.06", venue: "NeurIPS", year: 2025, selected: true, cats: ["tracking", "s2r"], tier: "main",
       title: "KungfuBot: Physics-Based Humanoid Whole-Body Control for Learning Highly-Dynamic Skills",
       authors: "Weiji Xie*, Jinrui Han*, Jiakun Zheng*, Huanyu Li, Xinzhe Liu, Jiyuan Shi, Weinan Zhang, Chenjia Bai†, Xuelong Li†",
       note: "Kung fu and dance on a real humanoid.",
@@ -58,7 +59,7 @@ window.SITE = {
       image: "../media/kungfubot.jpg", video: "https://kungfubot.github.io/static/videos/360%20spin.mp4",
     },
     {
-      short: "KungfuBot2", venue: "Under review", year: 2025, selected: true, cats: ["tracking"],
+      short: "KungfuBot2", date: "2025.09", venue: "Under review", year: 2025, selected: true, cats: ["tracking"],
       title: "KungfuBot2: Learning Versatile Motion Skills for Humanoid Whole-Body Control",
       authors: "Jinrui Han, Weiji Xie, Jiakun Zheng, Jiyuan Shi, Weinan Zhang, Ting Xiao, Chenjia Bai",
       note: "One policy, many motion skills.",
@@ -66,7 +67,7 @@ window.SITE = {
       image: "../media/kungfubot2.jpg",
     },
     {
-      short: "Narrow Terrain", venue: "IROS", year: 2025, selected: true, cats: ["loco"], tier: "main",
+      short: "Narrow Terrain", date: "2025.02", venue: "IROS", year: 2025, selected: true, cats: ["loco"], tier: "main",
       title: "Humanoid Whole-Body Locomotion on Narrow Terrain via Dynamic Balance and Reinforcement Learning",
       authors: "Weiji Xie, Chenjia Bai†, Jiyuan Shi, Junkai Yang, Yunfei Ge, Weinan Zhang†, Xuelong Li",
       note: "Whole-body balance on terrain as narrow as a foot.",
@@ -74,7 +75,7 @@ window.SITE = {
       image: "../media/narrow.jpg",
     },
     {
-      short: "LoopSR", venue: "IROS", year: 2025, selected: true, cats: ["loco", "s2r"],
+      short: "LoopSR", date: "2024.09", venue: "IROS", year: 2025, selected: true, cats: ["loco", "s2r"],
       title: "LoopSR: Looping Sim-and-Real for Lifelong Policy Adaptation of Legged Robots",
       authors: "Peilin Wu, Weiji Xie, Jiahang Cao, Hang Lai, Weinan Zhang",
       note: "Real-world experience flows back into simulation, for life.",
@@ -82,7 +83,7 @@ window.SITE = {
       image: "../media/loopsr.jpg",
     },
     {
-      short: "OFF-FSP", venue: "AAAI", year: 2026, selected: true, cats: ["marl"],
+      short: "OFF-FSP", date: "2024.03", venue: "AAAI", year: 2026, selected: true, cats: ["marl"],
       title: "Offline Fictitious Self-Play for Competitive Games",
       authors: "Jingxiao Chen, Weiji Xie, Weinan Zhang†, Yong Yu, Ying Wen†",
       note: "Self-play from cheap offline data, tested on a real robot game.",
@@ -90,7 +91,7 @@ window.SITE = {
       image: "../media/ofsp.jpg",
     },
     {
-      short: "TrajGen", venue: "Under review", year: 2024, selected: false, cats: ["gen"],
+      short: "TrajGen", date: "2024.06", venue: "Under review", year: 2024, selected: false, cats: ["gen"],
       title: "A Pre-Trained Trajectory Generative Model on Road Network",
       authors: "Weiji Xie, Yufan Zhang, Rui Zhang, Zhouyue Sun, Tianyu Liu, Guanjie Zheng, Zhenhui Li, Weinan Zhang",
       note: "A pre-trained generative model for city-scale vehicle trajectories.",

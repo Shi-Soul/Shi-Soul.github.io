@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar"><div class="wrap">
+  <a class="run" href="#top"><span class="live" aria-hidden="true"></span>Weiji Xie</a>
+  <div class="meta"><span>run: general-purpose-robots</span><span>started: 2021-09</span><span>status: running</span></div>
+  <nav aria-label="Site"><a href="#logs">logs</a><a href="#checkpoints">checkpoints</a><a href="cv.html">cv</a></nav>
+</div></header>
+
+<main class="wrap" id="top">
+  <section class="hero">
+    <div>
+      <div class="k" data-reveal id="tagline"></div>
+      <h1 data-reveal style="--d:1">Weiji Xie</h1>
+      <p class="st" data-reveal style="--d:2" id="statement"></p>
+      <p class="aff" data-reveal style="--d:3" id="aff"></p>
+      <div class="contacts" data-reveal style="--d:4" id="contacts"></div>
+    </div>
+    <div class="card-id" data-reveal style="--d:2">
+      <div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div>
+      <dl><dt>owner</dt><dd>Weiji Xie</dd><dt>org</dt><dd>SJTU · TeleAI</dd><dt>base</dt><dd>Shanghai</dd><dt>step</dt><dd id="step"></dd></dl>
+    </div>
+  </section>
+
+  <div class="panel" data-reveal>
+    <div class="ph"><span><b>eval/capability</b> vs. time</span><span class="legend"><span><i></i>smoothed</span><span><i class="band"></i>± std</span><span><i class="ck"></i>checkpoint (paper)</span></span></div>
+    <div class="plot" id="plot"><svg role="img" aria-label="Research progress drawn as a learning curve, with papers as checkpoints"></svg><div class="tip" id="tip"></div></div>
+  </div>
+
+  <section class="blk" id="logs">
+    <div class="sh" data-reveal><h2>Logs</h2><span>tail -n 5 news.log</span></div>
+    <div class="panel log" id="news" data-reveal></div>
+  </section>
+
+  <section class="blk" id="checkpoints">
+    <div class="sh" data-reveal><h2>Checkpoints</h2><span>publications · * equal contribution · † corresponding</span></div>
+    <div class="tabs" id="tabs" data-reveal></div>
+    <div class="ckpts" id="pubs"></div>
+  </section>
+
+  <section class="blk" id="path">
+    <div class="sh" data-reveal><h2>Config</h2><span>education &amp; experience</span></div>
+    <div class="panel" data-reveal><div class="ph"><b>config.yaml</b><a href="cv.html">full CV →</a></div><pre class="yaml" id="yaml"></pre></div>
+  </section>
+
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><span>hand-built, no template</span></footer>
+</main>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="run.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, isTop, media, links, rest, catName } = Site, $ = (id) => document.getElementById(id);
+  $("tagline").textContent = P.tagline.toLowerCase();
+  $("statement").textContent = P.statement;
+  $("aff").innerHTML = P.affiliation;
+  $("contacts").innerHTML = Site.contacts({ labels: true });
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  const d = new Date(); $("step").textContent = d.getFullYear() + "." + String(d.getMonth() + 1).padStart(2, "0");
+  $("news").innerHTML = S.news.map((n) => `<div><span class="d">[${n.date}]</span><span class="lv ${/accepted|released/i.test(n.text) ? "ck" : ""}">${/accepted|released/i.test(n.text) ? "CKPT" : "INFO"}</span><span>${esc(n.text)}</span></div>`).join("");
+  $("yaml").innerHTML = Run.yaml();
+  $("yr").textContent = new Date().getFullYear();
+  const card = (p) => `<article class="ckpt" data-hover data-short="${esc(p.short)}">${media(p)}<div class="b">
+      <div class="id"><span>ckpt_${p.date || p.year}</span><b>${esc(venue(p))}</b></div>
+      <h3>${esc(p.short)}</h3><p class="full">${esc(rest(p))}</p><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="ln">${links(p)}</div></div></article>`;
+  const setTab = Site.tabs($("tabs"), (f) => Site.renderPubs($("pubs"), f, card));
+  // 曲线上的 checkpoint 与下方卡片联动
+  Run.plot($("plot"), $("tip"), (p, on) => {
+    if (on === "go") { setTab("all"); requestAnimationFrame(() => { const c = document.querySelector(`.ckpt[data-short="${p.short}"]`); c && c.scrollIntoView({ behavior: "smooth", block: "center" }); }); return; }
+    const c = document.querySelector(`.ckpt[data-short="${p.short}"]`); c && c.classList.toggle("hot", on);
+  });
+  Site.init();
+  Site.reveal();
+})();
+</script>
+</body>
+</html>

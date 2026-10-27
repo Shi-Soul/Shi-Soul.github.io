@@ -41,7 +41,13 @@ code { font-size: 13px; background: var(--bg); padding: 1px 5px; border-radius: 
 </head>
 <body>
 <main class="wrap">
-  <h1>新主页草稿 · 第三轮</h1>
+  <h1>新主页草稿 · 第四轮</h1>
+  <p class="lede">这一轮的方向：冷静、克制、有 researcher / geek 的味道，创新体现在“形式”而不是视觉刺激。三个新想法各借用一种研究者熟悉的媒介；之前的版本保持不动，放在下面。</p>
+
+  <h2>新想法</h2>
+  <div class="grid" id="fresh"></div>
+
+  <h2 style="margin-top:56px">第三轮 · 之前的版本</h2>
   <p class="lede">保留并迭代 V4 / V5 / V6，新增 V8。每个版本都有风格一致的 <b>CV 子页</b>；News 在论文前；论文按分类筛选（默认 Selected），所有工作都带图；定位改为 robot learning，不再绑定 humanoid whole-body control；单一主题、全英文；页面里不再出现 handle。</p>
 
   <h2>当前版本</h2>
@@ -55,7 +61,7 @@ code { font-size: 13px; background: var(--bg); padding: 1px 5px; border-radius: 
     <ul>
       <li><b>加一篇论文</b>：在 <code>shared/data.js</code> 的 publications 里复制一条；<code>selected</code> 决定是否出现在默认标签，<code>cats</code> 决定分类，<code>image</code> 放进 <code>media/</code>，<code>video</code> 可填项目主页视频地址（悬停才加载）。</li>
       <li><b>改分类</b>：<code>categories</code> 里增删即可，筛选标签自动生成。</li>
-      <li><b>待核对</b>：新闻日期、每篇一句话 <code>note</code>、个人陈述 <code>statement</code> 是草稿。</li>
+      <li><b>待核对</b>：新闻日期、每篇一句话 <code>note</code>、个人陈述 <code>statement</code>、TextOp 和 TrajGen 的 <code>date</code> 月份是草稿。</li>
       <li><b>照片</b>：V5 / V6 用证件照最自然；V4 是回形针一寸照；V8 是带光环的圆形头像，换生活照会更好。</li>
       <li>右下角的版本切换条只存在于草稿，定稿时会去掉。</li>
     </ul>
@@ -63,6 +69,11 @@ code { font-size: 13px; background: var(--bg); padding: 1px 5px; border-radius: 
 </main>
 <script>
 (function () {
+  const fresh = [
+    ["v9-preprint", "V9 · Preprint", "researcher · geek", "整个主页排成一篇 arXiv 论文：Computer Modern 字体、侧边 arXiv 戳、Abstract 是个人陈述、研究目标写成公式 (1)、工作是带引用的 Figure（悬停 [n] 预览参考文献）、booktabs 表格、文末是 IEEE 式作者简介配证件照。CV 是 Supplementary Material。"],
+    ["v10-run", "V10 · Training Run", "technical · calm", "把研究画成一条训练曲线：平滑曲线 + ±std 带缓慢画出，论文是曲线上的 checkpoint（悬停看缩略图，点击跳到卡片），履历节点标在 x 轴，虚线外推到 general-purpose robots?。News 是日志，履历是 config.yaml。"],
+    ["v11-drawing", "V11 · Drawing", "engineering · precise", "工程图纸：图框分区刻度、标题栏（含实时光标坐标 mm）、证件照是带 35×45 尺寸线的 DETAIL A。News 是 Revision History，论文是编号的 Details，履历是 Parts List。CV 是 Sheet 2 of 2。"],
+  ];
   const cur = [
     ["v5-badge", "V5 · Lab Badge", "creative · personal", "可拖拽甩动的弹簧工牌、标题轮换词、卡片 3D 倾斜、扫描线。证件照最契合。"],
     ["v6-swiss", "V6 · Swiss", "researcher · formal", "名字逐字升起、红点光标、关键词跑马灯、分隔线滚动绘出。"],
@@ -71,6 +82,8 @@ code { font-size: 13px; background: var(--bg); padding: 1px 5px; border-radius: 
   ];
   const old = [["v1-console", "V1 · Control Room"], ["v2-editorial", "V2 · Research Review"], ["v3-atlas", "V3 · Atlas"], ["v7-manpage", "V7 · man weiji"]];
   const shot = (d, t) => `<div class="shot"><iframe src="${d}/index.html" title="${t} preview" loading="lazy" tabindex="-1"></iframe><a href="${d}/index.html" aria-label="Open ${t}"></a></div>`;
+  document.getElementById("fresh").innerHTML = fresh.map(([d, t, s, p]) => `<article class="v new">${shot(d, t)}
+    <div class="body"><h3>${t}<small>${s}</small></h3><p>${p}</p><p><a href="${d}/index.html">首页 →</a> &nbsp; <a href="${d}/cv.html">CV 页 →</a></p></div></article>`).join("");
   document.getElementById("grid").innerHTML = cur.map(([d, t, s, p, isNew]) => `<article class="v ${isNew ? "new" : ""}">${shot(d, t)}
     <div class="body"><h3>${t}<small>${s}</small></h3><p>${p}</p><p><a href="${d}/index.html">首页 →</a> &nbsp; <a href="${d}/cv.html">CV 页 →</a></p></div></article>`).join("");
   document.getElementById("old").innerHTML = old.map(([d, t]) => `<article class="v" style="opacity:.75">${shot(d, t)}<div class="body"><h3>${t}</h3><p><a href="${d}/index.html">打开 →</a></p></div></article>`).join("");
