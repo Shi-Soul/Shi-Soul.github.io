@@ -45,11 +45,11 @@ jobs:
           # only check local links
           # 排除：runner 上没有 imagemagick，响应式 *-480/800/1400.webp 不会生成（页面 onerror 会回退到原图）；
           # 模板示例项目 _projects/*.md 引用的 3/5/6/11.jpg 早已删除
-          args: --offline --exclude '-(480|800|1400)\.webp$' --exclude 'assets/img/(3|5|6|11)\.jpg$' --remap '_site(/?.*)/assets/(.*) _site/assets/$2' --verbose --no-progress '_site/**/*.html'
+          args: --offline --exclude 'assets/img/.+-(480|800|1400)\.webp$' --exclude 'assets/img/(3|5|6|11)\.jpg$' --remap '_site(/?.*)/assets/(.*) _site/assets/$2' --verbose --no-progress '_site/**/*.html'
 
       - name: Report broken links 📋
         # 日志需要登录才能看；把 lychee 结果写进 annotation，公开 API 可读
         if: failure()
         run: |
-          msg=$(grep -E '^\* \[' lychee/out.md | head -80 | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')
+          msg=$( (grep -E '^\* \[' lychee/out.md 2>/dev/null || echo "lychee produced no report (argument error?)") | head -80 | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')
           echo "::error title=Broken links::${msg}"

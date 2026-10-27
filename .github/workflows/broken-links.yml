@@ -57,5 +57,5 @@ jobs:
         # 日志需要登录才能看；把 lychee 结果写进 annotation，公开 API 可读
         if: failure()
         run: |
-          msg=$(grep -E '^\* \[' lychee/out.md | head -80 | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')
+          msg=$( (grep -E '^\* \[' lychee/out.md 2>/dev/null || echo "lychee produced no report (argument error?)") | head -80 | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')
           echo "::error title=Broken links::${msg}"
