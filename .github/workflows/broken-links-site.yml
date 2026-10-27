@@ -43,7 +43,9 @@ jobs:
         with:
           fail: true
           # only check local links
-          args: --offline --remap '_site(/?.*)/assets/(.*) _site/assets/$2' --verbose --no-progress '_site/**/*.html'
+          # 排除：runner 上没有 imagemagick，响应式 *-480/800/1400.webp 不会生成（页面 onerror 会回退到原图）；
+          # 模板示例项目 _projects/*.md 引用的 3/5/6/11.jpg 早已删除
+          args: --offline --exclude '-(480|800|1400)\.webp$' --exclude 'assets/img/(3|5|6|11)\.jpg$' --remap '_site(/?.*)/assets/(.*) _site/assets/$2' --verbose --no-progress '_site/**/*.html'
 
       - name: Report broken links 📋
         # 日志需要登录才能看；把 lychee 结果写进 annotation，公开 API 可读
