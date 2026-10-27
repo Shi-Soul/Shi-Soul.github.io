@@ -189,18 +189,22 @@
 | 记忆 Memory | 写什么、何时更新、检索什么 | MessyMem、HiMe、Mimir、SafeMem、NavMCP、BATON、HoloAgent-0、MeCo |
 | 监控与恢复 | 执行前、中、后的检查与修复 | DoReMi、Code-as-Monitor、REFLECT、AHA、LIBERO-RECOVER、PhyAgentOS、FLARE |
 | 技能 Skills | 可复用行为如何进入、演化、退出 | Voyager、DROC、Uni-Skill、ASPIRE、RATs、RoboRSI、SkillOpt、Zetta |
-| 基础设施 | 接口、工具链、策略服务、运行时闸门 | ROS MCP Server、RoboNeuron（MCP↔ROS 2）、ETP（100+ 工具）、openpi 远程推理、LeRobot、RTC/VLASH（异步执行）、ROSA/Robion（舰队推理） |
+| 基础设施 | 接口、工具链、策略服务、运行时闸门 | ROS MCP Server、RoboNeuron（MCP↔ROS 2）、ETP（100+ 工具）、openpi 远程推理、LeRobot、RTC/VLASH（异步执行）、ROSA/Robion（舰队推理）、vla.cpp（统一推理运行时）、OxyGen（KV Cache 管理）、BitVLA（1-bit VLA）、RoboECC（边云协同部署）、VLA-Perf（性能评测） |
 | 分层系统 | 规划器、学习策略、解析控制之间的权限划分 | Helix、GR00T、Hi Robot、Gemini Robotics 1.5、Harness VLA |
 
 **"机器人 Agent OS"与开源运行时**：
 - OpenClaw 生态：ROSClaw、RoboClaw、PHILIA，以及 Intel 的 OpenClaw + AgenticROS 示例；
 - ETA/OpenETA（可作为 Codex 插件）、Thea（"场景图即上下文""评估即退出码"）；
-- PhyAgentOS、ABot-AgentOS、RoboOS、Show-Harness、Guava（把 harness 能力蒸馏到 4B 模型）、Robo-Harness K1（感知即工具）。
+- PhyAgentOS（解耦认知规划与物理执行的自我进化 OS）、ABot-AgentOS、RoboOS、Show-Harness、Guava（把 harness 能力蒸馏到 4B 模型）、Robo-Harness K1（感知即工具）；
+- DynaHarness（2026-09，动态物理 harness 用于自我进化机器人 agent）；
+- 空中与集群：AeroWeaver（空中集群技能编织）、Harness Robotic OS（四足巡检）。
 
-**接口标准化**：
+**接口标准化与推理基础设施**：
 - ROS MCP Server（2025-09 开源）：机器人端加一个 rosbridge，Claude Code / Codex / Gemini CLI 就能发现并调用 topic、service、action；
+- RoboNeuron（2025-12）：MCP 与 ROS 之间的中间层基础设施，用于 agent 驱动的编排；
 - Anthropic 的 Model Hardware Standard（2026-08，研究预览）：读/写命令 + 安全参数参考文件，经 MCP/CLI/API 控制机械臂、显微镜等设备，对其他模型同样开放；
-- OpenAI 的 Decisions API（2026-10，gpt-6-luna）这类"决策模型"开始被用作 harness 里的快速决策层：代码给出合法候选，模型带概率挑一个。
+- OpenAI 的 Decisions API（2026-10，gpt-6-luna）这类"决策模型"开始被用作 harness 里的快速决策层：代码给出合法候选，模型带概率挑一个；
+- 推理优化：vla.cpp（统一推理运行时）、OxyGen（VLA 推理的 KV Cache 管理）、VLASH（未来状态感知的异步推理）、RTC（实时动作分块）、VLA-Perf（性能评测工具）。
 
 ### 2.7 编码智能体自动化机器人研发与自我改进（2026）
 
@@ -282,6 +286,42 @@
 | 2026-08 | Thea、ETA、AgenticRobotics loop；Anthropic MHS（8/27）；DYNA-2；Skild S1 |
 | 2026-09 | GPT-6 Astra（9/3）引发"LLM 即策略"研究潮；HomeBody；SimEX；OpenAI 表态做人形 |
 | 2026-10 | Pi API beta、Gemini 4 Argon for Robotics（10/13）；RobotWorld、RoboQuest、OpenRUA；综述 *Towards Agentic Robots*（10/14）；AgenticRoboRL |
+
+### 2.9 多机器人协作与专项领域（2023–2026）
+
+#### 多机器人/多智能体
+
+- **编排与协作**：
+  - **EMOS**（2024-10，ICLR'25）：从 URDF 自动生成"机器人简历"，本体感知的异构多机器人 OS；
+  - **RoCo**（2023-07）：多机械臂通过 LLM 对话协商计划，执行前做可行性检查；
+  - **EmboTeam**（2026-01）：LLM 推理经 PDDL 落地成反应式行为树，用于多机协作；
+  - **MeCo**（2026-01）：相似任务记忆化提升 LLM 多机协作效率；
+  - **RoboTalk**（2026-09）：从多模态演示学习多机器人通信与协调。
+- **专项应用**：
+  - **AeroWeaver**（2026-09）：空中集群的具身 agent harness，编织技能并分配角色；
+  - **MistyPilot**（2026-08）：多 agent LLM 技能编排控制社交机器人；
+  - **IMR-LLM**（2026-03）：工业多机器人任务规划与程序生成；
+  - **M2HRI**（2026-04）：LLM 驱动的多模态多 agent 个性化人机交互。
+
+#### 导航专项
+
+- **统一架构**：
+  - **ABot-N0/N1**（Alibaba AMAP，2026）：统一 5 类导航任务的 VLA，LLM 认知大脑 + 流匹配动作专家；
+  - **HarnessVLN**（AgiBot，2026-09）：免训练的统一导航 agent harness；
+  - **NavMCP**（SJTU，2026-08）：VLM agent 决定找什么、去哪找、何时停，导航基础模型负责执行，长时程探索 78.3%。
+- **空中导航**：**MissionBench**（2026-07）：空中 MLLM agent 的零样本任务级评测。
+
+#### 人形机器人专项
+
+- **全身控制**：
+  - **WholeBodyVLA**（2025-12，ICLR'26）：统一潜在 VLA 的全身移动操作；
+  - **Cybo-Waiter**（2026-03）：人形全身移动操作的物理 agent 框架；
+  - **HumanCLAW**（2026-07）：VLM 动作决策与底层全身运动解耦的评测框架。
+
+#### 自动驾驶
+
+- **Alpamayo 1.5**（NVIDIA，2026-03）：开放的 10B 推理型驾驶 VLA，Cosmos-Reason2 骨干 + 扩散轨迹解码；
+- **MindVLA-U1**（2026-05）：统一流式架构的驾驶 VLA。
 
 ---
 
@@ -376,16 +416,22 @@
 |---|---|---|
 | Embodied Agent Interface（NeurIPS'24） | LLM 具身决策四模块 | 细粒度诊断规划错误类型 |
 | EmbodiedBench（ICML'25） | MLLM agent 高层 vs 低层任务 | 高层任务 Claude-3.5 约 64–68%；低层操作最好的 GPT-4o 仅 28.9% |
+| Embodied First Exam（2026-10） | 第一次具身智能标准化考试 | 全新评测平台，覆盖物理推理、空间理解等 |
 | ERQA（Gemini Robotics） | 具身推理问答 | Gemini 4 Argon 87%（Google 自家基准） |
 | Butter-Bench（2025-10） | LLM 当机器人"大脑" | 最好 40%，人类 95% |
 | CaP-Bench（CaP-X） | 编码 agent 在不同抽象层 | 去掉人类抽象就掉分 |
 | LIBERO-PRO | 扰动后的操作 | VLA 记忆化；agent 方法的主战场 |
+| LIBERO-RECOVER（2026-09） | 失败恢复能力 | 不只看成功率，评测失败后的恢复表现 |
 | RoboArena | 分布式真机成对评测 | DreamZero 1750 Elo，π0.5 1622（2026-04） |
 | BEHAVIOR Challenge 2025 | 50 个家务长时程任务 | 冠军 Q-score 0.26（基于 π0.5） |
 | RoboDojo | 仿真 + 真机统一 | Astra 22.48% 排第 1 |
 | RobotWorld | 5 个领域 84 个任务 | 最强 19%；63 个任务无人完成 |
-| RoboQuest | 主动探索获取信息 | 最好 23% |
-| Embodied Playground、LIBERO-Agent、EmbodiedSWE-Bench、Video2World、4DCodeBench | 长时程、agent 原生、编码 agent、世界重建 | 2026-09/10 新出 |
+| RoboQuest | 主动探索获取信息 | 最好 23%；微调 π0.5 几乎为 0 |
+| Embodied Playground（2026-10） | 410 个长时程 agentic 任务 | 考察物理、策略与空间推理 |
+| ActiveArena（2026-09） | 操作中的主动感知 | 评测 agent 主动获取信息的能力 |
+| MEMOBench（2026-09） | 过程级记忆 | 机器人操作的记忆基准 |
+| RoboMemArena（2026-05） | 综合记忆能力 | 全面的机器人记忆基准 |
+| LIBERO-Agent、EmbodiedSWE-Bench、Video2World、4DCodeBench | agent 原生、编码 agent、世界重建 | 2026-09/10 新出 |
 | ASIMOV / ASIMOV-2.0、AgentSafe、GuardianBench | 语义与物理安全 | 据 ARC 转述：GPT-5、Gemini-2.5-Pro、Claude Opus 4.1 在 ASIMOV-2.0 的约束任务上违规率都在 30% 以上 |
 
 **评测上的共识**（*Towards Agentic Robots* §8）：任务成功率无法区分是 agent 的功劳还是执行器的功劳。应当固定执行器、观测和交互预算，报告 token、时间和人工协助，并且加入需要处理缺失信息、执行器不合适、动作失败的任务。
@@ -403,10 +449,13 @@
   - SafeHarness：编码 agent 在多数情况下仍撞上被禁止触碰的障碍物，推理里提到了障碍却不优先；
   - ROSClaw：不同模型提出越界动作的比率最多相差 4.8 倍；
   - Claude plays robotics 的真机片段：Grok 4.1 Fast 把玻璃门里的反射当成桌子冲过去；Opus 4.6 误判垃圾桶位置，把它拖行了几米。
+  - GuardianBench（2026-08）：良性指令在特定安全场景下组合后出现的潜在风险。
 - **防护**：
-  - 规范检查：Safety Chip（LTL）、RoboGuard（越狱成功率 92.3%→2.3%）、SafeGate（ISO 13482）、RoboSafe（可执行谓词）、CORE（控制屏障函数）；
+  - 规范检查：Safety Chip（LTL）、RoboGuard（越狱成功率 92.3%→2.3%）、SafeGate（ISO 13482）、RoboSafe（可执行谓词）、CORE（控制屏障函数，VLM 推理情境化约束）；
   - 接口层闸门：ROSClaw 安全包络、ETA 区分"想做"与"允许做"、MHS 参考文件编码限位；
-  - 基准：ASIMOV 系列。
+  - 治理架构：ARC（2026-09，三层治理架构用于已部署自主系统）；
+  - 系统化研究：SoK（2026-06，基础模型机器人的安全与隐私系统性框架）；
+  - 基准：ASIMOV 系列、GuardianBench、AgentSafe。
 - **部署清单（建议）**：
   1. 先仿真后真机；
   2. 安全检查放在模型之外：话题/服务白名单、速度、工作空间、力矩限幅；
