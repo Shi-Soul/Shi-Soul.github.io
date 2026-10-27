@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie · man weiji</title>
+<meta name="description" content="Weiji Xie: humanoid whole-body control, reinforcement learning, robotics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<style>
+:root {
+  --bg: #f4f1e8; --ink: #1d1b16; --muted: #7d786b; --hair: #d8d2c2; --acc: #0047ff;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, "PingFang SC", monospace;
+  --pm-bg: #e9e4d6; --pm-ph-bg: repeating-linear-gradient(0deg, #e9e4d6 0 2px, #e2dccb 2px 4px); --pm-ph-ink: var(--muted);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #0f1012; --ink: #d9f2d0; --muted: #6f8a69; --hair: #233024; --acc: #7dff6b; --pm-bg: #161a17; --pm-ph-bg: repeating-linear-gradient(0deg, #161a17 0 2px, #1a1f1b 2px 4px); color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #0f1012; --ink: #d9f2d0; --muted: #6f8a69; --hair: #233024; --acc: #7dff6b; --pm-bg: #161a17; --pm-ph-bg: repeating-linear-gradient(0deg, #161a17 0 2px, #1a1f1b 2px 4px); color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.65 var(--mono); -webkit-font-smoothing: antialiased; }
+a { color: var(--acc); text-decoration: underline; text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.page { max-width: 900px; margin: 0 auto; padding: 0 24px 60px; }
+.hdr { display: flex; justify-content: space-between; padding: 18px 0; border-bottom: 1px solid var(--hair); font-size: 13px; }
+.hdr button { font: inherit; color: var(--muted); background: none; border: 0; cursor: pointer; padding: 0; }
+.prompt { color: var(--muted); margin: 28px 0 0; }
+.prompt b { color: var(--acc); font-weight: 500; }
+.cur::after { content: "█"; animation: blink 1s steps(1) infinite; margin-left: 2px; }
+@keyframes blink { 50% { opacity: 0; } }
+h2 { font-size: 15px; font-weight: 700; margin: 30px 0 6px; letter-spacing: .02em; }
+.ind { padding-left: 7ch; }
+.name-row { display: grid; grid-template-columns: minmax(0, 1fr) 168px; gap: 28px; align-items: start; }
+canvas#dither { width: 168px; height: auto; image-rendering: pixelated; display: block; margin-top: 30px; }
+.cap { font-size: 11px; color: var(--muted); margin-top: 6px; text-align: center; }
+p { margin: 0 0 10px; }
+.opt b { font-weight: 700; }
+.opt .flag { color: var(--acc); }
+.syn b { font-weight: 700; }
+.pub { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 18px; padding: 10px 0; border-top: 1px dashed var(--hair); }
+.pub:first-child { border-top: 0; }
+.pub .pm { aspect-ratio: 4 / 3; filter: saturate(.85); }
+.pub b { font-weight: 700; }
+.pub .v { color: var(--muted); }
+.pub .ln a, .other .ln a { margin-right: 12px; }
+.other { padding: 3px 0; }
+.other .v { color: var(--muted); display: inline-block; min-width: 15ch; }
+.contacts { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+.contacts a, .contacts button { color: var(--acc); text-decoration: none; display: inline-flex; gap: 8px; align-items: center; }
+.contacts a:hover span, .contacts button:hover span { text-decoration: underline; }
+.news div { display: grid; grid-template-columns: 9ch 1fr; }
+.news time { color: var(--muted); }
+.ftr { margin-top: 40px; padding-top: 14px; border-top: 1px solid var(--hair); display: flex; justify-content: space-between; color: var(--muted); font-size: 13px; }
+@media (max-width: 640px) {
+  .page { padding: 0 16px 48px; }
+  .ind { padding-left: 2ch; }
+  .name-row { grid-template-columns: 1fr 100px; gap: 14px; }
+  canvas#dither { width: 100px; }
+  .pub { grid-template-columns: 1fr; }
+  .other .v { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { .cur::after { animation: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="hdr"><span>WEIJI(1)</span><span>Researcher's Manual</span><button id="theme" type="button" aria-label="Toggle dark mode">[ light | dark ]</button></div>
+  <div class="prompt">shi-soul@sjtu:~$ <b>man weiji</b><span class="cur"></span></div>
+
+  <div class="name-row">
+    <div>
+      <h2>NAME</h2>
+      <p class="ind"><b>weiji</b> (谢炜基, Weiji Xie): teaches humanoid robots to move</p>
+      <h2>SYNOPSIS</h2>
+      <p class="ind syn"><b>weiji</b> [<b>--rl</b>] [<b>--humanoid</b>] [<b>--whole-body</b>] <i>task</i> ...</p>
+      <h2>DESCRIPTION</h2>
+      <div class="ind" id="bio"></div>
+    </div>
+    <div><canvas id="dither" width="168" height="220" role="img" aria-label="Dithered photo of Weiji Xie"></canvas><div class="cap">weiji.jpg, 1-bit</div></div>
+  </div>
+
+  <h2>OPTIONS</h2>
+  <div class="ind opt" id="opts"></div>
+
+  <h2>PUBLICATIONS</h2>
+  <div class="ind" id="mains"></div>
+  <div class="ind" id="others" style="margin-top:8px"></div>
+
+  <h2>HISTORY</h2>
+  <div class="ind news" id="news"></div>
+
+  <h2>CONTACT</h2>
+  <div class="ind contacts" id="contacts"></div>
+
+  <h2>SEE ALSO</h2>
+  <p class="ind"><a id="cv-link" href="#">cv(1)</a>, <a id="sch" href="#">scholar(1)</a>, <a id="gh" href="#">github(1)</a></p>
+
+  <div class="ftr"><span>hand-built, no template</span><span id="yr"></span><span>WEIJI(1)</span></div>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, isTop, media, links } = Site, $ = (id) => document.getElementById(id);
+  $("bio").innerHTML = `<p>${P.bio}</p>`;
+  $("opts").innerHTML = S.cv.map((c) => `<p><span class="flag">--${c.when.replace(/\s/g, "")}</span>  ${esc(c.what)}</p>`).join("");
+  $("mains").innerHTML = Site.main().map((p) => `<div class="pub" data-hover>${media(p)}<div><b>${esc(p.short)}</b> <span class="v">(${esc(venue(p))})</span><br>${esc(p.note)}<br><span class="ln">${links(p, { project: "[project]", pdf: "[paper]" })}</span></div></div>`).join("");
+  $("others").innerHTML = Site.others().map((p) => `<div class="other"><span class="v">${esc(venue(p))}</span> <b>${esc(p.short)}</b>: ${esc(p.note)} <span class="ln">${links(p, { project: "[project]", pdf: "[paper]" })}</span></div>`).join("");
+  $("news").innerHTML = S.news.map((n) => `<div><time>${n.date}</time><span>${esc(n.text)}</span></div>`).join("");
+  $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true });
+  $("cv-link").href = P.cv; $("sch").href = P.links.scholar; $("gh").href = P.links.github;
+  $("yr").textContent = new Date().getFullYear();
+  Site.init();
+  Site.themeToggle($("theme"));
+
+  // 1-bit Atkinson 抖动：把证件照变成像素画，白底自然融进页面底色
+  const cv = $("dither"), ctx = cv.getContext("2d");
+  const img = new Image();
+  img.onload = () => {
+    const W = cv.width, H = cv.height, sy = img.height * 0.04, sh = img.width * H / W;
+    ctx.drawImage(img, 0, sy, img.width, Math.min(sh, img.height - sy), 0, 0, W, H);
+    const d = ctx.getImageData(0, 0, W, H), g = new Float32Array(W * H);
+    for (let i = 0; i < W * H; i++) { const v = 0.299 * d.data[i * 4] + 0.587 * d.data[i * 4 + 1] + 0.114 * d.data[i * 4 + 2]; g[i] = Math.min(255, Math.max(0, (v - 128) * 1.25 + 140)); }
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = y * W + x, o = g[i] < 128 ? 0 : 255, e = (g[i] - o) / 8; g[i] = o;
+      [[1, 0], [2, 0], [-1, 1], [0, 1], [1, 1], [0, 2]].forEach(([dx, dy]) => { const xx = x + dx, yy = y + dy; if (xx >= 0 && xx < W && yy < H) g[yy * W + xx] += e; });
+    }
+    const paint = () => {
+      const cs = getComputedStyle(document.documentElement), hex = (c) => { const m = c.trim().match(/^#(..)(..)(..)$/); return m ? m.slice(1).map((h) => parseInt(h, 16)) : [0, 0, 0]; };
+      const ink = hex(cs.getPropertyValue("--ink")), bg = hex(cs.getPropertyValue("--bg"));
+      for (let i = 0; i < W * H; i++) { const c = g[i] ? bg : ink; d.data.set([c[0], c[1], c[2], 255], i * 4); }
+      ctx.putImageData(d, 0, 0);
+    };
+    paint();
+    new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paint);
+  };
+  img.src = P.photo;
+})();
+</script>
+</body>
+</html>
