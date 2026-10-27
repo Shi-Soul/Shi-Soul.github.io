@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie · Swiss</title>
+<meta name="description" content="Weiji Xie: humanoid whole-body control, reinforcement learning, robotics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="../shared/site.css">
+<style>
+:root {
+  --bg: #ffffff; --ink: #0a0a0a; --ink2: #3c3c3c; --muted: #8a8a8a; --line: #0a0a0a; --hair: #e2e2e2; --red: #e3241b;
+  --sans: "Inter Tight", "Helvetica Neue", Helvetica, Arial, "PingFang SC", sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --pm-bg: #f2f2f2; --pm-ph-bg: #f2f2f2; --pm-ph-ink: var(--red);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #0c0c0c; --ink: #f4f4f4; --ink2: #c8c8c8; --muted: #8a8a8a; --line: #f4f4f4; --hair: #2a2a2a; --red: #ff3b30; --pm-bg: #1a1a1a; --pm-ph-bg: #1a1a1a; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #0c0c0c; --ink: #f4f4f4; --ink2: #c8c8c8; --muted: #8a8a8a; --line: #f4f4f4; --hair: #2a2a2a; --red: #ff3b30; --pm-bg: #1a1a1a; --pm-ph-bg: #1a1a1a; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--hair); }
+a:hover { color: var(--red); border-color: var(--red); }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+/* 12 栏网格 */
+.g { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; }
+
+.top { border-bottom: 2px solid var(--line); padding: 18px 0 14px; font: 500 12px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+.top .g > * { grid-column: span 3; }
+.top .r { grid-column: 10 / 13; text-align: right; }
+.theme { background: none; border: 0; color: inherit; font: inherit; cursor: pointer; padding: 0; text-transform: uppercase; letter-spacing: inherit; }
+
+.hero { padding: 56px 0 64px; border-bottom: 2px solid var(--line); }
+.idp { grid-column: 1 / 3; }
+.idp .img { aspect-ratio: 35 / 45; background: #fff center 26% / cover; border: 1px solid var(--hair); }
+.idp small { display: block; font: 11px var(--mono); color: var(--muted); margin-top: 8px; }
+.name { grid-column: 4 / 13; }
+.name h1 { font: 800 clamp(56px, 10.5vw, 150px)/.85 var(--sans); letter-spacing: -.06em; margin: 0; }
+.name h1 span { color: var(--red); }
+.name .sub { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); column-gap: 24px; margin-top: 36px; }
+.name .sub p { grid-column: span 5; margin: 0; font-size: 18px; color: var(--ink2); }
+.name .sub ul { grid-column: 7 / 10; list-style: none; margin: 0; padding: 0; font-size: 15px; }
+.name .sub li { border-top: 1px solid var(--hair); padding: 6px 0; }
+.name .sub li a, .name .sub li button { border: 0; display: flex; gap: 10px; align-items: center; color: inherit; }
+.name .sub li a:hover, .name .sub li button:hover { color: var(--red); }
+.name .sub li i { width: 18px; text-align: center; }
+
+.sec { padding: 40px 0 48px; border-bottom: 2px solid var(--line); }
+.sec h2 { grid-column: 1 / 4; margin: 0; font: 700 15px var(--sans); text-transform: uppercase; letter-spacing: .04em; }
+.sec h2 b { display: block; font: 800 64px/1 var(--sans); color: var(--red); letter-spacing: -.04em; margin-bottom: 6px; }
+.sec .body { grid-column: 4 / 13; }
+.row { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 5fr) minmax(0, 1fr); gap: 24px; padding: 18px 0; border-top: 1px solid var(--hair); align-items: start; }
+.row:first-child { border-top: 0; padding-top: 0; }
+.row .pm { aspect-ratio: 4 / 3; }
+.row h3 { margin: 0 0 6px; font: 700 26px/1.05 var(--sans); letter-spacing: -.025em; }
+.row .full { margin: 0 0 8px; font-size: 14px; color: var(--muted); }
+.row .note { margin: 0 0 10px; font-size: 16px; }
+.row .ln { display: flex; gap: 16px; font: 500 12px var(--mono); text-transform: uppercase; }
+.row .yr { font: 500 12px var(--mono); text-align: right; }
+.row .yr b { display: block; color: var(--red); font-weight: 500; }
+.lines { border-top: 1px solid var(--line); margin-top: 26px; }
+.line { display: grid; grid-template-columns: 90px minmax(0, 1fr) auto; gap: 24px; padding: 10px 0; border-bottom: 1px solid var(--hair); font-size: 14.5px; align-items: baseline; }
+.line .v { font: 12px var(--mono); color: var(--muted); }
+.line .au { display: block; color: var(--muted); font-size: 13px; }
+.line .me { color: var(--ink); }
+.line .ln { display: flex; gap: 12px; font: 500 12px var(--mono); text-transform: uppercase; }
+.news { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 24px; }
+.news li { break-inside: avoid; display: grid; grid-template-columns: 70px 1fr; gap: 10px; padding: 8px 0; border-top: 1px solid var(--hair); font-size: 15px; }
+.news time { font: 12px var(--mono); color: var(--red); padding-top: 2px; }
+footer { padding: 18px 0 56px; font: 12px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+footer .g > :first-child { grid-column: 1 / 9; } footer .g > :last-child { grid-column: 9 / 13; text-align: right; }
+footer span span { margin-right: 18px; }
+
+@media (max-width: 900px) {
+  .idp { grid-column: 1 / 4; } .name { grid-column: 1 / 13; margin-top: 28px; }
+  .name .sub p, .name .sub ul { grid-column: 1 / -1; } .name .sub ul { margin-top: 18px; }
+  .sec h2 { grid-column: 1 / 13; margin-bottom: 18px; } .sec h2 b { font-size: 44px; }
+  .sec .body { grid-column: 1 / 13; }
+  .top .g > * { grid-column: span 6; } .top .mid { display: none; } .top .r { grid-column: 7 / 13; }
+  footer .g > * { grid-column: 1 / 13 !important; text-align: left !important; }
+}
+@media (max-width: 600px) {
+  .wrap { padding: 0 16px; }
+  .idp { grid-column: 1 / 6; }
+  .row { grid-template-columns: 1fr; gap: 10px; } .row .yr { text-align: left; }
+  .line { grid-template-columns: 1fr; gap: 2px; }
+  .news { columns: 1; }
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap g"><span>Weiji Xie</span><span class="mid">Shanghai</span><span class="mid">Robotics / RL</span><span class="r"><button class="theme" id="theme" type="button">Light / Dark</button></span></div></header>
+<main class="wrap">
+  <section class="hero g">
+    <figure class="idp" style="margin:0"><div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div><small>谢炜基 · 35 × 45</small></figure>
+    <div class="name">
+      <h1>Weiji<br>Xie<span>.</span></h1>
+      <div class="sub"><p id="bio"></p><ul id="contacts"></ul></div>
+    </div>
+  </section>
+
+  <section class="sec g"><h2><b>01</b>Main work</h2><div class="body"><div id="mains"></div><div class="lines" id="others"></div></div></section>
+  <section class="sec g"><h2><b>02</b>News</h2><div class="body"><ul class="news" id="news"></ul></div></section>
+</main>
+<footer><div class="wrap g"><span id="cv"></span><span>Hand-built, no template</span></div></footer>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/site.js"></script>
+<script src="../shared/switcher.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, isTop, media, links, rest } = Site, $ = (id) => document.getElementById(id);
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("bio").innerHTML = P.bio;
+  $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true }).split(/(?=<a |<button )/).map((x) => `<li>${x}</li>`).join("");
+  $("mains").innerHTML = Site.main().map((p) => `<article class="row" data-hover>${media(p)}<div><h3>${esc(p.short)}</h3><p class="full">${esc(rest(p))}</p><p class="note">${esc(p.note)}</p><div class="ln">${links(p)}</div></div><div class="yr"><b>${isTop(p) ? esc(p.venue) : "Preprint"}</b>${p.year}</div></article>`).join("");
+  $("others").innerHTML = Site.others().map((p) => `<div class="line"><span class="v">${esc(venue(p))}</span><span>${esc(p.title)}<span class="au">${me(p.authors)}</span></span><span class="ln">${links(p)}</span></div>`).join("");
+  $("news").innerHTML = S.news.map((n) => `<li><time>${n.date}</time><span>${esc(n.text)}</span></li>`).join("");
+  $("cv").innerHTML = S.cv.map((c) => `<span>${c.when} ${esc(c.what)}</span>`).join("") + `<a href="${P.cv}">CV →</a>`;
+  Site.init();
+  Site.themeToggle($("theme"));
+})();
+</script>
+</body>
+</html>

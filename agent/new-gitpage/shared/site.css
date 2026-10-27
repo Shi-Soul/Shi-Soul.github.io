@@ -1,0 +1,17 @@
+/* 各版本共用的基础样式：缩略图容器、悬停视频、文字占位、微信弹窗。颜色由各版本的变量决定。 */
+.pm { position: relative; overflow: hidden; background: var(--pm-bg, #eee); }
+.pm img, .pm video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.pm video { opacity: 0; transition: opacity .25s; background: #111; object-fit: contain; }
+.pm.playing video { opacity: 1; }
+.pm-play { position: absolute; right: 8px; bottom: 8px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; color: #fff; background: rgba(0,0,0,.55); transition: opacity .2s; }
+.pm.playing .pm-play { opacity: 0; }
+.pm-ph { display: grid; place-items: center; background: var(--pm-ph-bg, repeating-linear-gradient(135deg, #eee 0 10px, #e6e6e6 10px 20px)); }
+.pm-ph span { font-weight: 700; letter-spacing: -.02em; color: var(--pm-ph-ink, #999); font-size: clamp(14px, 2.4vw, 22px); }
+
+[data-wechat] { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.wx-modal { position: fixed; inset: 0; z-index: 10000; display: none; place-items: center; background: rgba(0,0,0,.5); padding: 16px; }
+.wx-modal.open { display: grid; }
+.wx-card { position: relative; background: #fff; color: #222; border-radius: 14px; padding: 18px 18px 12px; max-width: 280px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+.wx-card img { width: 100%; height: auto; display: block; border-radius: 6px; }
+.wx-card p { font: 13px/1.5 system-ui, sans-serif; margin: 10px 0 0; color: #555; }
+.wx-close { position: absolute; top: 4px; right: 8px; border: 0; background: none; font-size: 22px; color: #888; cursor: pointer; }
