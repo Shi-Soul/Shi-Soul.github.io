@@ -49,5 +49,13 @@ jobs:
         uses: lycheeverse/lychee-action@v1.9.0
         with:
           fail: true
-          # removed md files that include liquid tags
-          args: --user-agent 'curl/7.54' --exclude-path README.md --exclude-path CUSTOMIZE.md --exclude-path _pages_example/blog.md --exclude-path _pages/blog.md --exclude-path _posts/2018-12-22-distill.md --exclude-path _posts/2023-04-24-videos.md --verbose --no-progress './**/*.md' './**/*.html'
+          # --offline: 只查站内相对链接；外链（论文、Scholar、X 等）逐个联网检查会被限流/拒绝，每次 push 都随机失败
+          # removed md files that include liquid tags (agent/index.html、_pages/404.md 的链接是 Liquid 模板)
+          args: --offline --exclude-path FAQ.md --exclude-path _pages/404.md --exclude-path agent/index.html --exclude-path agent/evaluation/index.html --exclude-path README.md --exclude-path CUSTOMIZE.md --exclude-path _pages_example/blog.md --exclude-path _pages/blog.md --exclude-path _posts/2018-12-22-distill.md --exclude-path _posts/2023-04-24-videos.md --verbose --no-progress './**/*.md' './**/*.html'
+
+      - name: Report broken links 📋
+        # 日志需要登录才能看；把 lychee 结果写进 annotation，公开 API 可读
+        if: failure()
+        run: |
+          msg=$(grep -E '^\* \[' lychee/out.md | head -80 | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')
+          echo "::error title=Broken links::${msg}"
