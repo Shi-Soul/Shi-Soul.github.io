@@ -186,9 +186,9 @@
 | 功能 | 解决什么 | 代表工作 |
 |---|---|---|
 | 编排 Orchestration | 谁来执行下一步、参数怎么绑定、何时交还控制权 | VoLo、EMOS（从 URDF 生成"机器人简历"）、Physical Agency、ROSClaw、Thea、RoboHarness、HarnessWAM、VLAs-as-Tools |
-| 记忆 Memory | 写什么、何时更新、检索什么 | MessyMem、HiMe、Mimir、SafeMem、NavMCP、BATON、HoloAgent-0、MeCo |
-| 监控与恢复 | 执行前、中、后的检查与修复 | DoReMi、Code-as-Monitor、REFLECT、AHA、LIBERO-RECOVER、PhyAgentOS、FLARE |
-| 技能 Skills | 可复用行为如何进入、演化、退出 | Voyager、DROC、Uni-Skill、ASPIRE、RATs、RoboRSI、SkillOpt、Zetta |
+| 记忆 Memory | 写什么、何时更新、检索什么 | MessyMem（边做边学记忆）、HiMe（分层具身记忆，ICML'26）、Mimir（神经符号动态接地记忆）、SafeMem（长期图记忆安全规划）、NavMCP（导航记忆）、BATON（子任务探索与转换感知记忆）、HoloAgent-0（3D 空间记忆）、MeCo（多机协作相似任务记忆化）、HAM-VLN（分层 agentic 记忆）、MEMORA（自我中心视频动作记忆，EMNLP'26）、Robo-Cortex（双粒度认知记忆自进化）、2AM（agent 侧记忆引导可操控动作模型）、Skills in Weights Memory in Code（权重技能 vs 代码记忆的混合学习）、World Action Agent（世界行动预演记忆） |
+| 监控与恢复 | 执行前、中、后的检查与修复 | DoReMi、Code-as-Monitor、REFLECT、AHA、LIBERO-RECOVER（失败恢复评测）、PhyAgentOS（自进化 OS）、FLARE（失败感知框架，CVPR'26）、VLA-Corrector（阶段感知闭环恢复）、ACE（零样本工作流推理）、DynaHarness（动态物理 harness）、ReCoVLA（VLM 引导的奖励编译用于失败恢复）、UniIntervene（高效真机 RL 的 agentic 介入，CoRL'26）、AgentChord（主动失败预防） |
+| 技能 Skills | 可复用行为如何进入、演化、退出 | Voyager、DROC、Uni-Skill（自进化技能库，ICRA'26）、ASPIRE、RATs（玩耍式学习）、RoboRSI、SkillOpt、Zetta、VASO（形式可验证的自进化技能）、Act-Observe-Rewrite（多模态编码 agent 作为 in-context 策略学习器）、Agentic Skill Discovery、Lifelong Robot Library Learning、RoboCodeX（多模态代码生成机器人行为） |
 | 基础设施 | 接口、工具链、策略服务、运行时闸门 | ROS MCP Server、RoboNeuron（MCP↔ROS 2）、ETP（100+ 工具）、openpi 远程推理、LeRobot、RTC/VLASH（异步执行）、ROSA/Robion（舰队推理）、vla.cpp（统一推理运行时）、OxyGen（KV Cache 管理）、BitVLA（1-bit VLA）、RoboECC（边云协同部署）、VLA-Perf（性能评测） |
 | 分层系统 | 规划器、学习策略、解析控制之间的权限划分 | Helix、GR00T、Hi Robot、Gemini Robotics 1.5、Harness VLA |
 
