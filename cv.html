@@ -3,9 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+// Reveal text once, with its final fonts. On a slow/failed load, keep the fallback for this visit.
+(function () {
+  if (!document.fonts) return;
+  const html = document.documentElement;
+  html.classList.add("fonts-pending");
+  window.fontsReady = new Promise((resolve) => {
+    const finish = (fallback) => {
+      if (!html.classList.contains("fonts-pending")) return;
+      clearTimeout(timeout);
+      html.classList.toggle("fonts-fallback", fallback);
+      html.classList.remove("fonts-pending");
+      resolve();
+    };
+    const timeout = setTimeout(() => finish(true), 3000);
+    document.addEventListener("DOMContentLoaded", () => {
+      const faces = ['400 20px "Source Serif 4"', '600 20px "Source Serif 4"', '700 66px "Source Serif 4"',
+        'italic 400 16px "Source Serif 4"', '400 22px "Patrick Hand"', '400 15px "IBM Plex Mono"', '500 13px "IBM Plex Mono"'];
+      Promise.all(faces.map((face) => document.fonts.load(face, "Weiji Xie")))
+        .then(() => document.fonts.ready).then(() => finish(false), () => finish(true));
+    }, { once: true });
+  });
+})();
+</script>
 <title>CV · Weiji Xie</title>
 <meta name="description" content="Curriculum vitae of Weiji Xie.">
 <link rel="canonical" href="https://shi-soul.github.io/cv.html">
+<link rel="preload" href="media/fonts/source-serif-4-normal-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="media/fonts/patrick-hand-normal-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="media/fonts/ibm-plex-mono-normal-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="media/fonts/text.css">
 <link rel="stylesheet" href="media/fonts/fontawesome.css">
 <link rel="stylesheet" href="media/fonts/academicons.css">
@@ -52,7 +79,7 @@
   $("updated").dateTime = S.lastUpdated;
   $("updated").textContent = new Date(`${S.lastUpdated}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
   Site.init();
-  Site.reveal();
+  Promise.resolve(window.fontsReady).then(() => Site.reveal());
 })();
 </script>
 </body>
