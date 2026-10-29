@@ -34,7 +34,7 @@ window.SITE = {
   },
 
   // Selected 标签下的展示顺序（填 short 名，自己调）；其他标签按 date 倒序
-  selectedOrder: ["KungfuBot", "TextOp", "TTC", "HALO", "KungfuBot2", "Narrow Terrain"],
+  selectedOrder: ["KungfuBot", "TextOp", "TTC", "HALO", "KungfuBot2", "DBHL"],
 
   categories: [
     { id: "tracking", name: "Motion Tracking" },
@@ -109,7 +109,7 @@ window.SITE = {
       image: "media/kungfubot.jpg", video: "https://kungfubot.github.io/static/videos/360%20spin.mp4",
     },
     {
-      short: "Narrow Terrain", date: "2025.02", venue: "IROS", year: 2025, selected: true, cats: ["loco"],
+      short: "DBHL", date: "2025.02", venue: "IROS", year: 2025, selected: true, cats: ["loco"],
       title: "Humanoid Whole-Body Locomotion on Narrow Terrain via Dynamic Balance and Reinforcement Learning",
       authors: "Weiji Xie, Chenjia Bai†, Jiyuan Shi, Junkai Yang, Yunfei Ge, Weinan Zhang†, Xuelong Li",
       note: "Proprioception-only walking on narrow beams and obstacles, with balance recovery under pushes.",
@@ -137,16 +137,15 @@ window.SITE = {
   // 日期为大致月份，请核对。文中出现的论文 short 名会自动链接到项目主页；其他链接写在 newsLinks 里
   newsLinks: { PBHC: "https://github.com/TeleHuman/PBHC" },
   news: [
-    { date: "2026.10", text: "TTC and KODA released on arXiv." },
-    { date: "2026.09", text: "NEXUS released: terrain-adaptive whole-body teleoperation." },
+    { date: "2026.10", text: "TTC, KODA and NEXUS released on arXiv." },
     { date: "2026.08", text: "TextOp accepted to CoRL 2026." },
     { date: "2026.06", text: "HALO accepted to IROS 2026. OASIS released." },
-    { date: "2026.02", text: "TextOp released, code open-sourced (500+ GitHub stars)." },
     { date: "2026.01", text: "KungfuBot2 accepted to ICRA 2026." },
+    { date: "2026.01", text: "TextOp released." },
     { date: "2025.11", text: "OFF-FSP accepted to AAAI 2026." },
     { date: "2025.09", text: "KungfuBot accepted to NeurIPS 2025. Started my M.S. at SJTU." },
-    { date: "2025.06", text: "PBHC, the open-source KungfuBot codebase, passes 1,000 GitHub stars." },
-    { date: "2025.06", text: "Narrow Terrain and LoopSR accepted to IROS 2025." },
+    { date: "2025.06", text: "KungfuBot released with open source code PBHC." },
+    { date: "2025.06", text: "DBHL and LoopSR accepted to IROS 2025." },
   ],
 
   // 经历：logo 填 media/ 下的图；没有 logo 时用 mono 里的两个字母做徽章
