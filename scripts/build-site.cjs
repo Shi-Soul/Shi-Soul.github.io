@@ -31,7 +31,6 @@ const entries = fs.readdirSync(path.join(root, "agent"), { withFileTypes: true }
       url: `/agent/${entry.name}/`,
       title: html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1].trim() || entry.name,
       description: html.match(/<meta\s+name="description"\s+content="([^"]*)"/i)?.[1] || "",
-      noindex: /<meta\s+name="robots"\s+content="[^"]*noindex/i.test(html),
     };
   });
 const cards = entries.map((entry, index) => `<li><a class="entry" href="${entry.url}" aria-labelledby="entry-${index + 1}">
@@ -45,11 +44,22 @@ directory = directory.replace(/<span class="count">[\s\S]*?<\/span>/, `<span cla
 assert(!directory.includes("{%") && !directory.includes("{{"), "Unrendered template in agent directory");
 fs.writeFileSync(directoryFile, directory);
 
+// Keep the reading area directly accessible but out of search results.
+// Do not block crawling in robots.txt: crawlers need to read these noindex tags.
+const readingRoot = path.join(output, "agent");
+for (const file of fs.readdirSync(readingRoot, { recursive: true }).filter((file) => /\.html$/i.test(file))) {
+  const target = path.join(readingRoot, file);
+  const html = fs.readFileSync(target, "utf8")
+    .replace(/<meta\b(?=[^>]*\bname=["']robots["'])[^>]*>/gi, "")
+    .replace(/<head\b[^>]*>/i, '$&<meta name="robots" content="noindex, nofollow">');
+  fs.writeFileSync(target, html);
+}
+
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, "data.js"), "utf8"), context);
 const site = context.window.SITE;
 const origin = "https://shi-soul.github.io";
-const urls = ["/", "/cv.html", "/agent/", ...entries.filter((entry) => !entry.noindex).map((entry) => entry.url)];
+const urls = ["/", "/cv.html"];
 fs.writeFileSync(path.join(output, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((url) => `<url><loc>${origin}${url}</loc><lastmod>${site.lastUpdated}</lastmod></url>`).join("")}</urlset>\n`);
 

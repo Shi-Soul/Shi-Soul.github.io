@@ -34,6 +34,7 @@ npm run build
 - `/cv/` 跳转到 `/cv.html`；`/publications/` 跳转到首页的 All publications。
 - 原草稿入口 `/agent/new-gitpage/home/` 跳转到新主页。
 - `agent/` 下的教程、调研和设计草稿保持独立；新建 `agent/<目录名>/index.html` 会自动加入阅读目录。
+- 阅读区域不设站内入口，不加入 sitemap；构建时为该区域的所有 HTML 添加 `noindex, nofollow`。robots.txt 允许抓取，以便搜索引擎读取禁止收录标记。这是隐藏入口，不是访问控制；已知准确网址的人仍可访问。
 - `agent/new-gitpage/v0-original/` 保存旧主页的静态快照，无需 Jekyll 即可浏览。
 - `assets/` 只保留旧草稿仍引用的微信二维码和论文 PDF。
 - `Archive/` 是本地资料目录，不参与构建和发布。
