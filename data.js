@@ -19,7 +19,7 @@ window.SITE = {
     role: "M.S. student · SJTU",
     tagline: "Robot learning · Reinforcement learning · Embodied AI",
     // 简介格式：**加粗**，==黄色底==，==**加粗并加黄色底**==；删除标记即恢复普通文字。
-    affiliation: 'I’m an M.S. student at <a href="https://www.sjtu.edu.cn/">Shanghai Jiao Tong University (SJTU)</a> supervised by <a href="https://wnzhang.net/">Prof. Weinan Zhang</a>. I am currently interning at the <a href="https://www.teleai.com.cn/">TeleAI</a> and working closely with <a href="https://baichenjia.github.io/">Dr. Chenjia Bai</a>.',
+    affiliation: 'I’m an M.S. student at <a href="https://www.sjtu.edu.cn/">Shanghai Jiao Tong University (SJTU)</a> supervised by <a href="https://wnzhang.net/">Prof. Weinan Zhang</a>. I am currently interning at <a href="https://www.teleai.com.cn/">TeleAI</a> and working closely with <a href="https://baichenjia.github.io/">Dr. Chenjia Bai</a>.',
     statement: "My research interests include **Reinforcement Learning** and **Robotics**, with a current focus on **Humanoid Robots**. Fundamentally, I want to build ==General-Purpose Robots== that can do anything for people.",
     location: "Shanghai, China",
     photo: "media/photo.webp",
@@ -164,11 +164,11 @@ window.SITE = {
   // 日期为大致月份，请核对。文中出现的论文 short 名会自动链接到项目主页；其他链接写在 newsLinks 里
   newsLinks: { PBHC: "https://github.com/TeleHuman/PBHC" },
   news: [
-    { date: "2026.10", text: "TTC, KODA and NEXUS released on arXiv." },
+    { date: "2026.10", text: "TTC, KODA and NEXUS released." },
     { date: "2026.08", text: "TextOp accepted to CoRL 2026." },
     { date: "2026.06", text: "HALO accepted to IROS 2026. OASIS released." },
+    { date: "2026.02", text: "TextOp released." },
     { date: "2026.01", text: "KungfuBot2 accepted to ICRA 2026." },
-    { date: "2026.01", text: "TextOp released." },
     { date: "2025.11", text: "OFF-FSP accepted to AAAI 2026." },
     { date: "2025.09", text: "KungfuBot accepted to NeurIPS 2025. Started my M.S. at SJTU." },
     { date: "2025.06", text: "KungfuBot released with open source code PBHC." },
@@ -198,7 +198,7 @@ window.SITE = {
   ],
   service: ["Conference reviewer: CoRL, ICRA, ICLR", "Journal reviewer: TPAMI, RA-L"],
   misc: [
-    { k: "Tools", v: "Python (PyTorch, JAX), C++, MuJoCo, Isaac Lab / Sim / Gym, ROS" },
+    { k: "Tools", v: "Codex, Claude Code, Python (PyTorch, JAX), C++, MuJoCo, Isaac Lab / Sim / Gym, ROS, CUDA, Matlab" },
     { k: "Languages", v: "Chinese, English" },
     { k: "Hobbies", v: "Reading books about math, philosophy, social science, etc." },
   ],
