@@ -6,7 +6,7 @@
  *   selected: 是否出现在默认的 "Selected" 标签下（顺序见 selectedOrder）
  *   cats:     所属分类（见 categories），决定出现在哪些筛选标签里
  *   image:    缩略图（放进 media/，没有就留空，会自动生成文字占位）
- *   video:    可选，鼠标悬停时才加载播放（可以直接填项目主页上的视频地址）
+ *   video:    可选，默认悬停加载播放；playback: "viewport" 表示进入视口才加载播放
  *   links:    project / pdf / code，有哪个填哪个
  *   note:     一句话说明
  *   date:     首次公开的年月（取 arXiv 编号），分类标签按它倒序
@@ -125,7 +125,7 @@ window.SITE = {
       authors: "Jinrui Han, Weiji Xie, Jiakun Zheng, Jiyuan Shi, Weinan Zhang, Ting Xiao, Chenjia Bai",
       note: "One policy, many skills: minute-long martial arts and dance sequences, including unseen motions.",
       links: { project: "https://kungfubot2-humanoid.github.io/", pdf: "https://arxiv.org/abs/2509.16638", code: "https://github.com/TeleHuman/PBHC" },
-      image: "media/kungfubot2.gif",
+      image: "media/kungfubot2-poster.webp", video: "media/kungfubot2.mp4", playback: "viewport",
     },
     {
       short: "KungfuBot", date: "2025.06", venue: "NeurIPS", year: 2025, selected: true, cats: ["tracking"],
@@ -133,7 +133,7 @@ window.SITE = {
       authors: "Weiji Xie*, Jinrui Han*, Jiakun Zheng*, Huanyu Li, Xinzhe Liu, Jiyuan Shi, Weinan Zhang, Chenjia Bai†, Xuelong Li†",
       note: "Spin kicks and flying kicks on a real Unitree G1, learned from human video.",
       links: { project: "https://kungfubot.github.io/", pdf: "https://arxiv.org/abs/2506.12851", code: "https://github.com/TeleHuman/PBHC" },
-      image: "media/kungfubot.gif",
+      image: "media/kungfubot-poster.webp", video: "media/kungfubot.mp4", playback: "viewport",
     },
     {
       short: "DBHL", date: "2025.02", venue: "IROS", year: 2025, selected: false, cats: ["loco"],

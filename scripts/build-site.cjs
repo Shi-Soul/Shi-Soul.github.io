@@ -63,8 +63,15 @@ const urls = ["/", "/cv.html"];
 fs.writeFileSync(path.join(output, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((url) => `<url><loc>${origin}${url}</loc><lastmod>${site.lastUpdated}</lastmod></url>`).join("")}</urlset>\n`);
 
-for (const ref of [site.profile.photo, site.profile.wechatQR, ...site.publications.map((p) => p.image), ...site.education.concat(site.experience).map((r) => r.logo)].filter(Boolean)) {
+for (const ref of [site.profile.photo, site.profile.wechatQR, ...site.publications.flatMap((p) => [p.image, p.video]), ...site.education.concat(site.experience).map((r) => r.logo)].filter((ref) => ref && !/^https?:/.test(ref))) {
   assert(fs.existsSync(path.join(output, ref)), `Missing published media: ${ref}`);
+}
+for (const file of fs.readdirSync(path.join(output, "media/fonts")).filter((file) => file.endsWith(".css"))) {
+  const css = fs.readFileSync(path.join(output, "media/fonts", file), "utf8");
+  for (const [, ref] of css.matchAll(/url\(["']?([^"')]+)["']?\)/g)) {
+    assert(!/^https?:|^\/\//.test(ref), `External font in ${file}: ${ref}`);
+    assert(fs.existsSync(path.resolve(output, "media/fonts", ref)), `Missing font in ${file}: ${ref}`);
+  }
 }
 for (const file of ["index.html", "cv.html"]) {
   const html = fs.readFileSync(path.join(output, file), "utf8");

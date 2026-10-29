@@ -11,10 +11,13 @@
 - `style.css` / `site.css`：页面样式与共用组件样式。
 - `site.js`：论文筛选、作者链接、视频悬停播放、微信弹窗等交互。
 - `media/`：统一存放照片、论文缩略图、机构 logo、微信二维码和 PDF。
+- `media/fonts/`：本地正文、手写和等宽字体，以及保持原样的 Font Awesome / Academicons 图标字体；来源与许可在 `NOTICE.txt`。
 
 简介中的 `statement` 支持 `**加粗**`、`==黄色底==`、`==**加粗并加黄色底**==`，只需修改引号中的文本。`affiliation` 中的链接仍使用 HTML。更新内容后修改 `data.js` 顶部的 `lastUpdated`，首页和 CV 页脚会同步显示该日期。
 
 添加论文时复制 `publications` 中的一条，修改字段；`selectedOrder` 控制 Selected 列表顺序。首页上有 GitHub Code 链接的论文会自动显示 Stars。
+
+演示用 `image` 指定静态封面、`video` 指定视频；`playback: "viewport"` 会在进入视口时加载并循环播放，离屏或切到后台时暂停。省略 `playback` 则保留悬停播放。两段 KungfuBot demo 已预先转成 H.264 MP4，日常打包无需 FFmpeg。
 
 ## 检查与发布
 
