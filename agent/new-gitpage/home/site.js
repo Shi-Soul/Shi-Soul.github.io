@@ -9,6 +9,10 @@
 
   const Site = {
     S, P, esc,
+    // 简介文本标记：**加粗**、==黄色底==，可嵌套；普通 HTML 仍按文本显示。
+    inlineText: (text) => esc(text)
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/==(.+?)==/g, "<mark>$1</mark>"),
     me: (authors) => esc(authors).replace(/Weiji Xie/g, '<b class="me">$&</b>'),
     venue: (p) => (/review/i.test(p.venue) ? "Under review" : `${p.venue} ${p.year}`),
     isTop: (p) => !/review/i.test(p.venue),
