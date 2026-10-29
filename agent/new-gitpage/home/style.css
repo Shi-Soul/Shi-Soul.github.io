@@ -47,14 +47,18 @@ h1 { font: 700 clamp(44px, 6.5vw, 66px)/1.02 var(--serif); margin: 0 0 18px; let
 .passport .img { aspect-ratio: 5 / 7; background: #fff center 25% / cover; }
 .passport::before { content: ""; position: absolute; top: -20px; left: 22px; width: 16px; height: 48px; border: 3px solid #9aa0a6; border-radius: 10px; border-bottom-color: transparent; }
 @keyframes swing { 0%, 100% { transform: rotate(2.5deg); } 50% { transform: rotate(-1.5deg); } }
-.passport-note { font: 400 20px/1.1 var(--hand); color: var(--pen); margin-top: 14px; text-align: center; transform: rotate(-3deg); }
+.reach { margin: 12px 0 0; font: 400 19px/1.35 var(--hand); color: var(--pen); }
 
 h2 { font: 700 30px var(--serif); margin: 0 0 22px; }
 section { padding: 44px 0 8px; }
-.news { list-style: none; margin: 0; padding: 0 0 0 20px; border-left: 2px solid var(--ink); }
+/* News：固定高度、可上下滚动的小框，底部渐隐提示还有更多 */
+.newsbox { position: relative; max-height: 236px; overflow-y: auto; padding: 14px 18px 6px 22px; background: rgba(255,255,255,.65); border: 1.5px solid var(--ink); border-radius: 4px; box-shadow: 4px 4px 0 var(--ink); scrollbar-width: thin; scrollbar-color: var(--rule) transparent;
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 26px), transparent); mask-image: linear-gradient(#000 calc(100% - 26px), transparent); }
+.newsbox:focus-visible { outline: 2px dashed var(--pen); outline-offset: 4px; }
+.news { list-style: none; margin: 0; padding: 0 0 18px 20px; border-left: 2px solid var(--ink); }
 .news li { position: relative; padding: 4px 0 12px 18px; font-size: 17px; }
-.news li::before { content: ""; position: absolute; left: -27px; top: 12px; width: 12px; height: 12px; border-radius: 50%; background: var(--paper); border: 2.5px solid var(--red); transition: background .3s .4s; }
-.news li.in::before { background: var(--red); }
+.news li::before { content: ""; position: absolute; left: -27px; top: 12px; width: 12px; height: 12px; border-radius: 50%; background: var(--red); border: 2.5px solid var(--red); }
+.news li:nth-child(n+4)::before { background: var(--paper); }
 .news time { font: 500 13px var(--mono); color: var(--muted); margin-right: 12px; }
 .news li:first-child::after { content: "← new!"; font: 400 19px var(--hand); color: var(--red); margin-left: 10px; display: inline-block; animation: nudge 1.4s ease-in-out infinite; }
 @keyframes nudge { 50% { transform: translateX(-5px); } }
@@ -87,9 +91,12 @@ section { padding: 44px 0 8px; }
 .path { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
 .path h3 { font: 400 23px var(--hand); color: var(--red); margin: 0 0 6px; }
 .path ul { list-style: none; margin: 0; padding: 0; }
-.path li { padding: 8px 0; border-top: 1.5px dashed var(--rule); font-size: 16.5px; }
+.path li { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 14px; align-items: start; padding: 12px 0; border-top: 1.5px dashed var(--rule); font-size: 16.5px; }
+.path li .logo { width: 46px; height: 46px; border-radius: 50%; object-fit: contain; background: #fff; border: 1.5px solid var(--ink); padding: 3px; box-shadow: 2px 2px 0 var(--ink); }
 .path li time { display: block; font: 500 12.5px var(--mono); color: var(--muted); }
 .path li small { display: block; color: var(--ink2); font-size: 15px; }
+.path li small.adv { color: var(--ink); }
+.path li small.adv a { color: var(--pen); }
 .more { display: inline-block; margin-top: 16px; font: 400 21px var(--hand); }
 footer { padding: 52px 0 64px; font: 14px var(--mono); color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 

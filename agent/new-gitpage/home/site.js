@@ -118,7 +118,7 @@
     cvBlocks() {
       return [
         { id: "education", title: "Education", rows: S.education },
-        { id: "experience", title: "Experience", rows: S.experience },
+        { id: "experience", title: "Research Experience", rows: S.experience },
         { id: "honors", title: "Honors & Awards", rows: S.honors.map((h) => ({ when: String(h.year), title: h.text })) },
         { id: "service", title: "Service", rows: S.service.map((s) => ({ when: "", title: s })) },
         { id: "misc", title: "Misc", rows: S.misc.map((m) => ({ when: m.k, title: m.v })) },
