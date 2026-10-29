@@ -7,8 +7,9 @@ module AgentDirectory
 
     def generate(site)
       # Use Jekyll's file list so excluded and unpublished pages stay out.
+      # Only first-level subdirectories (/agent/<name>/), not pages nested deeper.
       entries = (site.static_files + site.pages).select do |entry|
-        entry.url.match?(%r{\A/agent/.+/(?:index\.html)?\z}) && entry.write?
+        entry.url.match?(%r{\A/agent/[^/]+/(?:index\.html)?\z}) && entry.write?
       end
 
       site.data['agent_directory'] = entries.sort_by(&:url).map do |entry|
