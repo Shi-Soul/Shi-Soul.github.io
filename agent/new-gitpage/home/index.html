@@ -24,8 +24,8 @@
     <div>
       <div class="tagline" data-reveal id="tagline"></div>
       <h1 data-reveal style="--d:1">Weiji Xie <span class="name-zh" lang="zh-CN" id="name-zh"></span></h1>
-      <p class="statement" data-reveal style="--d:2" id="statement"></p>
-      <p class="aff" data-reveal style="--d:3" id="aff"></p>
+      <p class="aff" data-reveal style="--d:2" id="aff"></p>
+      <p class="statement" data-reveal style="--d:3" id="statement"></p>
       <div class="contacts" data-reveal style="--d:4" id="contacts"></div>
       <p class="reach" data-reveal style="--d:5" id="reach"></p>
     </div>
@@ -66,7 +66,7 @@
   $("name-zh").textContent = P.nameZh;
   $("tagline").textContent = P.tagline.toLowerCase();
   $("aff").innerHTML = P.affiliation;
-  $("statement").innerHTML = esc(P.statement).replace(/physical skills|general-purpose robots/g, "<mark>$&</mark>"); // 荧光笔标出关键词
+  $("statement").innerHTML = Site.inlineText(P.statement);
   $("contacts").innerHTML = Site.contacts({ labels: true, emailLabel: "Mail" });
   $("reach").textContent = `${P.contactNote} ${P.collabNote}`;
   $("news-list").innerHTML = S.news.map((n) => `<li><time>${n.date}</time>${Site.newsHTML(n.text)}</li>`).join("");
