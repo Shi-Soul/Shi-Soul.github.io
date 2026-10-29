@@ -185,8 +185,8 @@ window.SITE = {
   experience: [
     { when: "2024.10 – now", title: "Research Intern", org: "TeleAI, China Telecom", logo: "media/logo-teleai.jpg",
       advisor: { role: "Supervisor", name: "Dr. Chenjia Bai", url: "https://baichenjia.github.io/" }, detail: "RL-based humanoid motion control; VLA-based loco-manipulation" },
-    { when: "2024.06 – 2024.08", title: "Research Intern", org: "Yunqi Academy of Engineering",
-      advisor: { role: "Advisor", name: "Prof. Zhenhui Li", url: "https://jessielzh.com/" }, detail: "City Intelligence" },
+    // { when: "2024.06 – 2024.08", title: "Research Intern", org: "Yunqi Academy of Engineering",
+    //   advisor: { role: "Advisor", name: "Prof. Zhenhui Li", url: "https://jessielzh.com/" }, detail: "City Intelligence" },
     { when: "2022.08 – 2025.06", title: "Undergraduate Researcher", org: "APEX Lab, Shanghai Jiao Tong University", orgUrl: "https://apex.sjtu.edu.cn/", orgLinkText: "APEX Lab", logo: "media/logo-apex.png", logoDark: true,
       advisor: { role: "Advisor", name: "Prof. Weinan Zhang", url: "https://wnzhang.net/" }, detail: "Multi-agent RL; Legged robot locomotion" },
   ],
