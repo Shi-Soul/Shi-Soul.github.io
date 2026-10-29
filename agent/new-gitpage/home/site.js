@@ -49,9 +49,23 @@
 
     // 论文筛选：Selected（默认）/ All / 各分类
     filter(f) {
-      if (f === "all") return S.publications;
-      if (f === "selected") return S.publications.filter((p) => p.selected);
-      return S.publications.filter((p) => (p.cats || []).includes(f));
+      const byDate = (list) => list.slice().sort((a, b) => String(b.date || b.year).localeCompare(String(a.date || a.year)));
+      if (f === "selected") { // 按 selectedOrder 排；没写进去的放最后
+        const order = S.selectedOrder || [], rank = (p) => { const i = order.indexOf(p.short); return i < 0 ? 999 : i; };
+        return S.publications.filter((p) => p.selected).sort((a, b) => rank(a) - rank(b));
+      }
+      if (f === "all") return byDate(S.publications);
+      return byDate(S.publications.filter((p) => (p.cats || []).includes(f)));
+    },
+    // News 文本：论文 short 名链接到项目主页（无主页则 arXiv），再加 newsLinks 里的额外链接；一次替换，最长的名字优先
+    newsHTML(text) {
+      const map = {};
+      S.publications.forEach((p) => { const u = p.links.project || p.links.pdf; if (u) map[p.short] = u; });
+      Object.assign(map, S.newsLinks || {});
+      const names = Object.keys(map).sort((a, b) => b.length - a.length).map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+      if (!names.length) return esc(text);
+      const re = new RegExp(`(^|[^\\w-])(${names.join("|")})(?![\\w-])`, "g");
+      return esc(text).replace(re, (m, pre, name) => `${pre}<a href="${esc(map[name])}">${name}</a>`);
     },
     tabs(el, onChange) {
       const opts = [["selected", "Selected"], ["all", "All"]].concat(S.categories.map((c) => [c.id, c.name]));
