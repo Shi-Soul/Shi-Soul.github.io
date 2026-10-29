@@ -43,7 +43,7 @@
   $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true });
   const paths = ["M2 9 C 25 3, 50 13, 98 5", "M2 6 C 30 12, 60 2, 98 8", "M2 8 C 30 3, 70 12, 98 6"];
   const h2 = (t, i) => `<h2 data-reveal><span class="u">${t}<svg viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true"><path d="${paths[i % 3]}"/></svg></span></h2>`;
-  const row = (r) => `<div class="cvrow"><time>${esc(r.when || "")}</time><div>${esc(r.title)}${r.org ? `<small>${esc(r.org)}</small>` : ""}${r.advisor ? `<small>${r.advisor.role}: <a href="${r.advisor.url}">${esc(r.advisor.name)}</a></small>` : ""}${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</div></div>`;
+  const row = (r) => `<div class="cvrow"><time>${esc(r.when || "")}</time><div>${r.org ? `<b class="org">${esc(r.org)}</b><span class="pos">${esc(r.title)}</span>` : esc(r.title)}${r.advisor ? `<small>${r.advisor.role}: <a href="${r.advisor.url}">${esc(r.advisor.name)}</a></small>` : ""}${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</div></div>`;
   const sec = (t, body, i) => `<section class="cvsec">${h2(t, i)}<div data-reveal style="--d:1">${body}</div></section>`;
   const b = Site.cvBlocks();
   const pubs = S.publications.map((p) => `<div class="cvpub" data-hover>${media(p)}<div>${esc(p.title)}<small>${me(p.authors)}</small><small>${esc(venue(p))}<span class="acts">${links(p, { project: "project ↗", pdf: "paper ↗", code: "code ↗" })}</span></small></div></div>`).join("");
