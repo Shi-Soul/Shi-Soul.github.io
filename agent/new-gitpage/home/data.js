@@ -30,7 +30,7 @@ window.SITE = {
     },
     wechatQR: "../../../assets/img/wechat-qr.png",
     contactNote: "Feel free to add my WeChat or drop an email.",
-    collabNote: "Always happy to chat about robot learning and humanoids, and open to collaboration.",
+    collabNote: "Always happy to chat and open to collaboration.",
   },
 
   // Selected 标签下的展示顺序（填 short 名，自己调）；其他标签按 date 倒序

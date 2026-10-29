@@ -1,4 +1,12 @@
 /* 个人主页（源自草稿 V4 Notebook）：首页与 CV 页共用 */
+@font-face {
+  font-family: "LXGW WenKai Name";
+  src: url("media/lxgw-wenkai-name.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+57FA, U+709C, U+8C22;
+}
 :root {
   --paper: #fbfaf4; --grid: #e6ebf2; --ink: #1f2328; --ink2: #4b5058; --muted: #868b92; --rule: #d9dde3;
   --pen: #2457c5; --red: #d9412f; --hl: #ffe36e;
@@ -35,6 +43,7 @@ mark { background: linear-gradient(100deg, transparent 2%, var(--hl) 4%, var(--h
 
 .hello { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 40px; padding: 56px 0 20px; align-items: start; }
 h1 { font: 700 clamp(44px, 6.5vw, 66px)/1.02 var(--serif); margin: 0 0 18px; letter-spacing: -.02em; }
+.hello h1 .name-zh { display: inline-block; margin-left: .35em; font-family: "LXGW WenKai Name", KaiTi, serif; font-size: .42em; font-weight: 400; letter-spacing: .04em; color: var(--ink2); vertical-align: baseline; }
 .tagline { font: 400 22px var(--hand); color: var(--red); margin: 0 0 10px; transform: rotate(-1deg); display: inline-block; }
 .statement { font-size: 20px; margin: 0 0 14px; }
 .aff { font-size: 15.5px; color: var(--ink2); margin: 0; }
@@ -88,15 +97,16 @@ section { padding: 44px 0 8px; }
 .pub .au .me, .cvpub .me { color: var(--ink); }
 .pub .acts { font: 13px var(--mono); display: flex; gap: 14px; margin-top: 6px; }
 
-.path { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.path { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
 .path h3 { font: 400 23px var(--hand); color: var(--red); margin: 0 0 6px; }
 .path ul { list-style: none; margin: 0; padding: 0; }
-.path li { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 14px; align-items: start; padding: 12px 0; border-top: 1.5px dashed var(--rule); font-size: 16.5px; }
-.path li .logo { width: 46px; height: 46px; border-radius: 50%; object-fit: contain; background: #fff; border: 1.5px solid var(--ink); padding: 3px; box-shadow: 2px 2px 0 var(--ink); }
-.path li time { display: block; font: 500 12.5px var(--mono); color: var(--muted); }
+.path li { display: grid; grid-template-columns: 230px minmax(0, 1fr) 76px; grid-template-areas: "date detail logo"; gap: 18px; align-items: start; padding: 16px 0; border-top: 1.5px dashed var(--rule); font-size: 16.5px; }
+.path li > div { grid-area: detail; }
+.path li .logo { grid-area: logo; align-self: center; width: 76px; height: 76px; border-radius: 50%; object-fit: contain; background: #fff; border: 1.5px solid var(--ink); padding: 5px; box-shadow: 2px 2px 0 var(--ink); }
+.path li time { grid-area: date; display: block; font: 500 15px/1.6 var(--mono); color: var(--muted); padding-top: 0; }
 .path li .org { display: block; font-weight: 600; font-size: 17px; line-height: 1.35; color: var(--ink); margin-top: 1px; }
 .path li .pos { display: block; font-style: italic; font-size: 15.5px; color: var(--ink2); margin: 1px 0 3px; }
-.path li .logo.mono { display: grid; place-items: center; box-sizing: border-box; font: 600 15px var(--mono); color: var(--ink); background: var(--hl); }
+.path li .logo.mono { display: grid; place-items: center; box-sizing: border-box; font: 600 23px var(--mono); color: var(--ink); background: var(--hl); }
 .news li a { color: var(--pen); }
 .path li small { display: block; color: var(--ink2); font-size: 15px; }
 .path li small.adv { color: var(--ink); }
@@ -122,6 +132,8 @@ footer { padding: 52px 0 64px; font: 14px var(--mono); color: var(--muted); disp
   .page { padding: 0 16px; }
   .hello, .cvhead { grid-template-columns: 1fr 120px; gap: 18px; padding-top: 32px; }
   .pubs, .path { grid-template-columns: 1fr; }
+  .path li { grid-template-columns: minmax(0, 1fr) 64px; grid-template-areas: "date logo" "detail logo"; gap: 4px 14px; }
+  .path li .logo { width: 64px; height: 64px; }
   .top nav { gap: 14px; font-size: 19px; } .sig { font-size: 25px; }
   .cvrow, .cvpub { grid-template-columns: 1fr; gap: 6px; }
   .cvpub .pm { max-width: 220px; }

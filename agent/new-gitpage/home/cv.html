@@ -46,7 +46,7 @@
   const row = (r) => `<div class="cvrow"><time>${esc(r.when || "")}</time><div>${r.org ? `<b class="org">${esc(r.org)}</b><span class="pos">${esc(r.title)}</span>` : esc(r.title)}${r.advisor ? `<small>${r.advisor.role}: <a href="${r.advisor.url}">${esc(r.advisor.name)}</a></small>` : ""}${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</div></div>`;
   const sec = (t, body, i) => `<section class="cvsec">${h2(t, i)}<div data-reveal style="--d:1">${body}</div></section>`;
   const b = Site.cvBlocks();
-  const pubs = S.publications.map((p) => `<div class="cvpub" data-hover>${media(p)}<div>${esc(p.title)}<small>${me(p.authors)}</small><small>${esc(venue(p))}<span class="acts">${links(p, { project: "project ↗", pdf: "paper ↗", code: "code ↗" })}</span></small></div></div>`).join("");
+  const pubs = S.publications.map((p) => `<div class="cvpub" data-hover>${media(p)}<div>${esc(p.title)}<small>${me(p.authors)}</small><small>${esc(venue(p))}<span class="acts">${links(p, { project: "project", pdf: "paper", code: "code" })}</span></small></div></div>`).join("");
   $("cv").innerHTML = sec(b[0].title, b[0].rows.map(row).join(""), 0) + sec(b[1].title, b[1].rows.map(row).join(""), 1) + sec("Publications", pubs, 2) +
     b.slice(2).map((x, i) => sec(x.title, x.rows.map(row).join(""), i)).join("");
   $("yr").textContent = new Date().getFullYear();
