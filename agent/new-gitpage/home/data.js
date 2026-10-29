@@ -34,7 +34,7 @@ window.SITE = {
   },
 
   // Selected 标签下的展示顺序（填 short 名，自己调）；其他标签按 date 倒序
-  selectedOrder: ["KungfuBot", "TextOp", "TTC", "HALO", "KungfuBot2", "DBHL"],
+  selectedOrder: ["TTC", "TextOp", "KungfuBot", "HALO", "KungfuBot2", "DBHL"],
 
   categories: [
     { id: "tracking", name: "Motion Tracking" },
@@ -77,7 +77,7 @@ window.SITE = {
       image: "media/oasis.jpg", video: "https://oasis-humanoid.github.io/static/videos/asset/cup.mp4",
     },
     {
-      short: "HALO", date: "2026.03", venue: "IROS", year: 2026, selected: true, cats: ["tracking"],
+      short: "HALO", date: "2026.03", venue: "IROS", year: 2026, selected: false, cats: ["tracking"],
       title: "HALO: Closing Sim-to-Real Gap for Heavy-loaded Humanoid Agile Motion Skills via Differentiable Simulation",
       authors: "Xingyi Wang*, Chenyun Zhang*, Weiji Xie*, Chao Yu, Wei Song, Chenjia Bai†, Shiqiang Zhu†",
       note: "Agile motions under heavy payloads, with differentiable simulation to identify what the simulator gets wrong.",
@@ -104,12 +104,12 @@ window.SITE = {
       short: "KungfuBot", date: "2025.06", venue: "NeurIPS", year: 2025, selected: true, cats: ["tracking"],
       title: "KungfuBot: Physics-Based Humanoid Whole-Body Control for Learning Highly-Dynamic Skills",
       authors: "Weiji Xie*, Jinrui Han*, Jiakun Zheng*, Huanyu Li, Xinzhe Liu, Jiyuan Shi, Weinan Zhang, Chenjia Bai†, Xuelong Li†",
-      note: "Spin kicks and flying kicks on a real Unitree G1, learned from human video. Open-sourced as PBHC (1,000+ stars).",
+      note: "Spin kicks and flying kicks on a real Unitree G1, learned from human video.",
       links: { project: "https://kungfubot.github.io/", pdf: "https://arxiv.org/abs/2506.12851", code: "https://github.com/TeleHuman/PBHC" },
       image: "media/kungfubot.jpg", video: "https://kungfubot.github.io/static/videos/360%20spin.mp4",
     },
     {
-      short: "DBHL", date: "2025.02", venue: "IROS", year: 2025, selected: true, cats: ["loco"],
+      short: "DBHL", date: "2025.02", venue: "IROS", year: 2025, selected: false, cats: ["loco"],
       title: "Humanoid Whole-Body Locomotion on Narrow Terrain via Dynamic Balance and Reinforcement Learning",
       authors: "Weiji Xie, Chenjia Bai†, Jiyuan Shi, Junkai Yang, Yunfei Ge, Weinan Zhang†, Xuelong Li",
       note: "Proprioception-only walking on narrow beams and obstacles, with balance recovery under pushes.",
