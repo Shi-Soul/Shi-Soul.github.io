@@ -34,7 +34,7 @@
       opts = opts || {};
       const L = P.links, lab = (t) => (opts.labels ? `<span>${t}</span>` : "");
       const items = [
-        `<a href="mailto:${P.email}" title="Email"><i class="fa-solid fa-envelope"></i>${lab(opts.emailText ? P.email : "Email")}</a>`,
+        `<a href="mailto:${P.email}" title="Email"><i class="fa-solid fa-envelope"></i>${lab(opts.emailLabel || (opts.emailText ? P.email : "Email"))}</a>`,
         `<a href="${L.scholar}" title="Google Scholar"><i class="ai ai-google-scholar"></i>${lab("Scholar")}</a>`,
         `<a href="${L.github}" title="GitHub"><i class="fa-brands fa-github"></i>${lab("GitHub")}</a>`,
         `<a href="${L.linkedin}" title="LinkedIn"><i class="fa-brands fa-linkedin"></i>${lab("LinkedIn")}</a>`,

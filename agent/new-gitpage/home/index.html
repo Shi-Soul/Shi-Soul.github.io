@@ -16,14 +16,14 @@
 <body>
 <header class="top"><div class="page">
   <a class="sig" href="#top">Weiji Xie ✎</a>
-  <nav aria-label="Site"><a href="#news">news</a><a href="#publications">publications</a><a href="#experience">experience</a><a href="cv.html">cv</a></nav>
+  <nav aria-label="Site"><a href="#news">news</a><a href="#publications">publications</a><a href="#experience">trajectory</a><a href="cv.html">cv</a></nav>
 </div></header>
 
 <main class="page" id="top">
   <section class="hello">
     <div>
       <div class="tagline" data-reveal id="tagline"></div>
-      <h1 data-reveal style="--d:1">Weiji Xie</h1>
+      <h1 data-reveal style="--d:1">Weiji Xie <span class="name-zh" lang="zh-CN" id="name-zh"></span></h1>
       <p class="statement" data-reveal style="--d:2" id="statement"></p>
       <p class="aff" data-reveal style="--d:3" id="aff"></p>
       <div class="contacts" data-reveal style="--d:4" id="contacts"></div>
@@ -46,10 +46,10 @@
   </section>
 
   <section id="experience">
-    <h2 data-reveal><span class="u">Experience<svg viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2 8 C 30 3, 70 12, 98 6"/></svg></span></h2>
+    <h2 data-reveal><span class="u">Trajectory<svg viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2 8 C 30 3, 70 12, 98 6"/></svg></span></h2>
     <div class="path">
-      <div data-reveal><h3>education</h3><ul id="edu"></ul></div>
-      <div data-reveal style="--d:1"><h3>research</h3><ul id="exp"></ul></div>
+      <div data-reveal><h3>Education</h3><ul id="edu"></ul></div>
+      <div data-reveal><h3>Experience</h3><ul id="exp"></ul></div>
     </div>
     <a class="more" href="cv.html">→ full CV</a>
   </section>
@@ -63,19 +63,20 @@
 (function () {
   const { S, P, esc, me, venue, isTop, media, links, catName } = Site, $ = (id) => document.getElementById(id);
   $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("name-zh").textContent = P.nameZh;
   $("tagline").textContent = P.tagline.toLowerCase();
   $("aff").innerHTML = P.affiliation;
   $("statement").innerHTML = esc(P.statement).replace(/physical skills|general-purpose robots/g, "<mark>$&</mark>"); // 荧光笔标出关键词
-  $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true });
+  $("contacts").innerHTML = Site.contacts({ labels: true, emailLabel: "Mail" });
   $("reach").textContent = `${P.contactNote} ${P.collabNote}`;
   $("news-list").innerHTML = S.news.map((n) => `<li><time>${n.date}</time>${Site.newsHTML(n.text)}</li>`).join("");
-  // 每段经历：机构 logo + 时间 + 机构 + 职位/学位 + 导师
-  const li = (r) => `<li>${r.logo ? `<img class="logo" src="${r.logo}" alt="" loading="lazy">` : `<span class="logo mono" aria-hidden="true">${esc(r.mono || r.org[0])}</span>`}<div><time>${r.when}</time><b class="org">${esc(r.org)}</b><span class="pos">${esc(r.title)}</span>${r.advisor ? `<small class="adv">${r.advisor.role}: <a href="${r.advisor.url}">${esc(r.advisor.name)}</a></small>` : ""}${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</div></li>`;
+  // 每段经历占一整行：时间 + 机构 logo + 机构/职位/导师
+  const li = (r) => `<li><time>${esc(r.when)}</time>${r.logo ? `<img class="logo" src="${r.logo}" alt="" loading="lazy">` : `<span class="logo mono" aria-hidden="true">${esc(r.mono || r.org[0])}</span>`}<div><b class="org">${esc(r.org)}</b><span class="pos">${esc(r.title)}</span>${r.advisor ? `<small class="adv">${r.advisor.role}: <a href="${r.advisor.url}">${esc(r.advisor.name)}</a></small>` : ""}${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</div></li>`;
   $("edu").innerHTML = S.education.map(li).join(""); $("exp").innerHTML = S.experience.map(li).join("");
   $("yr").textContent = new Date().getFullYear();
   const card = (p) => `<article class="pub" data-hover>${media(p)}
     <div class="venue">${isTop(p) ? `<b>${esc(venue(p))}</b>` : "under review"}<span>${(p.cats || []).map(catName).join(", ").toLowerCase()}</span></div>
-    <h3>${esc(p.title)}</h3><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="acts">${links(p, { project: "project ↗", pdf: "paper ↗", code: "code ↗" })}</div></article>`;
+    <h3>${esc(p.title)}</h3><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="acts">${links(p, { project: "project", pdf: "paper", code: "code" })}</div></article>`;
   Site.tabs($("tabs"), (f) => Site.renderPubs($("pubs"), f, card));
   Site.init();
   Site.reveal();
