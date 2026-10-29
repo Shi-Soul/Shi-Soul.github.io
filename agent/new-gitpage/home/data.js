@@ -18,10 +18,10 @@ window.SITE = {
     role: "M.S. student · SJTU",
     tagline: "Robot learning · Reinforcement learning · Embodied AI",
     // 简介格式：**加粗**，==黄色底==，==**加粗并加黄色底**==；删除标记即恢复普通文字。
-    affiliation: 'I’m a M.S. student at <a href="https://www.sjtu.edu.cn/">Shanghai Jiao Tong University (SJTU)</a> supervised by <a href="https://wnzhang.net/">Prof. Weinan Zhang</a>. I am currently interning at the <a href="https://www.teleai.com.cn/">TeleAI</a> and working closely with <a href="https://baichenjia.github.io/">Dr. Chenjia Bai</a>.',
-    statement: "My research interests include **Reinforcement Learning** and **Robotics**, with a current focus on **Humanoid Robots**. Foundamentally, I want to build ==General-Purpose Robots== that can do anything for people.",
+    affiliation: 'I’m an M.S. student at <a href="https://www.sjtu.edu.cn/">Shanghai Jiao Tong University (SJTU)</a> supervised by <a href="https://wnzhang.net/">Prof. Weinan Zhang</a>. I am currently interning at the <a href="https://www.teleai.com.cn/">TeleAI</a> and working closely with <a href="https://baichenjia.github.io/">Dr. Chenjia Bai</a>.',
+    statement: "My research interests include **Reinforcement Learning** and **Robotics**, with a current focus on **Humanoid Robots**. Fundamentally, I want to build ==General-Purpose Robots== that can do anything for people.",
     location: "Shanghai, China",
-    photo: "media/photo.jpg",
+    photo: "media/photo.webp",
     email: "xieweiji249@sjtu.edu.cn",
     links: {
       scholar: "https://scholar.google.com/citations?user=Ey2NlGMAAAAJ",
@@ -186,7 +186,7 @@ window.SITE = {
     { when: "2024.10 – now", title: "Research Intern", org: "TeleAI, China Telecom", logo: "media/logo-teleai.jpg",
       advisor: { role: "Supervisor", name: "Dr. Chenjia Bai", url: "https://baichenjia.github.io/" }, detail: "RL-based humanoid motion control; VLA-based loco-manipulation" },
     { when: "2024.06 – 2024.08", title: "Research Intern", org: "Yunqi Academy of Engineering",
-      advisor: { role: "Advisor", name: "Zhenhui Li", url: "https://jessielzh.com/" }, detail: "City Intelligence" },
+      advisor: { role: "Advisor", name: "Prof. Zhenhui Li", url: "https://jessielzh.com/" }, detail: "City Intelligence" },
     { when: "2022.08 – 2025.06", title: "Undergraduate Researcher", org: "APEX Lab, Shanghai Jiao Tong University", orgUrl: "https://apex.sjtu.edu.cn/", orgLinkText: "APEX Lab", logo: "media/logo-apex.png", logoDark: true,
       advisor: { role: "Advisor", name: "Prof. Weinan Zhang", url: "https://wnzhang.net/" }, detail: "Multi-agent RL; Legged robot locomotion" },
   ],
