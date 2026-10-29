@@ -151,16 +151,17 @@ window.SITE = {
   // 经历：logo 填 media/ 下的图；没有 logo 时用 mono 里的两个字母做徽章
   education: [
     { when: "2025.09 – 2028.03 (expected)", title: "M.S. in Computer Science and Technology", org: "Shanghai Jiao Tong University", logo: "media/logo-sjtu.jpg",
-      advisor: { role: "Advisor", name: "Prof. Weinan Zhang", url: "https://wnzhang.net/" }, detail: "Reinforcement learning and humanoid robot control" },
+      advisor: { role: "Advisor", name: "Prof. Weinan Zhang", url: "https://wnzhang.net/" }, detail: "Reinforcement Learning and Embodied AI" },
     { when: "2021.09 – 2025.06", title: "B.Eng. in Artificial Intelligence", org: "Shanghai Jiao Tong University", logo: "media/logo-sjtu.jpg",
       detail: "GPA 4.07 / 4.30 · Rank top 5%" },
   ],
   experience: [
     { when: "2024.10 – now", title: "Research Intern", org: "TeleAI, China Telecom", logo: "media/logo-teleai.jpg",
-      advisor: { role: "Supervisor", name: "Dr. Chenjia Bai", url: "https://baichenjia.github.io/" }, detail: "RL-based humanoid motion control; VLA-based mobile manipulation" },
-    { when: "2024.06 – 2024.08", title: "Research Intern", org: "Yunqi Academy of Engineering", mono: "YQ" },
-    { when: "2022.08 – 2025.06", title: "Undergraduate Researcher", org: "APEX Lab, Shanghai Jiao Tong University", logo: "media/logo-sjtu.jpg",
-      advisor: { role: "Advisor", name: "Prof. Weinan Zhang", url: "https://wnzhang.net/" }, detail: "Multi-agent RL; legged robot locomotion" },
+      advisor: { role: "Supervisor", name: "Dr. Chenjia Bai", url: "https://baichenjia.github.io/" }, detail: "RL-based humanoid motion control; VLA-based loco-manipulation" },
+    { when: "2024.06 – 2024.08", title: "Research Intern", org: "Yunqi Academy of Engineering",
+      advisor: { role: "Advisor", name: "Zhenhui Li", url: "https://jessielzh.com/" }, detail: "City Intelligence" },
+    { when: "2022.08 – 2025.06", title: "Undergraduate Researcher", org: "APEX Lab, Shanghai Jiao Tong University", orgUrl: "https://apex.sjtu.edu.cn/", orgLinkText: "APEX Lab", logo: "media/logo-apex.png", logoDark: true,
+      advisor: { role: "Advisor", name: "Prof. Weinan Zhang", url: "https://wnzhang.net/" }, detail: "Multi-agent RL; Legged robot locomotion" },
   ],
   honors: [
     { year: 2024, text: "ASC Student Supercomputer Challenge, First Prize & Application Innovation Award" },
