@@ -88,7 +88,7 @@ window.SITE = {
       image: "media/koda.jpg",
     },
     {
-      short: "NEXUS", date: "2026.09", venue: "Under review", year: 2026,selected: true, cats: ["loco"],
+      short: "NEXUS", date: "2026.09", venue: "Under review", year: 2026,selected: true, cats: ["loco","tracking"],
       title: "NEXUS: Perceptive Whole-Body Control for Terrain-Adaptive Teleoperation",
       authors: "Xiangyu Miao, Junsong Wu, Jiyuan Shi, Weiji Xie, Jinrui Han, Xingyi Wang, Weinan Zhang†, Chenjia Bai†, Xuelong Li",
       note: "The operator walks on flat ground; the humanoid adapts to stairs and slopes on its own.",
