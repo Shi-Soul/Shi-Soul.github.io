@@ -28,7 +28,7 @@ window.SITE = {
       linkedin: "https://www.linkedin.com/in/weiji-xie-bb054b2b2",
       x: "https://x.com/Shi_Soul",
     },
-    wechatQR: "../../../assets/img/wechat-qr.png",
+    wechatQR: "../../../media/wechat-qr.png",
     contactNote: "Feel free to add my WeChat or drop an email.",
     cv: "../../../cv/", // 旧版本用；新版本链接到各自的 cv.html
   },
@@ -95,7 +95,7 @@ window.SITE = {
       title: "A Pre-Trained Trajectory Generative Model on Road Network",
       authors: "Weiji Xie, Yufan Zhang, Rui Zhang, Zhouyue Sun, Tianyu Liu, Guanjie Zheng, Zhenhui Li, Weinan Zhang",
       note: "A pre-trained generative model for city-scale vehicle trajectories.",
-      links: { pdf: "../../../assets/pdf/traffic_model.pdf" },
+      links: { pdf: "../../../media/traffic_model.pdf" },
       image: "../media/trajgen.jpg",
     },
   ],

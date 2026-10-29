@@ -10,11 +10,11 @@ if (fs.existsSync(output)) assert(!fs.lstatSync(output).isSymbolicLink(), "dist 
 fs.rmSync(output, { recursive: true, force: true });
 fs.mkdirSync(output);
 
-// Publish site files and downloadable reading notes, not repository configuration or tests.
-for (const file of ["index.html", "cv.html", "data.js", "site.js", "site.css", "style.css", "robots.txt", ".nojekyll", "404.html", "LICENSE"]) {
+// Publish site files and downloadable reading notes, not repository configuration.
+for (const file of ["index.html", "cv.html", "data.js", "site.js", "site.css", "style.css", "robots.txt", ".nojekyll", "404.html"]) {
   fs.copyFileSync(path.join(root, file), path.join(output, file));
 }
-for (const dir of ["media", "assets", "cv", "publications", "agent"]) {
+for (const dir of ["media", "cv", "publications", "agent"]) {
   fs.cpSync(path.join(root, dir), path.join(output, dir), {
     recursive: true,
     filter: (source) => !/\.(?:py|cjs)$/i.test(source),
