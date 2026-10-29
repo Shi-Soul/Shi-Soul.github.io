@@ -26,12 +26,12 @@
     others: () => S.publications.filter((p) => p.tier !== "main"),
     rest: (p) => { const i = p.title.indexOf(":"); return i > 0 ? p.title.slice(i + 1).trim() : p.title; },
 
-    // 缩略图：有 image 用图；有 video 时悬停才加载播放；都没有就生成文字占位
+    // image 作静态封面；video 按 playback 指定的 viewport / hover 时机加载。
     media(p, cls) {
       cls = cls || "";
       if (!p.image) return `<div class="pm pm-ph ${cls}" aria-hidden="true"><span>${esc(p.short)}</span></div>`;
-      const v = p.video ? ` data-video="${esc(p.video)}"` : "";
-      const badge = p.video ? `<span class="pm-play" aria-hidden="true">▶</span>` : "";
+      const v = p.video ? ` data-video="${esc(p.video)}" data-playback="${p.playback === "viewport" ? "viewport" : "hover"}"` : "";
+      const badge = p.video && p.playback !== "viewport" ? `<span class="pm-play" aria-hidden="true">▶</span>` : "";
       return `<div class="pm ${cls}"${v}><img src="${esc(p.image)}" alt="${esc(p.short)}" loading="lazy">${badge}</div>`;
     },
     links(p, labels) {
@@ -98,8 +98,9 @@
     },
     // 渲染论文列表；每张卡带 --i 供错峰入场动画
     renderPubs(el, f, card) {
+      if (el.stopMedia) el.stopMedia();
       el.innerHTML = Site.filter(f).map((p, i) => card(p, i).replace(/^(\s*<\w+)/, `$1 style="--i:${i}"`)).join("");
-      Site.bindMedia(el);
+      el.stopMedia = Site.bindMedia(el);
     },
 
     // 滚动入场：给 [data-reveal] 加 .in
@@ -152,19 +153,22 @@
     },
 
     bindMedia(root) {
+      const cleanups = [];
       (root || document).querySelectorAll(".pm[data-video]:not([data-bound])").forEach((el) => {
         el.dataset.bound = "1";
-        let vid = null, hovered = false, playAttempt = 0;
+        const viewport = el.dataset.playback === "viewport";
+        if (viewport && Site.calm) return;
+        let vid = null, active = false, playAttempt = 0;
         const hide = () => el.classList.remove("playing");
-        const on = () => {
-          hovered = true;
+        const start = () => {
+          if (!active || document.hidden || el.isConnected === false) return;
           const attempt = ++playAttempt;
           if (!vid) {
             vid = document.createElement("video");
             Object.assign(vid, { muted: true, loop: true, playsInline: true, preload: "none" });
             // 保留缩略图，直到视频真正开始播放；错误或缓冲时退回图片。
             vid.addEventListener("playing", () => {
-              if (hovered) el.classList.add("playing");
+              if (active && !document.hidden && el.isConnected !== false) el.classList.add("playing");
               else vid.pause();
             });
             vid.addEventListener("error", hide);
@@ -176,10 +180,29 @@
           const pr = vid.play();
           if (pr && pr.catch) pr.catch(() => { if (attempt === playAttempt) hide(); });
         };
-        const off = () => { hovered = false; ++playAttempt; hide(); if (vid) vid.pause(); };
+        const stop = () => { ++playAttempt; hide(); if (vid) vid.pause(); };
+        const on = () => { active = true; start(); };
+        const off = () => { active = false; stop(); };
         const host = el.closest("[data-hover]") || el;
-        host.addEventListener("mouseenter", on); host.addEventListener("mouseleave", off);
+        let observer;
+        if (viewport && window.IntersectionObserver) {
+          observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => entry.isIntersecting ? on() : off());
+          }, { rootMargin: "0px", threshold: 0 });
+          observer.observe(el);
+        } else {
+          host.addEventListener("mouseenter", on); host.addEventListener("mouseleave", off);
+        }
+        const visibility = () => document.hidden ? stop() : start();
+        document.addEventListener("visibilitychange", visibility);
+        cleanups.push(() => {
+          off();
+          if (observer) observer.disconnect();
+          else { host.removeEventListener("mouseenter", on); host.removeEventListener("mouseleave", off); }
+          document.removeEventListener("visibilitychange", visibility);
+        });
       });
+      return () => cleanups.forEach((cleanup) => cleanup());
     },
 
     init() {
