@@ -40,7 +40,7 @@ window.SITE = {
     { id: "tracking", name: "Motion Tracking" },
     { id: "locomanip", name: "Loco-Manipulation" },
     { id: "loco", name: "Locomotion" },
-    { id: "misc", name: "Others" },
+    // { id: "misc", name: "Others" },
   ],
 
   publications: [

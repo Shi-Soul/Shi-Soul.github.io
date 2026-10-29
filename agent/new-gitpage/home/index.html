@@ -66,7 +66,7 @@
   $("tagline").textContent = P.tagline.toLowerCase();
   $("aff").innerHTML = P.affiliation;
   $("statement").innerHTML = esc(P.statement).replace(/physical skills|general-purpose robots/g, "<mark>$&</mark>"); // 荧光笔标出关键词
-  $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true });
+  $("contacts").innerHTML = Site.contacts({ labels: true, emailLabel: "Mail" });
   $("reach").textContent = `${P.contactNote} ${P.collabNote}`;
   $("news-list").innerHTML = S.news.map((n) => `<li><time>${n.date}</time>${Site.newsHTML(n.text)}</li>`).join("");
   // 每段经历：机构 logo + 时间 + 机构 + 职位/学位 + 导师
