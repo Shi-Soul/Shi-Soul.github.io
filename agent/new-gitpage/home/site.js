@@ -153,18 +153,29 @@
     bindMedia(root) {
       (root || document).querySelectorAll(".pm[data-video]:not([data-bound])").forEach((el) => {
         el.dataset.bound = "1";
-        let vid = null;
+        let vid = null, hovered = false, playAttempt = 0;
+        const hide = () => el.classList.remove("playing");
         const on = () => {
+          hovered = true;
+          const attempt = ++playAttempt;
           if (!vid) {
             vid = document.createElement("video");
             Object.assign(vid, { muted: true, loop: true, playsInline: true, preload: "none" });
+            // 保留缩略图，直到视频真正开始播放；错误或缓冲时退回图片。
+            vid.addEventListener("playing", () => {
+              if (hovered) el.classList.add("playing");
+              else vid.pause();
+            });
+            vid.addEventListener("error", hide);
+            vid.addEventListener("waiting", hide);
+            vid.addEventListener("pause", hide);
             vid.src = el.dataset.video;
             el.appendChild(vid);
           }
-          el.classList.add("playing");
-          const pr = vid.play(); if (pr && pr.catch) pr.catch(() => {});
+          const pr = vid.play();
+          if (pr && pr.catch) pr.catch(() => { if (attempt === playAttempt) hide(); });
         };
-        const off = () => { el.classList.remove("playing"); if (vid) vid.pause(); };
+        const off = () => { hovered = false; ++playAttempt; hide(); if (vid) vid.pause(); };
         const host = el.closest("[data-hover]") || el;
         host.addEventListener("mouseenter", on); host.addEventListener("mouseleave", off);
       });
@@ -172,23 +183,7 @@
 
     init() {
       // 悬停播放
-      document.querySelectorAll(".pm[data-video]:not([data-bound])").forEach((el) => {
-        el.dataset.bound = "1";
-        let vid = null;
-        const on = () => {
-          if (!vid) {
-            vid = document.createElement("video");
-            Object.assign(vid, { muted: true, loop: true, playsInline: true, preload: "none" });
-            vid.src = el.dataset.video;
-            el.appendChild(vid);
-          }
-          el.classList.add("playing");
-          const pr = vid.play(); if (pr && pr.catch) pr.catch(() => {});
-        };
-        const off = () => { el.classList.remove("playing"); if (vid) vid.pause(); };
-        const host = el.closest("[data-hover]") || el;
-        host.addEventListener("mouseenter", on); host.addEventListener("mouseleave", off);
-      });
+      Site.bindMedia(document);
       // 微信二维码
       let modal = null;
       const close = () => modal && modal.classList.remove("open");
