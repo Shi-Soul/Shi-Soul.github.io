@@ -77,7 +77,7 @@
   $("yr").textContent = new Date().getFullYear();
   const card = (p) => `<article class="pub" data-hover>${media(p)}
     <div class="venue">${isTop(p) ? `<b>${esc(venue(p))}</b>` : "under review"}<span>${(p.cats || []).map(catName).join(", ").toLowerCase()}</span></div>
-    <h3>${esc(p.title)}</h3><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="acts">${links(p, { project: "<b>P</b>roject", pdf: "<b>P</b>aper", code: "<b>C</b>ode" })}</div></article>`;
+    <h3>${esc(p.title)}</h3><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="acts">${links(p, { project: "Project", pdf: "Paper", code: "Code" })}</div></article>`;
   Site.tabs($("tabs"), (f) => Site.renderPubs($("pubs"), f, card));
   Site.init();
   Site.reveal();
