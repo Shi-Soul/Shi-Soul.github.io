@@ -1,6 +1,11 @@
 {
-  "devDependencies": {
-    "@shopify/prettier-plugin-liquid": "1.4.0",
-    "prettier": "3.1.1"
+  "name": "weiji-xie-homepage",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-site.cjs",
+    "test": "node --test tests/*.test.cjs"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

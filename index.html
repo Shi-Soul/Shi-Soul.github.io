@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weiji Xie</title>
+<meta name="description" content="Weiji Xie: robot learning, reinforcement learning, embodied AI.">
+<link rel="canonical" href="https://shi-soul.github.io/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="page">
+  <a class="sig" href="#top">Weiji Xie ✎</a>
+  <nav aria-label="Site"><a href="#news">news</a><a href="#publications">publications</a><a href="#experience">trajectory</a><a href="cv.html">cv</a></nav>
+</div></header>
+
+<main class="page" id="top">
+  <section class="hello">
+    <div>
+      <div class="tagline" data-reveal id="tagline"></div>
+      <h1 data-reveal style="--d:1">Weiji Xie <span class="name-zh" lang="zh-CN" id="name-zh"></span></h1>
+      <p class="aff" data-reveal style="--d:2" id="aff"></p>
+      <p class="statement" data-reveal style="--d:3" id="statement"></p>
+      <div class="contacts" data-reveal style="--d:4" id="contacts"></div>
+      <p class="reach" data-reveal style="--d:5" id="reach"></p>
+    </div>
+    <div>
+      <div class="passport"><div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div></div>
+    </div>
+  </section>
+
+  <section id="news">
+    <h2 data-reveal><span class="u">News<svg viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2 9 C 25 3, 50 13, 98 5"/></svg></span></h2>
+    <div class="newsbox" data-reveal tabindex="0" aria-label="News, scrollable"><ul class="news" id="news-list"></ul></div>
+  </section>
+
+  <section id="publications">
+    <h2 data-reveal><span class="u">Publications<svg viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2 6 C 30 12, 60 2, 98 8"/></svg></span></h2>
+    <div class="tabs" id="tabs" data-reveal></div>
+    <div class="pubs" id="pubs"></div>
+  </section>
+
+  <section id="experience">
+    <h2 data-reveal><span class="u">Trajectory<svg viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2 8 C 30 3, 70 12, 98 6"/></svg></span></h2>
+    <div class="path">
+      <div data-reveal><h3>Education</h3><ul id="edu"></ul></div>
+      <div data-reveal><h3>Experience</h3><ul id="exp"></ul></div>
+    </div>
+    <a class="more" href="cv.html">→ Full CV</a>
+  </section>
+
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><span>Last updated: <time id="updated"></time></span></footer>
+</main>
+
+<script src="data.js"></script>
+<script src="site.js"></script>
+<script>
+(function () {
+  const { S, P, esc, me, venue, isTop, media, links, catName } = Site, $ = (id) => document.getElementById(id);
+  $("photo").style.backgroundImage = `url(${P.photo})`;
+  $("name-zh").textContent = P.nameZh;
+  $("tagline").textContent = P.tagline.toLowerCase();
+  $("aff").innerHTML = P.affiliation;
+  $("statement").innerHTML = Site.inlineText(P.statement);
+  $("contacts").innerHTML = Site.contacts({ labels: true, emailLabel: "Mail" });
+  $("reach").textContent = `${P.contactNote} ${P.collabNote}`;
+  $("news-list").innerHTML = S.news.map((n) => `<li><time>${n.date}</time>${Site.newsHTML(n.text)}</li>`).join("");
+  // 每段经历占一整行：时间 + 机构 logo + 机构/职位/导师
+  const org = (r) => r.orgUrl ? esc(r.org).replace(esc(r.orgLinkText || r.org), `<a href="${esc(r.orgUrl)}">${esc(r.orgLinkText || r.org)}</a>`) : esc(r.org);
+  const li = (r) => `<li><time>${esc(r.when)}</time>${r.logo ? `<img class="logo${r.logoDark ? " logo-dark" : ""}" src="${r.logo}" alt="" loading="lazy">` : ""}<div><b class="org">${org(r)}</b><div class="position-line"><span class="pos">${esc(r.title)}</span>${r.advisor ? ` <small class="adv">· ${r.advisor.role}: <a href="${r.advisor.url}">${esc(r.advisor.name)}</a></small>` : ""}</div>${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</div></li>`;
+  $("edu").innerHTML = S.education.map(li).join(""); $("exp").innerHTML = S.experience.map(li).join("");
+  $("yr").textContent = new Date().getFullYear();
+  $("updated").dateTime = S.lastUpdated;
+  $("updated").textContent = new Date(`${S.lastUpdated}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+  const stars = (p) => {
+    const match = (p.links.code || "").match(/^https:\/\/github\.com\/([^/?#]+\/[^/?#]+)\/?(?:[?#].*)?$/i);
+    if (!match) return "";
+    const repo = esc(match[1].replace(/\.git$/, ""));
+    return `<a class="stars" href="https://github.com/${repo}/stargazers" aria-label="${esc(p.short)} GitHub stars"><img src="https://img.shields.io/github/stars/${repo}?style=social" alt="GitHub stars" loading="lazy" height="20"></a>`;
+  };
+  const card = (p) => `<article class="pub" data-hover>${media(p)}
+    <div class="venue">${isTop(p) ? `<b>${esc(venue(p))}</b>` : "under review"}<span>${(p.cats || []).map(catName).join(", ").toLowerCase()}</span></div>
+    <h3>${esc(p.title)}</h3><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="acts">${links(p, { project: "Project", pdf: "Paper", code: "Code" })}${stars(p)}</div></article>`;
+  Site.tabs($("tabs"), (f) => Site.renderPubs($("pubs"), f, card));
+  Site.init();
+  Site.reveal();
+})();
+</script>
+</body>
+</html>

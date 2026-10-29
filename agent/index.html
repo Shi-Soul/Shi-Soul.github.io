@@ -1,15 +1,10 @@
----
-layout: null
-title: 阅读目录
-permalink: /agent/
----
 <!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="浏览本站的教程与调研，阅读机器人、灵巧手与哲学等主题。">
-    <title>{{ page.title | escape }} · Weiji Xie</title>
+    <title>阅读目录 · Weiji Xie</title>
     <style>
       :root {
         color-scheme: light;
@@ -79,8 +74,8 @@ permalink: /agent/
   <body>
     <header class="site-header">
       <div class="wrap">
-        <a class="site-name" href="{{ '/' | relative_url }}">Weiji Xie</a>
-        <a class="home-link" href="{{ '/' | relative_url }}">返回首页 <span aria-hidden="true">←</span></a>
+        <a class="site-name" href="/">Weiji Xie</a>
+        <a class="home-link" href="/">返回首页 <span aria-hidden="true">←</span></a>
       </div>
     </header>
     <main class="wrap">
@@ -92,24 +87,11 @@ permalink: /agent/
       <section aria-labelledby="directory-heading">
         <div class="list-heading">
           <h2 id="directory-heading">全部页面</h2>
-          <span class="count">共 {{ site.data.agent_directory | size }} 篇</span>
+          <span class="count"></span>
         </div>
         <ol class="entries">
-          {% for entry in site.data.agent_directory %}
-          <li>
-            <a class="entry" href="{{ entry.url | relative_url | escape }}" aria-labelledby="entry-{{ forloop.index }}">
-              <span class="number" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
-              <div>
-                <h3 id="entry-{{ forloop.index }}">{{ entry.title | escape }}</h3>
-                {% if entry.description != empty %}<p class="description">{{ entry.description | escape }}</p>{% endif %}
-                <span class="path">{{ entry.url | escape }}</span>
-              </div>
-              <span class="arrow" aria-hidden="true">→</span>
-            </a>
-          </li>
-          {% else %}
-          <li class="empty">还没有可阅读的页面。</li>
-          {% endfor %}
+          <!-- scripts/build-site.cjs fills this list when publishing. -->
+          <li class="empty">请运行 npm run build，在 dist/agent/ 中查看完整目录。</li>
         </ol>
       </section>
     </main>
