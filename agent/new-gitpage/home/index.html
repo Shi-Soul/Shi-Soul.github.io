@@ -68,9 +68,9 @@
   $("statement").innerHTML = esc(P.statement).replace(/physical skills|general-purpose robots/g, "<mark>$&</mark>"); // 荧光笔标出关键词
   $("contacts").innerHTML = Site.contacts({ labels: true, emailText: true });
   $("reach").textContent = `${P.contactNote} ${P.collabNote}`;
-  $("news-list").innerHTML = S.news.map((n) => `<li><time>${n.date}</time>${esc(n.text)}</li>`).join("");
+  $("news-list").innerHTML = S.news.map((n) => `<li><time>${n.date}</time>${Site.newsHTML(n.text)}</li>`).join("");
   // 每段经历：机构 logo + 时间 + 职位/学位 + 机构 + 导师
-  const li = (r) => `<li><img class="logo" src="${r.logo}" alt="" loading="lazy"><div><time>${r.when}</time>${esc(r.title)}<small>${esc(r.org)}</small>${r.advisor ? `<small class="adv">${r.advisor.role}: <a href="${r.advisor.url}">${esc(r.advisor.name)}</a></small>` : ""}${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</div></li>`;
+  const li = (r) => `<li>${r.logo ? `<img class="logo" src="${r.logo}" alt="" loading="lazy">` : `<span class="logo mono" aria-hidden="true">${esc(r.mono || r.org[0])}</span>`}<div><time>${r.when}</time>${esc(r.title)}<small>${esc(r.org)}</small>${r.advisor ? `<small class="adv">${r.advisor.role}: <a href="${r.advisor.url}">${esc(r.advisor.name)}</a></small>` : ""}${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</div></li>`;
   $("edu").innerHTML = S.education.map(li).join(""); $("exp").innerHTML = S.experience.map(li).join("");
   $("yr").textContent = new Date().getFullYear();
   const card = (p) => `<article class="pub" data-hover>${media(p)}

@@ -3,13 +3,13 @@
  * 论文列表 = 简历（data/谢炜基-CV.pdf）∪ Google Scholar，2026-10-28 整理。
  *
  * 新加一篇论文 = 在 publications 里复制一条改字段：
- *   selected: 是否出现在默认的 "Selected" 标签下
+ *   selected: 是否出现在默认的 "Selected" 标签下（顺序见 selectedOrder）
  *   cats:     所属分类（见 categories），决定出现在哪些筛选标签里
  *   image:    缩略图（放进 media/，没有就留空，会自动生成文字占位）
  *   video:    可选，鼠标悬停时才加载播放（可以直接填项目主页上的视频地址）
  *   links:    project / pdf / code，有哪个填哪个
  *   note:     一句话说明
- *   date:     首次公开的年月（取 arXiv 编号），列表按它倒序
+ *   date:     首次公开的年月（取 arXiv 编号），分类标签按它倒序
  */
 window.SITE = {
   profile: {
@@ -32,6 +32,9 @@ window.SITE = {
     contactNote: "Feel free to add my WeChat or drop an email.",
     collabNote: "Always happy to chat about robot learning and humanoids, and open to collaboration.",
   },
+
+  // Selected 标签下的展示顺序（填 short 名，自己调）；其他标签按 date 倒序
+  selectedOrder: ["KungfuBot", "TextOp", "TTC", "HALO", "KungfuBot2", "Narrow Terrain"],
 
   categories: [
     { id: "tracking", name: "Motion Tracking" },
@@ -131,7 +134,8 @@ window.SITE = {
     },
   ],
 
-  // 日期为大致月份，请核对（尤其各会议录用的月份）
+  // 日期为大致月份，请核对。文中出现的论文 short 名会自动链接到项目主页；其他链接写在 newsLinks 里
+  newsLinks: { PBHC: "https://github.com/TeleHuman/PBHC" },
   news: [
     { date: "2026.10", text: "TTC and KODA released on arXiv." },
     { date: "2026.09", text: "NEXUS released: terrain-adaptive whole-body teleoperation." },
@@ -142,9 +146,10 @@ window.SITE = {
     { date: "2025.11", text: "OFF-FSP accepted to AAAI 2026." },
     { date: "2025.09", text: "KungfuBot accepted to NeurIPS 2025. Started my M.S. at SJTU." },
     { date: "2025.06", text: "PBHC, the open-source KungfuBot codebase, passes 1,000 GitHub stars." },
-    { date: "2025.06", text: "Two papers accepted to IROS 2025." },
+    { date: "2025.06", text: "Narrow Terrain and LoopSR accepted to IROS 2025." },
   ],
 
+  // 经历：logo 填 media/ 下的图；没有 logo 时用 mono 里的两个字母做徽章
   education: [
     { when: "2025.09 – 2028.03 (expected)", title: "M.S. in Computer Science and Technology", org: "Shanghai Jiao Tong University", logo: "media/logo-sjtu.jpg",
       advisor: { role: "Advisor", name: "Prof. Weinan Zhang", url: "https://wnzhang.net/" }, detail: "Reinforcement learning and humanoid robot control" },
@@ -154,6 +159,7 @@ window.SITE = {
   experience: [
     { when: "2024.10 – now", title: "Research Intern", org: "TeleAI, China Telecom", logo: "media/logo-teleai.jpg",
       advisor: { role: "Supervisor", name: "Dr. Chenjia Bai", url: "https://baichenjia.github.io/" }, detail: "RL-based humanoid motion control; VLA-based mobile manipulation" },
+    { when: "2024.06 – 2024.08", title: "Research Intern", org: "Yunqi Academy of Engineering", mono: "YQ" },
     { when: "2022.08 – 2025.06", title: "Undergraduate Researcher", org: "APEX Lab, Shanghai Jiao Tong University", logo: "media/logo-sjtu.jpg",
       advisor: { role: "Advisor", name: "Prof. Weinan Zhang", url: "https://wnzhang.net/" }, detail: "Multi-agent RL; legged robot locomotion" },
   ],
