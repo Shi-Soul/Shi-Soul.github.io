@@ -94,6 +94,8 @@ section { padding: 44px 0 8px; }
 .path li { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 14px; align-items: start; padding: 12px 0; border-top: 1.5px dashed var(--rule); font-size: 16.5px; }
 .path li .logo { width: 46px; height: 46px; border-radius: 50%; object-fit: contain; background: #fff; border: 1.5px solid var(--ink); padding: 3px; box-shadow: 2px 2px 0 var(--ink); }
 .path li time { display: block; font: 500 12.5px var(--mono); color: var(--muted); }
+.path li .org { display: block; font-weight: 600; font-size: 17px; line-height: 1.35; color: var(--ink); margin-top: 1px; }
+.path li .pos { display: block; font-style: italic; font-size: 15.5px; color: var(--ink2); margin: 1px 0 3px; }
 .path li .logo.mono { display: grid; place-items: center; box-sizing: border-box; font: 600 15px var(--mono); color: var(--ink); background: var(--hl); }
 .news li a { color: var(--pen); }
 .path li small { display: block; color: var(--ink2); font-size: 15px; }
@@ -109,6 +111,8 @@ footer { padding: 52px 0 64px; font: 14px var(--mono); color: var(--muted); disp
 .cvrow { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 18px; padding: 10px 0; border-top: 1.5px dashed var(--rule); font-size: 17px; }
 .cvrow time { font: 500 13px var(--mono); color: var(--red); padding-top: 4px; }
 .cvrow small { display: block; color: var(--ink2); font-size: 15px; }
+.cvrow .org { display: block; font-weight: 600; }
+.cvrow .pos { display: block; font-style: italic; color: var(--ink2); font-size: 16px; }
 .cvpub { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px; padding: 12px 0; border-top: 1.5px dashed var(--rule); align-items: start; font-size: 16.5px; }
 .cvpub .pm { aspect-ratio: 4 / 3; border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
 .cvpub small { display: block; color: var(--muted); font-size: 14px; }
