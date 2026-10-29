@@ -12,6 +12,7 @@
  *   date:     首次公开的年月（取 arXiv 编号），分类标签按它倒序
  */
 window.SITE = {
+  lastUpdated: "2026-10-29", // 更新内容后修改此日期，首页与 CV 页脚同步显示。
   profile: {
     name: "Weiji Xie",
     nameZh: "谢炜基",
