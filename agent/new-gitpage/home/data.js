@@ -44,6 +44,32 @@ window.SITE = {
     // { id: "misc", name: "Others" },
   ],
 
+  // 合作者主页：姓名完全匹配时，首页和 CV 自动添加链接；部分使用机构/GitHub/Scholar 备用入口。
+  // 来源、候选匹配及未找到的作者见 ../coauthors-review.md，便于人工核对。
+  coauthors: {
+    "Junsong Wu": "https://jason-wjs.github.io/",
+    // "Zibo Zhou": "https://github.com/ZiboKNOW",
+    // "Yueru Chen": "https://github.com/YueruChen111",
+    "Weinan Zhang": "https://wnzhang.net/",
+    "Chenjia Bai": "https://baichenjia.github.io/",
+    "Jiyuan Shi": "https://scholar.google.com/citations?user=aVte5j4AAAAJ",
+    "Xuelong Li": "https://scholar.google.com/citations?user=ahUibskAAAAJ",
+    "Xiangyu Miao": "https://xiangyumiao.pages.dev/",
+    "Jinrui Han": "https://bwrooney82.github.io/",
+    // "Zehao Yu": "https://github.com/yzhperseverance",
+    // "Jiakun Zheng": "https://github.com/Gabril17",
+    "Peilin Wu": "https://peilinwu.site/",
+    "Jingxiao Chen": "https://timerchen.github.io/",
+    "Xinzhe Liu": "https://xinzheliu.github.io/",
+    "Yunfei Ge": "https://gecloud24.github.io/",
+    // "Jiahang Cao": "https://apex.sjtu.edu.cn/members/jhcao@apexlab.org",
+    "Hang Lai": "https://scholar.google.com/citations?user=WYdaCd0AAAAJ",
+    "Yong Yu": "https://scholar.google.com/citations?user=-84M1m0AAAAJ&hl=en",
+    "Ying Wen": "https://yingwen.io/",
+    "Xingyi Wang": "https://scholar.google.com/citations?user=w7dfT-gAAAAJ",
+    // "Chenyun Zhang": "https://github.com/chenyunzhanggit",
+  },
+
   publications: [
     {
       short: "TTC", date: "2026.10", venue: "Under review", year: 2026, selected: true, cats: ["tracking", "locomanip"],
@@ -174,5 +200,6 @@ window.SITE = {
   misc: [
     { k: "Tools", v: "Python (PyTorch, JAX), C++, MuJoCo, Isaac Lab / Sim / Gym, ROS" },
     { k: "Languages", v: "Chinese, English" },
+    { k: "Hobbies", v: "Reading books about math, philosophy, social science, etc." },
   ],
 };

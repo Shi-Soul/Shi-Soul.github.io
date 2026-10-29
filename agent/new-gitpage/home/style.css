@@ -49,7 +49,7 @@ h1 { font: 700 clamp(44px, 6.5vw, 66px)/1.02 var(--serif); margin: 0 0 18px; let
 .aff { font-size: 15.5px; color: var(--ink2); margin: 0; }
 .hello .aff { font-size: 20px; color: var(--ink); margin: 0 0 14px; }
 .contacts { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 18px; font: 15px var(--mono); }
-.contacts a, .contacts button { color: var(--ink); text-decoration: none; display: inline-flex; gap: 7px; align-items: center; }
+.contacts a, .contacts button, .contacts .contact-location { color: var(--ink); text-decoration: none; display: inline-flex; gap: 7px; align-items: center; }
 .contacts a:hover, .contacts button:hover { color: var(--pen); }
 .contacts i { color: var(--pen); }
 /* 回形针别着的一寸照，会摆动 */

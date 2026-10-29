@@ -13,7 +13,13 @@
     inlineText: (text) => esc(text)
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/==(.+?)==/g, "<mark>$1</mark>"),
-    me: (authors) => esc(authors).replace(/Weiji Xie/g, '<b class="me">$&</b>'),
+    me: (authors) => authors.split(",").map((a) => {
+      const author = a.trim(), name = author.replace(/\s*[*†‡]+$/, "");
+      const url = (S.coauthors || {})[name];
+      const label = name === P.name ? `<b class="me">${esc(name)}</b>`
+        : url ? `<a href="${esc(url)}">${esc(name)}</a>` : esc(name);
+      return label + esc(author.slice(name.length));
+    }).join(", "),
     venue: (p) => (/review/i.test(p.venue) ? "Under review" : `${p.venue} ${p.year}`),
     isTop: (p) => !/review/i.test(p.venue),
     main: () => S.publications.filter((p) => p.tier === "main"),
@@ -45,6 +51,7 @@
         `<a href="${L.x}" title="X"><i class="fa-brands fa-x-twitter"></i>${lab("X")}</a>`,
         `<button type="button" data-wechat title="WeChat"><i class="fa-brands fa-weixin"></i>${lab("WeChat")}</button>`,
       ];
+      if (P.location) items.push(`<span class="contact-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span>${esc(P.location)}</span></span>`);
       return items.join("");
     },
 
