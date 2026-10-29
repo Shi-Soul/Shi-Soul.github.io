@@ -46,7 +46,6 @@ window.SITE = {
   ],
 
   // 合作者主页：姓名完全匹配时，首页和 CV 自动添加链接；部分使用机构/GitHub/Scholar 备用入口。
-  // 来源、候选匹配及未找到的作者见 agent/new-gitpage/coauthors-review.md。
   coauthors: {
     "Junsong Wu": "https://jason-wjs.github.io/",
     // "Zibo Zhou": "https://github.com/ZiboKNOW",

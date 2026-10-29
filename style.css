@@ -1,12 +1,4 @@
 /* 个人主页（源自草稿 V4 Notebook）：首页与 CV 页共用 */
-@font-face {
-  font-family: "LXGW WenKai Name";
-  src: url("media/lxgw-wenkai-name.woff") format("woff");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+57FA, U+709C, U+8C22;
-}
 :root {
   --paper: #fbfaf4; --grid: #e6ebf2; --ink: #1f2328; --ink2: #4b5058; --muted: #868b92; --rule: #d9dde3;
   --pen: #2457c5; --red: #d9412f; --hl: #ffe36e;

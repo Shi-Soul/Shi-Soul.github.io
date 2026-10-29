@@ -18,7 +18,7 @@ node agent/evaluation/scripts/catalog.mjs
 node --check agent/evaluation/evaluation.js
 ```
 
-随后使用本地静态服务器打开页面，检查筛选、日期排序、比较、导出和手机布局。提交到网站发布分支后，由现有 GitHub Actions 构建 Jekyll 并部署；阅读目录插件会自动收录此页。
+随后使用本地静态服务器打开页面，检查筛选、日期排序、比较、导出和手机布局。提交到网站发布分支后，GitHub Actions 使用 Node.js 静态打包脚本部署；阅读目录会自动收录此页。
 
 ## 日期规则
 
