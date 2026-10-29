@@ -3,18 +3,12 @@
   --paper: #fbfaf4; --grid: #e6ebf2; --ink: #1f2328; --ink2: #4b5058; --muted: #868b92; --rule: #d9dde3;
   --pen: #2457c5; --red: #d9412f; --hl: #ffe36e;
   --n1: #fff3a8; --n2: #c9f0d8; --n3: #ffd6cc; --n4: #d6e4ff; --n5: #ead6ff; --n6: #ffe2b8; --n7: #d9f3f7;
-  --serif: "Source Serif 4", "Source Serif Fallback", Georgia, serif; --hand: "Patrick Hand", "Patrick Hand Fallback", "Comic Neue", cursive; --mono: "IBM Plex Mono", "IBM Plex Mono Fallback", ui-monospace, monospace;
+  --serif: "Source Serif 4", Georgia, serif; --hand: "Patrick Hand", "Comic Neue", cursive; --mono: "IBM Plex Mono", ui-monospace, monospace;
   --pm-bg: #fff; --pm-ph-bg: repeating-linear-gradient(135deg, var(--paper) 0 8px, var(--grid) 8px 9px); --pm-ph-ink: var(--red);
 }
-/* Keep photos/background visible while fonts settle; never replace visible fallback text later. */
+/* Photos/background stay visible; text waits for the real fonts with no timeout. */
 .fonts-pending body { visibility: hidden; }
 .fonts-pending .passport { visibility: visible; }
-:root.fonts-fallback {
-  --serif: "Source Serif Fallback", Georgia, serif;
-  --hand: "Patrick Hand Fallback", "Comic Neue", cursive;
-  --mono: "IBM Plex Mono Fallback", ui-monospace, monospace;
-}
-.fonts-fallback h1 { font-family: "Source Serif Heading Fallback", Georgia, serif; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 70px; }
 body { margin: 0; background-color: var(--paper); color: var(--ink); font: 18px/1.7 var(--serif); -webkit-font-smoothing: antialiased;
@@ -43,7 +37,7 @@ mark { background: linear-gradient(100deg, transparent 2%, var(--hl) 4%, var(--h
 .in .u path, .u.in path { stroke-dashoffset: 0; }
 
 .hello { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 40px; padding: 56px 0 20px; align-items: start; }
-h1 { font: 700 clamp(44px, 6.5vw, 66px)/1.02 "Source Serif 4", "Source Serif Heading Fallback", Georgia, serif; margin: 0 0 18px; letter-spacing: -.02em; }
+h1 { font: 700 clamp(44px, 6.5vw, 66px)/1.02 var(--serif); margin: 0 0 18px; letter-spacing: -.02em; }
 .hello h1 .name-zh { display: inline-block; margin-left: .35em; font-family: "STKaiti", "华文楷体", KaiTi, serif; font-size: .42em; font-weight: 400; letter-spacing: .04em; color: var(--ink2); vertical-align: baseline; }
 .tagline { font: 400 22px var(--hand); color: var(--red); margin: 0 0 10px; transform: rotate(-1deg); display: inline-block; }
 .statement { font-size: 20px; margin: 0 0 14px; }

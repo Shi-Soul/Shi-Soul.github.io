@@ -1,28 +1,26 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="fonts-pending">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>
-// Reveal text once, with its final fonts. On a slow/failed load, keep the fallback for this visit.
+// Show text only after the real fonts load; slow or failed requests never reveal a fallback.
 (function () {
-  if (!document.fonts) return;
   const html = document.documentElement;
-  html.classList.add("fonts-pending");
   window.fontsReady = new Promise((resolve) => {
-    const finish = (fallback) => {
-      if (!html.classList.contains("fonts-pending")) return;
-      clearTimeout(timeout);
-      html.classList.toggle("fonts-fallback", fallback);
-      html.classList.remove("fonts-pending");
-      resolve();
-    };
-    const timeout = setTimeout(() => finish(true), 3000);
-    document.addEventListener("DOMContentLoaded", () => {
+    if (!document.fonts) return;
+    document.addEventListener("DOMContentLoaded", async () => {
       const faces = ['400 20px "Source Serif 4"', '600 20px "Source Serif 4"', '700 66px "Source Serif 4"',
         'italic 400 16px "Source Serif 4"', '400 22px "Patrick Hand"', '400 15px "IBM Plex Mono"', '500 13px "IBM Plex Mono"'];
-      Promise.all(faces.map((face) => document.fonts.load(face, "Weiji Xie")))
-        .then(() => document.fonts.ready).then(() => finish(false), () => finish(true));
+      try {
+        const loaded = await Promise.all(faces.map((face) => document.fonts.load(face, "Weiji Xie")));
+        await document.fonts.ready;
+        if (loaded.some((fonts) => !fonts.length || fonts.some((font) => font.status !== "loaded"))) return;
+        html.classList.remove("fonts-pending");
+        resolve();
+      } catch {
+        // Leave text hidden when a font request fails.
+      }
     }, { once: true });
   });
 })();
