@@ -125,7 +125,7 @@ window.SITE = {
       authors: "Jinrui Han, Weiji Xie, Jiakun Zheng, Jiyuan Shi, Weinan Zhang, Ting Xiao, Chenjia Bai",
       note: "One policy, many skills: minute-long martial arts and dance sequences, including unseen motions.",
       links: { project: "https://kungfubot2-humanoid.github.io/", pdf: "https://arxiv.org/abs/2509.16638", code: "https://github.com/TeleHuman/PBHC" },
-      image: "media/kungfubot2.jpg",
+      image: "media/kungfubot2.gif",
     },
     {
       short: "KungfuBot", date: "2025.06", venue: "NeurIPS", year: 2025, selected: true, cats: ["tracking"],
@@ -133,7 +133,7 @@ window.SITE = {
       authors: "Weiji Xie*, Jinrui Han*, Jiakun Zheng*, Huanyu Li, Xinzhe Liu, Jiyuan Shi, Weinan Zhang, Chenjia Bai†, Xuelong Li†",
       note: "Spin kicks and flying kicks on a real Unitree G1, learned from human video.",
       links: { project: "https://kungfubot.github.io/", pdf: "https://arxiv.org/abs/2506.12851", code: "https://github.com/TeleHuman/PBHC" },
-      image: "media/kungfubot.jpg", video: "https://kungfubot.github.io/static/videos/360%20spin.mp4",
+      image: "media/kungfubot.gif",
     },
     {
       short: "DBHL", date: "2025.02", venue: "IROS", year: 2025, selected: false, cats: ["loco"],
