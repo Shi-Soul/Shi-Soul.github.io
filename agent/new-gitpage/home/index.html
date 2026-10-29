@@ -75,9 +75,15 @@
   const li = (r) => `<li><time>${esc(r.when)}</time>${r.logo ? `<img class="logo${r.logoDark ? " logo-dark" : ""}" src="${r.logo}" alt="" loading="lazy">` : ""}<div><b class="org">${org(r)}</b><div class="position-line"><span class="pos">${esc(r.title)}</span>${r.advisor ? ` <small class="adv">· ${r.advisor.role}: <a href="${r.advisor.url}">${esc(r.advisor.name)}</a></small>` : ""}</div>${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</div></li>`;
   $("edu").innerHTML = S.education.map(li).join(""); $("exp").innerHTML = S.experience.map(li).join("");
   $("yr").textContent = new Date().getFullYear();
+  const stars = (p) => {
+    const match = (p.links.code || "").match(/^https:\/\/github\.com\/([^/?#]+\/[^/?#]+)\/?(?:[?#].*)?$/i);
+    if (!match) return "";
+    const repo = esc(match[1].replace(/\.git$/, ""));
+    return `<a class="stars" href="https://github.com/${repo}/stargazers" aria-label="${esc(p.short)} GitHub stars"><img src="https://img.shields.io/github/stars/${repo}?style=social" alt="GitHub stars" loading="lazy" height="20"></a>`;
+  };
   const card = (p) => `<article class="pub" data-hover>${media(p)}
     <div class="venue">${isTop(p) ? `<b>${esc(venue(p))}</b>` : "under review"}<span>${(p.cats || []).map(catName).join(", ").toLowerCase()}</span></div>
-    <h3>${esc(p.title)}</h3><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="acts">${links(p, { project: "Project", pdf: "Paper", code: "Code" })}</div></article>`;
+    <h3>${esc(p.title)}</h3><p class="note">${esc(p.note)}</p><div class="au">${me(p.authors)}</div><div class="acts">${links(p, { project: "Project", pdf: "Paper", code: "Code" })}${stars(p)}</div></article>`;
   Site.tabs($("tabs"), (f) => Site.renderPubs($("pubs"), f, card));
   Site.init();
   Site.reveal();

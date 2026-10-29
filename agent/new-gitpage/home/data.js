@@ -65,7 +65,7 @@ window.SITE = {
       title: "NEXUS: Perceptive Whole-Body Control for Terrain-Adaptive Teleoperation",
       authors: "Xiangyu Miao, Junsong Wu, Jiyuan Shi, Weiji Xie, Jinrui Han, Xingyi Wang, Weinan Zhang†, Chenjia Bai†, Xuelong Li",
       note: "The operator walks on flat ground; the humanoid adapts to stairs and slopes on its own.",
-      links: { project: "https://nexus-humanoid.github.io/", pdf: "https://arxiv.org/abs/2609.39000" },
+      links: { project: "https://nexus-humanoid.github.io/", pdf: "https://arxiv.org/abs/2609.39000", code: "https://github.com/Gamma-Robot/NEXUS" },
       image: "media/nexus.jpg",
     },
     {
@@ -171,7 +171,6 @@ window.SITE = {
   ],
   service: ["Conference reviewer: CoRL, ICRA, ICLR", "Journal reviewer: TPAMI, RA-L"],
   misc: [
-    { k: "Open source", v: "Core contributor to PBHC (KungfuBot, 1,000+ GitHub stars) and TextOp (500+ stars)" },
     { k: "Tools", v: "Python (PyTorch, JAX), C++, MuJoCo, Isaac Lab / Sim / Gym, ROS" },
     { k: "Languages", v: "Chinese, English" },
   ],
