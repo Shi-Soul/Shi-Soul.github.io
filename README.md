@@ -28,15 +28,3 @@ npm run build
 `dist/` 是完整的静态站点；首页和 CV 也可直接打开根目录的 HTML 预览。构建脚本会自动生成 `/agent/` 阅读目录和 `sitemap.xml`，并检查主页的本地资源。
 
 推送到 `master` 后，`.github/workflows/deploy.yml` 会测试、打包，再发布到 `gh-pages`。GitHub Pages 保持从 `gh-pages` 根目录发布即可。不要手动编辑 `dist/` 或 `gh-pages`。
-
-## 保留的内容与旧链接
-
-- `/cv/` 跳转到 `/cv.html`；`/publications/` 跳转到首页的 All publications。
-- 原草稿入口 `/agent/new-gitpage/home/` 跳转到新主页。
-- `agent/` 下的教程、调研和设计草稿保持独立；新建 `agent/<目录名>/index.html` 会自动加入阅读目录。
-- 阅读区域不设站内入口，不加入 sitemap；构建时为该区域的所有 HTML 添加 `noindex, nofollow`。robots.txt 允许抓取，以便搜索引擎读取禁止收录标记。这是隐藏入口，不是访问控制；已知准确网址的人仍可访问。
-- `agent/new-gitpage/v0-original/` 保存旧主页的静态快照，无需 Jekyll 即可浏览。
-- `assets/` 只保留旧草稿仍引用的微信二维码和论文 PDF。
-- `Archive/` 是本地资料目录，不参与构建和发布。
-
-旧 Jekyll 源码仍可在 Git 历史的 `f4141a3` 提交及以前找到。旧主题的 MIT 许可保留在 `LICENSE`。
