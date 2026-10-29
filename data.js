@@ -36,7 +36,7 @@ window.SITE = {
   },
 
   // Selected 标签下的展示顺序（填 short 名，自己调）；其他标签按 date 倒序
-  selectedOrder: ["TTC", "TextOp", "KungfuBot", "HALO", "KungfuBot2", "DBHL"],
+  selectedOrder: ["TTC","NEXUS","KODA", "TextOp", "KungfuBot", "HALO", "KungfuBot2", "DBHL"],
 
   categories: [
     { id: "tracking", name: "Motion Tracking" },
@@ -80,7 +80,7 @@ window.SITE = {
       image: "media/ttc.jpg", video: "https://bfmttc.github.io/assets/videos/command-optimization-loop.mp4",
     },
     {
-      short: "KODA", date: "2026.10", venue: "Under review", year: 2026, cats: ["locomanip"],
+      short: "KODA", date: "2026.10", venue: "Under review", year: 2026, selected: true, cats: ["locomanip"],
       title: "KODA: Kinematics–Observation Data Alignment for Humanoid Learning from Human Egocentric Demonstration",
       authors: "Zibo Zhou*, Yueru Chen*, Junsong Wu, Weiji Xie, Qingyao Xu, Sheng Yin, Shiqing Wang, Jiyuan Shi, Siheng Chen, Chenjia Bai†, Xuelong Li†",
       note: "Turn human egocentric demonstrations into aligned training data for humanoid VLA policies.",
@@ -88,7 +88,7 @@ window.SITE = {
       image: "media/koda.jpg",
     },
     {
-      short: "NEXUS", date: "2026.09", venue: "Under review", year: 2026, cats: ["loco"],
+      short: "NEXUS", date: "2026.09", venue: "Under review", year: 2026,selected: true, cats: ["loco"],
       title: "NEXUS: Perceptive Whole-Body Control for Terrain-Adaptive Teleoperation",
       authors: "Xiangyu Miao, Junsong Wu, Jiyuan Shi, Weiji Xie, Jinrui Han, Xingyi Wang, Weinan Zhang†, Chenjia Bai†, Xuelong Li",
       note: "The operator walks on flat ground; the humanoid adapts to stairs and slopes on its own.",
