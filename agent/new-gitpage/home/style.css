@@ -1,0 +1,122 @@
+/* 个人主页（源自草稿 V4 Notebook）：首页与 CV 页共用 */
+:root {
+  --paper: #fbfaf4; --grid: #e6ebf2; --ink: #1f2328; --ink2: #4b5058; --muted: #868b92; --rule: #d9dde3;
+  --pen: #2457c5; --red: #d9412f; --hl: #ffe36e;
+  --n1: #fff3a8; --n2: #c9f0d8; --n3: #ffd6cc; --n4: #d6e4ff; --n5: #ead6ff; --n6: #ffe2b8; --n7: #d9f3f7;
+  --serif: "Source Serif 4", Georgia, serif; --hand: "Patrick Hand", "Comic Neue", cursive; --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --pm-bg: #fff; --pm-ph-bg: repeating-linear-gradient(135deg, var(--paper) 0 8px, var(--grid) 8px 9px); --pm-ph-ink: var(--red);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+body { margin: 0; background-color: var(--paper); color: var(--ink); font: 18px/1.7 var(--serif); -webkit-font-smoothing: antialiased;
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 26px 26px; }
+a { color: var(--pen); text-underline-offset: 3px; }
+:focus-visible { outline: 2px dashed var(--pen); outline-offset: 3px; }
+.page { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+
+.top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(6px); border-bottom: 1.5px dashed var(--rule); }
+.top .page { display: flex; align-items: center; height: 58px; }
+.sig { font: 400 28px var(--hand); color: var(--ink); text-decoration: none; }
+.top nav { margin-left: auto; display: flex; gap: 22px; font: 400 20px var(--hand); }
+.top nav a { color: var(--ink2); text-decoration: none; position: relative; }
+.top nav a::after { content: ""; position: absolute; left: -2px; right: -2px; bottom: 3px; height: 8px; background: var(--hl); z-index: -1; transform: scaleX(0); transform-origin: 0; transition: transform .25s; }
+.top nav a:hover::after, .top nav a[aria-current]::after { transform: none; }
+
+[data-reveal] { opacity: 0; transform: translateY(14px) rotate(-.4deg); transition: opacity .6s, transform .6s cubic-bezier(.2,.7,.2,1); transition-delay: calc(var(--d, 0) * 80ms); }
+[data-reveal].in { opacity: 1; transform: none; }
+/* 荧光笔：入场时从左往右涂上 */
+mark { background: linear-gradient(100deg, transparent 2%, var(--hl) 4%, var(--hl) 96%, transparent 98%) no-repeat 0 0 / 0% 100%; color: inherit; padding: 0 .15em; transition: background-size .9s cubic-bezier(.6,0,.2,1) .3s; }
+.in mark, mark.in { background-size: 100% 100%; }
+/* 手绘下划线 */
+.u { position: relative; display: inline-block; }
+.u svg { position: absolute; left: -4px; right: -4px; bottom: -10px; width: calc(100% + 8px); height: 14px; overflow: visible; }
+.u path { fill: none; stroke: var(--red); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 400; stroke-dashoffset: 400; transition: stroke-dashoffset 1.1s ease .2s; }
+.in .u path, .u.in path { stroke-dashoffset: 0; }
+
+.hello { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 40px; padding: 56px 0 20px; align-items: start; }
+h1 { font: 700 clamp(44px, 6.5vw, 66px)/1.02 var(--serif); margin: 0 0 18px; letter-spacing: -.02em; }
+.tagline { font: 400 22px var(--hand); color: var(--red); margin: 0 0 10px; transform: rotate(-1deg); display: inline-block; }
+.statement { font-size: 20px; margin: 0 0 14px; }
+.aff { font-size: 15.5px; color: var(--ink2); margin: 0; }
+.contacts { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 18px; font: 15px var(--mono); }
+.contacts a, .contacts button { color: var(--ink); text-decoration: none; display: inline-flex; gap: 7px; align-items: center; }
+.contacts a:hover, .contacts button:hover { color: var(--pen); }
+.contacts i { color: var(--pen); }
+/* 回形针别着的一寸照，会摆动 */
+.passport { position: relative; background: #fff; padding: 8px; border: 1px solid #ddd; transform-origin: 30px 0; animation: swing 4s ease-in-out infinite; box-shadow: 0 10px 22px -12px rgba(0,0,0,.35); margin-top: 14px; }
+.passport .img { aspect-ratio: 5 / 7; background: #fff center 25% / cover; }
+.passport::before { content: ""; position: absolute; top: -20px; left: 22px; width: 16px; height: 48px; border: 3px solid #9aa0a6; border-radius: 10px; border-bottom-color: transparent; }
+@keyframes swing { 0%, 100% { transform: rotate(2.5deg); } 50% { transform: rotate(-1.5deg); } }
+.passport-note { font: 400 20px/1.1 var(--hand); color: var(--pen); margin-top: 14px; text-align: center; transform: rotate(-3deg); }
+
+h2 { font: 700 30px var(--serif); margin: 0 0 22px; }
+section { padding: 44px 0 8px; }
+.news { list-style: none; margin: 0; padding: 0 0 0 20px; border-left: 2px solid var(--ink); }
+.news li { position: relative; padding: 4px 0 12px 18px; font-size: 17px; }
+.news li::before { content: ""; position: absolute; left: -27px; top: 12px; width: 12px; height: 12px; border-radius: 50%; background: var(--paper); border: 2.5px solid var(--red); transition: background .3s .4s; }
+.news li.in::before { background: var(--red); }
+.news time { font: 500 13px var(--mono); color: var(--muted); margin-right: 12px; }
+.news li:first-child::after { content: "← new!"; font: 400 19px var(--hand); color: var(--red); margin-left: 10px; display: inline-block; animation: nudge 1.4s ease-in-out infinite; }
+@keyframes nudge { 50% { transform: translateX(-5px); } }
+
+/* 便利贴标签 */
+.tabs { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+.tabs button { border: 0; font: 400 19px/1 var(--hand); color: var(--ink); padding: 10px 14px 8px; cursor: pointer; box-shadow: 2px 3px 0 rgba(0,0,0,.12); transform: rotate(-1.5deg); transition: transform .2s; }
+.tabs button:nth-child(7n+1) { background: var(--n1); } .tabs button:nth-child(7n+2) { background: var(--n2); transform: rotate(1deg); } .tabs button:nth-child(7n+3) { background: var(--n3); }
+.tabs button:nth-child(7n+4) { background: var(--n4); transform: rotate(1.5deg); } .tabs button:nth-child(7n+5) { background: var(--n5); } .tabs button:nth-child(7n+6) { background: var(--n6); transform: rotate(.8deg); } .tabs button:nth-child(7n+7) { background: var(--n7); }
+.tabs button:hover { transform: rotate(0) translateY(-2px); }
+.tabs button[aria-selected="true"] { transform: rotate(0) translateY(-5px) scale(1.06); box-shadow: 3px 6px 0 rgba(0,0,0,.18); outline: 2px solid var(--ink); }
+.tabs button sup { font: 500 10px var(--mono); margin-left: 3px; }
+.tab-ind { display: none; }
+.pubs { display: grid; grid-template-columns: 1fr 1fr; gap: 30px 28px; }
+.pub { position: relative; background: #fff; border: 1.5px solid var(--ink); padding: 12px 12px 16px; box-shadow: 4px 5px 0 var(--ink); transform: rotate(var(--tilt, 0deg)); animation: drop .5s cubic-bezier(.2,.8,.2,1.2) both; animation-delay: calc(var(--i) * 70ms); transition: transform .25s, box-shadow .25s; }
+.pub:nth-child(3n+1) { --tilt: -.8deg; } .pub:nth-child(3n+2) { --tilt: .6deg; } .pub:nth-child(3n) { --tilt: -.3deg; }
+.pub:hover { transform: rotate(0) translateY(-4px); box-shadow: 6px 9px 0 var(--ink); }
+.pub::before { content: ""; position: absolute; top: -11px; left: 50%; width: 84px; height: 22px; margin-left: -42px; background: color-mix(in srgb, var(--hl) 70%, transparent); transform: rotate(-3deg); }
+@keyframes drop { from { opacity: 0; transform: translateY(-14px) rotate(-4deg); } }
+.pub .pm { aspect-ratio: 16 / 10; border: 1px solid var(--rule); }
+.pub .venue { font: 500 12.5px var(--mono); color: var(--red); margin-top: 12px; display: flex; justify-content: space-between; gap: 10px; }
+.pub .venue b { background: var(--hl); color: var(--ink); padding: 0 5px; font-weight: 500; }
+.pub .venue span { color: var(--muted); }
+.pub h3 { font: 700 21px/1.25 var(--serif); margin: 4px 0 2px; }
+.pub .note { font: 400 19px/1.2 var(--hand); color: var(--pen); margin: 4px 0 6px; }
+.pub .au { font-size: 13.5px; color: var(--muted); }
+.pub .au .me, .cvpub .me { color: var(--ink); }
+.pub .acts { font: 13px var(--mono); display: flex; gap: 14px; margin-top: 6px; }
+
+.path { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.path h3 { font: 400 23px var(--hand); color: var(--red); margin: 0 0 6px; }
+.path ul { list-style: none; margin: 0; padding: 0; }
+.path li { padding: 8px 0; border-top: 1.5px dashed var(--rule); font-size: 16.5px; }
+.path li time { display: block; font: 500 12.5px var(--mono); color: var(--muted); }
+.path li small { display: block; color: var(--ink2); font-size: 15px; }
+.more { display: inline-block; margin-top: 16px; font: 400 21px var(--hand); }
+footer { padding: 52px 0 64px; font: 14px var(--mono); color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+/* CV */
+.cvhead { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 36px; padding: 52px 0 10px; align-items: start; }
+.cvsec { padding: 30px 0 4px; }
+.cvsec h2 { margin-bottom: 14px; }
+.cvrow { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 18px; padding: 10px 0; border-top: 1.5px dashed var(--rule); font-size: 17px; }
+.cvrow time { font: 500 13px var(--mono); color: var(--red); padding-top: 4px; }
+.cvrow small { display: block; color: var(--ink2); font-size: 15px; }
+.cvpub { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px; padding: 12px 0; border-top: 1.5px dashed var(--rule); align-items: start; font-size: 16.5px; }
+.cvpub .pm { aspect-ratio: 4 / 3; border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.cvpub small { display: block; color: var(--muted); font-size: 14px; }
+.cvpub .acts { font: 13px var(--mono); display: inline-flex; gap: 12px; margin-left: 8px; }
+
+@media (max-width: 760px) {
+  .page { padding: 0 16px; }
+  .hello, .cvhead { grid-template-columns: 1fr 120px; gap: 18px; padding-top: 32px; }
+  .pubs, .path { grid-template-columns: 1fr; }
+  .top nav { gap: 14px; font-size: 19px; } .sig { font-size: 25px; }
+  .cvrow, .cvpub { grid-template-columns: 1fr; gap: 6px; }
+  .cvpub .pm { max-width: 220px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+  mark { background-size: 100% 100%; transition: none; }
+  .u path { stroke-dashoffset: 0; transition: none; }
+  .passport, .pub, .news li:first-child::after { animation: none; }
+}
