@@ -54,7 +54,7 @@
     <a class="more" href="cv.html">→ Full CV</a>
   </section>
 
-  <footer><span>© <span id="yr"></span> Weiji Xie</span></footer>
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><span>Last updated: <time id="updated"></time></span></footer>
 </main>
 
 <script src="data.js"></script>
@@ -75,6 +75,8 @@
   const li = (r) => `<li><time>${esc(r.when)}</time>${r.logo ? `<img class="logo${r.logoDark ? " logo-dark" : ""}" src="${r.logo}" alt="" loading="lazy">` : ""}<div><b class="org">${org(r)}</b><div class="position-line"><span class="pos">${esc(r.title)}</span>${r.advisor ? ` <small class="adv">· ${r.advisor.role}: <a href="${r.advisor.url}">${esc(r.advisor.name)}</a></small>` : ""}</div>${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</div></li>`;
   $("edu").innerHTML = S.education.map(li).join(""); $("exp").innerHTML = S.experience.map(li).join("");
   $("yr").textContent = new Date().getFullYear();
+  $("updated").dateTime = S.lastUpdated;
+  $("updated").textContent = new Date(`${S.lastUpdated}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
   const stars = (p) => {
     const match = (p.links.code || "").match(/^https:\/\/github\.com\/([^/?#]+\/[^/?#]+)\/?(?:[?#].*)?$/i);
     if (!match) return "";

@@ -30,7 +30,7 @@
     <div class="passport"><div class="img" id="photo" role="img" aria-label="Photo of Weiji Xie"></div></div>
   </section>
   <div id="cv"></div>
-  <footer><span>© <span id="yr"></span> Weiji Xie</span><a href="index.html">← back home</a></footer>
+  <footer><span>© <span id="yr"></span> Weiji Xie</span><span>Last updated: <time id="updated"></time></span><a href="index.html">← back home</a></footer>
 </main>
 
 <script src="data.js"></script>
@@ -50,6 +50,8 @@
   $("cv").innerHTML = sec(b[0].title, b[0].rows.map(row).join(""), 0) + sec(b[1].title, b[1].rows.map(row).join(""), 1) + sec("Publications", pubs, 2) +
     b.slice(2).map((x, i) => sec(x.title, x.rows.map(row).join(""), i)).join("");
   $("yr").textContent = new Date().getFullYear();
+  $("updated").dateTime = S.lastUpdated;
+  $("updated").textContent = new Date(`${S.lastUpdated}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
   Site.init();
   Site.reveal();
 })();
