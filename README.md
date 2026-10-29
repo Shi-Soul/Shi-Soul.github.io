@@ -13,6 +13,8 @@
 - `media/`：统一存放照片、论文缩略图、机构 logo、微信二维码和 PDF。
 - `media/fonts/`：本地正文、手写和等宽字体，以及保持原样的 Font Awesome / Academicons 图标字体；来源与许可在 `NOTICE.txt`。
 
+首页与 CV 预加载首屏字体，字体就绪后再显示文字。加载超过 3 秒或失败时，本次访问固定使用尺寸校准过的系统备用字体，避免文字出现后再换字体；背景和照片照常显示。
+
 简介中的 `statement` 支持 `**加粗**`、`==黄色底==`、`==**加粗并加黄色底**==`，只需修改引号中的文本。`affiliation` 中的链接仍使用 HTML。更新内容后修改 `data.js` 顶部的 `lastUpdated`，首页和 CV 页脚会同步显示该日期。
 
 添加论文时复制 `publications` 中的一条，修改字段；`selectedOrder` 控制 Selected 列表顺序。首页上有 GitHub Code 链接的论文会自动显示 Stars。
