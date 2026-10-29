@@ -1,13 +1,15 @@
 /*
  * 主页的全部内容。改这里，首页和 CV 页同时更新。
+ * 论文列表 = 简历（data/谢炜基-CV.pdf）∪ Google Scholar，2026-10-28 整理。
  *
  * 新加一篇论文 = 在 publications 里复制一条改字段：
  *   selected: 是否出现在默认的 "Selected" 标签下
  *   cats:     所属分类（见 categories），决定出现在哪些筛选标签里
  *   image:    缩略图（放进 media/，没有就留空，会自动生成文字占位）
  *   video:    可选，鼠标悬停时才加载播放（可以直接填项目主页上的视频地址）
+ *   links:    project / pdf / code，有哪个填哪个
  *   note:     一句话说明
- *   date:     首次公开的年月（V10 的时间轴用；TextOp、TrajGen 的月份待核对）
+ *   date:     首次公开的年月（取 arXiv 编号），列表按它倒序
  */
 window.SITE = {
   profile: {
@@ -16,7 +18,7 @@ window.SITE = {
     role: "M.S. student · SJTU",
     tagline: "Robot learning · Reinforcement learning · Embodied AI",
     statement: "I study how robots can learn physical skills from data, simulation and interaction, and carry them reliably into the real world. Long term, I want to build general-purpose robots that can do anything for people.",
-    affiliation: 'M.S. student at <a href="https://www.sjtu.edu.cn/">SJTU</a>, <a href="https://apex.sjtu.edu.cn/">APEX Lab</a> (advisor <a href="https://wnzhang.net/">Prof. Weinan Zhang</a>) · Research intern at <a href="https://www.teleai.com.cn/">TeleAI</a> with <a href="https://baichenjia.github.io/">Dr. Chenjia Bai</a>',
+    affiliation: 'M.S. student at <a href="https://www.sjtu.edu.cn/">SJTU</a>, <a href="https://apex.sjtu.edu.cn/">APEX Lab</a> (advisor <a href="https://wnzhang.net/">Prof. Weinan Zhang</a>) · Research intern at <a href="https://www.teleai.com.cn/">TeleAI</a> (supervisor <a href="https://baichenjia.github.io/">Dr. Chenjia Bai</a>)',
     location: "Shanghai, China",
     photo: "media/photo.jpg",
     email: "xieweiji249@sjtu.edu.cn",
@@ -28,101 +30,143 @@ window.SITE = {
     },
     wechatQR: "../../../assets/img/wechat-qr.png",
     contactNote: "Feel free to add my WeChat or drop an email.",
+    collabNote: "Always happy to chat about robot learning and humanoids, and open to collaboration.",
   },
 
   categories: [
     { id: "tracking", name: "Motion Tracking" },
+    { id: "locomanip", name: "Loco-Manipulation" },
     { id: "loco", name: "Locomotion" },
-    { id: "s2r", name: "Sim-to-Real" },
-    { id: "gen", name: "Generative Models" },
-    { id: "marl", name: "Multi-Agent RL" },
+    { id: "misc", name: "Others" },
   ],
 
   publications: [
     {
-      short: "TextOp", date: "2026.01", venue: "Under review", year: 2026, selected: true, cats: ["tracking", "gen"], tier: "main",
+      short: "TTC", date: "2026.10", venue: "Under review", year: 2026, selected: true, cats: ["tracking", "locomanip"],
+      title: "Test-Time Compute for Humanoid Behavior Foundation Models",
+      authors: "Weiji Xie*, Junsong Wu*, Zibo Zhou, Yueru Chen, Xingyi Wang, Zhenhua Xiong, Weinan Zhang, Chenjia Bai†",
+      note: "Search better commands in simulation at test time; a frozen behavior foundation model executes more precisely, no retraining.",
+      links: { project: "https://bfmttc.github.io/", pdf: "https://arxiv.org/abs/2610.14896", code: "https://github.com/Gamma-Robot/bfm_ttc" },
+      image: "media/ttc.jpg", video: "https://bfmttc.github.io/assets/videos/command-optimization-loop.mp4",
+    },
+    {
+      short: "KODA", date: "2026.10", venue: "Under review", year: 2026, cats: ["locomanip"],
+      title: "KODA: Kinematics–Observation Data Alignment for Humanoid Learning from Human Egocentric Demonstration",
+      authors: "Zibo Zhou*, Yueru Chen*, Junsong Wu, Weiji Xie, Qingyao Xu, Sheng Yin, Shiqing Wang, Jiyuan Shi, Siheng Chen, Chenjia Bai†, Xuelong Li†",
+      note: "Turn human egocentric demonstrations into aligned training data for humanoid VLA policies.",
+      links: { project: "https://koda-humanoid.github.io/koda/", pdf: "https://arxiv.org/abs/2610.21152", code: "https://github.com/Gamma-Robot/KODA" },
+      image: "media/koda.jpg",
+    },
+    {
+      short: "NEXUS", date: "2026.09", venue: "Under review", year: 2026, cats: ["loco"],
+      title: "NEXUS: Perceptive Whole-Body Control for Terrain-Adaptive Teleoperation",
+      authors: "Xiangyu Miao, Junsong Wu, Jiyuan Shi, Weiji Xie, Jinrui Han, Xingyi Wang, Weinan Zhang†, Chenjia Bai†, Xuelong Li",
+      note: "The operator walks on flat ground; the humanoid adapts to stairs and slopes on its own.",
+      links: { project: "https://nexus-humanoid.github.io/", pdf: "https://arxiv.org/abs/2609.39000" },
+      image: "media/nexus.jpg",
+    },
+    {
+      short: "OASIS", date: "2026.06", venue: "Under review", year: 2026, cats: ["locomanip"],
+      title: "OASIS: From Simulation Data Collection to Real-World Humanoid Loco-Manipulation",
+      authors: "Zehao Yu, Jiakun Zheng, Weiji Xie, Jiyuan Shi, Chenyun Zhang, Chenjia Bai, Xuelong Li",
+      note: "Collect loco-manipulation data in simulation, deploy zero-shot on a real humanoid.",
+      links: { project: "https://oasis-humanoid.github.io/", pdf: "https://arxiv.org/abs/2606.08548", code: "https://github.com/TeleHuman/OASIS" },
+      image: "media/oasis.jpg", video: "https://oasis-humanoid.github.io/static/videos/asset/cup.mp4",
+    },
+    {
+      short: "HALO", date: "2026.03", venue: "IROS", year: 2026, selected: true, cats: ["tracking"],
+      title: "HALO: Closing Sim-to-Real Gap for Heavy-loaded Humanoid Agile Motion Skills via Differentiable Simulation",
+      authors: "Xingyi Wang*, Chenyun Zhang*, Weiji Xie*, Chao Yu, Wei Song, Chenjia Bai†, Shiqiang Zhu†",
+      note: "Agile motions under heavy payloads, with differentiable simulation to identify what the simulator gets wrong.",
+      links: { project: "https://mwondering.github.io/halo-humanoid/", pdf: "https://arxiv.org/abs/2603.15084" },
+      image: "media/halo.jpg", video: "https://mwondering.github.io/halo-humanoid/static/videos/sysid_demo_01.mp4",
+    },
+    {
+      short: "TextOp", date: "2026.02", venue: "CoRL", year: 2026, selected: true, cats: ["tracking"],
       title: "TextOp: Real-time Interactive Text-Driven Humanoid Robot Motion Generation and Control",
       authors: "Weiji Xie*, Jiakun Zheng*, Jinrui Han, Jiyuan Shi, Weinan Zhang†, Chenjia Bai†, Xuelong Li",
-      note: "Type a sentence; the robot moves, in real time.",
-      links: { project: "https://text-op.github.io/" },
+      note: "Type a sentence; the robot moves, in real time. Change the command mid-motion and it follows.",
+      links: { project: "https://text-op.github.io/", pdf: "https://arxiv.org/abs/2602.07439", code: "https://github.com/TeleHuman/TextOp" },
       image: "media/textop.jpg", video: "https://text-op.github.io/static/videos/demo_big.mp4",
     },
     {
-      short: "KungfuBot", date: "2025.06", venue: "NeurIPS", year: 2025, selected: true, cats: ["tracking", "s2r"], tier: "main",
-      title: "KungfuBot: Physics-Based Humanoid Whole-Body Control for Learning Highly-Dynamic Skills",
-      authors: "Weiji Xie*, Jinrui Han*, Jiakun Zheng*, Huanyu Li, Xinzhe Liu, Jiyuan Shi, Weinan Zhang, Chenjia Bai†, Xuelong Li†",
-      note: "Kung fu and dance on a real humanoid.",
-      links: { project: "https://kungfubot.github.io/", pdf: "https://arxiv.org/pdf/2506.12851" },
-      image: "media/kungfubot.jpg", video: "https://kungfubot.github.io/static/videos/360%20spin.mp4",
-    },
-    {
-      short: "KungfuBot2", date: "2025.09", venue: "Under review", year: 2025, selected: true, cats: ["tracking"],
+      short: "KungfuBot2", date: "2025.09", venue: "ICRA", year: 2026, selected: true, cats: ["tracking"],
       title: "KungfuBot2: Learning Versatile Motion Skills for Humanoid Whole-Body Control",
       authors: "Jinrui Han, Weiji Xie, Jiakun Zheng, Jiyuan Shi, Weinan Zhang, Ting Xiao, Chenjia Bai",
-      note: "One policy, many motion skills.",
-      links: { project: "https://kungfubot2-humanoid.github.io/", pdf: "https://arxiv.org/pdf/2509.16638" },
+      note: "One policy, many skills: minute-long martial arts and dance sequences, including unseen motions.",
+      links: { project: "https://kungfubot2-humanoid.github.io/", pdf: "https://arxiv.org/abs/2509.16638", code: "https://github.com/TeleHuman/PBHC" },
       image: "media/kungfubot2.jpg",
     },
     {
-      short: "Narrow Terrain", date: "2025.02", venue: "IROS", year: 2025, selected: true, cats: ["loco"], tier: "main",
+      short: "KungfuBot", date: "2025.06", venue: "NeurIPS", year: 2025, selected: true, cats: ["tracking"],
+      title: "KungfuBot: Physics-Based Humanoid Whole-Body Control for Learning Highly-Dynamic Skills",
+      authors: "Weiji Xie*, Jinrui Han*, Jiakun Zheng*, Huanyu Li, Xinzhe Liu, Jiyuan Shi, Weinan Zhang, Chenjia Bai†, Xuelong Li†",
+      note: "Spin kicks and flying kicks on a real Unitree G1, learned from human video. Open-sourced as PBHC (1,000+ stars).",
+      links: { project: "https://kungfubot.github.io/", pdf: "https://arxiv.org/abs/2506.12851", code: "https://github.com/TeleHuman/PBHC" },
+      image: "media/kungfubot.jpg", video: "https://kungfubot.github.io/static/videos/360%20spin.mp4",
+    },
+    {
+      short: "Narrow Terrain", date: "2025.02", venue: "IROS", year: 2025, selected: true, cats: ["loco"],
       title: "Humanoid Whole-Body Locomotion on Narrow Terrain via Dynamic Balance and Reinforcement Learning",
       authors: "Weiji Xie, Chenjia Bai†, Jiyuan Shi, Junkai Yang, Yunfei Ge, Weinan Zhang†, Xuelong Li",
-      note: "Whole-body balance on terrain as narrow as a foot.",
-      links: { project: "https://whole-body-loco.github.io/", pdf: "https://arxiv.org/pdf/2502.17219" },
+      note: "Proprioception-only walking on narrow beams and obstacles, with balance recovery under pushes.",
+      links: { project: "https://whole-body-loco.github.io/", pdf: "https://arxiv.org/abs/2502.17219" },
       image: "media/narrow.jpg",
     },
     {
-      short: "LoopSR", date: "2024.09", venue: "IROS", year: 2025, selected: true, cats: ["loco", "s2r"],
+      short: "LoopSR", date: "2024.09", venue: "IROS", year: 2025, cats: ["loco"],
       title: "LoopSR: Looping Sim-and-Real for Lifelong Policy Adaptation of Legged Robots",
       authors: "Peilin Wu, Weiji Xie, Jiahang Cao, Hang Lai, Weinan Zhang",
-      note: "Real-world experience flows back into simulation, for life.",
-      links: { project: "https://peilinwu.site/looping-sim-and-real.github.io/", pdf: "https://arxiv.org/pdf/2409.17992" },
+      note: "Real-world experience flows back into simulation, so a legged robot keeps improving for life.",
+      links: { project: "https://peilinwu.site/looping-sim-and-real.github.io/", pdf: "https://arxiv.org/abs/2409.17992", code: "https://github.com/aldeW64/LoopSR" },
       image: "media/loopsr.jpg",
     },
     {
-      short: "OFF-FSP", date: "2024.03", venue: "AAAI", year: 2026, selected: true, cats: ["marl"],
+      short: "OFF-FSP", date: "2024.03", venue: "AAAI", year: 2026, cats: ["misc"],
       title: "Offline Fictitious Self-Play for Competitive Games",
       authors: "Jingxiao Chen, Weiji Xie, Weinan Zhang†, Yong Yu, Ying Wen†",
-      note: "Self-play from cheap offline data, tested on a real robot game.",
-      links: { pdf: "https://arxiv.org/pdf/2403.00841" },
+      note: "Self-play from cheap offline data, tested on a real robot ball-defence game.",
+      links: { pdf: "https://arxiv.org/abs/2403.00841" },
       image: "media/ofsp.jpg",
-    },
-    {
-      short: "TrajGen", date: "2024.06", venue: "Under review", year: 2024, selected: false, cats: ["gen"],
-      title: "A Pre-Trained Trajectory Generative Model on Road Network",
-      authors: "Weiji Xie, Yufan Zhang, Rui Zhang, Zhouyue Sun, Tianyu Liu, Guanjie Zheng, Zhenhui Li, Weinan Zhang",
-      note: "A pre-trained generative model for city-scale vehicle trajectories.",
-      links: { pdf: "../../../assets/pdf/traffic_model.pdf" },
-      image: "media/trajgen.jpg",
     },
   ],
 
-  // TODO: 日期请核对
+  // 日期为大致月份，请核对（尤其各会议录用的月份）
   news: [
-    { date: "2026.01", text: "TextOp released: real-time text-driven humanoid control." },
+    { date: "2026.10", text: "TTC and KODA released on arXiv." },
+    { date: "2026.09", text: "NEXUS released: terrain-adaptive whole-body teleoperation." },
+    { date: "2026.08", text: "TextOp accepted to CoRL 2026." },
+    { date: "2026.06", text: "HALO accepted to IROS 2026. OASIS released." },
+    { date: "2026.02", text: "TextOp released, code open-sourced (500+ GitHub stars)." },
+    { date: "2026.01", text: "KungfuBot2 accepted to ICRA 2026." },
     { date: "2025.11", text: "OFF-FSP accepted to AAAI 2026." },
-    { date: "2025.09", text: "KungfuBot accepted to NeurIPS 2025." },
-    { date: "2025.09", text: "Started my M.S. at SJTU." },
+    { date: "2025.09", text: "KungfuBot accepted to NeurIPS 2025. Started my M.S. at SJTU." },
+    { date: "2025.06", text: "PBHC, the open-source KungfuBot codebase, passes 1,000 GitHub stars." },
     { date: "2025.06", text: "Two papers accepted to IROS 2025." },
   ],
 
   education: [
-    { when: "2025.09 – now", title: "M.S. in Computer Science and Technology", org: "Shanghai Jiao Tong University", detail: "APEX Lab, advised by Prof. Weinan Zhang" },
-    { when: "2021.09 – 2025.06", title: "B.Eng. in Artificial Intelligence", org: "Shanghai Jiao Tong University", detail: "GPA 4.03 / 4.30 · Rank top 5%" },
+    { when: "2025.09 – 2028.03 (expected)", title: "M.S. in Computer Science and Technology", org: "Shanghai Jiao Tong University", logo: "media/logo-sjtu.jpg",
+      advisor: { role: "Advisor", name: "Prof. Weinan Zhang", url: "https://wnzhang.net/" }, detail: "Reinforcement learning and humanoid robot control" },
+    { when: "2021.09 – 2025.06", title: "B.Eng. in Artificial Intelligence", org: "Shanghai Jiao Tong University", logo: "media/logo-sjtu.jpg",
+      detail: "GPA 4.07 / 4.30 · Rank top 5%" },
   ],
   experience: [
-    { when: "2024.10 – now", title: "Research Intern", org: "TeleAI, China Telecom", detail: "With Dr. Chenjia Bai" },
-    { when: "2024.06 – 2024.08", title: "Research Intern", org: "Yunqi Academy of Engineering" },
+    { when: "2024.10 – now", title: "Research Intern", org: "TeleAI, China Telecom", logo: "media/logo-teleai.jpg",
+      advisor: { role: "Supervisor", name: "Dr. Chenjia Bai", url: "https://baichenjia.github.io/" }, detail: "RL-based humanoid motion control; VLA-based mobile manipulation" },
+    { when: "2022.08 – 2025.06", title: "Undergraduate Researcher", org: "APEX Lab, Shanghai Jiao Tong University", logo: "media/logo-sjtu.jpg",
+      advisor: { role: "Advisor", name: "Prof. Weinan Zhang", url: "https://wnzhang.net/" }, detail: "Multi-agent RL; legged robot locomotion" },
   ],
   honors: [
     { year: 2024, text: "ASC Student Supercomputer Challenge, First Prize & Application Innovation Award" },
-    { year: 2024, text: "SJTU B-Class Excellent Scholarship" },
-    { year: 2023, text: "SJTU B-Class Excellent Scholarship" },
+    { year: "2022–2024", text: "SJTU B-Class Excellent Scholarship (three times)" },
+    { year: "2021–2024", text: "Fuguang Undergraduate Scholarship (four times)" },
     { year: 2023, text: "Outstanding Youth League Member, SJTU" },
   ],
-  service: ["Reviewer: TPAMI, ICRA"],
+  service: ["Conference reviewer: CoRL, ICRA, ICLR", "Journal reviewer: TPAMI, RA-L"],
   misc: [
+    { k: "Open source", v: "Core contributor to PBHC (KungfuBot, 1,000+ GitHub stars) and TextOp (500+ stars)" },
+    { k: "Tools", v: "Python (PyTorch, JAX), C++, MuJoCo, Isaac Lab / Sim / Gym, ROS" },
     { k: "Languages", v: "Chinese, English" },
-    { k: "Hobbies", v: "Reading math, philosophy and social science; badminton." },
   ],
 };
