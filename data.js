@@ -165,7 +165,7 @@ window.SITE = {
   newsLinks: { PBHC: "https://github.com/TeleHuman/PBHC" },
   news: [
     { date: "2026.10", text: "TTC, KODA and NEXUS released." },
-    { date: "2026.08", text: "TextOp accepted to CoRL 2026." },
+    { date: "2026.09", text: "TextOp accepted to CoRL 2026." },
     { date: "2026.06", text: "HALO accepted to IROS 2026. OASIS released." },
     { date: "2026.02", text: "TextOp released." },
     { date: "2026.01", text: "KungfuBot2 accepted to ICRA 2026." },
