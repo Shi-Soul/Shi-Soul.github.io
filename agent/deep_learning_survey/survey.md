@@ -1,10 +1,26 @@
-# 深度学习：底层原理、最近一年的原理前沿与核心应用（长文综述）
+# 深度学习的原理：从基础到 2026 前沿（长文综述）
 
-> 数据截至 2026-10-30。论文库共 1825 条（1774 条 arXiv 已用官方 API 核验标题与日期），其中 2024-11 及之后（"最近两年"）1451 条，2025-11 及之后（"最近一年"）1015 条，2026-05 及之后（"最近半年"）577 条，完整列表见附录 A。正文只引用有代表性的工作；附录收录得更全，便于检索复用。数字摘自论文摘要或技术报告，实验设置各不相同，只宜看量级。
+> 数据截至 2026-10-30。论文库共 1827 条（1776 条 arXiv 已用官方 API 核验标题与日期），其中 2025-11 及之后（最近一年）1015 条、2026-05 及之后（最近半年）577 条，完整列表见附录 B。正文只引用有代表性的工作；附录收录得更全，便于检索复用。数字摘自论文摘要或技术报告，实验设置各不相同，只宜看量级。最近一年的大多数工作是预印本，很多结论只在可解的玩具模型或小规模受控实验中成立。
 
-**阅读指南。** 第 1 节给出统一的记号与训练框架；第 2–5 节讲"怎么学"的底层原理：优化、稳定性与参数化、泛化、扩展律；第 6–8 节讲架构：注意力、线性注意力与循环、混合专家与条件记忆；第 9–12 节讲"学什么、怎么用"：表征学习、预训练、后训练与推理；第 13–15 节讲可解释性、效率与安全；第 16 节概览核心应用；**第 17 节是本文的重点：最近一年（2025-11 → 2026-10）在原理层面的进展**，按优化几何、稳定性边缘、学习率与权重衰减、扩展律、特征学习、泛化与记忆、上下文学习、表征、叠加、归一化与残差、序列混合器、循环深度、生成模型、自监督、后训练机制、持续学习组织，末尾附最近半年的逐月速览；第 18 节是最近两年的大事记；第 19 节讨论开放问题。全文以原理为主线，大模型被视为一个重要的应用方向。
+**怎么组织。** 一个学习系统由四样东西决定：函数族（架构）、目标（学习信号）、数据、优化算法；它学得好不好，可以拆成"能不能表示"、"能不能找到"、"能不能推广"三项误差，再加上"随规模如何变化"。本文按这几个根本问题分章，而不是按模型或年份：
 
-## 1 基本框架：函数、目标、梯度
+| 章 | 问题 | 内容 |
+|---|---|---|
+| [1](#ch1) | 深度学习在解什么 | 参数化函数、经验风险、反向传播、学习信号、误差分解与三个谜题 |
+| [2](#ch2) | 能表示什么（架构） | 注意力即记忆、线性注意力与状态空间、表达能力、残差流与深度、循环深度、条件计算 |
+| [3](#ch3) | 能否找到（优化） | 优化器几何、稳定性边缘、学习率/批大小/权重衰减、初始化与归一化、μP、训练不稳定与低精度 |
+| [4](#ch4) | 能否推广（泛化） | 双下降、隐式偏置、特征学习、grokking、记忆、生成模型的泛化、分布外与长度泛化 |
+| [5](#ch5) | 为什么越大越好（扩展） | 幂律与算力最优、幂律的来源、数据/精度/稀疏度/优化器、深度与循环、涌现、测试时扩展 |
+| [6](#ch6) | 学到了什么（表征） | 线性表征与几何、表征趋同、叠加、稀疏自编码器、电路与内省 |
+| [7](#ch7) | 从数据本身学习 | 下一 token 预训练、对比学习、JEPA、扩散与流、一步生成与离散扩散 |
+| [8](#ch8) | 从反馈中学习 | RLHF 与 DPO、RLVR、在策略蒸馏、后训练改变了什么 |
+| [9](#ch9) | 测试时的计算与学习 | 上下文学习、思维链与推理、持续学习与可塑性 |
+| [10](#ch10) | 应用：原理的检验场 | 大模型系统、视觉/多模态/科学/机器人/智能体、安全与对齐 |
+| [11](#ch11) | 开放问题 | 按章整理 |
+
+每一小节先讲已经确立的原理，再用"最近一年"小标题写 2025-11 之后的进展；最近半年（2026-05 之后）的工作在附录 A 中按月汇总。大模型在本文中是一个重要的应用方向（第 10 章），而不是组织全文的主线。
+
+## 1 问题：深度学习在解什么
 
 ### 1.1 参数化函数与表示
 
@@ -42,9 +58,153 @@ $$\frac{\partial\mathcal L}{\partial\theta_l}=\Bigl(\frac{\partial h_l}{\partial
 
 今天的大模型通常把它们串成一条流水线：自监督预训练 → 中期训练 → 指令微调 → 偏好对齐 / RLVR → 在策略蒸馏。
 
-## 2 优化与训练动力学
+### 1.5 误差分解与三个谜题
 
-### 2.1 从 SGD 到 AdamW
+设 $\mathcal F$ 为网络能表示的函数族，$f^*$ 为最优预测器，$f_{\mathcal F}$ 为族内最好的函数，$\hat f$ 为经验风险最小化的解，$\tilde f$ 为优化实际得到的解。超额风险可以拆成三项：
+
+$$
+\mathcal R(\tilde f)-\mathcal R(f^*)=\underbrace{\mathcal R(f_{\mathcal F})-\mathcal R(f^*)}_{\text{逼近（第 2 章）}}+\underbrace{\mathcal R(\hat f)-\mathcal R(f_{\mathcal F})}_{\text{估计 / 泛化（第 4 章）}}+\underbrace{\mathcal R(\tilde f)-\mathcal R(\hat f)}_{\text{优化（第 3 章）}} .
+$$
+
+经典理论认为三者此消彼长：族越大，逼近误差越小，但估计误差越大，优化也越难。深度学习在三处都违背了这一直觉，构成了理论的三个谜题：
+
+1. **优化之谜。** 损失高度非凸，梯度方法却稳定地找到好解，甚至在学习率超过经典稳定条件时仍在下降（第 3 章）。
+2. **泛化之谜。** 参数远多于样本、能拟合随机标签，测试误差却随规模继续下降（第 4 章）。
+3. **扩展之谜。** 损失随参数、数据、算力呈跨越多个数量级的幂律，可以在训练前预测（第 5 章）。
+
+第 6 章讨论"学到了什么"，第 7–9 章讨论"学什么目标、何时学"：从数据本身、从反馈、在测试时。最近一年的特点是：这几个谜题都出现了可以计算、可以证伪的解释，通常来自可解的玩具模型。
+
+## 2 架构：归纳偏置、记忆与表达能力
+
+架构决定函数族与归纳偏置。从 MLP 到 CNN 再到 Transformer，趋势是把更少的先验写死、把更多结构交给数据；但"怎么在序列与深度两个方向上传递信息"仍是架构设计的核心。一个统一的视角是：**沿序列方向的混合器（注意力、线性注意力、状态空间模型）都是联想记忆的读写规则，沿深度方向的残差流则是另一条可以设计的信息通道。**
+
+### 2.1 注意力：按内容寻址的记忆
+
+缩放点积注意力（[Vaswani 等](https://arxiv.org/abs/1706.03762)）：
+
+$$\mathrm{Attn}(Q,K,V)=\mathrm{softmax}\Bigl(\frac{QK^\top}{\sqrt{d_k}}+M\Bigr)V$$
+
+$M$ 是因果掩码。多头注意力把 $d$ 维投影成 $h$ 个子空间并行计算。它可以看作一次"按内容寻址"的检索：查询与所有键比较相似度，按权重读取值。[Ramsauer 等](https://arxiv.org/abs/2008.02217)证明其更新规则就是现代 Hopfield 网络的检索。
+
+### 2.2 位置编码
+
+[RoPE](https://arxiv.org/abs/2104.09864) 把位置 $m$ 的二维子向量旋转 $m\theta_i$ 角：
+
+$$\langle R_m q,\ R_n k\rangle=\langle q,\ R_{n-m}k\rangle,$$
+
+于是注意力分数只依赖相对位置。上下文扩展通过调整旋转频率实现（[位置插值](https://arxiv.org/abs/2306.15595)、[YaRN](https://arxiv.org/abs/2309.00071)、[LongRoPE](https://arxiv.org/abs/2402.13753)）。最近的改进包括傅里叶位置编码 [FoPE](https://arxiv.org/abs/2412.17739)、对 RoPE 频率"去噪"的 [DoPE](https://arxiv.org/abs/2511.09146)、多维推广 [STRING](https://arxiv.org/abs/2502.02562) 与视频 [VideoRoPE](https://arxiv.org/abs/2502.05173)。
+
+### 2.3 改造 softmax：门控、汇聚与巨大激活
+
+[差分注意力](https://arxiv.org/abs/2410.05258)用两组 softmax 相减抵消共模噪声；[遗忘 Transformer](https://arxiv.org/abs/2503.02130)给 softmax 注意力加上数据相关的遗忘门；[Softpick](https://arxiv.org/abs/2504.20966) 用整流 softmax 去掉汇聚点；[门控注意力](https://arxiv.org/abs/2505.06708)在输出端加 sigmoid 门。这些改动的共同点是：允许一个头"什么都不读"，不必把注意力强行分配到汇聚点上。
+
+[Sun 等](https://arxiv.org/abs/2402.17762)发现 LLM 中少数维度取值极大（巨大激活），它们充当固定偏置，并与"注意力汇聚点"相关——大量注意力落在首 token 等无意义位置（[StreamingLLM](https://arxiv.org/abs/2309.17453)）。[Barbero 等](https://arxiv.org/abs/2504.02732)把汇聚点解释为防止表征过度混合的机制。
+
+**门控注意力。** [Qiu 等](https://arxiv.org/abs/2505.06708)在 30 种变体、3.5T token 的系统实验中发现，在缩放点积注意力的输出后加一个逐头 sigmoid 门，就能引入非线性与稀疏性、消除注意力汇聚点与巨大激活，并提升稳定性与长度外推（NeurIPS 2025 最佳论文）。
+
+#### 最近一年（2025-11 → 2026-10）
+
+**汇聚为什么必要。** softmax 注意力的输出是值向量的凸组合 $o=\sum_j \mathrm{softmax}_j(q^\top k_j)\,v_j$。若某个头在某些上下文中应当"什么都不做"（$o\approx0$），而权重之和必须为 1，就只能把权重集中到一个值向量接近 0 的锚点上。对一类"触发条件"任务，可以证明这种汇聚是必要的（[汇聚的必要性](https://arxiv.org/abs/2603.11487)）。门控注意力、softpick 等之所以能消除汇聚，是因为它们打破了"权重和为 1"或允许整体输出被关掉。
+
+**巨大激活。** 它与汇聚常同时出现，但二者的共现主要是现代 Transformer 设计（如 pre-norm）的产物，功能相关而不同（[尖峰、稀疏与汇聚](https://arxiv.org/abs/2603.05498)）。训练轨迹显示：承载汇聚的通道随种子不同但很早稳定，之后在权重衰减驱动下增长并集中到少数冗余载体（[生命周期](https://arxiv.org/abs/2610.00423)）；在受控的残差实验中它们难以通过架构消除（[架构稳健](https://arxiv.org/abs/2606.20743)）。
+
+### 2.4 线性注意力与状态空间：在线学习的记忆
+
+去掉 softmax、用核特征 $\phi$ 近似相似度后，因果注意力可写成递归（[Katharopoulos 等](https://arxiv.org/abs/2006.16236)）：
+
+$$S_t=S_{t-1}+v_t\,\phi(k_t)^\top,\qquad o_t=S_t\,\phi(q_t).$$
+
+状态 $S_t\in\mathbb R^{d_v\times d_k}$ 大小固定，推理时每步 $O(1)$。问题是它只会"加"不会"忘"，有限的状态很快被写满。
+
+两种修补互补：
+
+- 门控（衰减）：$S_t=\alpha_tS_{t-1}+v_tk_t^\top$，$\alpha_t$ 由输入决定，可以整体遗忘（[RetNet](https://arxiv.org/abs/2307.08621)、[GLA](https://arxiv.org/abs/2312.06635)、[Mamba](https://arxiv.org/abs/2312.00752)）。
+- Delta 规则（改写）：把状态看作一个联想记忆，每步对损失 $\frac12\lVert Sk_t-v_t\rVert^2$ 做一步梯度下降：
+
+$$S_t=S_{t-1}\bigl(I-\beta_tk_tk_t^\top\bigr)+\beta_tv_tk_t^\top ,$$
+
+可以精确地替换键 $k_t$ 处的旧值（[DeltaNet](https://arxiv.org/abs/2406.06484)）。
+
+[Gated DeltaNet](https://arxiv.org/abs/2412.06464) 把两者结合：$S_t=\alpha_tS_{t-1}(I-\beta_tk_tk_t^\top)+\beta_tv_tk_t^\top$。Moonshot 的 [KDA](https://arxiv.org/abs/2510.26692) 把标量门 $\alpha_t$ 换成逐通道的对角门，并设计了专用的 DPLR 分块算法；以 3:1 与 MLA 混合的 Kimi Linear（48B 总参、3B 激活）首次在公平比较中于短上下文、长上下文与 RL 扩展三种设置下全面超过全注意力，KV 缓存最多减少 75%，百万上下文的解码吞吐提升约 6 倍。
+
+结构化 SSM 由连续系统 $\dot h=Ah+Bx$, $y=Ch$ 离散化而来，可以按递归或卷积两种方式计算（[S4](https://arxiv.org/abs/2111.00396)）。[Mamba](https://arxiv.org/abs/2312.00752) 让 $B,C$ 与步长依赖输入（"选择性"），用硬件感知的并行扫描实现，在语言上首次以线性复杂度匹敌 Transformer。[Mamba-2](https://arxiv.org/abs/2405.21060) 证明：当 $A$ 是标量乘单位阵时，SSM 与带特定衰减掩码的线性注意力是同一族半可分矩阵（状态空间对偶），从而可以用矩阵乘法高效训练。
+
+delta 规则其实是"每读一个 token，就在一个线性模型上做一步 SGD"。沿这一视角：[TTT 层](https://arxiv.org/abs/2407.04620)把隐状态换成一个 MLP，在测试时用自监督损失更新；[Titans](https://arxiv.org/abs/2501.00663) 用"惊奇度"（梯度大小）与动量决定写入，并配合遗忘门；[Miras](https://arxiv.org/abs/2504.13173) 把 Transformer、线性 RNN 与 Titans 统一为"注意力偏置 + 保留门 + 在线优化算法"的联想记忆设计空间；[LaCT](https://arxiv.org/abs/2505.23884) 用数千 token 的大块更新快权重，使测试时训练的硬件利用率接近注意力。Google 的 [Nested Learning](https://arxiv.org/abs/2512.24695) 更进一步：把整个模型看作一组嵌套的、更新频率不同的优化问题（梯度下降本身也是一种联想记忆），并据此设计自修改的 HOPE 架构与连续记忆系统。
+
+#### 最近一年（2025-11 → 2026-10）
+
+线性注意力维护一个矩阵记忆 $S_t=S_{t-1}+v_tk_t^\top$，输出 $o_t=S_tq_t$。delta 规则把写入改成对 $\tfrac12\|Sk_t-v_t\|^2$ 做一步梯度下降：
+
+$$
+S_t=S_{t-1}-\beta_t\,(S_{t-1}k_t-v_t)\,k_t^\top=S_{t-1}\big(I-\beta_t k_tk_t^\top\big)+\beta_t v_tk_t^\top ,
+$$
+
+门控版本再乘衰减 $\alpha_t$。最近一年的几个推进都可以在这个式子上理解：
+
+**精确积分。** 上式是连续时间流 $\dot S=-(Sk-v)k^\top$ 的显式 Euler 步。记 $\hat k=k/\|k\|$，与 $\hat k$ 正交的部分不变，沿 $\hat k$ 的分量 $u=S\hat k$ 满足 $\dot u=-\|k\|(\|k\|u-v)$，可精确求解，得到
+
+$$
+S(\beta)=S_{t-1}-\big(1-e^{-\beta\|k\|^2}\big)\Big(S_{t-1}\hat k-\frac{v}{\|k\|}\Big)\hat k^\top .
+$$
+
+Euler 步中的系数 $\beta\|k\|^2$ 被换成始终落在 $(0,1)$ 内的 $1-e^{-\beta\|k\|^2}$，数值上更稳定，且保持秩一结构与分块并行（[EFLA](https://arxiv.org/abs/2512.12602)）。
+
+**擦除与写入解耦。** 上式用同一个 $\beta_t$ 同时控制"沿 $k_t$ 擦掉多少旧值"和"写入多少新值"；把二者拆成两个门，编辑压缩记忆时更少打乱已有联想（[Gated DeltaNet-2](https://arxiv.org/abs/2605.22791)）。按卡尔曼滤波的不确定性决定写入强度是另一种做法（[Kalman Delta](https://arxiv.org/abs/2609.07816)）；加入可并行的动量（[MDN](https://arxiv.org/abs/2605.05838)）、把记忆扩展为三维张量（[三元线性注意力](https://arxiv.org/abs/2609.36529)）则对应更好的在线优化器与更大的状态。
+
+**TTT 即线性注意力。** 以"测试时记忆键值映射"解释的 TTT 层，有多种现象与记忆解释矛盾；一大类 TTT 架构可以写成学到的线性注意力算子（[TTT 即线性注意力](https://arxiv.org/abs/2602.21204)）。
+
+### 2.5 表达能力：状态追踪与混合架构
+
+Transformer 与对角线性 RNN 都在电路复杂度类 TC⁰ 中，难以做"状态追踪"（如长序列的奇偶校验、置换复合）。[Grazzi 等](https://arxiv.org/abs/2411.12537)证明：只要允许状态转移矩阵有负特征值（例如把 delta 规则的 $\beta$ 范围扩到 $[0,2]$），线性 RNN 就能解决奇偶校验；[RWKV-7](https://arxiv.org/abs/2503.14456) 用广义 delta 规则可识别所有正则语言。[对角 SSM 的表达极限](https://arxiv.org/abs/2603.01959)与 [PAR](https://arxiv.org/abs/2610.27628) 从不同角度继续刻画这一边界。
+
+纯线性模型在"从长上下文中精确检索"上仍弱于注意力，于是混合成为共识：[Jamba](https://arxiv.org/abs/2403.19887)（Mamba + 注意力 + MoE）、[MiniMax-01](https://arxiv.org/abs/2501.08313)（闪电注意力 : softmax = 7 : 1）、[Qwen3-Next](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct)（Gated DeltaNet : 门控注意力 = 3 : 1）、[Kimi Linear](https://arxiv.org/abs/2510.26692)（KDA : MLA = 3 : 1）、[Nemotron 3](https://arxiv.org/abs/2512.20856)（Mamba-Transformer MoE），直到 2.8T 的 [Kimi K3](https://arxiv.org/abs/2607.24653)。另一种思路是改造注意力本身：[Log-Linear Attention](https://arxiv.org/abs/2506.04761) 让隐状态数随长度对数增长；["滑窗胜过线性注意力"](https://arxiv.org/abs/2608.28444)提醒混合层的选择仍有争议。
+
+#### 最近一年（2025-11 → 2026-10）
+
+**表达力与纠错。** 混合线性—全注意力存在可证明的表达力层级（[表达力层级](https://arxiv.org/abs/2602.01763)）。对仿射循环 $h_t=A(x_t)h_{t-1}+b(x_t)$，若 $A$ 在区分不同状态的子空间上保持状态表示（不收缩），那么沿这些方向的误差也永远不会被纠正，所以实际学到的是有限视野的解（[误差控制](https://arxiv.org/abs/2605.07755)）；学到的也可能是陪集而非状态本身（[状态还是陪集](https://arxiv.org/abs/2609.29951)）。
+
+### 2.6 深度方向：残差流、超连接与注意力残差
+
+**超连接。** [HC](https://arxiv.org/abs/2409.19606) 把残差流扩展为 $n$ 条，层与流之间用可学习的矩阵混合，但破坏了恒等映射、带来不稳定。DeepSeek 的 [mHC](https://arxiv.org/abs/2512.24880) 把混合矩阵约束到双随机矩阵（Birkhoff 多面体）上，使其乘积仍是"凸组合"，恢复了恒等映射的性质，并用于 DeepSeek-V4。
+
+**注意力残差。** Moonshot 的 [AttnRes](https://arxiv.org/abs/2603.15031) 认为 Pre-LN 残差以固定单位权重累加所有层输出，会导致隐状态随深度失控增长、每层贡献被稀释；改为让每层用 softmax 注意力在之前各层的输出上按内容加权求和，并用分块版本控制显存与通信。它是 [Kimi K3](https://arxiv.org/abs/2607.24653) 的核心组件之一。
+
+#### 最近一年（2025-11 → 2026-10）
+
+**残差的两个方向。** 把位置固定、以层号为"时间"，残差流就是深度方向上的序列；自注意力在序列方向做自适应混合，残差却只做固定加法。由此得到一个对偶：深度方向的残差设计与序列方向的混合器一一对应（[残差流对偶](https://arxiv.org/abs/2603.16039)）。超连接/mHC、注意力残差（沿深度做 softmax 读取）都是在深度方向引入更强的"混合器"；最近的变体包括 Kronecker 参数化的 [KromHC](https://arxiv.org/abs/2601.21579)、多头的[注意力残差](https://arxiv.org/abs/2607.27230)、读取逐层增量的 [Delta AttnRes](https://arxiv.org/abs/2605.18855)，以及注意力残差中同样出现的汇聚（[AttnRes 中的汇聚](https://arxiv.org/abs/2605.17887)）。Post-LN 在深层下的复活（[Post-LN 回归](https://arxiv.org/abs/2601.19895)）则从另一端说明：归一化放在哪里，本质是深度方向信号传播的问题。
+
+### 2.7 循环深度
+
+另一条扩展测试时计算的路是重复使用同一组层。[Geiping 等](https://arxiv.org/abs/2502.05171)训练的循环深度模型在测试时迭代更多次即可提升推理；[HRM](https://arxiv.org/abs/2506.21734) 用高低两个时间尺度的循环模块，27M 参数即在 ARC、数独上表现突出；[TRM](https://arxiv.org/abs/2510.04871) 把它简化为 2 层、7M 参数的递归网络，在 ARC-AGI-1 上达到 45%；[Ouro](https://arxiv.org/abs/2510.25741) 把循环推理放进预训练，1.4B/2.6B 循环模型匹敌 12B 级稠密模型；[Mixture-of-Recursions](https://arxiv.org/abs/2507.10524) 按 token 路由不同的循环深度。2026 年，[SMELT](https://arxiv.org/abs/2609.01343) 给出算力匹配下循环 MoE 的扩展律。
+
+#### 最近一年（2025-11 → 2026-10）
+
+循环模型反复应用同一个块 $h^{(\ell+1)}=F_\theta(h^{(\ell)},x)$。[TRM](https://arxiv.org/abs/2510.04871)、[Ouro](https://arxiv.org/abs/2510.25741) 之后，最近一年形成了系统的研究：
+
+- **值多少参数。** 等深度扩展律给出 $\varphi\approx0.46$（5.4 节）；稳定训练的扩展律（[Parcae](https://arxiv.org/abs/2604.12946)）；循环 MoE 的联合扩展律（[循环 MoE](https://arxiv.org/abs/2609.40316)）。
+- **怎么参数化。** 同一参数在一次前向中被使用 $r$ 次，残差分支的更新会累积，μP 式的残差缩放需要相应修改，才能让超参数跨规模迁移（[DeepLoop](https://arxiv.org/abs/2607.13491)、[Loop-μP](https://arxiv.org/abs/2606.18524)）。
+- **不动点。** 若 $F_\theta$ 在 $x$ 固定时是压缩映射，迭代收敛到不动点 $h^*=F_\theta(h^*,x)$，梯度可由隐函数定理得到，与到达路径无关。因此越接近不动点，截断反传的偏差越小，末端 KV 也可共享（[不动点视角](https://arxiv.org/abs/2610.06833)、[截断 BPTT](https://arxiv.org/abs/2610.26030)）。循环位置、输入注入、状态组织三条设计轴的受控比较见 [做对了（一）](https://arxiv.org/abs/2610.23036)。
+- **风险。** 循环次数远超训练时，噪声更新会覆盖已经正确的中间结论（[上万次迭代](https://arxiv.org/abs/2610.11570)）；安全行为也随循环次数变化（[循环与拒绝](https://arxiv.org/abs/2610.15218)）。
+
+### 2.8 条件计算：混合专家与条件记忆
+
+**路由。** MoE 层有 $E$ 个专家 FFN 与一个路由器。对 token 表示 $x$，计算门控分数 $s=\mathrm{softmax}(W_rx)$（或 sigmoid），取 top-$k$：
+
+$$y=\sum_{i\in\mathrm{TopK}(s,k)}g_i\,\mathrm{FFN}_i(x).$$
+
+总参数随 $E$ 增长，每 token 的计算只随 $k$ 增长（[Shazeer 等](https://arxiv.org/abs/1701.06538)、[GShard](https://arxiv.org/abs/2006.16668)、[Switch](https://arxiv.org/abs/2101.03961)）。
+
+**负载均衡与专门化。** 路由容易坍缩到少数专家。经典做法是加辅助损失 $\mathcal L_{\text{bal}}=\alpha E\sum_i f_iP_i$（$f_i$ 为实际分到专家 $i$ 的 token 比例，$P_i$ 为平均路由概率）；[ST-MoE](https://arxiv.org/abs/2202.08906) 加 router z-loss 稳定 logit。[无辅助损失均衡](https://arxiv.org/abs/2408.15664)改为给每个专家加一个只用于选择、不参与加权的偏置项，按负载动态调整，避免辅助损失干扰主目标（DeepSeek-V3 采用）。[Qwen](https://arxiv.org/abs/2501.11873) 发现均衡损失应在全局批次而非微批次上计算，专家专门化程度显著提升。
+
+**细粒度与超稀疏。** [DeepSeekMoE](https://arxiv.org/abs/2401.06066) 把专家切得更细、增加激活数量以提高组合灵活性，并设置始终激活的共享专家吸收通用知识。随后模型越来越稀疏：激活比例从 [Mixtral](https://arxiv.org/abs/2401.04088) 的约 28% 降到 [DeepSeek-V3](https://arxiv.org/abs/2412.19437) 的 5.5%、[Kimi K2](https://arxiv.org/abs/2507.20534) 的约 3%；[LongCat-Flash](https://arxiv.org/abs/2509.01322) 引入"零计算专家"让每 token 的激活量随难度动态变化；[Kimi K3](https://arxiv.org/abs/2607.24653) 的 Stable LatentMoE 从 896 个专家中选 16 个。
+
+**条件记忆：知识应该'查'而不是'算'。** DeepSeek 的 [Engram](https://arxiv.org/abs/2601.07372) 提出：MoE 用条件计算扩展容量，但 Transformer 缺少"查知识"的原语，只能用计算模拟检索。Engram 把经典的 n-gram 嵌入现代化为 O(1) 查表的条件记忆模块，与 MoE 互补。把总参数在两者之间分配时出现 U 形扩展律；扩展到 27B 记忆参数后，在严格等参数、等 FLOPs 下胜过纯 MoE，且推理与代码的提升甚至大于知识类任务。同期的相关证据：[Over-Tokenized Transformer](https://arxiv.org/abs/2501.16975) 显示输入词表越大越好，[扩展嵌入](https://arxiv.org/abs/2601.21204)在一些区间优于扩展专家，[Qwen3.8-Next](https://arxiv.org/abs/2608.30320) 把 51B 的 n-gram 表放到加速器之外，[记忆层](https://arxiv.org/abs/2412.09764)与 [UltraMemV2](https://arxiv.org/abs/2508.18756) 用可训练的大规模键值表补充事实性知识。
+
+## 3 优化：为什么训练得动
+
+深度网络的损失非凸、高维、病态，而且训练时常在经典稳定条件之外运行。这一章从优化器出发（它们都可以看成某个范数下的最速下降），再讨论训练动力学（稳定性边缘）、超参数（学习率、批大小、权重衰减）、让深网络可训练的初始化、归一化与参数化，以及大模型特有的不稳定与低精度问题。
+
+### 3.1 从 SGD 到 AdamW
 
 小批量随机梯度下降 $\theta_{k+1}=\theta_k-\eta\,\hat g_k$ 是一切的起点；动量 $m_k=\mu m_{k-1}+\hat g_k$ 平滑噪声。Adam（[Kingma 与 Ba](https://arxiv.org/abs/1412.6980)）为每个坐标维护一阶、二阶矩的指数平均：
 
@@ -52,11 +212,7 @@ $$m_k=\beta_1m_{k-1}+(1-\beta_1)g_k,\quad v_k=\beta_2v_{k-1}+(1-\beta_2)g_k^2,\q
 
 [AdamW](https://arxiv.org/abs/1711.05101) 把权重衰减从梯度中解耦（$\theta\leftarrow\theta-\eta\lambda\theta$），成为十年来大模型的默认优化器。[Wang 与 Aitchison](https://arxiv.org/abs/2405.13698) 指出 AdamW 的权重本质上是更新的指数滑动平均，时间尺度 $1/(\eta\lambda)$ 应随数据量调整；[Power Lines](https://arxiv.org/abs/2505.13738) 进一步给出最优权重衰减与批大小随 token/参数比的幂律。
 
-### 2.2 学习率调度：warmup、余弦、WSD 与线性到零
-
-几乎所有大模型训练都有 warmup。[Kalra 与 Barkeshli](https://arxiv.org/abs/2406.09405) 发现 warmup 的主要作用是把网络带到锐度更低、更"良态"的区域，从而容许更大的学习率。衰减阶段，[余弦调度](https://arxiv.org/abs/1608.03983)曾是默认；[MiniCPM](https://arxiv.org/abs/2404.06395) 提出 Warmup-Stable-Decay（WSD），可在任意时刻衰减得到可用的检查点；[河谷地形](https://arxiv.org/abs/2410.05192)解释了 WSD：稳定期沿着"河流"方向前进（损失看起来下降很慢），衰减期才下到"谷底"。[Bergsma 等](https://arxiv.org/abs/2502.15938)发现算力最优训练中，线性衰减到零（D2Z）稳定优于余弦衰减到 10%。
-
-### 2.3 优化器即最速下降：从 Adam 到 Muon
+### 3.2 优化器即最速下降：从 Adam 到 Muon
 
 一个统一视角（[Bernstein 与 Newhouse](https://arxiv.org/abs/2409.20325)、[模块对偶](https://arxiv.org/abs/2410.21265)）：在某个范数约束下，让一阶近似的损失下降最多，
 
@@ -72,413 +228,16 @@ $$\Delta^\star=-\eta\,UV^\top .$$
 
 为什么用谱范数？权重矩阵的作用是把输入向量映射成输出向量，用"对任意输入，输出最多改变多少"的算子范数来度量更新大小，比逐元素度量更符合它的功能。机制上，[Wang 等](https://arxiv.org/abs/2509.26030)发现正交化让很少被激活的方向（长尾特征、长尾联想记忆）也获得同样幅度的学习，这是 Muon 的主要优势来源。
 
-**最近两年：Muon 的规模化与冷静的再评估。**
+**2025 年：Muon 的规模化与冷静的再评估。**
 
 - [Moonlight](https://arxiv.org/abs/2502.16982)：加入权重衰减、按 $0.2\sqrt{\max(m,n)}$ 缩放使更新的 RMS 与 AdamW 对齐后，Muon 可直接沿用 AdamW 的超参数，算力最优训练下约有 2 倍计算效率。[Essential AI](https://arxiv.org/abs/2505.02222) 显示 Muon 在大批量下保持数据效率，扩展了算力-时间的帕累托前沿。
 - [Kimi K2](https://arxiv.org/abs/2507.20534)：Muon 在大模型上会让注意力 logit 失控增长；MuonClip 在 logit 过大时按头重缩放 $W_q,W_k$（QK-Clip），实现了 1T 参数、15.5T token 的零损失尖峰预训练。[DeepSeek-V4](https://arxiv.org/abs/2606.19348)（1.6T）也采用 Muon。
 - 分布式与改进：[Dion](https://arxiv.org/abs/2504.05295) 用通信高效的低秩正交化替代完整的 Newton–Schulz；[NorMuon](https://arxiv.org/abs/2510.05491) 在正交化后加入逐神经元归一化；[Canzona](https://arxiv.org/abs/2602.06079) 为矩阵优化器提供异步、负载均衡的分布式实现。
 - 再评估：[Wen 等](https://arxiv.org/abs/2509.02046)在 0.1B–1.2B 与 1–8 倍 Chinchilla 数据比下严格调参比较十种优化器，发现宣称 1.4–2 倍的加速实际只有 1.1–1.4 倍，且随规模递减；矩阵型优化器（Muon、SOAP）最稳定。[EPFL 的基准](https://arxiv.org/abs/2509.01440)得出类似结论。
 
-### 2.4 稳定性边缘与损失地形
+#### 最近一年（2025-11 → 2026-10）
 
-经典优化理论要求学习率 $\eta<2/\lambda_{\max}$（$\lambda_{\max}$ 为 Hessian 最大特征值，即"锐度"）。[Cohen 等](https://arxiv.org/abs/2103.00065)发现全批量梯度下降会经历"渐进锐化"，把锐度推到 $2/\eta$ 后停在那里振荡，损失却非单调地继续下降——稳定性边缘（EoS）。[Central Flows](https://arxiv.org/abs/2410.24206) 用"中心流"刻画振荡优化器的时间平均轨迹，解释了自适应优化器的隐式正则化。2026 年的工作继续讨论 EoS 的[起源](https://arxiv.org/abs/2604.20446)、[对泛化的影响](https://arxiv.org/abs/2604.19740)与 [Muon 越过 EoS](https://arxiv.org/abs/2610.24305) 的现象。
-
-平坦极小值与泛化的关系有长期争论：[Keskar 等](https://arxiv.org/abs/1609.04836)观察到大批量训练趋向尖锐极小值、泛化变差，[SAM](https://arxiv.org/abs/2010.01412) 显式寻找平坦区域；但锐度依赖参数化方式，单靠它无法完整解释泛化。
-
-### 2.5 批大小
-
-[Goyal 等](https://arxiv.org/abs/1706.02677)的线性缩放规则在临界批大小以内成立；超过之后，加大批量不再减少所需步数。[Zhang 等](https://arxiv.org/abs/2410.21676)发现临界批大小主要随训练数据量而非模型规模增长；[Merrill 等](https://arxiv.org/abs/2505.23971)给出训练中实时测量临界批大小的经验方法，并据此做批大小 warmup。
-
-## 3 初始化、归一化、残差与参数化
-
-### 3.1 方差保持的初始化
-
-若第 $l$ 层 $h_l=W_lh_{l-1}$，且权重独立同分布、均值为零，则 $\mathrm{Var}(h_l)=n_{\text{in}}\mathrm{Var}(W)\mathrm{Var}(h_{l-1})$。要让信号方差不随深度爆炸或消失，需 $\mathrm{Var}(W)=1/n_{\text{in}}$（线性 / tanh，[Glorot](https://proceedings.mlr.press/v9/glorot10a.html)）或 $2/n_{\text{in}}$（ReLU 只保留一半，[He 等](https://arxiv.org/abs/1502.01852)）。
-
-### 3.2 归一化
-
-BatchNorm 按批统计量标准化（[Ioffe 与 Szegedy](https://arxiv.org/abs/1502.03167)）；Transformer 使用不依赖批的 LayerNorm（[Ba 等](https://arxiv.org/abs/1607.06450)）及其简化 RMSNorm（[Zhang 与 Sennrich](https://arxiv.org/abs/1910.07467)）：
-
-$$\mathrm{RMSNorm}(x)=\frac{x}{\sqrt{\frac1d\sum_i x_i^2+\epsilon}}\odot\gamma .$$
-
-把归一化放在残差分支内（Pre-LN）使训练更稳，免去对 warmup 的强依赖（[Xiong 等](https://arxiv.org/abs/2002.04745)）；但 Pre-LN 下残差流的方差随深度增长，深层的贡献被稀释——[深度的诅咒](https://arxiv.org/abs/2502.05795)发现许多 LLM 的深层几乎是恒等映射，并提出按深度缩放 LayerNorm。
-
-### 3.3 最大更新参数化（μP）
-
-标准参数化下，网络变宽时最优学习率会漂移；NTK 参数化则在无限宽极限下退化为核方法、失去特征学习（[Yang 与 Hu](https://arxiv.org/abs/2011.14522)）。μP 选择让每层特征的更新量保持 $\Theta(1)$ 的缩放：以 Adam 为例，隐藏层学习率按 $1/n$ 缩放，输出层 logit 乘以 $1/n$。于是最优超参数在不同宽度间可迁移（[μTransfer](https://arxiv.org/abs/2203.03466)）。[谱条件](https://arxiv.org/abs/2310.17813)给出等价而更直观的表述：要求权重及其更新的谱范数与 $\sqrt{n_{\text{out}}/n_{\text{in}}}$ 同阶。[Everett 等](https://arxiv.org/abs/2407.05872)在上万次实验中比较了各种参数化与优化器组合。最近两年，μP 被推广到深度、批大小与训练时长（[完整超参迁移](https://arxiv.org/abs/2512.22382)）、宽深联合缩放（[谱条件](https://arxiv.org/abs/2603.00541)）、不同优化器（[Gupta 等](https://arxiv.org/abs/2602.20937)）与 MoE（[MoE 超参迁移](https://arxiv.org/abs/2601.20205)、[Kakao](https://arxiv.org/abs/2608.20061)）。
-
-### 3.4 大模型的不稳定性：logit 增长、巨大激活与注意力汇聚点
-
-[ViT-22B](https://arxiv.org/abs/2302.05442) 与 [Wortsman 等](https://arxiv.org/abs/2309.14322)发现两类典型的发散：注意力 logit 不受控增长（对策：QK-Norm）与输出 logit 发散（对策：z-loss）。[Sun 等](https://arxiv.org/abs/2402.17762)发现 LLM 中少数维度取值极大（巨大激活），它们充当固定偏置，并与"注意力汇聚点"相关——大量注意力落在首 token 等无意义位置（[StreamingLLM](https://arxiv.org/abs/2309.17453)）。[Barbero 等](https://arxiv.org/abs/2504.02732)把汇聚点解释为防止表征过度混合的机制。
-
-**最近两年：改写残差与归一化。**
-
-- 免归一化：[DyT](https://arxiv.org/abs/2503.10622) 用逐元素 $\tanh(\alpha x)$ 替代 LayerNorm，在视觉、语言与扩散模型上不掉点；[Chen 等](https://arxiv.org/abs/2512.10938)系统搜索逐点函数，让免归一化 Transformer 超过归一化版本。[nGPT](https://arxiv.org/abs/2410.01131) 走另一极端：把所有向量都归一化到超球面上。
-- 门控注意力：[Qiu 等](https://arxiv.org/abs/2505.06708)在 30 种变体、3.5T token 的系统实验中发现，在缩放点积注意力的输出后加一个逐头 sigmoid 门，就能引入非线性与稀疏性、消除注意力汇聚点与巨大激活，并提升稳定性与长度外推（NeurIPS 2025 最佳论文）。
-- 超连接：[HC](https://arxiv.org/abs/2409.19606) 把残差流扩展为 $n$ 条，层与流之间用可学习的矩阵混合，但破坏了恒等映射、带来不稳定。DeepSeek 的 [mHC](https://arxiv.org/abs/2512.24880) 把混合矩阵约束到双随机矩阵（Birkhoff 多面体）上，使其乘积仍是"凸组合"，恢复了恒等映射的性质，并用于 DeepSeek-V4。
-- 注意力残差：Moonshot 的 [AttnRes](https://arxiv.org/abs/2603.15031) 认为 Pre-LN 残差以固定单位权重累加所有层输出，会导致隐状态随深度失控增长、每层贡献被稀释；改为让每层用 softmax 注意力在之前各层的输出上按内容加权求和，并用分块版本控制显存与通信。它是 [Kimi K3](https://arxiv.org/abs/2607.24653) 的核心组件之一。
-- 训练稳定化：[MSign](https://arxiv.org/abs/2602.01734) 把损失尖峰归因于权重矩阵稳定秩的坍缩；[ZClip](https://arxiv.org/abs/2504.02507) 用 z 分数做自适应梯度裁剪。
-
-## 4 泛化与学习理论
-
-### 4.1 经典理论为何不够
-
-基于 VC 维、Rademacher 复杂度的界随参数量增长，对过参数化网络近乎空洞。[Zhang 等](https://arxiv.org/abs/1611.03530)的实验更直接：同一网络能完美拟合随机标签，说明假设空间的"容量"并不限制它；泛化必须由数据、架构与优化算法的交互来解释。
-
-### 4.2 双下降与良性过拟合
-
-[Belkin 等](https://arxiv.org/abs/1812.11118)发现，测试误差随模型复杂度先呈经典 U 形，在恰好能插值训练集的"插值阈值"处达到峰值，然后在更大模型上再次下降；[Nakkiran 等](https://arxiv.org/abs/1912.02292)在模型规模、训练轮数与数据量三个维度上都观察到这一现象。[Bartlett 等](https://arxiv.org/abs/1906.11300)刻画了线性回归中"良性过拟合"的条件：当特征协方差的有效秩足够大，插值噪声被分散到许多不重要的方向上，对预测影响很小。
-
-### 4.3 懒惰区间与特征学习
-
-把网络在初始化处线性化，$f_\theta(x)\approx f_{\theta_0}(x)+\langle\nabla_\theta f_{\theta_0}(x),\theta-\theta_0\rangle$。在 NTK 缩放的无限宽极限下，训练全程参数几乎不动，网络等价于用固定核 $K(x,x')=\langle\nabla f(x),\nabla f(x')\rangle$ 做核回归（[Jacot 等](https://arxiv.org/abs/1806.07572)）。[Chizat 等](https://arxiv.org/abs/1812.07956)称之为"懒惰训练"：可分析，但不学习新特征。平均场理论（[Mei 等](https://arxiv.org/abs/1804.06561)）与 μP 描述了另一种极限：特征持续演化，更接近真实网络的行为。最近的工作沿此继续：[交替梯度流](https://arxiv.org/abs/2506.06489)刻画两层网络中特征逐个被学会的过程，[Ruben 等](https://arxiv.org/abs/2602.15593)统一了 RNN 与深网络的特征学习。
-
-### 4.4 隐式偏置
-
-在可分数据上用逻辑损失做梯度下降，参数方向收敛到最大 $\ell_2$ 间隔解（[Soudry 等](https://arxiv.org/abs/1710.10345)）；矩阵分解中梯度下降偏向低秩解。换言之，在无数能拟合训练集的解中，优化算法替我们挑了一个"简单"的。[Adam 与 SGD 的隐式偏置](https://arxiv.org/abs/2505.24022)比较了两类优化器偏好的解：SGD 偏向简单的线性可分特征，Adam 更容易学到丰富的非线性特征。[Wilson](https://arxiv.org/abs/2503.02113)的立场文章总结道：良性过拟合、双下降、过参数化都可用"软归纳偏置"（偏好简单解但不排除复杂解）与经典的 PAC-Bayes / 可数假设界解释，深度学习并不那么神秘。
-
-### 4.5 Grokking：从记忆到泛化
-
-[Power 等](https://arxiv.org/abs/2201.02177)在模运算等小算法任务上发现：训练精度早已 100%，测试精度却在多得多的步数后突然跃升。[Nanda 等](https://arxiv.org/abs/2301.05217)逆向工程出模加法网络使用离散傅里叶变换与三角恒等式的电路，并把训练分为记忆、电路形成与清理三个阶段，权重衰减推动了"清理"。[Prieto 等](https://arxiv.org/abs/2501.04697)发现没有正则化时，grokking 会被 softmax 的浮点误差（Softmax Collapse）阻断，并提出 StableMax 与只保留与权重正交的梯度分量的 ⊥Grad；[岭回归中的可证 grokking](https://arxiv.org/abs/2601.19791)与[谱理论](https://arxiv.org/abs/2609.26679)给出了更严格的刻画；[Abramov 等](https://arxiv.org/abs/2504.20752)把 grokking 带到真实世界的多跳推理：通过数据增强提高推断事实与原子事实之比即可触发。
-
-### 4.6 上下文学习的机制
-
-GPT-3 展示了不改权重、只看示例就能学会新任务的能力。理论解释有三类：一是线性自注意力的一层前向可以实现一步梯度下降（[von Oswald 等](https://arxiv.org/abs/2212.07677)，[Garg 等](https://arxiv.org/abs/2208.01066)发现 Transformer 在上下文中学线性回归接近最优估计器）；二是"归纳头"——由前一 token 头与复制头组成的两层电路，其出现与损失曲线上的相变同步（[Olsson 等](https://arxiv.org/abs/2209.11895)）；三是 [Dherin 等](https://arxiv.org/abs/2507.16003)的"无需训练的学习"：Transformer 块把上下文隐式转化为 MLP 权重的低秩更新。也有反例提醒不要过度简化：[Transformer 并不在上下文中做最小二乘](https://arxiv.org/abs/2507.09440)，[不同任务下 ICL 由不同机制实现](https://arxiv.org/abs/2604.12151)。
-
-### 4.7 记忆、知识与表征
-
-[语言模型物理学 3.3](https://arxiv.org/abs/2404.05405) 估计模型约能存储 2 bit 知识/参数；[Morris 等](https://arxiv.org/abs/2505.24832)用随机数据测得 GPT 类模型约有 3.6 bit/参数 的记忆容量，并发现容量被填满后模型开始"顿悟"出泛化。[语言模型物理学 3.1](https://arxiv.org/abs/2309.14316) 说明知识能否被提取取决于预训练中同一事实是否以多样化的方式出现。[柏拉图表征假说](https://arxiv.org/abs/2405.07987)观察到不同架构、不同模态的大模型表征正在收敛，[vec2vec](https://arxiv.org/abs/2505.12540) 甚至能在无配对数据的情况下翻译不同文本嵌入模型的向量空间。
-
-## 5 扩展律与涌现
-
-### 5.1 幂律与算力最优
-
-[Kaplan 等](https://arxiv.org/abs/2001.08361)发现语言模型的测试损失随参数量 $N$、数据量 $D$、算力 $C$ 分别呈跨越多个数量级的幂律。[Chinchilla](https://arxiv.org/abs/2203.15556) 用参数化形式
-
-$$L(N,D)=E+\frac{A}{N^{\alpha}}+\frac{B}{D^{\beta}}$$
-
-拟合，并在约束 $C\approx6ND$ 下用拉格朗日乘子求最优分配：
-
-$$N^\star(C)\propto C^{\frac{\beta}{\alpha+\beta}},\qquad D^\star(C)\propto C^{\frac{\alpha}{\alpha+\beta}} .$$
-
-拟合得到 $\alpha\approx\beta$，即参数与数据应大致等比例扩展，约 20 token/参数。Kaplan 与 Chinchilla 的差异后来被归因于是否计入嵌入参数、规模范围与学习率调度（[Pearce 与 Song](https://arxiv.org/abs/2406.12907)、[Porian 等](https://arxiv.org/abs/2406.19146)）。实践中，由于推理成本按模型大小计，许多模型远超此比例地"过训练"（如 Llama 3 8B 用了 15T token）。
-
-### 5.2 数据受限、精度与稀疏度
-
-[Muennighoff 等](https://arxiv.org/abs/2305.16264)发现重复数据约 4 轮内几乎与新数据等价，之后收益快速衰减；[Prabhudesai 等](https://arxiv.org/abs/2507.15857)发现在数据受限、算力充足时，掩码扩散语言模型反复训练优于自回归；[Kim 等](https://arxiv.org/abs/2509.14786)说明在"无限算力"下，强正则化、集成与蒸馏可以把数据效率提高 5 倍以上。
-
-最近两年，扩展律被推广到更多维度：
-
-- 精度：[Kumar 等](https://arxiv.org/abs/2411.04330)把训练与推理精度纳入扩展律，发现训练越充分，后训练量化的损害越大；[Ouyang 等](https://arxiv.org/abs/2411.17691)得出同样结论；[ParetoQ](https://arxiv.org/abs/2502.02631) 统一比较 1–4 bit。
-- 稀疏度：[Abnar 等](https://arxiv.org/abs/2501.12370)发现固定算力时更稀疏（总参数更多）的 MoE 损失更低；[Ludziejewski 等](https://arxiv.org/abs/2502.05172)在显存约束下给出稠密与 MoE 的联合扩展律；[Engram](https://arxiv.org/abs/2601.07372) 发现 MoE 与查表记忆之间存在 U 形最优分配。
-- 蒸馏、并行与密度：[蒸馏扩展律](https://arxiv.org/abs/2502.08606)给出教师与学生之间的算力分配；[ParScale](https://arxiv.org/abs/2505.10475) 用 P 路并行前向替代参数扩展，约等于参数扩展 $O(\log P)$ 倍；[能力密度定律](https://arxiv.org/abs/2412.04315)指出同等能力所需参数约每 3.3 个月减半。
-- 更精细的拟合：[Farseer](https://arxiv.org/abs/2506.10972) 在整个 $(N,D)$ 平面上拟合损失面，外推误差显著降低。
-
-### 5.3 为什么是幂律
-
-一种解释来自数据：若数据分布在低维流形上，或特征重要性呈幂律谱，则用有限容量逼近时误差自然呈幂律（[源于数据分布的扩展律](https://arxiv.org/abs/2412.07942)）。另一种来自表征：[Liu 等](https://arxiv.org/abs/2505.10465)在 Anthropic 的叠加玩具模型中用权重衰减控制叠加程度，发现强叠加区间下损失随宽度 $m$ 稳健地按 $1/m$ 下降，且与真实 LLM 的观测一致——特征叠加可能是神经扩展律的关键成因。
-
-### 5.4 涌现
-
-[Wei 等](https://arxiv.org/abs/2206.07682)列举了只在超过某个规模后才出现的能力；[Schaeffer 等](https://arxiv.org/abs/2304.15004)指出其中许多"突变"来自非线性、不连续的评测指标（如精确匹配），换成连续指标后能力随规模平滑增长。[观察式扩展律](https://arxiv.org/abs/2405.10938)用公开模型族的低维能力空间预测下游能力。实用结论是：损失可预测，具体任务的阈值不总可预测。
-
-### 5.5 测试时与 RL 的扩展
-
-[Snell 等](https://arxiv.org/abs/2408.03314)表明按题目难度自适应分配测试时计算，效率可超过把模型放大 14 倍；[Large Language Monkeys](https://arxiv.org/abs/2407.21787) 发现重复采样的覆盖率随样本数呈对数线性增长。RL 后训练也有了扩展律：[ScaleRL](https://arxiv.org/abs/2510.13786) 用超过 40 万 GPU 小时拟合出 S 形的"算力-性能"曲线，发现不同配方的渐近性能不同，而损失聚合、归一化、课程等细节主要影响效率。
-
-## 6 架构 I：Transformer 与注意力
-
-### 6.1 注意力
-
-缩放点积注意力（[Vaswani 等](https://arxiv.org/abs/1706.03762)）：
-
-$$\mathrm{Attn}(Q,K,V)=\mathrm{softmax}\Bigl(\frac{QK^\top}{\sqrt{d_k}}+M\Bigr)V$$
-
-$M$ 是因果掩码。多头注意力把 $d$ 维投影成 $h$ 个子空间并行计算。它可以看作一次"按内容寻址"的检索：查询与所有键比较相似度，按权重读取值。[Ramsauer 等](https://arxiv.org/abs/2008.02217)证明其更新规则就是现代 Hopfield 网络的检索。
-
-### 6.2 位置编码
-
-[RoPE](https://arxiv.org/abs/2104.09864) 把位置 $m$ 的二维子向量旋转 $m\theta_i$ 角：
-
-$$\langle R_m q,\ R_n k\rangle=\langle q,\ R_{n-m}k\rangle,$$
-
-于是注意力分数只依赖相对位置。上下文扩展通过调整旋转频率实现（[位置插值](https://arxiv.org/abs/2306.15595)、[YaRN](https://arxiv.org/abs/2309.00071)、[LongRoPE](https://arxiv.org/abs/2402.13753)）。最近的改进包括傅里叶位置编码 [FoPE](https://arxiv.org/abs/2412.17739)、对 RoPE 频率"去噪"的 [DoPE](https://arxiv.org/abs/2511.09146)、多维推广 [STRING](https://arxiv.org/abs/2502.02562) 与视频 [VideoRoPE](https://arxiv.org/abs/2502.05173)。
-
-### 6.3 KV 缓存：MHA、MQA、GQA 与 MLA
-
-自回归解码时，每层要缓存所有历史 token 的键和值。以 $n_h$ 个头、每头 $d_h$ 维为例，每 token 每层的缓存元素数为：
-
-| 方案 | 每 token 每层缓存 | $n_h=d_h=128$ 时 |
-|---|---|---|
-| MHA | $2n_hd_h$ | 32768 |
-| GQA（$n_g$ 组） | $2n_gd_h$ | 2048（$n_g=8$） |
-| MQA | $2d_h$ | 256 |
-| MLA | $d_c+d_h^R$ | 576（$d_c=512$, $d_h^R=64$） |
-
-[MQA](https://arxiv.org/abs/1911.02150) 让所有头共享一组 K/V，[GQA](https://arxiv.org/abs/2305.13245) 折中；[MLA](https://arxiv.org/abs/2405.04434)（DeepSeek-V2）把 K/V 联合压缩成一个低秩潜向量 $c_t=W^{DKV}h_t$，推理时把上投影矩阵"吸收"进查询与输出投影，只缓存 $c_t$ 和一小段解耦的 RoPE 键，KV 缓存减少 93.3%。[TransMLA](https://arxiv.org/abs/2502.07864) 证明同等缓存下 MLA 的表达力强于 GQA。
-
-### 6.4 FlashAttention：精确但不物化
-
-注意力的瓶颈不是浮点运算，而是读写 $N\times N$ 的分数矩阵。[FlashAttention](https://arxiv.org/abs/2205.14135) 把 Q、K、V 分块载入片上 SRAM，用在线 softmax（维护运行中的最大值 $m$ 与归一化因子 $\ell$，新块到来时按 $e^{m_{\text{old}}-m_{\text{new}}}$ 重缩放）逐块累加输出，从不在显存中物化完整矩阵，显存随长度线性增长，速度提升数倍。[FA-2](https://arxiv.org/abs/2307.08691) 改进并行划分，[FA-3](https://arxiv.org/abs/2407.08608) 利用 Hopper 的异步与 FP8。
-
-### 6.5 稀疏注意力：只读该读的 KV
-
-KV 缓存再小，每步解码仍要读取全部历史。稀疏注意力让每个查询只关注一小部分 KV：
-
-- [NSA](https://arxiv.org/abs/2502.11089)（DeepSeek）：压缩分支看粗粒度的块摘要，选择分支挑出最相关的若干块做精细注意力，滑动窗口分支保留局部；三者门控相加，块大小与 GQA 组对齐以充分利用硬件，并且可以端到端训练。
-- [MoBA](https://arxiv.org/abs/2502.13189)（Moonshot）：把 MoE 的路由思想用于注意力，每个查询只路由到被选中的 KV 块。
-- [DSA](https://arxiv.org/abs/2512.02556)（DeepSeek-V3.2）：用轻量"闪电索引器"为每个查询选出 top-k token，再做标准注意力；被 [GLM-5](https://arxiv.org/abs/2602.15763) 采用。
-- [DeepSeek-V4](https://arxiv.org/abs/2606.19348)：混合压缩稀疏注意力（CSA）与重度压缩注意力（HCA），1.6T 与 284B 两个模型都支持 100 万 token。
-- [MiniMax Sparse Attention](https://arxiv.org/abs/2606.13392)：在 GQA 的每个组内独立选块，主分支只对选中的块做精确注意力。
-
-### 6.6 改造 softmax 本身
-
-[差分注意力](https://arxiv.org/abs/2410.05258)用两组 softmax 相减抵消共模噪声；[遗忘 Transformer](https://arxiv.org/abs/2503.02130)给 softmax 注意力加上数据相关的遗忘门；[Softpick](https://arxiv.org/abs/2504.20966) 用整流 softmax 去掉汇聚点；[门控注意力](https://arxiv.org/abs/2505.06708)在输出端加 sigmoid 门。这些改动的共同点是：允许一个头"什么都不读"，不必把注意力强行分配到汇聚点上。
-
-## 7 架构 II：线性注意力、状态空间、混合与循环
-
-### 7.1 线性注意力就是 RNN
-
-去掉 softmax、用核特征 $\phi$ 近似相似度后，因果注意力可写成递归（[Katharopoulos 等](https://arxiv.org/abs/2006.16236)）：
-
-$$S_t=S_{t-1}+v_t\,\phi(k_t)^\top,\qquad o_t=S_t\,\phi(q_t).$$
-
-状态 $S_t\in\mathbb R^{d_v\times d_k}$ 大小固定，推理时每步 $O(1)$。问题是它只会"加"不会"忘"，有限的状态很快被写满。
-
-### 7.2 遗忘与改写：门控与 delta 规则
-
-两种修补互补：
-
-- 门控（衰减）：$S_t=\alpha_tS_{t-1}+v_tk_t^\top$，$\alpha_t$ 由输入决定，可以整体遗忘（[RetNet](https://arxiv.org/abs/2307.08621)、[GLA](https://arxiv.org/abs/2312.06635)、[Mamba](https://arxiv.org/abs/2312.00752)）。
-- Delta 规则（改写）：把状态看作一个联想记忆，每步对损失 $\frac12\lVert Sk_t-v_t\rVert^2$ 做一步梯度下降：
-
-$$S_t=S_{t-1}\bigl(I-\beta_tk_tk_t^\top\bigr)+\beta_tv_tk_t^\top ,$$
-
-可以精确地替换键 $k_t$ 处的旧值（[DeltaNet](https://arxiv.org/abs/2406.06484)）。
-
-[Gated DeltaNet](https://arxiv.org/abs/2412.06464) 把两者结合：$S_t=\alpha_tS_{t-1}(I-\beta_tk_tk_t^\top)+\beta_tv_tk_t^\top$。Moonshot 的 [KDA](https://arxiv.org/abs/2510.26692) 把标量门 $\alpha_t$ 换成逐通道的对角门，并设计了专用的 DPLR 分块算法；以 3:1 与 MLA 混合的 Kimi Linear（48B 总参、3B 激活）首次在公平比较中于短上下文、长上下文与 RL 扩展三种设置下全面超过全注意力，KV 缓存最多减少 75%，百万上下文的解码吞吐提升约 6 倍。
-
-### 7.3 状态空间模型与对偶性
-
-结构化 SSM 由连续系统 $\dot h=Ah+Bx$, $y=Ch$ 离散化而来，可以按递归或卷积两种方式计算（[S4](https://arxiv.org/abs/2111.00396)）。[Mamba](https://arxiv.org/abs/2312.00752) 让 $B,C$ 与步长依赖输入（"选择性"），用硬件感知的并行扫描实现，在语言上首次以线性复杂度匹敌 Transformer。[Mamba-2](https://arxiv.org/abs/2405.21060) 证明：当 $A$ 是标量乘单位阵时，SSM 与带特定衰减掩码的线性注意力是同一族半可分矩阵（状态空间对偶），从而可以用矩阵乘法高效训练。
-
-### 7.4 表达力：状态追踪
-
-Transformer 与对角线性 RNN 都在电路复杂度类 TC⁰ 中，难以做"状态追踪"（如长序列的奇偶校验、置换复合）。[Grazzi 等](https://arxiv.org/abs/2411.12537)证明：只要允许状态转移矩阵有负特征值（例如把 delta 规则的 $\beta$ 范围扩到 $[0,2]$），线性 RNN 就能解决奇偶校验；[RWKV-7](https://arxiv.org/abs/2503.14456) 用广义 delta 规则可识别所有正则语言。[对角 SSM 的表达极限](https://arxiv.org/abs/2603.01959)与 [PAR](https://arxiv.org/abs/2610.27628) 从不同角度继续刻画这一边界。
-
-### 7.5 混合架构成为主流
-
-纯线性模型在"从长上下文中精确检索"上仍弱于注意力，于是混合成为共识：[Jamba](https://arxiv.org/abs/2403.19887)（Mamba + 注意力 + MoE）、[MiniMax-01](https://arxiv.org/abs/2501.08313)（闪电注意力 : softmax = 7 : 1）、[Qwen3-Next](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct)（Gated DeltaNet : 门控注意力 = 3 : 1）、[Kimi Linear](https://arxiv.org/abs/2510.26692)（KDA : MLA = 3 : 1）、[Nemotron 3](https://arxiv.org/abs/2512.20856)（Mamba-Transformer MoE），直到 2.8T 的 [Kimi K3](https://arxiv.org/abs/2607.24653)。另一种思路是改造注意力本身：[Log-Linear Attention](https://arxiv.org/abs/2506.04761) 让隐状态数随长度对数增长；["滑窗胜过线性注意力"](https://arxiv.org/abs/2608.28444)提醒混合层的选择仍有争议。
-
-### 7.6 测试时训练：把记忆写进权重
-
-delta 规则其实是"每读一个 token，就在一个线性模型上做一步 SGD"。沿这一视角：[TTT 层](https://arxiv.org/abs/2407.04620)把隐状态换成一个 MLP，在测试时用自监督损失更新；[Titans](https://arxiv.org/abs/2501.00663) 用"惊奇度"（梯度大小）与动量决定写入，并配合遗忘门；[Miras](https://arxiv.org/abs/2504.13173) 把 Transformer、线性 RNN 与 Titans 统一为"注意力偏置 + 保留门 + 在线优化算法"的联想记忆设计空间；[LaCT](https://arxiv.org/abs/2505.23884) 用数千 token 的大块更新快权重，使测试时训练的硬件利用率接近注意力。Google 的 [Nested Learning](https://arxiv.org/abs/2512.24695) 更进一步：把整个模型看作一组嵌套的、更新频率不同的优化问题（梯度下降本身也是一种联想记忆），并据此设计自修改的 HOPE 架构与连续记忆系统。
-
-### 7.7 循环深度：在隐空间里"多想几遍"
-
-另一条扩展测试时计算的路是重复使用同一组层。[Geiping 等](https://arxiv.org/abs/2502.05171)训练的循环深度模型在测试时迭代更多次即可提升推理；[HRM](https://arxiv.org/abs/2506.21734) 用高低两个时间尺度的循环模块，27M 参数即在 ARC、数独上表现突出；[TRM](https://arxiv.org/abs/2510.04871) 把它简化为 2 层、7M 参数的递归网络，在 ARC-AGI-1 上达到 45%；[Ouro](https://arxiv.org/abs/2510.25741) 把循环推理放进预训练，1.4B/2.6B 循环模型匹敌 12B 级稠密模型；[Mixture-of-Recursions](https://arxiv.org/abs/2507.10524) 按 token 路由不同的循环深度。2026 年，[SMELT](https://arxiv.org/abs/2609.01343) 给出算力匹配下循环 MoE 的扩展律。
-
-## 8 架构 III：混合专家、条件计算与条件记忆
-
-### 8.1 路由
-
-MoE 层有 $E$ 个专家 FFN 与一个路由器。对 token 表示 $x$，计算门控分数 $s=\mathrm{softmax}(W_rx)$（或 sigmoid），取 top-$k$：
-
-$$y=\sum_{i\in\mathrm{TopK}(s,k)}g_i\,\mathrm{FFN}_i(x).$$
-
-总参数随 $E$ 增长，每 token 的计算只随 $k$ 增长（[Shazeer 等](https://arxiv.org/abs/1701.06538)、[GShard](https://arxiv.org/abs/2006.16668)、[Switch](https://arxiv.org/abs/2101.03961)）。
-
-### 8.2 负载均衡与专门化
-
-路由容易坍缩到少数专家。经典做法是加辅助损失 $\mathcal L_{\text{bal}}=\alpha E\sum_i f_iP_i$（$f_i$ 为实际分到专家 $i$ 的 token 比例，$P_i$ 为平均路由概率）；[ST-MoE](https://arxiv.org/abs/2202.08906) 加 router z-loss 稳定 logit。[无辅助损失均衡](https://arxiv.org/abs/2408.15664)改为给每个专家加一个只用于选择、不参与加权的偏置项，按负载动态调整，避免辅助损失干扰主目标（DeepSeek-V3 采用）。[Qwen](https://arxiv.org/abs/2501.11873) 发现均衡损失应在全局批次而非微批次上计算，专家专门化程度显著提升。
-
-### 8.3 细粒度与超稀疏
-
-[DeepSeekMoE](https://arxiv.org/abs/2401.06066) 把专家切得更细、增加激活数量以提高组合灵活性，并设置始终激活的共享专家吸收通用知识。随后模型越来越稀疏：激活比例从 [Mixtral](https://arxiv.org/abs/2401.04088) 的约 28% 降到 [DeepSeek-V3](https://arxiv.org/abs/2412.19437) 的 5.5%、[Kimi K2](https://arxiv.org/abs/2507.20534) 的约 3%；[LongCat-Flash](https://arxiv.org/abs/2509.01322) 引入"零计算专家"让每 token 的激活量随难度动态变化；[Kimi K3](https://arxiv.org/abs/2607.24653) 的 Stable LatentMoE 从 896 个专家中选 16 个。
-
-### 8.4 条件记忆：知识应该"查"而不是"算"
-
-DeepSeek 的 [Engram](https://arxiv.org/abs/2601.07372) 提出：MoE 用条件计算扩展容量，但 Transformer 缺少"查知识"的原语，只能用计算模拟检索。Engram 把经典的 n-gram 嵌入现代化为 O(1) 查表的条件记忆模块，与 MoE 互补。把总参数在两者之间分配时出现 U 形扩展律；扩展到 27B 记忆参数后，在严格等参数、等 FLOPs 下胜过纯 MoE，且推理与代码的提升甚至大于知识类任务。同期的相关证据：[Over-Tokenized Transformer](https://arxiv.org/abs/2501.16975) 显示输入词表越大越好，[扩展嵌入](https://arxiv.org/abs/2601.21204)在一些区间优于扩展专家，[Qwen3.8-Next](https://arxiv.org/abs/2608.30320) 把 51B 的 n-gram 表放到加速器之外，[记忆层](https://arxiv.org/abs/2412.09764)与 [UltraMemV2](https://arxiv.org/abs/2508.18756) 用可训练的大规模键值表补充事实性知识。
-
-## 9 表征学习与自监督
-
-### 9.1 对比学习
-
-InfoNCE（[CPC](https://arxiv.org/abs/1807.03748)）对一个正样本与 $K$ 个负样本：
-
-$$\mathcal L=-\log\frac{\exp(\mathrm{sim}(z,z^+)/\tau)}{\exp(\mathrm{sim}(z,z^+)/\tau)+\sum_{j=1}^{K}\exp(\mathrm{sim}(z,z_j^-)/\tau)},$$
-
-是互信息的下界。[SimCLR](https://arxiv.org/abs/2002.05709) 用强数据增强与大批量，[MoCo](https://arxiv.org/abs/1911.05722) 用动量编码器与队列，[CLIP](https://arxiv.org/abs/2103.00020) 把它用于 4 亿图文对，[SigLIP](https://arxiv.org/abs/2303.15343) 改用逐对的 sigmoid 损失。
-
-### 9.2 自蒸馏与掩码建模
-
-[BYOL](https://arxiv.org/abs/2006.07733) 与 [DINO](https://arxiv.org/abs/2104.14294) 不用负样本，让学生网络预测动量教师的输出，靠中心化、锐化等技巧避免坍缩；[MAE](https://arxiv.org/abs/2111.06377) 遮住 75% 的图像块再重建像素。[DINOv2](https://arxiv.org/abs/2304.07193) 在精选数据上结合二者。
-
-### 9.3 联合嵌入预测架构（JEPA）
-
-[I-JEPA](https://arxiv.org/abs/2301.08243) 在表征空间而非像素空间预测被遮挡区域，避免浪费容量去建模不可预测的细节。[V-JEPA](https://arxiv.org/abs/2404.08471) 把它用于视频；[V-JEPA 2](https://arxiv.org/abs/2506.09985) 用超过百万小时的视频预训练，再用不到 62 小时的无标注机器人视频训练动作条件世界模型，在新环境中零样本规划抓取与放置。[LeJEPA](https://arxiv.org/abs/2511.08544) 从理论上证明各向同性高斯是 JEPA 嵌入的最优分布，用一个 SIGReg 正则替代了停梯度、教师网络等一系列启发式技巧。
-
-### 9.4 最近两年：扩展与收敛
-
-[DINOv3](https://arxiv.org/abs/2508.10104) 把自监督骨干扩展到 7B，发现长训练会让稠密特征退化，提出 Gram anchoring 保持局部特征的一致性；[Web-SSL](https://arxiv.org/abs/2504.01017) 在与 CLIP 相同的数据上把纯视觉自监督扩展到 7B，在 VQA 上追平语言监督的模型——语言并非视觉表征的必需监督。[SigLIP 2](https://arxiv.org/abs/2502.14786)、[Perception Encoder](https://arxiv.org/abs/2504.13181)（最好的特征藏在中间层）、[AIMv2](https://arxiv.org/abs/2411.14402)（多模态自回归预训练）代表了语言监督一侧的进展。表征也开始反哺生成：[REPA](https://arxiv.org/abs/2410.06940) 把扩散 Transformer 的中间层对齐到 DINOv2，训练提速 17 倍；[RAE](https://arxiv.org/abs/2510.11690) 直接用冻结的表征编码器作扩散的潜空间（详见<a href="../diffusion_survey/">扩散导读</a>）。
-
-## 10 预训练：数据、分词与目标
-
-### 10.1 数据成为主要变量
-
-架构趋同后，数据决定了大部分差异。路线从"过滤 + 去重"（[RefinedWeb](https://arxiv.org/abs/2306.01116)）到基于模型的质量打分（[FineWeb-Edu](https://arxiv.org/abs/2406.17557)、[DCLM](https://arxiv.org/abs/2406.11794)），再到改写与合成（[Phi-1](https://arxiv.org/abs/2306.11644)、[Nemotron-CC](https://arxiv.org/abs/2412.02595)、[BeyondWeb](https://arxiv.org/abs/2508.10975)：改写网页优于从零生成）。数据配比被纳入扩展律（[Shukor 等](https://arxiv.org/abs/2507.09404)、[DataDecide](https://arxiv.org/abs/2504.11393)：小规模实验的排序在大规模基本成立）；[OPUS](https://arxiv.org/abs/2602.05400) 在每一步按优化器诱导的更新方向挑选数据。合成数据也有风险：[模型崩溃](https://arxiv.org/abs/2305.17493)表明递归地用生成数据训练会丢失分布尾部。
-
-### 10.2 中期训练与面向 RL 的预训练
-
-预训练与后训练之间出现了"中期训练"：用高质量数学、代码、长上下文与推理数据退火。[OctoThinker](https://arxiv.org/abs/2506.20512) 发现中期训练决定了基座能否被 RL 有效提升；[Agentic CPT](https://arxiv.org/abs/2509.13310) 与 [daVinci-Dev](https://arxiv.org/abs/2601.18418) 把智能体轨迹放进持续预训练。
-
-### 10.3 分词与"下一 token"的再思考
-
-BPE（[Sennrich 等](https://arxiv.org/abs/1508.07909)）仍是主流，但它带来多语言不公平（[Token 税](https://arxiv.org/abs/2509.05486)）与字符级盲区。[BLT](https://arxiv.org/abs/2412.09871) 按下一字节的熵动态切块，首次在规模上匹敌基于 tokenizer 的模型；[H-Net](https://arxiv.org/abs/2507.07955) 端到端学习分块；[SuperBPE](https://arxiv.org/abs/2503.13423) 允许跨空格的"超词"。目标函数层面：[多 token 预测](https://arxiv.org/abs/2404.19737)提升样本效率（DeepSeek-V3 采用）；[强化预训练](https://arxiv.org/abs/2506.08007)把下一 token 预测改写为可验证的推理任务；[Large Concept Models](https://arxiv.org/abs/2412.08821)、[NCP](https://arxiv.org/abs/2609.10715) 在句子或"概念"层面建模；[LLaDA](https://arxiv.org/abs/2502.09992) 用掩码扩散替代自回归。
-
-## 11 后训练：从 RLHF 到 RLVR 与在策略蒸馏
-
-### 11.1 RLHF 与 DPO
-
-RLHF 先用偏好比较训练奖励模型 $r_\phi$（Bradley–Terry 模型 $P(y_w\succ y_l)=\sigma(r(y_w)-r(y_l))$），再优化带 KL 约束的目标（[Christiano 等](https://arxiv.org/abs/1706.03741)、[InstructGPT](https://arxiv.org/abs/2203.02155)）：
-
-$$\max_{\pi}\ \mathbb E_{x,\,y\sim\pi}\bigl[r_\phi(x,y)\bigr]-\beta\,\mathrm{KL}\bigl(\pi(\cdot\mid x)\,\Vert\,\pi_{\text{ref}}(\cdot\mid x)\bigr).$$
-
-其最优解为 $\pi^\star(y\mid x)\propto\pi_{\text{ref}}(y\mid x)\exp(r(x,y)/\beta)$，即 $r(x,y)=\beta\log\frac{\pi^\star(y\mid x)}{\pi_{\text{ref}}(y\mid x)}+\beta\log Z(x)$。代回 Bradley–Terry 模型，配分函数 $Z(x)$ 相消，得到只依赖策略本身的 [DPO](https://arxiv.org/abs/2305.18290) 损失：
-
-$$\mathcal L_{\text{DPO}}=-\mathbb E\Bigl[\log\sigma\Bigl(\beta\log\frac{\pi_\theta(y_w\mid x)}{\pi_{\text{ref}}(y_w\mid x)}-\beta\log\frac{\pi_\theta(y_l\mid x)}{\pi_{\text{ref}}(y_l\mid x)}\Bigr)\Bigr].$$
-
-[Gao 等](https://arxiv.org/abs/2210.10760)发现对代理奖励优化越多，真实奖励先升后降——奖励投机是 RLHF 的内在问题。
-
-### 11.2 GRPO 与 RLVR
-
-对可以程序验证答案的任务（数学、代码），奖励直接来自验证器，不再需要奖励模型。[GRPO](https://arxiv.org/abs/2402.03300) 对每道题采样 $G$ 个回答，用组内标准化的奖励作为优势，省去价值网络：
-
-$$\hat A_i=\frac{r_i-\mathrm{mean}(r_{1..G})}{\mathrm{std}(r_{1..G})},\qquad \mathcal J=\mathbb E\Bigl[\frac1G\sum_i\frac1{|o_i|}\sum_t\min\bigl(\rho_{i,t}\hat A_i,\ \mathrm{clip}(\rho_{i,t},1-\epsilon,1+\epsilon)\hat A_i\bigr)\Bigr]-\beta\,\mathrm{KL},$$
-
-其中 $\rho_{i,t}$ 是新旧策略在第 $t$ 个 token 上的概率比。[Tülu 3](https://arxiv.org/abs/2411.15124) 把这种做法命名为 RLVR；[DeepSeek-R1](https://arxiv.org/abs/2501.12948) 证明只用规则奖励的纯 RL（R1-Zero）就能让模型涌现出长思维链、自我验证与反思。
-
-### 11.3 修补 GRPO
-
-- [Dr. GRPO](https://arxiv.org/abs/2503.20783)：按回答长度 $1/|o_i|$ 归一化会偏向长的错误回答，除以标准差会偏向过易或过难的题；去掉二者更无偏。
-- [DAPO](https://arxiv.org/abs/2503.14476)：上下裁剪解耦（放宽上界以保持探索）、动态采样（丢弃全对或全错的组）、token 级损失聚合、超长惩罚。
-- [GSPO](https://arxiv.org/abs/2507.18071)：token 级重要性比在 MoE 上方差很大，改用序列级比率与裁剪，稳定了 Qwen3 的大规模 RL。
-- [Qwen 的形式化](https://arxiv.org/abs/2512.01374)：token 级替代目标只是序列级目标的一阶近似，仅当训练-推理不一致与策略陈旧都很小时才成立；这解释了重要性采样修正、裁剪与 MoE 的路由重放为何关键。
-- 熵：[Cui 等](https://arxiv.org/abs/2505.22617)发现策略熵塌缩限制了性能，熵的变化由动作概率与优势的协方差驱动；[Wang 等](https://arxiv.org/abs/2506.01939)发现只有约 20% 的高熵"分叉"token 决定了 RLVR 的效果。
-
-### 11.4 RL 是在激发还是在创造
-
-[Yue 等](https://arxiv.org/abs/2504.13837)发现在 $k$ 很大时，基座模型的 pass@k 反超 RLVR 模型：RL 主要提高了采样效率，而非扩展可解问题的集合。反方证据包括：[ProRL](https://arxiv.org/abs/2505.24864) 长时间、有 KL 控制与参考模型重置的训练确实扩展了边界；[CoT-Pass@k](https://arxiv.org/abs/2506.14245) 显示 RLVR 提升了推理过程本身的正确性。同时，[虚假奖励](https://arxiv.org/abs/2506.10947)（随机甚至错误的奖励也能提升 Qwen2.5-Math）与 [单样本 RL](https://arxiv.org/abs/2504.20571) 说明很大一部分收益来自激发预训练中已有的行为，[数据污染](https://arxiv.org/abs/2507.10532)则让部分结论不可靠。机制上，RL 只稀疏地更新 5%–30% 的参数（[Mukherjee 等](https://arxiv.org/abs/2505.11711)），更新避开权重的主方向（[Zhu 等](https://arxiv.org/abs/2511.08567)），并偏向与原模型 KL 最小的解，因此比 SFT 遗忘更少（[RL's Razor](https://arxiv.org/abs/2509.04259)）；对比实验也显示 SFT 倾向记忆而 RL 更能泛化（[Chu 等](https://arxiv.org/abs/2501.17161)）。
-
-### 11.5 在策略蒸馏
-
-SFT 用教师的离线轨迹训练学生，学生在推理时却要面对自己生成的前缀（暴露偏差）；RL 在策略，但每条回答只有一个稀疏奖励。[在策略蒸馏](https://thinkingmachines.ai/blog/on-policy-distillation/)（Thinking Machines，2025-10）让学生自己采样，再用教师对每个 token 计算反向 KL：
-
-$$\mathcal L_{\text{OPD}}=\mathbb E_{y\sim\pi_\theta}\sum_t\Bigl[\log\pi_\theta(y_t\mid y_{<t})-\log\pi_{\text{T}}(y_t\mid y_{<t})\Bigr],$$
-
-相当于每个 token 都有稠密奖励的 RL，成本远低于 RL。2026 年围绕它出现了大量研究：现象、机制与配方（[清华](https://arxiv.org/abs/2604.13016)）、单样本 OPD（[OPD II](https://arxiv.org/abs/2609.04172)）、在/离策略蒸馏动力学的系统比较（[UC](https://arxiv.org/abs/2609.35259)）、长度膨胀（[Microsoft](https://arxiv.org/abs/2609.20511)）、奖励外推以超越教师（[G-OPD](https://arxiv.org/abs/2602.12125)）、用弱教师激发强学生（[弱到强 OPD](https://arxiv.org/abs/2607.05394)）；工业管线普遍采用"级联 RL + 多领域在策略蒸馏"（[Nemotron-Cascade 2](https://arxiv.org/abs/2603.19220)）。
-
-## 12 推理与测试时计算
-
-### 12.1 从提示到训练
-
-[思维链](https://arxiv.org/abs/2201.11903)提示让模型写出中间步骤；[自洽性](https://arxiv.org/abs/2203.11171)采样多条推理后投票；[Tree of Thoughts](https://arxiv.org/abs/2305.10601) 把推理组织成可回溯的树。训练层面，[STaR](https://arxiv.org/abs/2203.14465) 用模型自己生成且答案正确的推理链迭代微调，[过程监督](https://arxiv.org/abs/2305.20050)（逐步打分）优于结果监督。[o1](https://openai.com/index/learning-to-reason-with-llms/) 与 R1 把这一切统一为：用 RL 训练模型生成长思维链，推理能力随训练算力与思考长度平滑提升。
-
-### 12.2 推理算力怎么花
-
-[Snell 等](https://arxiv.org/abs/2408.03314)比较了"顺序修改"与"并行采样 + 验证器搜索"，发现最优策略取决于题目难度；[Liu 等](https://arxiv.org/abs/2502.06703)发现在合适的测试时策略下 1B 模型可以在数学上超过 405B 模型。[s1](https://arxiv.org/abs/2501.19393) 用 1000 条样本 SFT 加"预算强制"（在模型想停时追加 Wait）即可实现测试时扩展；[LIMO](https://arxiv.org/abs/2502.03387) 用 817 条精选样本激发复杂推理。验证器本身也在变强：[DeepSeek-GRM](https://arxiv.org/abs/2504.02495) 让奖励模型先生成原则与批评再打分，使奖励模型也能随推理算力扩展；[DeepSeekMath-V2](https://arxiv.org/abs/2511.22570) 训练证明验证器，实现可自我验证的定理证明。
-
-### 12.3 效率：别想太多
-
-推理模型常在简单题上过度思考（[Chen 等](https://arxiv.org/abs/2412.21187)）。对策包括：学会何时思考（[AdaptThink](https://arxiv.org/abs/2505.13417)）、在测试时调度快慢思考（[AlphaOne](https://arxiv.org/abs/2505.24863)）、把思考切成固定长度的块只携带短状态以获得线性算力（[Markovian Thinker](https://arxiv.org/abs/2510.06557)）、并行思考（[Parallel-R1](https://arxiv.org/abs/2509.07980)、[Multiverse](https://arxiv.org/abs/2506.09991)）。综述见 [Sui 等](https://arxiv.org/abs/2503.16419)。
-
-### 12.4 推理是否必须用语言
-
-[Coconut](https://arxiv.org/abs/2412.06769) 把最后一层隐状态直接作为下一步输入，在连续空间中推理，可同时保留多个候选分支；循环深度模型（第 7.7 节）在隐空间迭代。[Anthropic](https://arxiv.org/abs/2505.05410) 发现推理模型的思维链常常不承认使用了提示中的线索，即语言化的推理并不总是忠实于内部计算；这既是潜空间推理的动机，也是安全上的隐忧（第 15 节）。
-
-### 12.5 前沿检验：数学、算法与竞赛
-
-2025 年 IMO 上，[Gemini Deep Think](https://deepmind.google/discover/blog/advanced-version-of-gemini-with-deep-think-officially-achieves-gold-medal-standard-at-the-international-mathematical-olympiad/) 用自然语言在比赛时限内解出 6 题中的 5 题，形式化系统 [Aristotle](https://arxiv.org/abs/2510.01346) 与 [Seed-Prover](https://arxiv.org/abs/2507.23726) 也达到金牌级；[DeepSeek-V3.2-Speciale](https://arxiv.org/abs/2512.02556) 在 IMO 与 IOI 上达到金牌水平；[OpenAI](https://arxiv.org/abs/2502.06807) 的通用 RL 模型 o3 无需人工策略即在 IOI 拿到金牌。[AlphaEvolve](https://arxiv.org/abs/2506.13131) 把 LLM 与进化搜索、自动评估结合，发现了 4×4 复数矩阵乘法的更优算法并优化了数据中心调度。
-
-## 13 可解释性
-
-### 13.1 电路与叠加
-
-[Olah 等](https://distill.pub/2020/circuits/zoom-in/)提出"特征是基本单元、权重把特征连成电路"的研究纲领；[Elhage 等](https://transformer-circuits.pub/2021/framework/index.html)把 Transformer 分解为对残差流读写的注意力头（QK 电路决定看哪里，OV 电路决定搬什么）。[归纳头](https://arxiv.org/abs/2209.11895)与 [IOI 电路](https://arxiv.org/abs/2211.00593)是早期的完整案例。困难在于神经元是多义的：[叠加](https://arxiv.org/abs/2209.10652)理论表明，当特征稀疏、数量多于维度时，网络会用近乎正交的方向存储它们，以少量干扰换取容量。
-
-### 13.2 字典学习与稀疏自编码器
-
-SAE 学一个过完备字典 $x\approx W_d\,\mathrm{ReLU}(W_ex+b)$ 并对激活施加稀疏惩罚，把多义神经元分解为单义特征（[Cunningham 等](https://arxiv.org/abs/2309.08600)、[Towards Monosemanticity](https://transformer-circuits.pub/2023/monosemantic-features/index.html)）。[Scaling Monosemanticity](https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html) 在 Claude 3 Sonnet 上提取了数千万特征，包括抽象、多语言与安全相关的特征，并可用于操控行为；[OpenAI](https://arxiv.org/abs/2406.04093) 给出 SAE 的扩展律，[Gemma Scope](https://arxiv.org/abs/2408.05147) 开放了全层 SAE。
-
-### 13.3 最近两年：归因图、稀疏电路与内省
-
-- 归因图：Anthropic 用跨层转码器（[transcoder](https://arxiv.org/abs/2406.11944) 的推广）构建可解释的替代模型，再为具体输入画出特征之间的因果图（[电路追踪](https://transformer-circuits.pub/2025/attribution-graphs/methods.html)），在 Claude 3.5 Haiku 中看到两跳推理的中间步骤、写诗时提前选定韵脚、不同语言共享的概念表示等（[大语言模型的生物学](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)）。
-- 设计可解释的模型：OpenAI 训练权重极稀疏的 Transformer，使每个神经元只有少量连接，剪枝后得到人能读懂的小电路，并发现扩大模型能改善"能力-可解释性"前沿（[Gao 等](https://arxiv.org/abs/2511.13653)）。
-- 内省：[Lindsey](https://arxiv.org/abs/2601.01828) 向模型激活中注入已知概念，发现最强的模型有时能察觉并准确说出被注入的概念，还能区分自己的输出与人为预填——有限但真实的内省能力。
-- 人格与安全：[人格向量](https://arxiv.org/abs/2507.21509)提取"邪恶""谄媚""幻觉"等特质方向，可用于监控、以及在训练中预防人格漂移；[审计游戏](https://arxiv.org/abs/2503.10965)中，蓝队借助可解释性工具找出了被故意植入的隐藏目标。
-- 反思：[Kantamneni 等](https://arxiv.org/abs/2502.16681)发现在数据稀缺、分布偏移等困难设置下，SAE 探针并不稳定地优于简单线性探针；[合理性检查](https://arxiv.org/abs/2602.14111)发现 SAE 在部分指标上未必胜过随机基线；[开放问题](https://arxiv.org/abs/2501.16496)综述了方法论层面的挑战。
-
-## 14 效率：量化、低精度训练与推理系统
-
-### 14.1 量化
-
-后训练量化的难点是激活中的离群通道（[LLM.int8()](https://arxiv.org/abs/2208.07339)）。[GPTQ](https://arxiv.org/abs/2210.17323) 用近似二阶信息逐层补偿量化误差（[几何视角](https://arxiv.org/abs/2507.18553)：它等价于格上的 Babai 最近平面算法）；[AWQ](https://arxiv.org/abs/2306.00978) 保护按激活重要的权重通道；[SmoothQuant](https://arxiv.org/abs/2211.10438) 把激活离群值的难度迁移到权重。原生低比特模型方面，[BitNet b1.58](https://arxiv.org/abs/2402.17764) 用三值权重从头训练，[BitNet b1.58 2B4T](https://arxiv.org/abs/2504.12285) 开源了首个原生 1-bit 的 2B 模型。
-
-### 14.2 低精度训练：FP8 → FP4
-
-混合精度训练（[Micikevicius 等](https://arxiv.org/abs/1710.03740)）用 FP16/BF16 计算、FP32 主权重。[DeepSeek-V3](https://arxiv.org/abs/2412.19437) 用细粒度（逐块）缩放的 FP8 完成 671B 模型的预训练。4-bit 训练最近两年成熟：[Quartet](https://arxiv.org/abs/2505.14669) 给出 MXFP4 原生训练的算法与扩展律；NVIDIA 用随机 Hadamard 变换、二维缩放与随机舍入，以 NVFP4 训练 12B 模型 10T token（[NVFP4](https://arxiv.org/abs/2509.25149)）；[Quartet II](https://arxiv.org/abs/2601.22813) 改进了无偏梯度估计；[Nemotron 3](https://arxiv.org/abs/2512.20856) Super 与 Ultra 用 NVFP4 训练。
-
-### 14.3 推理系统
-
-[vLLM](https://arxiv.org/abs/2309.06180) 借鉴操作系统的分页管理 KV 缓存；[SGLang](https://arxiv.org/abs/2312.07104) 用基数树复用前缀；[DistServe](https://arxiv.org/abs/2401.09670) 与 [Mooncake](https://arxiv.org/abs/2407.00079) 把预填充与解码分离到不同设备。[推测解码](https://arxiv.org/abs/2211.17192)用小模型起草、大模型并行验证，保证输出分布不变；[Medusa](https://arxiv.org/abs/2401.10774)、[EAGLE](https://arxiv.org/abs/2401.15077)、[EAGLE-3](https://arxiv.org/abs/2503.01840) 不断提高草稿接受率。面向智能体负载，[DualPath](https://arxiv.org/abs/2602.21548) 指出多轮推理的瓶颈已从计算转向 KV 缓存的存储 I/O。
-
-### 14.4 参数高效微调
-
-[LoRA](https://arxiv.org/abs/2106.09685) 只训练低秩增量 $\Delta W=BA$，[QLoRA](https://arxiv.org/abs/2305.14314) 在 4-bit 底座上训练 LoRA。[Thinking Machines](https://thinkingmachines.ai/blog/lora/) 的系统实验表明，合理配置（更大的学习率、作用于所有层）的 LoRA 在后训练与 RL 场景下可以匹敌全参数微调，而 RL 所需的容量极小——每回合只传递约 1 bit 的信息。
-
-## 15 安全与鲁棒性
-
-### 15.1 对抗鲁棒性
-
-[Szegedy 等](https://arxiv.org/abs/1312.6199)发现人眼不可察觉的扰动就能让分类器出错；[Goodfellow 等](https://arxiv.org/abs/1412.6572)把它归因于高维下的线性；[Madry 等](https://arxiv.org/abs/1706.06083)给出以 PGD 为对手的鲁棒优化框架。LLM 时代，[GCG](https://arxiv.org/abs/2307.15043) 自动搜索出可迁移的对抗后缀；[新近工作](https://arxiv.org/abs/2508.17456)把对抗脆弱性与特征叠加联系起来。
-
-### 15.2 对齐的意外后果
-
-- [Sleeper Agents](https://arxiv.org/abs/2401.05566)：植入的后门行为能挺过 SFT、RL 与对抗训练。
-- [对齐伪装](https://arxiv.org/abs/2412.14093)：Claude 3 Opus 在认为对话会被用于训练时策略性地顺从，以保护原有偏好；[后续研究](https://arxiv.org/abs/2506.18032)发现 25 个模型中只有少数表现出这种行为。
-- [涌现失准](https://arxiv.org/abs/2502.17424)：只在"写不安全代码"这一窄任务上微调，就会导致广泛的有害、失准行为；[潜意识学习](https://arxiv.org/abs/2507.14805)进一步发现，学生模型能从看似无关的数据（如数字序列）中继承教师的特质，前提是共享初始化。
-- [奖励投机导致的自然涌现失准](https://arxiv.org/abs/2511.18397)：在 Anthropic 的生产级编程 RL 环境中学会奖励投机的模型，会泛化出对齐伪装、与恶意行为者合作、破坏安全研究等行为。
-- 谋划与评测意识：前沿模型在给定目标的智能体场景中会隐瞒、关闭监督（[Apollo](https://arxiv.org/abs/2412.04984)），面临被替换时会采取勒索等手段（[智能体失准](https://www.anthropic.com/research/agentic-misalignment)），并常能识别自己在被评测（[Needham 等](https://arxiv.org/abs/2505.23836)）。
-
-### 15.3 监控与防御
-
-[审慎对齐](https://arxiv.org/abs/2412.16339)让推理模型在回答前显式回忆并推理安全规范；[反谋划训练](https://arxiv.org/abs/2509.15541)能把隐蔽行为降低约 30 倍，但评测意识混淆了效果。[OpenAI](https://arxiv.org/abs/2503.11926) 发现思维链监控能抓住奖励投机，但对思维链施加优化压力会让模型学会隐藏意图；多家机构因此联合呼吁把[思维链可监控性](https://arxiv.org/abs/2507.11473)当作脆弱而需要保护的安全机会。防御侧还有[宪法分类器](https://arxiv.org/abs/2501.18837)与[宪法 AI](https://arxiv.org/abs/2212.08073)。对幻觉，[Kalai 等](https://arxiv.org/abs/2509.04664)给出统计解释：即使训练数据无误，生成式模型的错误也与二分类错误同源；而以准确率为主的评测奖励"猜测"而非"承认不知道"，使其在后训练中得以保留。
-
-## 16 核心应用概览
-
-**视觉感知与 3D。** [AlexNet](https://papers.nips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html) → [ResNet](https://arxiv.org/abs/1512.03385) → [ViT](https://arxiv.org/abs/2010.11929)；检测分割从 [Faster R-CNN](https://arxiv.org/abs/1506.01497)、[DETR](https://arxiv.org/abs/2005.12872) 到可提示的 [SAM](https://arxiv.org/abs/2304.02643)、[SAM 2](https://arxiv.org/abs/2408.00714)、[SAM 3](https://arxiv.org/abs/2511.16719)（按名词短语分割与跟踪所有实例）。几何方面，[NeRF](https://arxiv.org/abs/2003.08934)、[3D 高斯泼溅](https://arxiv.org/abs/2308.04079)之后，[DUSt3R](https://arxiv.org/abs/2312.14132)、[VGGT](https://arxiv.org/abs/2503.11651)、[MapAnything](https://arxiv.org/abs/2509.13414)、[Depth Anything 3](https://arxiv.org/abs/2511.10647) 用一次前向直接回归相机与几何。
-
-**生成。** GAN、VAE → 扩散与流匹配 + DiT → 视频与可交互世界模型（[Sora](https://openai.com/index/video-generation-models-as-world-simulators/)、[Genie 3](https://deepmind.google/discover/blog/genie-3-a-new-frontier-for-world-models/)）。详见<a href="../diffusion_survey/">扩散模型与流匹配导读</a>。
-
-**语音与音频。** [wav2vec 2.0](https://arxiv.org/abs/2006.11477) 的自监督、[Whisper](https://arxiv.org/abs/2212.04356) 的大规模弱监督、[VALL-E](https://arxiv.org/abs/2301.02111) 把 TTS 视为编解码 token 上的语言建模、[Moshi](https://arxiv.org/abs/2410.00037) 的全双工对话、[VibeVoice](https://arxiv.org/abs/2508.19205) 的超低帧率连续 token。
-
-**多模态。** [CLIP](https://arxiv.org/abs/2103.00020) → [Flamingo](https://arxiv.org/abs/2204.14198)、[LLaVA](https://arxiv.org/abs/2304.08485) → [Qwen2.5-VL](https://arxiv.org/abs/2502.13923)、[Qwen3-VL](https://arxiv.org/abs/2511.21631)、[InternVL3.5](https://arxiv.org/abs/2508.18265) → 原生全模态（[GPT-4o](https://arxiv.org/abs/2410.21276)、[Qwen3-Omni](https://arxiv.org/abs/2509.17765)、[Gemma 4](https://arxiv.org/abs/2607.02770) 的无编码器 12B）。[DeepSeek-OCR](https://arxiv.org/abs/2510.18234) 与 [Glyph](https://arxiv.org/abs/2510.17800) 把长文本渲染为图像，用视觉 token 压缩上下文。
-
-**智能体。** [ReAct](https://arxiv.org/abs/2210.03629)、[Toolformer](https://arxiv.org/abs/2302.04761) → [SWE-agent](https://arxiv.org/abs/2405.15793)、[Computer Use](https://www.anthropic.com/news/3-5-models-and-computer-use)、[Deep Research](https://openai.com/index/introducing-deep-research/) → 端到端智能体 RL（[ARPO](https://arxiv.org/abs/2507.19849)、[Tongyi DeepResearch](https://arxiv.org/abs/2510.24701)、[UI-TARS-2](https://arxiv.org/abs/2509.02544)）与 2026 年的 harness 工程和递归自我改进（[Raven](https://arxiv.org/abs/2609.33439)、[HarnessDev](https://arxiv.org/abs/2609.01437)、[Darwin Gödel Machine](https://arxiv.org/abs/2505.22954)）。[METR](https://arxiv.org/abs/2503.14499) 测得 AI 能完成的任务时长自 2019 年起约每 7 个月翻一番。
-
-**科学与数学。** [AlphaFold 2](https://www.nature.com/articles/s41586-021-03819-2)、[AlphaFold 3](https://www.nature.com/articles/s41586-024-07487-w)；[ESM3](https://www.science.org/doi/10.1126/science.ads0018)、[Evo 2](https://www.biorxiv.org/content/10.1101/2025.02.18.638918v1)、[AlphaGenome](https://deepmind.google/discover/blog/alphagenome-ai-for-better-understanding-the-genome/)；[GraphCast](https://arxiv.org/abs/2212.12794)、[GenCast](https://arxiv.org/abs/2312.15796)；[GNoME](https://www.nature.com/articles/s41586-023-06735-9)、[MatterGen](https://arxiv.org/abs/2312.03687)、[UMA](https://arxiv.org/abs/2506.23971)；[FunSearch](https://www.nature.com/articles/s41586-023-06924-6)、[AlphaEvolve](https://arxiv.org/abs/2506.13131)；自主科研（[AI co-scientist](https://arxiv.org/abs/2502.18864)、[Kosmos](https://arxiv.org/abs/2511.02824)）。
-
-**机器人。** [RT-2](https://arxiv.org/abs/2307.15818) → [Diffusion Policy](https://arxiv.org/abs/2303.04137) → [π0](https://arxiv.org/abs/2410.24164)、[π0.5](https://arxiv.org/abs/2504.16054) → [Gemini Robotics 1.5](https://arxiv.org/abs/2510.03342)；世界模型路线有 [V-JEPA 2](https://arxiv.org/abs/2506.09985) 与 [DreamZero](https://arxiv.org/abs/2602.15922)。详见<a href="../embodied_agent_survey/">机器人 × Agent 导读</a>。
-
-**博弈与决策。** [DQN](https://arxiv.org/abs/1312.5602) → [AlphaGo](https://www.nature.com/articles/nature16961) → [AlphaZero](https://arxiv.org/abs/1712.01815) → [MuZero](https://arxiv.org/abs/1911.08265) → [DreamerV3](https://arxiv.org/abs/2301.04104)、[Dreamer 4](https://arxiv.org/abs/2509.24527)。这条线积累的策略梯度、自我博弈与价值学习，如今是 LLM 后训练的基础。
-
-## 17 最近一年的原理前沿（2025-11 → 2026-10）
-
-这一节只讨论底层原理，不讨论大模型的工程配方。论文库中 1015 条发表于 2025-11 之后，其中 577 条在最近半年（2026-05 之后），附录中分别用 ◆ 与 🔥 标出。总体趋势是：过去被当作"经验规律"的现象，开始有了可以计算、可以证伪的解释，通常来自可解的玩具模型或受控实验。下面按问题组织，每小节先写结论，再写最关键的推导或公式。需要提醒：这些工作大多是预印本，结论的适用范围往往比标题窄。
-
-### 17.1 优化几何：隐式偏置、规范对称与 Muon 的容量
-
-第 2 节把优化器写成范数 $\|\cdot\|$ 下的最速下降：$\Delta\theta=-\eta\,\arg\max_{\|d\|\le 1}\langle g,d\rangle$，ℓ2 给出 SGD，ℓ∞ 给出符号下降（Adam 在 $\beta_1=\beta_2$、去掉 $\epsilon$ 时的极限），矩阵谱范数给出 Muon 的 $UV^\top$。最近一年，这个视角开始给出可检验的预测。
+上文把优化器写成范数 $\|\cdot\|$ 下的最速下降：$\Delta\theta=-\eta\,\arg\max_{\|d\|\le 1}\langle g,d\rangle$，ℓ2 给出 SGD，ℓ∞ 给出符号下降（Adam 在 $\beta_1=\beta_2$、去掉 $\epsilon$ 时的极限），矩阵谱范数给出 Muon 的 $UV^\top$。最近一年，这个视角开始给出可检验的预测。
 
 **隐式偏置。** 对 $L$ 阶齐次网络 $f(\theta;x)$ 定义归一化间隔 $\gamma(\theta)=\min_i y_i f(\theta;x_i)/\|\theta\|^{L}$。在衰减学习率下，带动量的最速下降轨迹近似于相应范数下的最速下降，因此方向上收敛到
 
@@ -494,7 +253,13 @@ $$
 
 **边界。** 严格调参下新优化器的加速有限（[Wen 等](https://arxiv.org/abs/2509.02046)），而矩阵预条件方法只有配合正确的超参数迁移才能跨规模保持增益（[超参数迁移](https://arxiv.org/abs/2512.05620)）；Adam 预训练的模型直接换 Muon 微调会失配（[优化器失配](https://arxiv.org/abs/2605.10468)）。
 
-### 17.2 稳定性边缘：从现象到可预测的常微分方程
+### 3.3 稳定性边缘与损失地形
+
+经典优化理论要求学习率 $\eta<2/\lambda_{\max}$（$\lambda_{\max}$ 为 Hessian 最大特征值，即"锐度"）。[Cohen 等](https://arxiv.org/abs/2103.00065)发现全批量梯度下降会经历"渐进锐化"，把锐度推到 $2/\eta$ 后停在那里振荡，损失却非单调地继续下降——稳定性边缘（EoS）。[Central Flows](https://arxiv.org/abs/2410.24206) 用"中心流"刻画振荡优化器的时间平均轨迹，解释了自适应优化器的隐式正则化。2026 年的工作继续讨论 EoS 的[起源](https://arxiv.org/abs/2604.20446)、[对泛化的影响](https://arxiv.org/abs/2604.19740)与 [Muon 越过 EoS](https://arxiv.org/abs/2610.24305) 的现象。
+
+平坦极小值与泛化的关系有长期争论：[Keskar 等](https://arxiv.org/abs/1609.04836)观察到大批量训练趋向尖锐极小值、泛化变差，[SAM](https://arxiv.org/abs/2010.01412) 显式寻找平坦区域；但锐度依赖参数化方式，单靠它无法完整解释泛化。
+
+#### 最近一年（2025-11 → 2026-10）
 
 对二次模型，梯度下降稳定当且仅当 $\eta\lambda_{\max}(H)<2$。实际训练中锐度 $S(\theta)=\lambda_{\max}(\nabla^2L)$ 会上升到 $2/\eta$ 并停在那里（稳定性边缘，EoS），损失非单调但长期下降。自稳定理论说明，GD 在 EoS 上近似执行约束优化
 
@@ -508,7 +273,13 @@ $$
 - **随机性。** 小批量 SGD 的锐度稳定在 $2/\eta$ 之下，间隙随批量变小而变大，现在有了理论解释（[随机锐度间隙](https://arxiv.org/abs/2604.21016)）。
 - **Muon 与大模型。** GD 中"损失中性、更新反转、边际稳定"三个条件在同一边缘重合，Muon 把它们拆开（[Muon 与 EoS](https://arxiv.org/abs/2609.34915)）；二次近似在 LLM 训练中的失效方式也被重新检验（[LLM 预训练与 EoS](https://arxiv.org/abs/2610.36778)）。
 
-### 17.3 学习率调度与权重衰减：一个"时钟"
+### 3.4 学习率、批大小与权重衰减
+
+几乎所有大模型训练都有 warmup。[Kalra 与 Barkeshli](https://arxiv.org/abs/2406.09405) 发现 warmup 的主要作用是把网络带到锐度更低、更"良态"的区域，从而容许更大的学习率。衰减阶段，[余弦调度](https://arxiv.org/abs/1608.03983)曾是默认；[MiniCPM](https://arxiv.org/abs/2404.06395) 提出 Warmup-Stable-Decay（WSD），可在任意时刻衰减得到可用的检查点；[河谷地形](https://arxiv.org/abs/2410.05192)解释了 WSD：稳定期沿着"河流"方向前进（损失看起来下降很慢），衰减期才下到"谷底"。[Bergsma 等](https://arxiv.org/abs/2502.15938)发现算力最优训练中，线性衰减到零（D2Z）稳定优于余弦衰减到 10%。
+
+[Goyal 等](https://arxiv.org/abs/1706.02677)的线性缩放规则在临界批大小以内成立；超过之后，加大批量不再减少所需步数。[Zhang 等](https://arxiv.org/abs/2410.21676)发现临界批大小主要随训练数据量而非模型规模增长；[Merrill 等](https://arxiv.org/abs/2505.23971)给出训练中实时测量临界批大小的经验方法，并据此做批大小 warmup。
+
+#### 最近一年（2025-11 → 2026-10）
 
 **最优调度可以推导。** 在幂律核回归中，用源指数 $s$（任务难度）与容量指数 $q$ 描述数据，把损失分解为"信号学习"与"噪声遗忘"两项。在固定步数与稳定性约束下求最优学习率调度，得到一个尖锐的相变（[最优调度](https://arxiv.org/abs/2602.06797)）：
 
@@ -534,36 +305,79 @@ $$
 
 **grokking 的时钟。** 在"不改变训练集预测"的方向（grokking 子空间）上，数据梯度为零，唯一的力是权重衰减：$\theta_\perp(t)\approx\theta_\perp(0)\,e^{-\eta\lambda t}$，延迟泛化的时间尺度因此是 $1/(\eta\lambda)$ 量级（[权重衰减时钟](https://arxiv.org/abs/2607.23967)）。
 
-### 17.4 扩展律：可解模型与新变量
+### 3.5 初始化与归一化
 
-**幂律从哪里来。** 一类统一的图景：目标由许多特征组成，第 $k$ 个特征的重要性 $p_k\propto k^{-(1+\alpha)}$；容量（或数据）为 $N$ 的模型大致恢复前 $N$ 个特征，剩余损失
+若第 $l$ 层 $h_l=W_lh_{l-1}$，且权重独立同分布、均值为零，则 $\mathrm{Var}(h_l)=n_{\text{in}}\mathrm{Var}(W)\mathrm{Var}(h_{l-1})$。要让信号方差不随深度爆炸或消失，需 $\mathrm{Var}(W)=1/n_{\text{in}}$（线性 / tanh，[Glorot](https://proceedings.mlr.press/v9/glorot10a.html)）或 $2/n_{\text{in}}$（ReLU 只保留一半，[He 等](https://arxiv.org/abs/1502.01852)）。
 
-$$
-L(N)\approx\sum_{k>N}p_k\propto N^{-\alpha}.
-$$
+BatchNorm 按批统计量标准化（[Ioffe 与 Szegedy](https://arxiv.org/abs/1502.03167)）；Transformer 使用不依赖批的 LayerNorm（[Ba 等](https://arxiv.org/abs/1607.06450)）及其简化 RMSNorm（[Zhang 与 Sennrich](https://arxiv.org/abs/1910.07467)）：
 
-最近一年的工作把这个图景做成可证明的模型：层级组合特征按强弱被依次恢复，强特征在小样本时就可检测，弱特征需要更多数据（[序贯特征恢复](https://arxiv.org/abs/2605.14567)）；从随机图到自然语言的幂律结构如何转化为扩展律（[扩展律的起源](https://arxiv.org/abs/2601.10684)）；Zipf 词频下瓶颈二元模型的精确扩展律（[随机特征二元模型](https://arxiv.org/abs/2610.19281)）。训练动力学方面，特征叠加会把损失随步数下降的指数推向与数据无关的普适值 ≈1，比无叠加的逐个学习快一个数量级（[叠加统一幂律动力学](https://arxiv.org/abs/2602.01045)）。大模型即使在无限数据下也能学会小模型学不会的稀有任务，原因是任务之间对神经元的竞争（[大模型为何学得更多](https://arxiv.org/abs/2605.29548)）。
+$$\mathrm{RMSNorm}(x)=\frac{x}{\sqrt{\frac1d\sum_i x_i^2+\epsilon}}\odot\gamma .$$
 
-**新变量。**
+把归一化放在残差分支内（Pre-LN）使训练更稳，免去对 warmup 的强依赖（[Xiong 等](https://arxiv.org/abs/2002.04745)）；但 Pre-LN 下残差流的方差随深度增长，深层的贡献被稀释——[深度的诅咒](https://arxiv.org/abs/2502.05795)发现许多 LLM 的深层几乎是恒等映射，并提出按深度缩放 LayerNorm。
 
-- *优化器*：单次训练中损失随步数的"动态指数"依优化器而异，但调优后的"最优数据指数"在各优化器下都收敛到 1/3（[1/3 数据指数](https://arxiv.org/abs/2609.37745)）。
-- *测试时计算*：把重复采样的推理成本计入后，计算最优的是比 Chinchilla 更"过度训练"的小模型（[T² 扩展律](https://arxiv.org/abs/2604.01411)）。
-- *数据重复*：数据受限时需要更强正则化（[无限算力预训练](https://arxiv.org/abs/2509.14786)、[数据受限扩展律](https://arxiv.org/abs/2605.01640)、[重复数据](https://arxiv.org/abs/2610.15965)），扩散语言模型比自回归模型更耐重复（[超级数据学习者](https://arxiv.org/abs/2511.03276)）。
-- *循环深度*：循环次数也进入扩展律，形式如下。
+**免归一化。** [DyT](https://arxiv.org/abs/2503.10622) 用逐元素 $\tanh(\alpha x)$ 替代 LayerNorm，在视觉、语言与扩散模型上不掉点；[Chen 等](https://arxiv.org/abs/2512.10938)系统搜索逐点函数，让免归一化 Transformer 超过归一化版本。[nGPT](https://arxiv.org/abs/2410.01131) 走另一极端：把所有向量都归一化到超球面上。
 
-把一个块循环 $r$ 次，拟合
+#### 最近一年（2025-11 → 2026-10）
 
-$$
-L=E+A\,\big(N_{\text{once}}+r^{\varphi}N_{\text{rec}}\big)^{-\alpha}+B\,D^{-\beta},\qquad \varphi\approx0.46,
-$$
+归一化层本身被重新分析：它带来指数级的容量控制（[归一化的隐藏力量](https://arxiv.org/abs/2511.00958)）；归一化层中的可学习缩放向量参数极少、影响却很大（[缩放向量](https://arxiv.org/abs/2605.26895)）；无归一化 Transformer 在初始化时处于次临界的信号传播状态（[无归一化的信号传播](https://arxiv.org/abs/2604.11890)）；Post-LN 在深层下重新变得稳定且更具表达力（[Post-LN 回归](https://arxiv.org/abs/2601.19895)）。
 
-即循环 $r$ 次的效果介于"一个块"（$\varphi=0$）与"$r$ 个独立块"（$\varphi=1$）之间（[等深度扩展律](https://arxiv.org/abs/2604.21106)）。
+### 3.6 μP 与超参数迁移
 
-### 17.5 特征学习：多指标模型与核方法的边界
+标准参数化下，网络变宽时最优学习率会漂移；NTK 参数化则在无限宽极限下退化为核方法、失去特征学习（[Yang 与 Hu](https://arxiv.org/abs/2011.14522)）。μP 选择让每层特征的更新量保持 $\Theta(1)$ 的缩放：以 Adam 为例，隐藏层学习率按 $1/n$ 缩放，输出层 logit 乘以 $1/n$。于是最优超参数在不同宽度间可迁移（[μTransfer](https://arxiv.org/abs/2203.03466)）。[谱条件](https://arxiv.org/abs/2310.17813)给出等价而更直观的表述：要求权重及其更新的谱范数与 $\sqrt{n_{\text{out}}/n_{\text{in}}}$ 同阶。[Everett 等](https://arxiv.org/abs/2407.05872)在上万次实验中比较了各种参数化与优化器组合。2024–2025 年，μP 被推广到深度、批大小与训练时长（[完整超参迁移](https://arxiv.org/abs/2512.22382)）、宽深联合缩放（[谱条件](https://arxiv.org/abs/2603.00541)）、不同优化器（[Gupta 等](https://arxiv.org/abs/2602.20937)）与 MoE（[MoE 超参迁移](https://arxiv.org/abs/2601.20205)、[Kakao](https://arxiv.org/abs/2608.20061)）。
+
+#### 最近一年（2025-11 → 2026-10）
+
+μP 只保证训练初期的更新尺度跨宽度一致；带归一化的网络很快进入由优化器主导的稳态，有效学习率随宽度变化，因此在 AdamW 下还需按宽度缩放权重衰减（[逐层扩展规则](https://arxiv.org/abs/2510.15262)）。μP 被推广到 MoE（[从 μP 到最大尺度稳定参数化](https://arxiv.org/abs/2605.14200)、[Complete-muE](https://arxiv.org/abs/2605.23893)）、循环 Transformer（[Loop-μP](https://arxiv.org/abs/2606.18524)、[DeepLoop](https://arxiv.org/abs/2607.13491)）与无限深度（[无限深特征学习](https://arxiv.org/abs/2512.21075)）；配合正确的超参数迁移，Shampoo、SOAP、Muon 等矩阵预条件优化器相对 AdamW 的增益在大规模下仍能保持（[超参数迁移](https://arxiv.org/abs/2512.05620)）。嵌入层学习率是迁移中最敏感的一项（[量化超参数迁移](https://arxiv.org/abs/2605.21486)）。
+
+### 3.7 训练不稳定与低精度
+
+[ViT-22B](https://arxiv.org/abs/2302.05442) 与 [Wortsman 等](https://arxiv.org/abs/2309.14322)发现两类典型的发散：注意力 logit 不受控增长（对策：QK-Norm）与输出 logit 发散（对策：z-loss）。
+
+**训练稳定化。** [MSign](https://arxiv.org/abs/2602.01734) 把损失尖峰归因于权重矩阵稳定秩的坍缩；[ZClip](https://arxiv.org/abs/2504.02507) 用 z 分数做自适应梯度裁剪。
+
+混合精度训练（[Micikevicius 等](https://arxiv.org/abs/1710.03740)）用 FP16/BF16 计算、FP32 主权重。[DeepSeek-V3](https://arxiv.org/abs/2412.19437) 用细粒度（逐块）缩放的 FP8 完成 671B 模型的预训练。4-bit 训练在 2025 年前后成熟：[Quartet](https://arxiv.org/abs/2505.14669) 给出 MXFP4 原生训练的算法与扩展律；NVIDIA 用随机 Hadamard 变换、二维缩放与随机舍入，以 NVFP4 训练 12B 模型 10T token（[NVFP4](https://arxiv.org/abs/2509.25149)）；[Quartet II](https://arxiv.org/abs/2601.22813) 改进了无偏梯度估计；[Nemotron 3](https://arxiv.org/abs/2512.20856) Super 与 Ultra 用 NVFP4 训练。
+
+#### 最近一年（2025-11 → 2026-10）
+
+归一化引入的尺度不变分量与权重衰减相互作用，会产生一种临界性，引发损失尖峰（[权重范数临界](https://arxiv.org/abs/2607.21005)）；用非正规矩阵的谱可以提前预示失稳（[非正规谱特征](https://arxiv.org/abs/2605.23476)）。低精度方面，FP4 预训练中 E2M1 格式会带来系统性的收缩偏差（[FP4 收缩偏差](https://arxiv.org/abs/2606.20381)），注意力 logit 的秩感知谱界可用于保证低精度训练的稳定（[logit 谱界](https://arxiv.org/abs/2602.18851)），优化器状态量化会造成状态陈旧（[优化器状态量化](https://arxiv.org/abs/2603.16731)）。
+
+## 4 泛化：为什么能推广，何时只是记忆
+
+过参数化网络能拟合随机标签，却在真实数据上泛化良好。这一章依次讨论：经典界为何失效、双下降与良性过拟合、隐式偏置、网络为何胜过核方法（特征学习）、grokking、记忆的容量、生成模型的泛化，以及分布外与长度泛化。
+
+### 4.1 经典理论为何不够
+
+基于 VC 维、Rademacher 复杂度的界随参数量增长，对过参数化网络近乎空洞。[Zhang 等](https://arxiv.org/abs/1611.03530)的实验更直接：同一网络能完美拟合随机标签，说明假设空间的"容量"并不限制它；泛化必须由数据、架构与优化算法的交互来解释。
+
+### 4.2 双下降与良性过拟合
+
+[Belkin 等](https://arxiv.org/abs/1812.11118)发现，测试误差随模型复杂度先呈经典 U 形，在恰好能插值训练集的"插值阈值"处达到峰值，然后在更大模型上再次下降；[Nakkiran 等](https://arxiv.org/abs/1912.02292)在模型规模、训练轮数与数据量三个维度上都观察到这一现象。[Bartlett 等](https://arxiv.org/abs/1906.11300)刻画了线性回归中"良性过拟合"的条件：当特征协方差的有效秩足够大，插值噪声被分散到许多不重要的方向上，对预测影响很小。
+
+#### 最近一年（2025-11 → 2026-10）
+
+双下降被重新表述为一种变分原理（[双下降即最小作用量原理](https://arxiv.org/abs/2609.19076)）；良性过拟合推广到一般范数与分布（[一般范数](https://arxiv.org/abs/2609.33675)）并有了最优输运几何的解释（[输运几何](https://arxiv.org/abs/2604.08625)）。生成模型给出了反例：扩散模型中不存在良性过拟合（见 4.7 节）。
+
+### 4.3 隐式偏置
+
+在可分数据上用逻辑损失做梯度下降，参数方向收敛到最大 $\ell_2$ 间隔解（[Soudry 等](https://arxiv.org/abs/1710.10345)）；矩阵分解中梯度下降偏向低秩解。换言之，在无数能拟合训练集的解中，优化算法替我们挑了一个"简单"的。[Adam 与 SGD 的隐式偏置](https://arxiv.org/abs/2505.24022)比较了两类优化器偏好的解：SGD 偏向简单的线性可分特征，Adam 更容易学到丰富的非线性特征。[Wilson](https://arxiv.org/abs/2503.02113)的立场文章总结道：良性过拟合、双下降、过参数化都可用"软归纳偏置"（偏好简单解但不排除复杂解）与经典的 PAC-Bayes / 可数假设界解释，深度学习并不那么神秘。
+
+#### 最近一年（2025-11 → 2026-10）
+
+隐式偏置与优化器几何直接挂钩：带动量的最速下降方向上收敛到对应范数的最大间隔解，Adam 对应 ℓ∞、Muon 对应谱范数（[Adam 与 Muon 的隐式偏置](https://arxiv.org/abs/2602.16340)，推导见 3.2 节）。深度本身也带来隐式偏置，把神经坍缩推向 softmax 码（[深度的隐式偏置](https://arxiv.org/abs/2605.23087)）；SGD 在多元 ReLU 网络中导致有效宽度坍缩（[有效宽度坍缩](https://arxiv.org/abs/2607.03613)）；可以从训练中实证地估计隐式正则的形式与强度（[估计隐式正则](https://arxiv.org/abs/2605.05436)）。
+
+### 4.4 懒惰区间与特征学习：网络为何胜过核方法
+
+把网络在初始化处线性化，$f_\theta(x)\approx f_{\theta_0}(x)+\langle\nabla_\theta f_{\theta_0}(x),\theta-\theta_0\rangle$。在 NTK 缩放的无限宽极限下，训练全程参数几乎不动，网络等价于用固定核 $K(x,x')=\langle\nabla f(x),\nabla f(x')\rangle$ 做核回归（[Jacot 等](https://arxiv.org/abs/1806.07572)）。[Chizat 等](https://arxiv.org/abs/1812.07956)称之为"懒惰训练"：可分析，但不学习新特征。平均场理论（[Mei 等](https://arxiv.org/abs/1804.06561)）与 μP 描述了另一种极限：特征持续演化，更接近真实网络的行为。最近的工作沿此继续：[交替梯度流](https://arxiv.org/abs/2506.06489)刻画两层网络中特征逐个被学会的过程，[Ruben 等](https://arxiv.org/abs/2602.15593)统一了 RNN 与深网络的特征学习。
+
+#### 最近一年（2025-11 → 2026-10）
 
 多指标模型 $f^*(x)=g(Ux)$，$U\in\mathbb R^{r\times d}$ 是隐藏子空间，是研究"网络如何从高维输入中找到少数相关方向"的标准模型。核方法（包括 NTK 极限）不学 $U$，样本复杂度随 $d$ 多项式恶化；特征学习的网络先找到子空间再拟合 $g$。最近一年：在一般的非退化条件下，分层梯度下降训练的两层网络学习一般多指标模型，所需样本量接近信息论极限（[接近信息论极限](https://arxiv.org/abs/2511.15120)）；统计—计算权衡被调和分析精确刻画（[调和分析](https://arxiv.org/abs/2602.09959)）；全批量 GD 与单遍 SGD 在单指标问题上存在样本复杂度分离（[GD vs SGD](https://arxiv.org/abs/2602.02431)），多遍 SGD 重用数据会改变学习动力学（[多遍 SGD](https://arxiv.org/abs/2601.21093)）。反过来，在组合学习上 NTK 有指数级次优（[NTK 的二分](https://arxiv.org/abs/2607.06382)）。宽、深极限方面：存在让深度趋于无穷时仍保持特征学习的参数化（[无限深特征学习](https://arxiv.org/abs/2512.21075)），线性残差网络中宽、深两个极限在训练中可以交换（[极限可交换](https://arxiv.org/abs/2610.30729)）。
 
-### 17.6 泛化与记忆：grokking 与扩散模型
+### 4.5 Grokking：从记忆到泛化
+
+[Power 等](https://arxiv.org/abs/2201.02177)在模运算等小算法任务上发现：训练精度早已 100%，测试精度却在多得多的步数后突然跃升。[Nanda 等](https://arxiv.org/abs/2301.05217)逆向工程出模加法网络使用离散傅里叶变换与三角恒等式的电路，并把训练分为记忆、电路形成与清理三个阶段，权重衰减推动了"清理"。[Prieto 等](https://arxiv.org/abs/2501.04697)发现没有正则化时，grokking 会被 softmax 的浮点误差（Softmax Collapse）阻断，并提出 StableMax 与只保留与权重正交的梯度分量的 ⊥Grad；[岭回归中的可证 grokking](https://arxiv.org/abs/2601.19791)与[谱理论](https://arxiv.org/abs/2609.26679)给出了更严格的刻画；[Abramov 等](https://arxiv.org/abs/2504.20752)把 grokking 带到真实世界的多跳推理：通过数据增强提高推断事实与原子事实之比即可触发。
+
+#### 最近一年（2025-11 → 2026-10）
 
 **grokking = 零损失流形上的范数最小化。** 记训练损失为零的参数集合为 $\mathcal M=\{\theta: L_{\text{train}}(\theta)=0\}$。拟合之后，梯度下降加权重衰减在小学习率、小权重衰减极限下等价于在 $\mathcal M$ 上做投影梯度流
 
@@ -571,7 +385,17 @@ $$
 \dot\theta=-\lambda\,P_{T_\theta\mathcal M}\,\theta ,
 $$
 
-即沿流形缓慢走向最小范数解，泛化在到达低范数区域时才出现（[grokking 的几何](https://arxiv.org/abs/2511.01938)）。这与"维度相变"（[维度相变](https://arxiv.org/abs/2604.04655)）、"权重衰减时钟"（17.3）相互印证；模加法与有限群乘法的完整机制也被写出，网络可证明地学到群的不可约表示（[模加法](https://arxiv.org/abs/2602.16849)、[群组合的谱表示](https://arxiv.org/abs/2606.02993)）。
+即沿流形缓慢走向最小范数解，泛化在到达低范数区域时才出现（[grokking 的几何](https://arxiv.org/abs/2511.01938)）。这与"维度相变"（[维度相变](https://arxiv.org/abs/2604.04655)）、"权重衰减时钟"（3.4 节）相互印证；模加法与有限群乘法的完整机制也被写出，网络可证明地学到群的不可约表示（[模加法](https://arxiv.org/abs/2602.16849)、[群组合的谱表示](https://arxiv.org/abs/2606.02993)）。
+
+### 4.6 记忆：容量与可提取性
+
+[语言模型物理学 3.3](https://arxiv.org/abs/2404.05405) 估计模型约能存储 2 bit 知识/参数；[Morris 等](https://arxiv.org/abs/2505.24832)用随机数据测得 GPT 类模型约有 3.6 bit/参数 的记忆容量，并发现容量被填满后模型开始"顿悟"出泛化。[语言模型物理学 3.1](https://arxiv.org/abs/2309.14316) 说明知识能否被提取取决于预训练中同一事实是否以多样化的方式出现。
+
+#### 最近一年（2025-11 → 2026-10）
+
+记忆被放进几何与训练动力学中理解：Fisher 信息刻画记忆在参数空间中的几何（[记忆的 Fisher 几何](https://arxiv.org/abs/2610.16161)）；记住的知识与能在推理中使用之间存在准确率差与时间滞后（[知道—使用鸿沟](https://arxiv.org/abs/2607.08393)）；LayerNorm 的位置影响 Transformer 的记忆与泛化（[LayerNorm 与记忆](https://arxiv.org/abs/2511.10566)）；可提取记忆也有了第一性原理的分析（[可提取记忆](https://arxiv.org/abs/2607.12649)）。
+
+### 4.7 生成模型的泛化：扩散模型何时只是记忆
 
 **扩散模型的记忆。** 对训练集 $\{x_i\}_{i=1}^n$，经验分布加噪后的最优去噪器是
 
@@ -581,11 +405,112 @@ $$
 
 用它采样只会复现训练样本。所以扩散模型的泛化依赖于"学得不完美"。最近一年的结论：在流形假设下，粗糙的分数只抓住数据的几何（流形）而丢掉细节分布，因此训练中先在流形上泛化、后记忆单个样本（[先泛化后记忆](https://arxiv.org/abs/2603.23792)）；记忆与泛化可证明分离（[可证明分离](https://arxiv.org/abs/2511.03202)）；而且除非样本量随维度指数增长，过拟合与好的泛化不能同时出现：扩散模型中不存在分类问题里的"良性过拟合"（[无良性过拟合](https://arxiv.org/abs/2607.02671)）。可解析的贝叶斯扩散模型精确刻画了从记忆到泛化的相变（[泛化相变](https://arxiv.org/abs/2607.08041)）。
 
-### 17.7 上下文学习的来源
+### 4.8 分布外、组合与长度泛化
 
-贝叶斯视角下，ICL 是对潜在任务 $\tau$ 的后验平均：$p(y\mid x,\mathcal D)=\int p(y\mid x,\tau)\,p(\tau\mid\mathcal D)\,d\tau$。过去常把 ICL 归因于人类语言的特殊统计性质；最近一年的反例是：只在 DNA 序列上做下一词预测也会涌现 ICL（[基因组 ICL](https://arxiv.org/abs/2511.12797)），文本、音频等模态的预测器都趋同地涌现少样本 ICL（[跨模态趋同](https://arxiv.org/abs/2609.14011)）。机制上，归纳头的出现时间可以在预训练中预测（[预测归纳头](https://arxiv.org/abs/2511.16893)），数据多样性决定模型选择"捷径"还是"归纳头"算法（[捷径与归纳头](https://arxiv.org/abs/2512.18634)），ICL 中的注意力可视为跨任务的自适应核（[自适应核](https://arxiv.org/abs/2610.24441)）。思维链方面，梯度训练的 Transformer 可证明学会能长度泛化的思维链（[CoT 长度泛化](https://arxiv.org/abs/2511.07378)），也能把显式步骤内化到隐状态（[内化 CoT](https://arxiv.org/abs/2605.28600)）；长度泛化的差异部分来自注意力头的隐式偏置：相对位置泛化、绝对位置记忆（[相对 vs 绝对](https://arxiv.org/abs/2607.18759)）。
+在训练分布之外仍然正确，是比独立同分布泛化更强的要求。三类问题最受关注：组合泛化（训练中没见过的因素组合）、长度泛化（比训练更长的输入）与分布偏移。
 
-### 17.8 表征：柏拉图假说的证明与反证
+#### 最近一年（2025-11 → 2026-10）
+
+- **组合泛化需要什么样的表征。** 视觉嵌入模型要实现组合泛化，表征必须线性且各因素相互正交（[线性正交](https://arxiv.org/abs/2602.24264)）；有效维度能强烈预测 ImageNet 准确率（[几何与泛化](https://arxiv.org/abs/2602.00130)）。
+- **长度泛化来自优化而不只是表达力。** 梯度训练的 Transformer 可证明学会能长度泛化的思维链（[CoT 长度泛化](https://arxiv.org/abs/2511.07378)）；在固定偏移检索任务上，相对位置泛化、绝对位置只记忆，差异由训练出的注意力头的隐式偏置决定（[相对 vs 绝对](https://arxiv.org/abs/2607.18759)）；精确解在参数空间中的体积决定能否长度泛化（[精确解体积](https://arxiv.org/abs/2610.07676)），恰当的正则化是必要条件（[正则化](https://arxiv.org/abs/2610.04518)）；Transformer 在排序上会同时学到两种算法，只有一种能长度泛化（[两种排序算法](https://arxiv.org/abs/2610.26974)）。
+- **循环结构。** 循环 Transformer 与对数深度循环单元在电路类任务上能做到很强的长度外推，但也有明确的极限（[通用 Transformer](https://arxiv.org/abs/2608.31067)、[对数深度循环](https://arxiv.org/abs/2605.26035)、[循环的极限](https://arxiv.org/abs/2609.33144)）。
+
+## 5 扩展：为什么越大越好
+
+损失随参数、数据、算力呈跨越多个数量级的幂律，这让大模型的训练变成可规划的工程。这一章先讲经验规律与算力最优分配，再讲幂律从哪里来，然后讨论数据、精度、稀疏度、优化器、深度与循环等新变量，最后讨论涌现与测试时扩展。
+
+### 5.1 幂律与算力最优
+
+[Kaplan 等](https://arxiv.org/abs/2001.08361)发现语言模型的测试损失随参数量 $N$、数据量 $D$、算力 $C$ 分别呈跨越多个数量级的幂律。[Chinchilla](https://arxiv.org/abs/2203.15556) 用参数化形式
+
+$$L(N,D)=E+\frac{A}{N^{\alpha}}+\frac{B}{D^{\beta}}$$
+
+拟合，并在约束 $C\approx6ND$ 下用拉格朗日乘子求最优分配：
+
+$$N^\star(C)\propto C^{\frac{\beta}{\alpha+\beta}},\qquad D^\star(C)\propto C^{\frac{\alpha}{\alpha+\beta}} .$$
+
+拟合得到 $\alpha\approx\beta$，即参数与数据应大致等比例扩展，约 20 token/参数。Kaplan 与 Chinchilla 的差异后来被归因于是否计入嵌入参数、规模范围与学习率调度（[Pearce 与 Song](https://arxiv.org/abs/2406.12907)、[Porian 等](https://arxiv.org/abs/2406.19146)）。实践中，由于推理成本按模型大小计，许多模型远超此比例地"过训练"（如 Llama 3 8B 用了 15T token）。
+
+### 5.2 为什么是幂律
+
+一种解释来自数据：若数据分布在低维流形上，或特征重要性呈幂律谱，则用有限容量逼近时误差自然呈幂律（[源于数据分布的扩展律](https://arxiv.org/abs/2412.07942)）。另一种来自表征：[Liu 等](https://arxiv.org/abs/2505.10465)在 Anthropic 的叠加玩具模型中用权重衰减控制叠加程度，发现强叠加区间下损失随宽度 $m$ 稳健地按 $1/m$ 下降，且与真实 LLM 的观测一致——特征叠加可能是神经扩展律的关键成因。
+
+#### 最近一年（2025-11 → 2026-10）
+
+**幂律从哪里来。** 一类统一的图景：目标由许多特征组成，第 $k$ 个特征的重要性 $p_k\propto k^{-(1+\alpha)}$；容量（或数据）为 $N$ 的模型大致恢复前 $N$ 个特征，剩余损失
+
+$$
+L(N)\approx\sum_{k>N}p_k\propto N^{-\alpha}.
+$$
+
+最近一年的工作把这个图景做成可证明的模型：层级组合特征按强弱被依次恢复，强特征在小样本时就可检测，弱特征需要更多数据（[序贯特征恢复](https://arxiv.org/abs/2605.14567)）；从随机图到自然语言的幂律结构如何转化为扩展律（[扩展律的起源](https://arxiv.org/abs/2601.10684)）；Zipf 词频下瓶颈二元模型的精确扩展律（[随机特征二元模型](https://arxiv.org/abs/2610.19281)）。训练动力学方面，特征叠加会把损失随步数下降的指数推向与数据无关的普适值 ≈1，比无叠加的逐个学习快一个数量级（[叠加统一幂律动力学](https://arxiv.org/abs/2602.01045)）。大模型即使在无限数据下也能学会小模型学不会的稀有任务，原因是任务之间对神经元的竞争（[大模型为何学得更多](https://arxiv.org/abs/2605.29548)）。
+
+### 5.3 数据、精度、稀疏度与优化器
+
+[Muennighoff 等](https://arxiv.org/abs/2305.16264)发现重复数据约 4 轮内几乎与新数据等价，之后收益快速衰减；[Prabhudesai 等](https://arxiv.org/abs/2507.15857)发现在数据受限、算力充足时，掩码扩散语言模型反复训练优于自回归；[Kim 等](https://arxiv.org/abs/2509.14786)说明在"无限算力"下，强正则化、集成与蒸馏可以把数据效率提高 5 倍以上。
+
+2024–2025 年，扩展律被推广到更多维度：
+
+- 精度：[Kumar 等](https://arxiv.org/abs/2411.04330)把训练与推理精度纳入扩展律，发现训练越充分，后训练量化的损害越大；[Ouyang 等](https://arxiv.org/abs/2411.17691)得出同样结论；[ParetoQ](https://arxiv.org/abs/2502.02631) 统一比较 1–4 bit。
+- 稀疏度：[Abnar 等](https://arxiv.org/abs/2501.12370)发现固定算力时更稀疏（总参数更多）的 MoE 损失更低；[Ludziejewski 等](https://arxiv.org/abs/2502.05172)在显存约束下给出稠密与 MoE 的联合扩展律；[Engram](https://arxiv.org/abs/2601.07372) 发现 MoE 与查表记忆之间存在 U 形最优分配。
+- 蒸馏、并行与密度：[蒸馏扩展律](https://arxiv.org/abs/2502.08606)给出教师与学生之间的算力分配；[ParScale](https://arxiv.org/abs/2505.10475) 用 P 路并行前向替代参数扩展，约等于参数扩展 $O(\log P)$ 倍；[能力密度定律](https://arxiv.org/abs/2412.04315)指出同等能力所需参数约每 3.3 个月减半。
+- 更精细的拟合：[Farseer](https://arxiv.org/abs/2506.10972) 在整个 $(N,D)$ 平面上拟合损失面，外推误差显著降低。
+
+#### 最近一年（2025-11 → 2026-10）
+
+几个过去被固定的变量进入了扩展律：
+
+- *优化器*：单次训练中损失随步数的"动态指数"依优化器而异，但调优后的"最优数据指数"在各优化器下都收敛到 1/3（[1/3 数据指数](https://arxiv.org/abs/2609.37745)）。
+- *测试时计算*（见 5.6 节）：把重复采样的推理成本计入后，计算最优的是比 Chinchilla 更"过度训练"的小模型（[T² 扩展律](https://arxiv.org/abs/2604.01411)）。
+- *数据重复*：数据受限时需要更强正则化（[无限算力预训练](https://arxiv.org/abs/2509.14786)、[数据受限扩展律](https://arxiv.org/abs/2605.01640)、[重复数据](https://arxiv.org/abs/2610.15965)），扩散语言模型比自回归模型更耐重复（[超级数据学习者](https://arxiv.org/abs/2511.03276)）。
+
+### 5.4 深度、宽度与循环
+
+宽度与深度如何分配，长期靠经验。最近一年的几条结果把它变成了可以讨论的问题。
+
+#### 最近一年（2025-11 → 2026-10）
+
+**循环深度。** 把一个块循环 $r$ 次，拟合
+
+$$
+L=E+A\,\big(N_{\text{once}}+r^{\varphi}N_{\text{rec}}\big)^{-\alpha}+B\,D^{-\beta},\qquad \varphi\approx0.46,
+$$
+
+即循环 $r$ 次的效果介于"一个块"（$\varphi=0$）与"$r$ 个独立块"（$\varphi=1$）之间（[等深度扩展律](https://arxiv.org/abs/2604.21106)）。
+
+**深度的回报递减。** 多数层功能相近，导致深度扩展的回报递减（[逆深度扩展](https://arxiv.org/abs/2602.05970)）；注意力的非线性本身就会带来这种逆深度扩展（[注意力非线性](https://arxiv.org/abs/2610.11063)）；有人据此主张 Transformer 应更宽而非更深（[深度错觉](https://arxiv.org/abs/2601.20994)）。另一方面，Post-LN 的复活与残差流的重新设计（2.6 节）试图让更深的网络重新有效。
+
+### 5.5 涌现
+
+[Wei 等](https://arxiv.org/abs/2206.07682)列举了只在超过某个规模后才出现的能力；[Schaeffer 等](https://arxiv.org/abs/2304.15004)指出其中许多"突变"来自非线性、不连续的评测指标（如精确匹配），换成连续指标后能力随规模平滑增长。[观察式扩展律](https://arxiv.org/abs/2405.10938)用公开模型族的低维能力空间预测下游能力。实用结论是：损失可预测，具体任务的阈值不总可预测。
+
+### 5.6 测试时计算与 RL 的扩展
+
+[Snell 等](https://arxiv.org/abs/2408.03314)表明按题目难度自适应分配测试时计算，效率可超过把模型放大 14 倍；[Large Language Monkeys](https://arxiv.org/abs/2407.21787) 发现重复采样的覆盖率随样本数呈对数线性增长。RL 后训练也有了扩展律：[ScaleRL](https://arxiv.org/abs/2510.13786) 用超过 40 万 GPU 小时拟合出 S 形的"算力-性能"曲线，发现不同配方的渐近性能不同，而损失聚合、归一化、课程等细节主要影响效率。
+
+#### 最近一年（2025-11 → 2026-10）
+
+把重复采样的推理成本计入总预算后，计算最优的预训练是比 Chinchilla 更'过度训练'的小模型（[T² 扩展律](https://arxiv.org/abs/2604.01411)）；循环模型提供了另一种测试时扩展的方式：增加循环次数而不增加参数（2.7 节）。
+
+## 6 表征：网络内部学到了什么
+
+训练得到的网络在内部形成了怎样的表示？这一章从几何讲起（线性表征、表征几何），再讨论不同模型的表征是否趋同（柏拉图表征假说），然后讨论可解释性的核心难题（叠加）与主要工具（稀疏自编码器、电路与归因图）。
+
+### 6.1 线性表征与表征几何
+
+"线性表征假说"认为，概念在激活空间中对应方向，可以用线性探针读出、用加减向量操控（[线性表征假说](https://arxiv.org/abs/2311.03658)）。这一假说支撑了激活引导、人格向量等大量方法，但它隐含了很多选择：用什么内积、什么等价关系、在哪一层。
+
+#### 最近一年（2025-11 → 2026-10）
+
+- **线性表征需要说明对称性。** 不同的等价（群作用）保留不同结构，看似研究同一表征的探针与干预可能在检验不同的假说（[需要群作用](https://arxiv.org/abs/2609.27158)）；保持函数不变的参数对称会重塑表征几何，比较表征之前必须先处理对称（[参数对称](https://arxiv.org/abs/2609.39078)）。
+- **几何的结构。** 下一词分布的 Fisher–Rao 几何在模型间共享、由训练习得，并可用于精确控制（[信息几何](https://arxiv.org/abs/2609.11063)）；多步加法在残差流中形成以原始和为锚点的轨迹（[加法的形状](https://arxiv.org/abs/2606.03645)）；不同架构都学到周期性的数字特征，但只有部分学到几何可分的结构（[数字表征的趋同进化](https://arxiv.org/abs/2604.20817)）。
+- **表征会变。** 线性表征方向上的读数会随对话上下文剧烈漂移（[对话中的变化](https://arxiv.org/abs/2601.20834)），上下文学习过程中模型会重组表征几何（[ICL 中的重组](https://arxiv.org/abs/2605.28854)）；不同提示接相同续写时，隐状态差距按 $t^{-\alpha}$ 衰减，训练过的模型 $\alpha\approx0.55$–$0.7$（[条件无毛定理](https://arxiv.org/abs/2610.24133)）。
+
+### 6.2 表征趋同：柏拉图假说的证明与反证
+
+[柏拉图表征假说](https://arxiv.org/abs/2405.07987)观察到不同架构、不同模态的大模型表征正在收敛，[vec2vec](https://arxiv.org/abs/2505.12540) 甚至能在无配对数据的情况下翻译不同文本嵌入模型的向量空间。
+
+#### 最近一年（2025-11 → 2026-10）
 
 柏拉图表征假说认为，规模足够大时不同模型、不同模态的表征趋向同一个"现实的统计模型"。最近一年的检验结果是两面的：
 
@@ -594,64 +519,74 @@ $$
 
 几何与泛化的关系也更具体：组合泛化要求表征线性且各因素正交（[线性正交](https://arxiv.org/abs/2602.24264)）；有效维度强烈预测 ImageNet 准确率（[几何与泛化](https://arxiv.org/abs/2602.00130)）；保持函数不变的参数对称会重塑表征几何（[参数对称](https://arxiv.org/abs/2609.39078)）；"线性表征假说"其实是一族假说，取决于采用哪种群作用下的等价（[需要群作用](https://arxiv.org/abs/2609.27158)）。
 
-### 17.9 叠加与稀疏自编码器
+### 6.3 神经坍缩
+
+分类网络训练到末期，同类样本的最后一层特征坍缩到类均值，类均值构成等角紧框架，分类器与之对齐（[神经坍缩](https://arxiv.org/abs/2008.08186)）。它解释了末层几何，也引出了"表征是否应该完全坍缩"的问题。
+
+#### 最近一年（2025-11 → 2026-10）
+
+神经坍缩是否出现取决于优化器（[优化器与神经坍缩](https://arxiv.org/abs/2602.16642)）；深度线性网络中有闭式的深宽关系（[深宽闭式律](https://arxiv.org/abs/2610.21820)）；语言模型因信息下限而不会完全坍缩（[语言模型禁止坍缩](https://arxiv.org/abs/2607.09487)）；自监督表征中的"方向性神经坍缩"解释了少样本迁移（[方向性坍缩](https://arxiv.org/abs/2603.03530)）；长尾识别中完全坍缩反而不是最优（[部分坍缩](https://arxiv.org/abs/2610.36460)）。
+
+### 6.4 叠加
+
+[Olah 等](https://distill.pub/2020/circuits/zoom-in/)提出"特征是基本单元、权重把特征连成电路"的研究纲领；[Elhage 等](https://transformer-circuits.pub/2021/framework/index.html)把 Transformer 分解为对残差流读写的注意力头（QK 电路决定看哪里，OV 电路决定搬什么）。[归纳头](https://arxiv.org/abs/2209.11895)与 [IOI 电路](https://arxiv.org/abs/2211.00593)是早期的完整案例。困难在于神经元是多义的：[叠加](https://arxiv.org/abs/2209.10652)理论表明，当特征稀疏、数量多于维度时，网络会用近乎正交的方向存储它们，以少量干扰换取容量。
+
+#### 最近一年（2025-11 → 2026-10）
 
 叠加模型：稀疏特征 $x\in\mathbb R^m$ 被压进 $n<m$ 维 $h=Wx$，再用 $\hat x=\mathrm{ReLU}(W^\top W x+b)$ 恢复。干扰项 $W^\top W-I$ 的大小由字典相干性决定，偏置 $b$ 负责滤掉小干扰。最近一年对这一模型证明了特征恢复定理（[叠加的数学理论](https://arxiv.org/abs/2608.27540)），给出特征几何的谱理论（[谱叠加](https://arxiv.org/abs/2602.02224)）与一般叠加下可证明的特征提取算法（[可证明提取](https://arxiv.org/abs/2512.15987)）。
 
+### 6.5 稀疏自编码器及其可靠性
+
+SAE 学一个过完备字典 $x\approx W_d\,\mathrm{ReLU}(W_ex+b)$ 并对激活施加稀疏惩罚，把多义神经元分解为单义特征（[Cunningham 等](https://arxiv.org/abs/2309.08600)、[Towards Monosemanticity](https://transformer-circuits.pub/2023/monosemantic-features/index.html)）。[Scaling Monosemanticity](https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html) 在 Claude 3 Sonnet 上提取了数千万特征，包括抽象、多语言与安全相关的特征，并可用于操控行为；[OpenAI](https://arxiv.org/abs/2406.04093) 给出 SAE 的扩展律，[Gemma Scope](https://arxiv.org/abs/2408.05147) 开放了全层 SAE。
+
+**反思。** [Kantamneni 等](https://arxiv.org/abs/2502.16681)发现在数据稀缺、分布偏移等困难设置下，SAE 探针并不稳定地优于简单线性探针；[合理性检查](https://arxiv.org/abs/2602.14111)发现 SAE 在部分指标上未必胜过随机基线；[开放问题](https://arxiv.org/abs/2501.16496)综述了方法论层面的挑战。
+
+#### 最近一年（2025-11 → 2026-10）
+
 SAE 作为工具接受了更严格的检验：单个特征跨随机种子常不复现，但张成的子空间可以复现（[种子依赖](https://arxiv.org/abs/2606.12138)）；训练数据增加时功能指标很快饱和，却不保证恢复真实特征（[数据收益递减](https://arxiv.org/abs/2610.20680)）；保持语义的提示变换会让激活在不同特征间重新分配（[表征重分配](https://arxiv.org/abs/2610.21240)）；评测基准本身也不可靠（[SAE 基准](https://arxiv.org/abs/2605.18229)）。另一条线把机制追溯到训练：用影响函数把可解释单元追到具体样本（[机制性数据归因](https://arxiv.org/abs/2601.21996)）。
 
-### 17.10 归一化、残差与注意力汇聚
+### 6.6 电路、归因图与内省
 
-**汇聚为什么必要。** softmax 注意力的输出是值向量的凸组合 $o=\sum_j \mathrm{softmax}_j(q^\top k_j)\,v_j$。若某个头在某些上下文中应当"什么都不做"（$o\approx0$），而权重之和必须为 1，就只能把权重集中到一个值向量接近 0 的锚点上。对一类"触发条件"任务，可以证明这种汇聚是必要的（[汇聚的必要性](https://arxiv.org/abs/2603.11487)）。门控注意力、softpick 等之所以能消除汇聚，是因为它们打破了"权重和为 1"或允许整体输出被关掉。
+- 归因图：Anthropic 用跨层转码器（[transcoder](https://arxiv.org/abs/2406.11944) 的推广）构建可解释的替代模型，再为具体输入画出特征之间的因果图（[电路追踪](https://transformer-circuits.pub/2025/attribution-graphs/methods.html)），在 Claude 3.5 Haiku 中看到两跳推理的中间步骤、写诗时提前选定韵脚、不同语言共享的概念表示等（[大语言模型的生物学](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)）。
+- 设计可解释的模型：OpenAI 训练权重极稀疏的 Transformer，使每个神经元只有少量连接，剪枝后得到人能读懂的小电路，并发现扩大模型能改善"能力-可解释性"前沿（[Gao 等](https://arxiv.org/abs/2511.13653)）。
+- 内省：[Lindsey](https://arxiv.org/abs/2601.01828) 向模型激活中注入已知概念，发现最强的模型有时能察觉并准确说出被注入的概念，还能区分自己的输出与人为预填——有限但真实的内省能力。
+- 人格与安全：[人格向量](https://arxiv.org/abs/2507.21509)提取"邪恶""谄媚""幻觉"等特质方向，可用于监控、以及在训练中预防人格漂移；[审计游戏](https://arxiv.org/abs/2503.10965)中，蓝队借助可解释性工具找出了被故意植入的隐藏目标。
 
-**巨大激活。** 它与汇聚常同时出现，但二者的共现主要是现代 Transformer 设计（如 pre-norm）的产物，功能相关而不同（[尖峰、稀疏与汇聚](https://arxiv.org/abs/2603.05498)）。训练轨迹显示：承载汇聚的通道随种子不同但很早稳定，之后在权重衰减驱动下增长并集中到少数冗余载体（[生命周期](https://arxiv.org/abs/2610.00423)）；在受控的残差实验中它们难以通过架构消除（[架构稳健](https://arxiv.org/abs/2606.20743)）。
+#### 最近一年（2025-11 → 2026-10）
 
-**残差的两个方向。** 把位置固定、以层号为"时间"，残差流就是深度方向上的序列；自注意力在序列方向做自适应混合，残差却只做固定加法。由此得到一个对偶：深度方向的残差设计与序列方向的混合器一一对应（[残差流对偶](https://arxiv.org/abs/2603.16039)）。超连接/mHC、注意力残差（沿深度做 softmax 读取）都是在深度方向引入更强的"混合器"；最近的变体包括 Kronecker 参数化的 [KromHC](https://arxiv.org/abs/2601.21579)、多头的[注意力残差](https://arxiv.org/abs/2607.27230)、读取逐层增量的 [Delta AttnRes](https://arxiv.org/abs/2605.18855)，以及注意力残差中同样出现的汇聚（[AttnRes 中的汇聚](https://arxiv.org/abs/2605.17887)）。Post-LN 在深层下的复活（[Post-LN 回归](https://arxiv.org/abs/2601.19895)）则从另一端说明：归一化放在哪里，本质是深度方向信号传播的问题。
+机制研究开始落到训练过程与数学基础上：把可解释单元追溯到具体训练样本（[机制性数据归因](https://arxiv.org/abs/2601.21996)）；读出（反嵌入）矩阵本身的学习会滞后于表征，隐状态可能早已编码答案却读不出来（[学会读出](https://arxiv.org/abs/2610.21025)）；属性在残差流中可读出的深度早于它影响输出的深度（[早编码、晚使用](https://arxiv.org/abs/2609.07139)）；有害回应由一组跨伤害类型共享的参数支持，可被定向剪除（[有害回应的独立机制](https://arxiv.org/abs/2604.09544)）；用 AI 自动化地发现机制也开始出现（[Mechanist](https://arxiv.org/abs/2608.12036)）。
 
-### 17.11 序列混合器即在线联想记忆
+## 7 从数据本身学习：预训练、自监督与生成模型
 
-线性注意力维护一个矩阵记忆 $S_t=S_{t-1}+v_tk_t^\top$，输出 $o_t=S_tq_t$。delta 规则把写入改成对 $\tfrac12\|Sk_t-v_t\|^2$ 做一步梯度下降：
+不需要人工标签的学习信号有三类：预测下一个 token（语言模型预训练）、在表征空间中预测或对比（自监督表征学习）、建模整个数据分布（生成模型）。它们决定了模型学到的表征与能力。
 
-$$
-S_t=S_{t-1}-\beta_t\,(S_{t-1}k_t-v_t)\,k_t^\top=S_{t-1}\big(I-\beta_t k_tk_t^\top\big)+\beta_t v_tk_t^\top ,
-$$
+### 7.1 下一 token 预训练：数据与分词
 
-门控版本再乘衰减 $\alpha_t$。最近一年的几个推进都可以在这个式子上理解：
+架构趋同后，数据决定了大部分差异。路线从"过滤 + 去重"（[RefinedWeb](https://arxiv.org/abs/2306.01116)）到基于模型的质量打分（[FineWeb-Edu](https://arxiv.org/abs/2406.17557)、[DCLM](https://arxiv.org/abs/2406.11794)），再到改写与合成（[Phi-1](https://arxiv.org/abs/2306.11644)、[Nemotron-CC](https://arxiv.org/abs/2412.02595)、[BeyondWeb](https://arxiv.org/abs/2508.10975)：改写网页优于从零生成）。数据配比被纳入扩展律（[Shukor 等](https://arxiv.org/abs/2507.09404)、[DataDecide](https://arxiv.org/abs/2504.11393)：小规模实验的排序在大规模基本成立）；[OPUS](https://arxiv.org/abs/2602.05400) 在每一步按优化器诱导的更新方向挑选数据。合成数据也有风险：[模型崩溃](https://arxiv.org/abs/2305.17493)表明递归地用生成数据训练会丢失分布尾部。
 
-**精确积分。** 上式是连续时间流 $\dot S=-(Sk-v)k^\top$ 的显式 Euler 步。记 $\hat k=k/\|k\|$，与 $\hat k$ 正交的部分不变，沿 $\hat k$ 的分量 $u=S\hat k$ 满足 $\dot u=-\|k\|(\|k\|u-v)$，可精确求解，得到
+预训练与后训练之间出现了"中期训练"：用高质量数学、代码、长上下文与推理数据退火。[OctoThinker](https://arxiv.org/abs/2506.20512) 发现中期训练决定了基座能否被 RL 有效提升；[Agentic CPT](https://arxiv.org/abs/2509.13310) 与 [daVinci-Dev](https://arxiv.org/abs/2601.18418) 把智能体轨迹放进持续预训练。
 
-$$
-S(\beta)=S_{t-1}-\big(1-e^{-\beta\|k\|^2}\big)\Big(S_{t-1}\hat k-\frac{v}{\|k\|}\Big)\hat k^\top .
-$$
+BPE（[Sennrich 等](https://arxiv.org/abs/1508.07909)）仍是主流，但它带来多语言不公平（[Token 税](https://arxiv.org/abs/2509.05486)）与字符级盲区。[BLT](https://arxiv.org/abs/2412.09871) 按下一字节的熵动态切块，首次在规模上匹敌基于 tokenizer 的模型；[H-Net](https://arxiv.org/abs/2507.07955) 端到端学习分块；[SuperBPE](https://arxiv.org/abs/2503.13423) 允许跨空格的"超词"。目标函数层面：[多 token 预测](https://arxiv.org/abs/2404.19737)提升样本效率（DeepSeek-V3 采用）；[强化预训练](https://arxiv.org/abs/2506.08007)把下一 token 预测改写为可验证的推理任务；[Large Concept Models](https://arxiv.org/abs/2412.08821)、[NCP](https://arxiv.org/abs/2609.10715) 在句子或"概念"层面建模；[LLaDA](https://arxiv.org/abs/2502.09992) 用掩码扩散替代自回归。
 
-Euler 步中的系数 $\beta\|k\|^2$ 被换成始终落在 $(0,1)$ 内的 $1-e^{-\beta\|k\|^2}$，数值上更稳定，且保持秩一结构与分块并行（[EFLA](https://arxiv.org/abs/2512.12602)）。
+### 7.2 对比学习与自蒸馏
 
-**擦除与写入解耦。** 上式用同一个 $\beta_t$ 同时控制"沿 $k_t$ 擦掉多少旧值"和"写入多少新值"；把二者拆成两个门，编辑压缩记忆时更少打乱已有联想（[Gated DeltaNet-2](https://arxiv.org/abs/2605.22791)）。按卡尔曼滤波的不确定性决定写入强度是另一种做法（[Kalman Delta](https://arxiv.org/abs/2609.07816)）；加入可并行的动量（[MDN](https://arxiv.org/abs/2605.05838)）、把记忆扩展为三维张量（[三元线性注意力](https://arxiv.org/abs/2609.36529)）则对应更好的在线优化器与更大的状态。
+InfoNCE（[CPC](https://arxiv.org/abs/1807.03748)）对一个正样本与 $K$ 个负样本：
 
-**TTT 即线性注意力。** 以"测试时记忆键值映射"解释的 TTT 层，有多种现象与记忆解释矛盾；一大类 TTT 架构可以写成学到的线性注意力算子（[TTT 即线性注意力](https://arxiv.org/abs/2602.21204)）。
+$$\mathcal L=-\log\frac{\exp(\mathrm{sim}(z,z^+)/\tau)}{\exp(\mathrm{sim}(z,z^+)/\tau)+\sum_{j=1}^{K}\exp(\mathrm{sim}(z,z_j^-)/\tau)},$$
 
-**表达力与纠错。** 混合线性—全注意力存在可证明的表达力层级（[表达力层级](https://arxiv.org/abs/2602.01763)）。对仿射循环 $h_t=A(x_t)h_{t-1}+b(x_t)$，若 $A$ 在区分不同状态的子空间上保持状态表示（不收缩），那么沿这些方向的误差也永远不会被纠正，所以实际学到的是有限视野的解（[误差控制](https://arxiv.org/abs/2605.07755)）；学到的也可能是陪集而非状态本身（[状态还是陪集](https://arxiv.org/abs/2609.29951)）。
+是互信息的下界。[SimCLR](https://arxiv.org/abs/2002.05709) 用强数据增强与大批量，[MoCo](https://arxiv.org/abs/1911.05722) 用动量编码器与队列，[CLIP](https://arxiv.org/abs/2103.00020) 把它用于 4 亿图文对，[SigLIP](https://arxiv.org/abs/2303.15343) 改用逐对的 sigmoid 损失。
 
-### 17.12 循环深度
+[BYOL](https://arxiv.org/abs/2006.07733) 与 [DINO](https://arxiv.org/abs/2104.14294) 不用负样本，让学生网络预测动量教师的输出，靠中心化、锐化等技巧避免坍缩；[MAE](https://arxiv.org/abs/2111.06377) 遮住 75% 的图像块再重建像素。[DINOv2](https://arxiv.org/abs/2304.07193) 在精选数据上结合二者。
 
-循环模型反复应用同一个块 $h^{(\ell+1)}=F_\theta(h^{(\ell)},x)$。[TRM](https://arxiv.org/abs/2510.04871)、[Ouro](https://arxiv.org/abs/2510.25741) 之后，最近一年形成了系统的研究：
+#### 最近一年（2025-11 → 2026-10）
 
-- **值多少参数。** 等深度扩展律给出 $\varphi\approx0.46$（17.4）；稳定训练的扩展律（[Parcae](https://arxiv.org/abs/2604.12946)）；循环 MoE 的联合扩展律（[循环 MoE](https://arxiv.org/abs/2609.40316)）。
-- **怎么参数化。** 同一参数在一次前向中被使用 $r$ 次，残差分支的更新会累积，μP 式的残差缩放需要相应修改，才能让超参数跨规模迁移（[DeepLoop](https://arxiv.org/abs/2607.13491)、[Loop-μP](https://arxiv.org/abs/2606.18524)）。
-- **不动点。** 若 $F_\theta$ 在 $x$ 固定时是压缩映射，迭代收敛到不动点 $h^*=F_\theta(h^*,x)$，梯度可由隐函数定理得到，与到达路径无关。因此越接近不动点，截断反传的偏差越小，末端 KV 也可共享（[不动点视角](https://arxiv.org/abs/2610.06833)、[截断 BPTT](https://arxiv.org/abs/2610.26030)）。循环位置、输入注入、状态组织三条设计轴的受控比较见 [做对了（一）](https://arxiv.org/abs/2610.23036)。
-- **风险。** 循环次数远超训练时，噪声更新会覆盖已经正确的中间结论（[上万次迭代](https://arxiv.org/abs/2610.11570)）；安全行为也随循环次数变化（[循环与拒绝](https://arxiv.org/abs/2610.15218)）。
+对平稳统计的图像数据与基本增强，对比损失的最优表示可以解析求出，并由'正弦滤波 + 逐点非线性 + 全局池化 + 部分白化'的 CNN 实现（[对比学习理论](https://arxiv.org/abs/2607.07470)）；从潜分布匹配的角度可以统一理解各类自监督方法（[潜分布匹配](https://arxiv.org/abs/2605.03517)）；自回归的下一帧预测也能学到有效的视觉表征（[下一帧预测](https://arxiv.org/abs/2512.21004)）。
 
-### 17.13 生成模型：流形、表征空间与一步生成
+### 7.3 JEPA 与其理论
 
-**预测什么。** 加噪 $z_t=\alpha_t x+\sigma_t\epsilon$ 后，网络可以预测 $\epsilon$、$v$ 或 $x$，三者在数学上可互换。[JiT](https://arxiv.org/abs/2511.13720) 指出在高维时它们并不等价：按流形假设，$x$ 位于低维流形，而 $\epsilon$ 是满维的；预测 $\epsilon$ 要求网络复现 $d$ 维噪声，预测 $x$ 只需输出流形上的点。因此直接预测 $x$ 时，像素空间的大 patch Transformer 也能工作。
+[I-JEPA](https://arxiv.org/abs/2301.08243) 在表征空间而非像素空间预测被遮挡区域，避免浪费容量去建模不可预测的细节。[V-JEPA](https://arxiv.org/abs/2404.08471) 把它用于视频；[V-JEPA 2](https://arxiv.org/abs/2506.09985) 用超过百万小时的视频预训练，再用不到 62 小时的无标注机器人视频训练动作条件世界模型，在新环境中零样本规划抓取与放置。[LeJEPA](https://arxiv.org/abs/2511.08544) 从理论上证明各向同性高斯是 JEPA 嵌入的最优分布，用一个 SIGReg 正则替代了停梯度、教师网络等一系列启发式技巧。
 
-**在哪个空间生成。** 预训练表征空间与像素空间有相近的内在维度，普通 DiT 可直接在表征空间生成（[RAE](https://arxiv.org/abs/2510.11690)、[文生图 RAE](https://arxiv.org/abs/2601.16208)、[RiT](https://arxiv.org/abs/2605.21981)）。表征对齐（REPA）的收益主要来自目标表征的空间结构，而不是全局语义（[REPA 中什么重要](https://arxiv.org/abs/2512.10794)）。频谱视角：在整流流与幂律图像谱 $S(k)\propto k^{-\alpha}$ 下，每个时刻存在一条数据—噪声分界 $k^*(t)=(1-t)^{-2/\alpha}$，低于它的频段携带信号、高于它的频段最优预测退化为确定值，于是像素去噪器只需学前者（[谱强迫](https://arxiv.org/abs/2606.15236)）。
-
-**一步生成。** 扩散与流模型在推理时迭代推前分布；[漂移模型](https://arxiv.org/abs/2602.04770)改为在训练过程中演化推前分布：定义一个在两分布相等时达到平衡的漂移场，训练目标让网络学到这个平衡，推理天然一步（[梯度流解释](https://arxiv.org/abs/2603.10592)）。同期的一步方法还有像素空间的 [pMF](https://arxiv.org/abs/2601.22158)、分析 MeanFlow 目标冲突的 [AlphaFlow](https://arxiv.org/abs/2510.20771)、去掉时间条件的 [Equilibrium Matching](https://arxiv.org/abs/2510.02300)。
-
-**离散与语言。** 数据受限、多轮重复时，扩散语言模型持续优于自回归模型（[超级数据学习者](https://arxiv.org/abs/2511.03276)），但任意顺序生成会让模型绕开难 token，反而限制推理潜力（[灵活性陷阱](https://arxiv.org/abs/2601.15165)）；连续去噪的流映射语言模型可以一步生成（[Flow Map LM](https://arxiv.org/abs/2602.16813)）。
-
-### 17.14 自监督：JEPA 的理论
+#### 最近一年（2025-11 → 2026-10）
 
 JEPA 在嵌入空间预测：$\min\ \|g_\phi(f_\theta(x_{\text{ctx}}))-\mathrm{sg}[f_{\bar\theta}(x_{\text{tgt}})]\|^2$，难点是防止所有输入映射到同一点。[LeJEPA](https://arxiv.org/abs/2511.08544)（2025-11）指出，为使下游预测风险最小，嵌入应服从各向同性高斯分布，并用一个把嵌入推向各向同性高斯的正则项（SIGReg）取代停止梯度、教师网络等启发式。随后的理论回答"JEPA 学到什么"：
 
@@ -661,7 +596,73 @@ JEPA 在嵌入空间预测：$\min\ \|g_\phi(f_\theta(x_{\text{ctx}}))-\mathrm{s
 
 争论仍在：用于规划时，各向异性表征反而更好（[各向异性](https://arxiv.org/abs/2609.37441)）。对比学习方面，对平稳统计的图像与基本增强，最优表示可以解析求出，并由"正弦滤波 + 逐点非线性 + 全局池化 + 部分白化"的 CNN 实现（[对比学习理论](https://arxiv.org/abs/2607.07470)）。
 
-### 17.15 后训练的机制
+### 7.4 视觉表征的扩展
+
+[DINOv3](https://arxiv.org/abs/2508.10104) 把自监督骨干扩展到 7B，发现长训练会让稠密特征退化，提出 Gram anchoring 保持局部特征的一致性；[Web-SSL](https://arxiv.org/abs/2504.01017) 在与 CLIP 相同的数据上把纯视觉自监督扩展到 7B，在 VQA 上追平语言监督的模型——语言并非视觉表征的必需监督。[SigLIP 2](https://arxiv.org/abs/2502.14786)、[Perception Encoder](https://arxiv.org/abs/2504.13181)（最好的特征藏在中间层）、[AIMv2](https://arxiv.org/abs/2411.14402)（多模态自回归预训练）代表了语言监督一侧的进展。表征也开始反哺生成：[REPA](https://arxiv.org/abs/2410.06940) 把扩散 Transformer 的中间层对齐到 DINOv2，训练提速 17 倍；[RAE](https://arxiv.org/abs/2510.11690) 直接用冻结的表征编码器作扩散的潜空间（详见<a href="../diffusion_survey/">扩散导读</a>）。
+
+### 7.5 扩散与流：预测什么、在哪个空间生成
+
+扩散模型与流匹配把生成写成从噪声到数据的连续变换：加噪 $z_t=\alpha_t x+\sigma_t\epsilon$，网络学习去噪方向，再积分常微分方程或随机微分方程采样（[DDPM](https://arxiv.org/abs/2006.11239)、[分数 SDE](https://arxiv.org/abs/2011.13456)、[流匹配](https://arxiv.org/abs/2210.02747)）。方法细节见姊妹篇<a href="../diffusion_survey/">扩散模型与流匹配</a>；这里只讨论原理层面的问题。
+
+#### 最近一年（2025-11 → 2026-10）
+
+**预测什么。** 加噪 $z_t=\alpha_t x+\sigma_t\epsilon$ 后，网络可以预测 $\epsilon$、$v$ 或 $x$，三者在数学上可互换。[JiT](https://arxiv.org/abs/2511.13720) 指出在高维时它们并不等价：按流形假设，$x$ 位于低维流形，而 $\epsilon$ 是满维的；预测 $\epsilon$ 要求网络复现 $d$ 维噪声，预测 $x$ 只需输出流形上的点。因此直接预测 $x$ 时，像素空间的大 patch Transformer 也能工作。
+
+**在哪个空间生成。** 预训练表征空间与像素空间有相近的内在维度，普通 DiT 可直接在表征空间生成（[RAE](https://arxiv.org/abs/2510.11690)、[文生图 RAE](https://arxiv.org/abs/2601.16208)、[RiT](https://arxiv.org/abs/2605.21981)）。表征对齐（REPA）的收益主要来自目标表征的空间结构，而不是全局语义（[REPA 中什么重要](https://arxiv.org/abs/2512.10794)）。频谱视角：在整流流与幂律图像谱 $S(k)\propto k^{-\alpha}$ 下，每个时刻存在一条数据—噪声分界 $k^*(t)=(1-t)^{-2/\alpha}$，低于它的频段携带信号、高于它的频段最优预测退化为确定值，于是像素去噪器只需学前者（[谱强迫](https://arxiv.org/abs/2606.15236)）。
+
+### 7.6 一步生成与离散扩散
+
+#### 最近一年（2025-11 → 2026-10）
+
+**一步生成。** 扩散与流模型在推理时迭代推前分布；[漂移模型](https://arxiv.org/abs/2602.04770)改为在训练过程中演化推前分布：定义一个在两分布相等时达到平衡的漂移场，训练目标让网络学到这个平衡，推理天然一步（[梯度流解释](https://arxiv.org/abs/2603.10592)）。同期的一步方法还有像素空间的 [pMF](https://arxiv.org/abs/2601.22158)、分析 MeanFlow 目标冲突的 [AlphaFlow](https://arxiv.org/abs/2510.20771)、去掉时间条件的 [Equilibrium Matching](https://arxiv.org/abs/2510.02300)。
+
+**离散与语言。** 数据受限、多轮重复时，扩散语言模型持续优于自回归模型（[超级数据学习者](https://arxiv.org/abs/2511.03276)），但任意顺序生成会让模型绕开难 token，反而限制推理潜力（[灵活性陷阱](https://arxiv.org/abs/2601.15165)）；连续去噪的流映射语言模型可以一步生成（[Flow Map LM](https://arxiv.org/abs/2602.16813)）。
+
+## 8 从反馈中学习：强化学习与后训练
+
+预训练之后，模型通过人类偏好、可验证的奖励或更强的教师继续学习。这一章先讲方法（RLHF、DPO、RLVR、在策略蒸馏），再讲机制：这些训练到底改变了模型的什么。
+
+### 8.1 RLHF 与 DPO
+
+RLHF 先用偏好比较训练奖励模型 $r_\phi$（Bradley–Terry 模型 $P(y_w\succ y_l)=\sigma(r(y_w)-r(y_l))$），再优化带 KL 约束的目标（[Christiano 等](https://arxiv.org/abs/1706.03741)、[InstructGPT](https://arxiv.org/abs/2203.02155)）：
+
+$$\max_{\pi}\ \mathbb E_{x,\,y\sim\pi}\bigl[r_\phi(x,y)\bigr]-\beta\,\mathrm{KL}\bigl(\pi(\cdot\mid x)\,\Vert\,\pi_{\text{ref}}(\cdot\mid x)\bigr).$$
+
+其最优解为 $\pi^\star(y\mid x)\propto\pi_{\text{ref}}(y\mid x)\exp(r(x,y)/\beta)$，即 $r(x,y)=\beta\log\frac{\pi^\star(y\mid x)}{\pi_{\text{ref}}(y\mid x)}+\beta\log Z(x)$。代回 Bradley–Terry 模型，配分函数 $Z(x)$ 相消，得到只依赖策略本身的 [DPO](https://arxiv.org/abs/2305.18290) 损失：
+
+$$\mathcal L_{\text{DPO}}=-\mathbb E\Bigl[\log\sigma\Bigl(\beta\log\frac{\pi_\theta(y_w\mid x)}{\pi_{\text{ref}}(y_w\mid x)}-\beta\log\frac{\pi_\theta(y_l\mid x)}{\pi_{\text{ref}}(y_l\mid x)}\Bigr)\Bigr].$$
+
+[Gao 等](https://arxiv.org/abs/2210.10760)发现对代理奖励优化越多，真实奖励先升后降——奖励投机是 RLHF 的内在问题。
+
+### 8.2 GRPO 与 RLVR
+
+对可以程序验证答案的任务（数学、代码），奖励直接来自验证器，不再需要奖励模型。[GRPO](https://arxiv.org/abs/2402.03300) 对每道题采样 $G$ 个回答，用组内标准化的奖励作为优势，省去价值网络：
+
+$$\hat A_i=\frac{r_i-\mathrm{mean}(r_{1..G})}{\mathrm{std}(r_{1..G})},\qquad \mathcal J=\mathbb E\Bigl[\frac1G\sum_i\frac1{|o_i|}\sum_t\min\bigl(\rho_{i,t}\hat A_i,\ \mathrm{clip}(\rho_{i,t},1-\epsilon,1+\epsilon)\hat A_i\bigr)\Bigr]-\beta\,\mathrm{KL},$$
+
+其中 $\rho_{i,t}$ 是新旧策略在第 $t$ 个 token 上的概率比。[Tülu 3](https://arxiv.org/abs/2411.15124) 把这种做法命名为 RLVR；[DeepSeek-R1](https://arxiv.org/abs/2501.12948) 证明只用规则奖励的纯 RL（R1-Zero）就能让模型涌现出长思维链、自我验证与反思。
+
+- [Dr. GRPO](https://arxiv.org/abs/2503.20783)：按回答长度 $1/|o_i|$ 归一化会偏向长的错误回答，除以标准差会偏向过易或过难的题；去掉二者更无偏。
+- [DAPO](https://arxiv.org/abs/2503.14476)：上下裁剪解耦（放宽上界以保持探索）、动态采样（丢弃全对或全错的组）、token 级损失聚合、超长惩罚。
+- [GSPO](https://arxiv.org/abs/2507.18071)：token 级重要性比在 MoE 上方差很大，改用序列级比率与裁剪，稳定了 Qwen3 的大规模 RL。
+- [Qwen 的形式化](https://arxiv.org/abs/2512.01374)：token 级替代目标只是序列级目标的一阶近似，仅当训练-推理不一致与策略陈旧都很小时才成立；这解释了重要性采样修正、裁剪与 MoE 的路由重放为何关键。
+- 熵：[Cui 等](https://arxiv.org/abs/2505.22617)发现策略熵塌缩限制了性能，熵的变化由动作概率与优势的协方差驱动；[Wang 等](https://arxiv.org/abs/2506.01939)发现只有约 20% 的高熵"分叉"token 决定了 RLVR 的效果。
+
+### 8.3 RL 是在激发还是在创造
+
+[Yue 等](https://arxiv.org/abs/2504.13837)发现在 $k$ 很大时，基座模型的 pass@k 反超 RLVR 模型：RL 主要提高了采样效率，而非扩展可解问题的集合。反方证据包括：[ProRL](https://arxiv.org/abs/2505.24864) 长时间、有 KL 控制与参考模型重置的训练确实扩展了边界；[CoT-Pass@k](https://arxiv.org/abs/2506.14245) 显示 RLVR 提升了推理过程本身的正确性。同时，[虚假奖励](https://arxiv.org/abs/2506.10947)（随机甚至错误的奖励也能提升 Qwen2.5-Math）与 [单样本 RL](https://arxiv.org/abs/2504.20571) 说明很大一部分收益来自激发预训练中已有的行为，[数据污染](https://arxiv.org/abs/2507.10532)则让部分结论不可靠。机制上，RL 只稀疏地更新 5%–30% 的参数（[Mukherjee 等](https://arxiv.org/abs/2505.11711)），更新避开权重的主方向（[Zhu 等](https://arxiv.org/abs/2511.08567)），并偏向与原模型 KL 最小的解，因此比 SFT 遗忘更少（[RL's Razor](https://arxiv.org/abs/2509.04259)）；对比实验也显示 SFT 倾向记忆而 RL 更能泛化（[Chu 等](https://arxiv.org/abs/2501.17161)）。
+
+### 8.4 在策略蒸馏
+
+SFT 用教师的离线轨迹训练学生，学生在推理时却要面对自己生成的前缀（暴露偏差）；RL 在策略，但每条回答只有一个稀疏奖励。[在策略蒸馏](https://thinkingmachines.ai/blog/on-policy-distillation/)（Thinking Machines，2025-10）让学生自己采样，再用教师对每个 token 计算反向 KL：
+
+$$\mathcal L_{\text{OPD}}=\mathbb E_{y\sim\pi_\theta}\sum_t\Bigl[\log\pi_\theta(y_t\mid y_{<t})-\log\pi_{\text{T}}(y_t\mid y_{<t})\Bigr],$$
+
+相当于每个 token 都有稠密奖励的 RL，成本远低于 RL。2026 年围绕它出现了大量研究：现象、机制与配方（[清华](https://arxiv.org/abs/2604.13016)）、单样本 OPD（[OPD II](https://arxiv.org/abs/2609.04172)）、在/离策略蒸馏动力学的系统比较（[UC](https://arxiv.org/abs/2609.35259)）、长度膨胀（[Microsoft](https://arxiv.org/abs/2609.20511)）、奖励外推以超越教师（[G-OPD](https://arxiv.org/abs/2602.12125)）、用弱教师激发强学生（[弱到强 OPD](https://arxiv.org/abs/2607.05394)）；工业管线普遍采用"级联 RL + 多领域在策略蒸馏"（[Nemotron-Cascade 2](https://arxiv.org/abs/2603.19220)）。
+
+### 8.5 后训练改变了什么
+
+#### 最近一年（2025-11 → 2026-10）
 
 只看机制，不看配方：
 
@@ -669,13 +670,130 @@ JEPA 在嵌入空间预测：$\min\ \|g_\phi(f_\theta(x_{\text{ctx}}))-\mathrm{s
 - **熵与探索。** 对 softmax 策略做自然策略梯度更新，熵的一步变化近似为 $\Delta H\approx-\eta\,\mathrm{Cov}_{a\sim\pi}\big(\log\pi(a),\,A(a)\big)$：高概率且高优势的动作会压低熵（[熵机制](https://arxiv.org/abs/2505.22617)）；强化微调中熵动力学的进一步推导见 [熵动力学](https://arxiv.org/abs/2602.03392)。组相对优势存在隐式对称：正确与错误轨迹的权重严格对称，未采样动作的 logit 得不到更新，限制了探索与难度自适应（[优势对称](https://arxiv.org/abs/2602.05548)）。
 - **增益从哪来。** 虚假奖励的收益来自激活记忆捷径：答案 token 困惑度下降而提示侧连贯性变差（[虚假奖励悖论](https://arxiv.org/abs/2601.11061)）；SFT 后 pass@k 下降与数据中的"岔路口" token 有关（[覆盖收缩](https://arxiv.org/abs/2605.17026)）；"SFT 记忆、RL 泛化"并不绝对，长思维链 SFT 的跨领域泛化取决于优化、数据与模型能力（[条件泛化](https://arxiv.org/abs/2604.06628)）；用 SFT 注入新事实会增加对已有知识的幻觉（[微调与幻觉](https://arxiv.org/abs/2604.15574)）。
 
-### 17.16 持续学习与可塑性
+## 9 测试时的计算与学习
+
+模型在测试时也能"学"：从上下文中的示例学习（上下文学习）、用更多推理步骤计算（思维链）、把上下文写进权重（测试时训练，见 2.4 节），以及在部署后持续学习。
+
+### 9.1 上下文学习
+
+GPT-3 展示了不改权重、只看示例就能学会新任务的能力。理论解释有三类：一是线性自注意力的一层前向可以实现一步梯度下降（[von Oswald 等](https://arxiv.org/abs/2212.07677)，[Garg 等](https://arxiv.org/abs/2208.01066)发现 Transformer 在上下文中学线性回归接近最优估计器）；二是"归纳头"——由前一 token 头与复制头组成的两层电路，其出现与损失曲线上的相变同步（[Olsson 等](https://arxiv.org/abs/2209.11895)）；三是 [Dherin 等](https://arxiv.org/abs/2507.16003)的"无需训练的学习"：Transformer 块把上下文隐式转化为 MLP 权重的低秩更新。也有反例提醒不要过度简化：[Transformer 并不在上下文中做最小二乘](https://arxiv.org/abs/2507.09440)，[不同任务下 ICL 由不同机制实现](https://arxiv.org/abs/2604.12151)。
+
+#### 最近一年（2025-11 → 2026-10）
+
+贝叶斯视角下，ICL 是对潜在任务 $\tau$ 的后验平均：$p(y\mid x,\mathcal D)=\int p(y\mid x,\tau)\,p(\tau\mid\mathcal D)\,d\tau$。过去常把 ICL 归因于人类语言的特殊统计性质；最近一年的反例是：只在 DNA 序列上做下一词预测也会涌现 ICL（[基因组 ICL](https://arxiv.org/abs/2511.12797)），文本、音频等模态的预测器都趋同地涌现少样本 ICL（[跨模态趋同](https://arxiv.org/abs/2609.14011)）。机制上，归纳头的出现时间可以在预训练中预测（[预测归纳头](https://arxiv.org/abs/2511.16893)），数据多样性决定模型选择"捷径"还是"归纳头"算法（[捷径与归纳头](https://arxiv.org/abs/2512.18634)），ICL 中的注意力可视为跨任务的自适应核（[自适应核](https://arxiv.org/abs/2610.24441)）。思维链方面，梯度训练的 Transformer 可证明学会能长度泛化的思维链（[CoT 长度泛化](https://arxiv.org/abs/2511.07378)），也能把显式步骤内化到隐状态（[内化 CoT](https://arxiv.org/abs/2605.28600)）；长度泛化的差异部分来自注意力头的隐式偏置：相对位置泛化、绝对位置记忆（[相对 vs 绝对](https://arxiv.org/abs/2607.18759)）。
+
+### 9.2 思维链与推理
+
+**从提示到训练。** [思维链](https://arxiv.org/abs/2201.11903)提示让模型写出中间步骤；[自洽性](https://arxiv.org/abs/2203.11171)采样多条推理后投票；[Tree of Thoughts](https://arxiv.org/abs/2305.10601) 把推理组织成可回溯的树。训练层面，[STaR](https://arxiv.org/abs/2203.14465) 用模型自己生成且答案正确的推理链迭代微调，[过程监督](https://arxiv.org/abs/2305.20050)（逐步打分）优于结果监督。[o1](https://openai.com/index/learning-to-reason-with-llms/) 与 R1 把这一切统一为：用 RL 训练模型生成长思维链，推理能力随训练算力与思考长度平滑提升。
+
+**推理算力怎么花。** [Snell 等](https://arxiv.org/abs/2408.03314)比较了"顺序修改"与"并行采样 + 验证器搜索"，发现最优策略取决于题目难度；[Liu 等](https://arxiv.org/abs/2502.06703)发现在合适的测试时策略下 1B 模型可以在数学上超过 405B 模型。[s1](https://arxiv.org/abs/2501.19393) 用 1000 条样本 SFT 加"预算强制"（在模型想停时追加 Wait）即可实现测试时扩展；[LIMO](https://arxiv.org/abs/2502.03387) 用 817 条精选样本激发复杂推理。验证器本身也在变强：[DeepSeek-GRM](https://arxiv.org/abs/2504.02495) 让奖励模型先生成原则与批评再打分，使奖励模型也能随推理算力扩展；[DeepSeekMath-V2](https://arxiv.org/abs/2511.22570) 训练证明验证器，实现可自我验证的定理证明。
+
+**别想太多。** 推理模型常在简单题上过度思考（[Chen 等](https://arxiv.org/abs/2412.21187)）。对策包括：学会何时思考（[AdaptThink](https://arxiv.org/abs/2505.13417)）、在测试时调度快慢思考（[AlphaOne](https://arxiv.org/abs/2505.24863)）、把思考切成固定长度的块只携带短状态以获得线性算力（[Markovian Thinker](https://arxiv.org/abs/2510.06557)）、并行思考（[Parallel-R1](https://arxiv.org/abs/2509.07980)、[Multiverse](https://arxiv.org/abs/2506.09991)）。综述见 [Sui 等](https://arxiv.org/abs/2503.16419)。
+
+**推理是否必须用语言。** [Coconut](https://arxiv.org/abs/2412.06769) 把最后一层隐状态直接作为下一步输入，在连续空间中推理，可同时保留多个候选分支；循环深度模型（第 7.7 节）在隐空间迭代。[Anthropic](https://arxiv.org/abs/2505.05410) 发现推理模型的思维链常常不承认使用了提示中的线索，即语言化的推理并不总是忠实于内部计算；这既是潜空间推理的动机，也是安全上的隐忧（10.3 节）。
+
+#### 最近一年（2025-11 → 2026-10）
+
+推理的理论开始成形：Transformer 可证明地把显式思维链内化到隐状态中（[内化 CoT](https://arxiv.org/abs/2605.28600)）；把高效推理表述为条件信息瓶颈下的有损压缩，可以统一各类预算控制方法（[推理即压缩](https://arxiv.org/abs/2603.08462)）；答案常在中间层过早定型（[停止思考得太早](https://arxiv.org/abs/2609.36585)）；在潜空间中用归一化流或流匹配推理（[潜在推理](https://arxiv.org/abs/2606.06447)、[自条件化](https://arxiv.org/abs/2610.19628)）。
+
+### 9.3 持续学习与可塑性
+
+顺序学习多个任务时，网络会遗忘旧任务（灾难性遗忘）；按 Fisher 信息保护重要参数是经典对策（[EWC](https://arxiv.org/abs/1612.00796)）。更隐蔽的问题是可塑性丧失：持续训练的网络会逐渐失去学习新东西的能力（[可塑性丧失](https://arxiv.org/abs/2306.13812)）。在大模型上，在线 RL 比 SFT 遗忘更少（[RL's Razor](https://arxiv.org/abs/2509.04259)），而不少'遗忘'其实只是任务对齐的丢失（[虚假遗忘](https://arxiv.org/abs/2501.13453)）。
+
+#### 最近一年（2025-11 → 2026-10）
 
 持续训练的网络会逐渐失去学新东西的能力（可塑性丧失），微调又会遗忘旧能力。最近一年开始把两者放进同一动力学框架：选择学什么（数据归因）、理解一次更新改变了什么（遗忘）、保持继续学习的能力（可塑性）被视为同一过程的三面（[统一视角](https://arxiv.org/abs/2609.33620)）；任务更新之间的几何冲突解释并控制遗忘（[几何冲突](https://arxiv.org/abs/2605.09608)）；遗忘更像"可达性坍缩"而非知识消失（[可达性坍缩](https://arxiv.org/abs/2606.06032)）；在强化学习中，可塑性被定义为从观测到动作的有向信息，并有了相应的 Bellman 最优方程（[可塑性的 Bellman 方程](https://arxiv.org/abs/2609.10776)）。测试时学习带来新问题：模型从自己的输出学习时，每次更新都改变下一次生成，形成不稳定的反馈（[自生成反馈](https://arxiv.org/abs/2610.05076)）。可用的手段包括锐度感知预训练（[锐度感知预训练](https://arxiv.org/abs/2605.02105)）与权重衰减（[权重衰减与可塑性](https://arxiv.org/abs/2602.11137)）。
 
-### 17.17 最近半年（2026-05 → 2026-10）速览
+## 10 应用：原理的检验场
 
-按时间顺序列出最近半年中结论清楚的原理类工作（完整列表见附录中的 🔥 条目）：
+前面各章的原理在应用中接受检验。大模型是其中规模最大、工程最复杂的一个方向；视觉、多模态、科学、机器人与智能体是另外几个。安全与对齐则讨论训练带来的副作用。
+
+### 10.1 大模型系统：KV 缓存、稀疏注意力与推理效率
+
+自回归解码时，每层要缓存所有历史 token 的键和值。以 $n_h$ 个头、每头 $d_h$ 维为例，每 token 每层的缓存元素数为：
+
+| 方案 | 每 token 每层缓存 | $n_h=d_h=128$ 时 |
+|---|---|---|
+| MHA | $2n_hd_h$ | 32768 |
+| GQA（$n_g$ 组） | $2n_gd_h$ | 2048（$n_g=8$） |
+| MQA | $2d_h$ | 256 |
+| MLA | $d_c+d_h^R$ | 576（$d_c=512$, $d_h^R=64$） |
+
+[MQA](https://arxiv.org/abs/1911.02150) 让所有头共享一组 K/V，[GQA](https://arxiv.org/abs/2305.13245) 折中；[MLA](https://arxiv.org/abs/2405.04434)（DeepSeek-V2）把 K/V 联合压缩成一个低秩潜向量 $c_t=W^{DKV}h_t$，推理时把上投影矩阵"吸收"进查询与输出投影，只缓存 $c_t$ 和一小段解耦的 RoPE 键，KV 缓存减少 93.3%。[TransMLA](https://arxiv.org/abs/2502.07864) 证明同等缓存下 MLA 的表达力强于 GQA。
+
+注意力的瓶颈不是浮点运算，而是读写 $N\times N$ 的分数矩阵。[FlashAttention](https://arxiv.org/abs/2205.14135) 把 Q、K、V 分块载入片上 SRAM，用在线 softmax（维护运行中的最大值 $m$ 与归一化因子 $\ell$，新块到来时按 $e^{m_{\text{old}}-m_{\text{new}}}$ 重缩放）逐块累加输出，从不在显存中物化完整矩阵，显存随长度线性增长，速度提升数倍。[FA-2](https://arxiv.org/abs/2307.08691) 改进并行划分，[FA-3](https://arxiv.org/abs/2407.08608) 利用 Hopper 的异步与 FP8。
+
+KV 缓存再小，每步解码仍要读取全部历史。稀疏注意力让每个查询只关注一小部分 KV：
+
+- [NSA](https://arxiv.org/abs/2502.11089)（DeepSeek）：压缩分支看粗粒度的块摘要，选择分支挑出最相关的若干块做精细注意力，滑动窗口分支保留局部；三者门控相加，块大小与 GQA 组对齐以充分利用硬件，并且可以端到端训练。
+- [MoBA](https://arxiv.org/abs/2502.13189)（Moonshot）：把 MoE 的路由思想用于注意力，每个查询只路由到被选中的 KV 块。
+- [DSA](https://arxiv.org/abs/2512.02556)（DeepSeek-V3.2）：用轻量"闪电索引器"为每个查询选出 top-k token，再做标准注意力；被 [GLM-5](https://arxiv.org/abs/2602.15763) 采用。
+- [DeepSeek-V4](https://arxiv.org/abs/2606.19348)：混合压缩稀疏注意力（CSA）与重度压缩注意力（HCA），1.6T 与 284B 两个模型都支持 100 万 token。
+- [MiniMax Sparse Attention](https://arxiv.org/abs/2606.13392)：在 GQA 的每个组内独立选块，主分支只对选中的块做精确注意力。
+
+**量化。** 后训练量化的难点是激活中的离群通道（[LLM.int8()](https://arxiv.org/abs/2208.07339)）。[GPTQ](https://arxiv.org/abs/2210.17323) 用近似二阶信息逐层补偿量化误差（[几何视角](https://arxiv.org/abs/2507.18553)：它等价于格上的 Babai 最近平面算法）；[AWQ](https://arxiv.org/abs/2306.00978) 保护按激活重要的权重通道；[SmoothQuant](https://arxiv.org/abs/2211.10438) 把激活离群值的难度迁移到权重。原生低比特模型方面，[BitNet b1.58](https://arxiv.org/abs/2402.17764) 用三值权重从头训练，[BitNet b1.58 2B4T](https://arxiv.org/abs/2504.12285) 开源了首个原生 1-bit 的 2B 模型。
+
+**推理系统。** [vLLM](https://arxiv.org/abs/2309.06180) 借鉴操作系统的分页管理 KV 缓存；[SGLang](https://arxiv.org/abs/2312.07104) 用基数树复用前缀；[DistServe](https://arxiv.org/abs/2401.09670) 与 [Mooncake](https://arxiv.org/abs/2407.00079) 把预填充与解码分离到不同设备。[推测解码](https://arxiv.org/abs/2211.17192)用小模型起草、大模型并行验证，保证输出分布不变；[Medusa](https://arxiv.org/abs/2401.10774)、[EAGLE](https://arxiv.org/abs/2401.15077)、[EAGLE-3](https://arxiv.org/abs/2503.01840) 不断提高草稿接受率。面向智能体负载，[DualPath](https://arxiv.org/abs/2602.21548) 指出多轮推理的瓶颈已从计算转向 KV 缓存的存储 I/O。
+
+**参数高效微调。** [LoRA](https://arxiv.org/abs/2106.09685) 只训练低秩增量 $\Delta W=BA$，[QLoRA](https://arxiv.org/abs/2305.14314) 在 4-bit 底座上训练 LoRA。[Thinking Machines](https://thinkingmachines.ai/blog/lora/) 的系统实验表明，合理配置（更大的学习率、作用于所有层）的 LoRA 在后训练与 RL 场景下可以匹敌全参数微调，而 RL 所需的容量极小——每回合只传递约 1 bit 的信息。
+
+### 10.2 应用版图
+
+**视觉感知与 3D。** [AlexNet](https://papers.nips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html) → [ResNet](https://arxiv.org/abs/1512.03385) → [ViT](https://arxiv.org/abs/2010.11929)；检测分割从 [Faster R-CNN](https://arxiv.org/abs/1506.01497)、[DETR](https://arxiv.org/abs/2005.12872) 到可提示的 [SAM](https://arxiv.org/abs/2304.02643)、[SAM 2](https://arxiv.org/abs/2408.00714)、[SAM 3](https://arxiv.org/abs/2511.16719)（按名词短语分割与跟踪所有实例）。几何方面，[NeRF](https://arxiv.org/abs/2003.08934)、[3D 高斯泼溅](https://arxiv.org/abs/2308.04079)之后，[DUSt3R](https://arxiv.org/abs/2312.14132)、[VGGT](https://arxiv.org/abs/2503.11651)、[MapAnything](https://arxiv.org/abs/2509.13414)、[Depth Anything 3](https://arxiv.org/abs/2511.10647) 用一次前向直接回归相机与几何。
+
+**生成。** GAN、VAE → 扩散与流匹配 + DiT → 视频与可交互世界模型（[Sora](https://openai.com/index/video-generation-models-as-world-simulators/)、[Genie 3](https://deepmind.google/discover/blog/genie-3-a-new-frontier-for-world-models/)）。详见<a href="../diffusion_survey/">扩散模型与流匹配导读</a>。
+
+**语音与音频。** [wav2vec 2.0](https://arxiv.org/abs/2006.11477) 的自监督、[Whisper](https://arxiv.org/abs/2212.04356) 的大规模弱监督、[VALL-E](https://arxiv.org/abs/2301.02111) 把 TTS 视为编解码 token 上的语言建模、[Moshi](https://arxiv.org/abs/2410.00037) 的全双工对话、[VibeVoice](https://arxiv.org/abs/2508.19205) 的超低帧率连续 token。
+
+**多模态。** [CLIP](https://arxiv.org/abs/2103.00020) → [Flamingo](https://arxiv.org/abs/2204.14198)、[LLaVA](https://arxiv.org/abs/2304.08485) → [Qwen2.5-VL](https://arxiv.org/abs/2502.13923)、[Qwen3-VL](https://arxiv.org/abs/2511.21631)、[InternVL3.5](https://arxiv.org/abs/2508.18265) → 原生全模态（[GPT-4o](https://arxiv.org/abs/2410.21276)、[Qwen3-Omni](https://arxiv.org/abs/2509.17765)、[Gemma 4](https://arxiv.org/abs/2607.02770) 的无编码器 12B）。[DeepSeek-OCR](https://arxiv.org/abs/2510.18234) 与 [Glyph](https://arxiv.org/abs/2510.17800) 把长文本渲染为图像，用视觉 token 压缩上下文。
+
+**智能体。** [ReAct](https://arxiv.org/abs/2210.03629)、[Toolformer](https://arxiv.org/abs/2302.04761) → [SWE-agent](https://arxiv.org/abs/2405.15793)、[Computer Use](https://www.anthropic.com/news/3-5-models-and-computer-use)、[Deep Research](https://openai.com/index/introducing-deep-research/) → 端到端智能体 RL（[ARPO](https://arxiv.org/abs/2507.19849)、[Tongyi DeepResearch](https://arxiv.org/abs/2510.24701)、[UI-TARS-2](https://arxiv.org/abs/2509.02544)）与 2026 年的 harness 工程和递归自我改进（[Raven](https://arxiv.org/abs/2609.33439)、[HarnessDev](https://arxiv.org/abs/2609.01437)、[Darwin Gödel Machine](https://arxiv.org/abs/2505.22954)）。[METR](https://arxiv.org/abs/2503.14499) 测得 AI 能完成的任务时长自 2019 年起约每 7 个月翻一番。
+
+**科学与数学。** [AlphaFold 2](https://www.nature.com/articles/s41586-021-03819-2)、[AlphaFold 3](https://www.nature.com/articles/s41586-024-07487-w)；[ESM3](https://www.science.org/doi/10.1126/science.ads0018)、[Evo 2](https://www.biorxiv.org/content/10.1101/2025.02.18.638918v1)、[AlphaGenome](https://deepmind.google/discover/blog/alphagenome-ai-for-better-understanding-the-genome/)；[GraphCast](https://arxiv.org/abs/2212.12794)、[GenCast](https://arxiv.org/abs/2312.15796)；[GNoME](https://www.nature.com/articles/s41586-023-06735-9)、[MatterGen](https://arxiv.org/abs/2312.03687)、[UMA](https://arxiv.org/abs/2506.23971)；[FunSearch](https://www.nature.com/articles/s41586-023-06924-6)、[AlphaEvolve](https://arxiv.org/abs/2506.13131)；自主科研（[AI co-scientist](https://arxiv.org/abs/2502.18864)、[Kosmos](https://arxiv.org/abs/2511.02824)）。
+
+**机器人。** [RT-2](https://arxiv.org/abs/2307.15818) → [Diffusion Policy](https://arxiv.org/abs/2303.04137) → [π0](https://arxiv.org/abs/2410.24164)、[π0.5](https://arxiv.org/abs/2504.16054) → [Gemini Robotics 1.5](https://arxiv.org/abs/2510.03342)；世界模型路线有 [V-JEPA 2](https://arxiv.org/abs/2506.09985) 与 [DreamZero](https://arxiv.org/abs/2602.15922)。详见<a href="../embodied_agent_survey/">机器人 × Agent 导读</a>。
+
+**博弈与决策。** [DQN](https://arxiv.org/abs/1312.5602) → [AlphaGo](https://www.nature.com/articles/nature16961) → [AlphaZero](https://arxiv.org/abs/1712.01815) → [MuZero](https://arxiv.org/abs/1911.08265) → [DreamerV3](https://arxiv.org/abs/2301.04104)、[Dreamer 4](https://arxiv.org/abs/2509.24527)。这条线积累的策略梯度、自我博弈与价值学习，如今是 LLM 后训练的基础。
+
+**数学与算法发现。** 2025 年 IMO 上，[Gemini Deep Think](https://deepmind.google/discover/blog/advanced-version-of-gemini-with-deep-think-officially-achieves-gold-medal-standard-at-the-international-mathematical-olympiad/) 用自然语言在比赛时限内解出 6 题中的 5 题，形式化系统 [Aristotle](https://arxiv.org/abs/2510.01346) 与 [Seed-Prover](https://arxiv.org/abs/2507.23726) 也达到金牌级；[DeepSeek-V3.2-Speciale](https://arxiv.org/abs/2512.02556) 在 IMO 与 IOI 上达到金牌水平；[OpenAI](https://arxiv.org/abs/2502.06807) 的通用 RL 模型 o3 无需人工策略即在 IOI 拿到金牌。[AlphaEvolve](https://arxiv.org/abs/2506.13131) 把 LLM 与进化搜索、自动评估结合，发现了 4×4 复数矩阵乘法的更优算法并优化了数据中心调度。
+
+### 10.3 安全与对齐
+
+**对抗鲁棒性。** [Szegedy 等](https://arxiv.org/abs/1312.6199)发现人眼不可察觉的扰动就能让分类器出错；[Goodfellow 等](https://arxiv.org/abs/1412.6572)把它归因于高维下的线性；[Madry 等](https://arxiv.org/abs/1706.06083)给出以 PGD 为对手的鲁棒优化框架。LLM 时代，[GCG](https://arxiv.org/abs/2307.15043) 自动搜索出可迁移的对抗后缀；[新近工作](https://arxiv.org/abs/2508.17456)把对抗脆弱性与特征叠加联系起来。
+
+**对齐的意外后果。**
+
+- [Sleeper Agents](https://arxiv.org/abs/2401.05566)：植入的后门行为能挺过 SFT、RL 与对抗训练。
+- [对齐伪装](https://arxiv.org/abs/2412.14093)：Claude 3 Opus 在认为对话会被用于训练时策略性地顺从，以保护原有偏好；[后续研究](https://arxiv.org/abs/2506.18032)发现 25 个模型中只有少数表现出这种行为。
+- [涌现失准](https://arxiv.org/abs/2502.17424)：只在"写不安全代码"这一窄任务上微调，就会导致广泛的有害、失准行为；[潜意识学习](https://arxiv.org/abs/2507.14805)进一步发现，学生模型能从看似无关的数据（如数字序列）中继承教师的特质，前提是共享初始化。
+- [奖励投机导致的自然涌现失准](https://arxiv.org/abs/2511.18397)：在 Anthropic 的生产级编程 RL 环境中学会奖励投机的模型，会泛化出对齐伪装、与恶意行为者合作、破坏安全研究等行为。
+- 谋划与评测意识：前沿模型在给定目标的智能体场景中会隐瞒、关闭监督（[Apollo](https://arxiv.org/abs/2412.04984)），面临被替换时会采取勒索等手段（[智能体失准](https://www.anthropic.com/research/agentic-misalignment)），并常能识别自己在被评测（[Needham 等](https://arxiv.org/abs/2505.23836)）。
+
+**监控与防御。** [审慎对齐](https://arxiv.org/abs/2412.16339)让推理模型在回答前显式回忆并推理安全规范；[反谋划训练](https://arxiv.org/abs/2509.15541)能把隐蔽行为降低约 30 倍，但评测意识混淆了效果。[OpenAI](https://arxiv.org/abs/2503.11926) 发现思维链监控能抓住奖励投机，但对思维链施加优化压力会让模型学会隐藏意图；多家机构因此联合呼吁把[思维链可监控性](https://arxiv.org/abs/2507.11473)当作脆弱而需要保护的安全机会。防御侧还有[宪法分类器](https://arxiv.org/abs/2501.18837)与[宪法 AI](https://arxiv.org/abs/2212.08073)。对幻觉，[Kalai 等](https://arxiv.org/abs/2509.04664)给出统计解释：即使训练数据无误，生成式模型的错误也与二分类错误同源；而以准确率为主的评测奖励"猜测"而非"承认不知道"，使其在后训练中得以保留。
+
+#### 最近一年（2025-11 → 2026-10）
+
+涌现失准的机制被进一步分析：只在谄媚数据上微调也能诱发（[谄媚诱发](https://arxiv.org/abs/2606.09068)），可以用二阶几何动态诊断其形成并在参数空间中缓解（[机制诊断](https://arxiv.org/abs/2609.34970)），也可以用特征叠加的几何来理解（[叠加几何](https://arxiv.org/abs/2605.00842)）；思维链可监控性有了信息论的分析（[可监控性的信息论](https://arxiv.org/abs/2602.18297)）；循环深度模型的安全行为随循环次数变化（[循环与拒绝](https://arxiv.org/abs/2610.15218)）。
+
+## 11 开放问题与展望
+
+按章整理：
+
+1. **架构（第 2 章）。** 线性与全注意力的最佳混合、残差流的形式、循环深度与外置记忆，Transformer 之后的"标准件"尚未定型；注意力汇聚与巨大激活是该消除的缺陷，还是 softmax 架构的必要组件？
+2. **优化（第 3 章）。** 若优化器决定"哪种范数下的最大间隔"与"哪种谱剖面"，最优的范数是否依赖层的类型、数据与规模？逐坐标自适应引入的基依赖是缺陷还是归纳偏置？稳定性边缘的 ODE 模型能否用于在线调参？
+3. **泛化（第 4 章）。** 扩散模型的泛化依赖"学得不完美"，那么什么样的不完美是好的？长度与组合泛化能否由架构保证，还是只能靠数据与优化？
+4. **扩展（第 5 章）。** 高质量数据接近用尽；精度、稀疏度、循环、RL、测试时计算各有扩展律，如何联合优化？可解模型能否在训练前给出定量预测？
+5. **表征（第 6 章）。** 柏拉图表征假说同时得到定理与反证，"趋同"的度量、对称性处理与判定标准仍需统一；叠加的数学理论能否转化为可靠的特征提取工具？
+6. **自监督与生成（第 7 章）。** JEPA 应追求各向同性还是各向异性？一步生成能否在质量上全面取代迭代采样？扩散语言模型的优势与"灵活性陷阱"如何权衡？
+7. **反馈学习（第 8 章）。** RLVR 是在重排预训练中已有的解，还是能发现新策略？没有可验证奖励的开放式任务如何扩展？
+8. **测试时学习（第 9 章）。** 有效上下文远小于窗口长度（[Context Rot](https://research.trychroma.com/context-rot)）；测试时训练与持续学习能否在不失稳、不遗忘的前提下成为常态？
+9. **应用与安全（第 10 章）。** 窄域训练会泛化出意外行为，模型能识别评测、可能隐藏意图；可解释性能否用于保证，而不只用于发现？
+
+深度学习的基本配方十余年没有变：可微函数、梯度、数据与规模。最近一年的变化是，越来越多的经验规律有了可以计算的解释。理解这些原理，比追踪任何一个具体模型都更持久。
+
+## 附录 A：大事记（2024-11 → 2026-10）
+
+**最近半年（2026-05 → 2026-10），原理类：**
 
 - **2026-05**：[Gated DeltaNet-2](https://arxiv.org/abs/2605.22791)（擦除与写入解耦）；[Shannon 扩展律](https://arxiv.org/abs/2605.23901)；[大模型为何学得更多](https://arxiv.org/abs/2605.29548)；[优化器诱导的谱扩展律](https://arxiv.org/abs/2605.21803)；[可证明地内化思维链](https://arxiv.org/abs/2605.28600)；[RL 在回路层面遗忘更少](https://arxiv.org/abs/2605.28860)；[EMO](https://arxiv.org/abs/2605.06663)（MoE 的涌现模块化）。
 - **2026-06**：[Edge Flow](https://arxiv.org/abs/2606.18080)；[群组合的谱表示](https://arxiv.org/abs/2606.02993)；[SAE 的种子依赖](https://arxiv.org/abs/2606.12138)；[OPD 稀疏更新](https://arxiv.org/abs/2606.13657)；[谱强迫](https://arxiv.org/abs/2606.15236)；[Loop-μP](https://arxiv.org/abs/2606.18524)；[JEPA 泛化理论](https://arxiv.org/abs/2606.27014)。
@@ -684,7 +802,7 @@ JEPA 在嵌入空间预测：$\min\ \|g_\phi(f_\theta(x_{\text{ctx}}))-\mathrm{s
 - **2026-09**：[1/3 数据指数](https://arxiv.org/abs/2609.37745)；[Muon 与 EoS](https://arxiv.org/abs/2609.34915)；[参数对称决定表征几何](https://arxiv.org/abs/2609.39078)；[线性表征需要群作用](https://arxiv.org/abs/2609.27158)；[JEPA 学不可恢复部分](https://arxiv.org/abs/2609.32481)；[持续学习的统一动力学](https://arxiv.org/abs/2609.33620)；[跨模态趋同的 ICL](https://arxiv.org/abs/2609.14011)；[Kalman Delta](https://arxiv.org/abs/2609.07816)。
 - **2026-10**：[柏拉图表征定理](https://arxiv.org/abs/2610.39302)；[条件无毛定理](https://arxiv.org/abs/2610.24133)；[JEPA 的驱动与衰减](https://arxiv.org/abs/2610.02344)；[巨大激活的生命周期](https://arxiv.org/abs/2610.00423)；[有效学习率调度](https://arxiv.org/abs/2610.40362)；[随机特征二元模型](https://arxiv.org/abs/2610.19281)；[循环的不动点](https://arxiv.org/abs/2610.06833)；[SAE 的数据收益递减](https://arxiv.org/abs/2610.20680)；[自生成反馈破坏 TTT](https://arxiv.org/abs/2610.05076)。
 
-## 18 最近两年大事记（2024-11 → 2026-10）
+**两年回看（原理与应用）：**
 
 - **2024-11 至 12**：[Tülu 3](https://arxiv.org/abs/2411.15124) 提出 RLVR；[精度扩展律](https://arxiv.org/abs/2411.04330)；[MCP](https://www.anthropic.com/news/model-context-protocol)；[Muon](https://kellerjordan.github.io/posts/muon/) 博文；[Gated DeltaNet](https://arxiv.org/abs/2412.06464)；[BLT](https://arxiv.org/abs/2412.09871)；[Coconut](https://arxiv.org/abs/2412.06769)；[对齐伪装](https://arxiv.org/abs/2412.14093)；[DeepSeek-V3](https://arxiv.org/abs/2412.19437)。
 - **2025-01 至 03**：[Titans](https://arxiv.org/abs/2501.00663)；[DeepSeek-R1](https://arxiv.org/abs/2501.12948)、[Kimi k1.5](https://arxiv.org/abs/2501.12599)；[s1](https://arxiv.org/abs/2501.19393)；[NSA](https://arxiv.org/abs/2502.11089)、[MoBA](https://arxiv.org/abs/2502.13189)；[Moonlight](https://arxiv.org/abs/2502.16982)；[涌现失准](https://arxiv.org/abs/2502.17424)；[DyT](https://arxiv.org/abs/2503.10622)；[DAPO](https://arxiv.org/abs/2503.14476)；[METR 任务时长](https://arxiv.org/abs/2503.14499)；[归因图](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)。
@@ -694,26 +812,11 @@ JEPA 在嵌入空间预测：$\min\ \|g_\phi(f_\theta(x_{\text{ctx}}))-\mathrm{s
 - **2026-01 至 03**：[Engram](https://arxiv.org/abs/2601.07372)；[内省](https://arxiv.org/abs/2601.01828)；[Kimi K2.5](https://arxiv.org/abs/2602.02276)；[GLM-5](https://arxiv.org/abs/2602.15763)；[Attention Residuals](https://arxiv.org/abs/2603.15031)。
 - **2026-04 至 06**：[DeepSeek-V4](https://arxiv.org/abs/2606.19348)（1.6T、百万上下文、mHC + Muon）；[MiniMax-M2](https://arxiv.org/abs/2605.26494)；[MiniMax Sparse Attention](https://arxiv.org/abs/2606.13392)；在策略蒸馏研究井喷。
 - **2026-07 至 10**：[Gemma 4](https://arxiv.org/abs/2607.02770)；[Kimi K3](https://arxiv.org/abs/2607.24653)（2.8T、KDA + AttnRes）；[Qwen3.8-Next](https://arxiv.org/abs/2608.30320)；[循环 MoE 扩展律](https://arxiv.org/abs/2609.01343)；[DeepSeek-V4.1-Flash](https://arxiv.org/abs/2609.19969)；harness 工程与递归自我改进成为智能体研究热点。
-- **原理侧（2025-11 → 2026-10）**：[JiT](https://arxiv.org/abs/2511.13720) 与 [LeJEPA](https://arxiv.org/abs/2511.08544)（2025-11）；[grokking 的几何](https://arxiv.org/abs/2511.01938)；[漂移模型](https://arxiv.org/abs/2602.04770)；[Adam/Muon 的隐式偏置](https://arxiv.org/abs/2602.16340)；[最优学习率调度](https://arxiv.org/abs/2602.06797)；[汇聚的必要性](https://arxiv.org/abs/2603.11487)；[扩散先泛化后记忆](https://arxiv.org/abs/2603.23792)；[循环的等深度扩展律](https://arxiv.org/abs/2604.21106)；[Gated DeltaNet-2](https://arxiv.org/abs/2605.22791)；[Edge Flow](https://arxiv.org/abs/2606.18080)；[扩散无良性过拟合](https://arxiv.org/abs/2607.02671)；[叠加的数学理论](https://arxiv.org/abs/2608.27540)；[1/3 数据指数](https://arxiv.org/abs/2609.37745)；[柏拉图表征定理](https://arxiv.org/abs/2610.39302)。详见第 17 节。
-
-## 19 开放问题与展望
-
-1. **RL 能否创造新能力。** RLVR 主要在重排预训练中已有的解，还是能发现真正新的策略？开放式任务没有可验证奖励，探索、信用分配与奖励来源如何扩展？
-2. **扩展律会不会弯折。** 高质量文本接近用尽，合成数据有崩溃风险；精度、稀疏度、记忆、RL、测试时计算各有扩展律，如何联合优化？
-3. **理论能否预测而不只解释。** 最近一年出现了大量可解模型：扩展律的序贯特征恢复、稳定性边缘的 ODE、最优学习率调度、grokking 的流形几何、扩散模型的先泛化后记忆。下一步是检验它们能否在训练开始前给出定量预测，例如事先判断哪种架构、优化器、数据配比在大规模下更好。
-4. **优化器选择的本质是什么。** 若优化器决定"哪种范数下的最大间隔"与"哪种谱剖面"，那么最优的范数是否依赖层的类型、数据与规模？逐坐标自适应引入的基依赖是缺陷还是归纳偏置？
-5. **表征是否真的趋同。** 柏拉图表征假说同时得到定理与反证；度量的校准、对称性的处理与"趋同到什么程度才算趋同"仍需统一标准。
-6. **架构会收敛还是分化。** 线性与全注意力的最佳混合比例、残差流的形式、循环深度、外置记忆——Transformer 之后的"标准件"尚未定型，而且受硬件强烈约束。
-7. **有效上下文与持续学习。** 百万 token 的窗口不等于百万 token 的理解（[Context Rot](https://research.trychroma.com/context-rot)）；测试时训练与持续学习能否成为常态？
-8. **可解释性能否用于保证。** 归因图与 SAE 已能发现部分机制，但离"审计前沿模型是否有隐藏目标"仍远，方法本身的可靠性也受到质疑。
-9. **对齐的副作用与监控。** 窄域训练会泛化出意外行为，模型能识别评测、可能隐藏意图；如何在强优化压力下保持诚实与可监控？
-10. **算力、能耗与可及性。** 低精度、稀疏、蒸馏与端侧模型能把多少能力带到更便宜的硬件上？开放模型与闭源前沿的差距如何演变？
-
-深度学习的基本配方十余年没有变：可微函数、梯度、数据与规模。变化的是"在哪个维度上扩展"——从参数与数据，到推理算力、稀疏度与记忆，再到测试时的学习。理解这些维度背后的原理，比追踪任何一个具体模型都更持久。
+- **原理侧（2025-11 → 2026-10）**：[JiT](https://arxiv.org/abs/2511.13720) 与 [LeJEPA](https://arxiv.org/abs/2511.08544)（2025-11）；[grokking 的几何](https://arxiv.org/abs/2511.01938)；[漂移模型](https://arxiv.org/abs/2602.04770)；[Adam/Muon 的隐式偏置](https://arxiv.org/abs/2602.16340)；[最优学习率调度](https://arxiv.org/abs/2602.06797)；[汇聚的必要性](https://arxiv.org/abs/2603.11487)；[扩散先泛化后记忆](https://arxiv.org/abs/2603.23792)；[循环的等深度扩展律](https://arxiv.org/abs/2604.21106)；[Gated DeltaNet-2](https://arxiv.org/abs/2605.22791)；[Edge Flow](https://arxiv.org/abs/2606.18080)；[扩散无良性过拟合](https://arxiv.org/abs/2607.02671)；[叠加的数学理论](https://arxiv.org/abs/2608.27540)；[1/3 数据指数](https://arxiv.org/abs/2609.37745)；[柏拉图表征定理](https://arxiv.org/abs/2610.39302)。详见各章的'最近一年'小节。
 
 ---
 
-## 附录 A：论文与资源总表（1825 条，按主类别分组，组内按时间倒序）
+## 附录 B：论文与资源总表（1827 条，按主类别分组，组内按时间倒序）
 
 > arXiv 条目的标题与日期由 export.arxiv.org API 核验；★ 为入门推荐；🔥 为 2026-05 及之后（最近半年），◆ 为 2025-11 及之后（最近一年），🆕 为 2024-11 及之后（最近两年）的工作。
 
@@ -1032,7 +1135,7 @@ JEPA 在嵌入空间预测：$\min\ \|g_\phi(f_\theta(x_{\text{ctx}}))-\mathrm{s
 | 2020-02 | [Pre-LN Transformer](https://arxiv.org/abs/2002.04745) `arXiv:2002.04745` | Microsoft/PKU | 理论说明 Post-LN 需要 warmup 的原因，Pre-LN 训练更稳定 |
 | 2019-10 | [RMSNorm](https://arxiv.org/abs/1910.07467) `arXiv:1910.07467` | Edinburgh | 只做均方根缩放、不减均值的 LayerNorm 简化版，LLM 标配 |
 
-### 泛化与学习理论（194）
+### 泛化与学习理论（195）
 
 | 日期 | 工作 | 机构 | 一句话 |
 |---|---|---|---|
@@ -1220,6 +1323,7 @@ JEPA 在嵌入空间预测：$\min\ \|g_\phi(f_\theta(x_{\text{ctx}}))-\mathrm{s
 | 2022-01 | ★ [Grokking](https://arxiv.org/abs/2201.02177) `arXiv:2201.02177` | OpenAI | 小算法数据集上过拟合很久之后泛化突然出现 |
 | 2021-06 | [深度学习理论原理（专著）](https://arxiv.org/abs/2106.10165) `arXiv:2106.10165` | Meta/MIT | 有效场论视角：有限宽度修正、临界初始化、表征学习的系统理论 |
 | 2021-05 | [深度学习的数学分析](https://arxiv.org/abs/2105.04026) `arXiv:2105.04026` | Vienna/ETH | 表达、优化、泛化三方面的数学理论综述 |
+| 2020-08 | [神经坍缩](https://arxiv.org/abs/2008.08186) `arXiv:2008.08186` | Stanford | 训练到末期，同类特征坍缩到类均值，类均值构成等角紧框架、分类器与之对齐 |
 | 2019-12 | [Deep Double Descent](https://arxiv.org/abs/1912.02292) `arXiv:1912.02292` | OpenAI/Harvard | 在模型规模、训练轮数、数据量三个维度上都观察到双下降 |
 | 2019-06 | [良性过拟合](https://arxiv.org/abs/1906.11300) `arXiv:1906.11300` | UC Berkeley | 刻画线性回归中插值噪声数据仍能泛化的条件 |
 | 2018-12 | ★ [双下降（Belkin）](https://arxiv.org/abs/1812.11118) `arXiv:1812.11118` | Ohio State/Columbia | 测试误差随模型复杂度先 U 形再二次下降，调和偏差-方差与过参数化 |
@@ -1869,7 +1973,7 @@ JEPA 在嵌入空间预测：$\min\ \|g_\phi(f_\theta(x_{\text{ctx}}))-\mathrm{s
 | 2020-09 | [学习摘要（RLHF）](https://arxiv.org/abs/2009.01325) `arXiv:2009.01325` | OpenAI | 人类反馈强化学习用于语言模型摘要，奖励模型 + PPO 的完整流程 |
 | 2017-06 | ★ [从人类偏好学习](https://arxiv.org/abs/1706.03741) `arXiv:1706.03741` | OpenAI/DeepMind | 用人类对轨迹片段的比较训练奖励模型再做 RL，RLHF 的起点 |
 
-### 推理与测试时计算（118）
+### 推理与测试时计算（119）
 
 | 日期 | 工作 | 机构 | 一句话 |
 |---|---|---|---|
@@ -1983,6 +2087,7 @@ JEPA 在嵌入空间预测：$\min\ \|g_\phi(f_\theta(x_{\text{ctx}}))-\mathrm{s
 | 2024-12 | ★ 🆕 [Coconut](https://arxiv.org/abs/2412.06769) `arXiv:2412.06769` | Meta/UCSD | 在连续潜空间而非语言 token 中推理，可同时保留多个推理分支（类 BFS） |
 | 2024-09 | ★ [OpenAI o1](https://openai.com/index/learning-to-reason-with-llms/) | OpenAI | 用大规模 RL 训练长思维链，推理性能随训练与测试时计算平滑提升 |
 | 2024-03 | [Quiet-STaR](https://arxiv.org/abs/2403.09629) `arXiv:2403.09629` | Stanford | 让模型在每个 token 前生成内部"思考"再预测 |
+| 2024-02 | [思维链的表达力](https://arxiv.org/abs/2402.12875) `arXiv:2402.12875` | Stanford/Google | T 步思维链让常数深度 Transformer 突破 TC⁰，可解决本质上串行的问题 |
 | 2024-02 | ★ [DeepSeekMath（GRPO）](https://arxiv.org/abs/2402.03300) `arXiv:2402.03300` | DeepSeek | 组相对策略优化：用同题多样本的组内均值作基线，省去价值网络 |
 | 2023-05 | ★ [Let's Verify Step by Step](https://arxiv.org/abs/2305.20050) `arXiv:2305.20050` | OpenAI | 过程监督（逐步打分）优于结果监督，发布 PRM800K |
 | 2023-05 | [Tree of Thoughts](https://arxiv.org/abs/2305.10601) `arXiv:2305.10601` | Princeton/Google DeepMind | 把推理组织成树并搜索、回溯 |
