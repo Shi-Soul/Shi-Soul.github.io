@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="DeepSeek 全部技术报告、论文与开源内容的系统梳理：从 2023 年的 Coder 到 2026 年的 V4.1，四个阶段、四条技术主线，以及它与大模型领域同期工作的关系。">
+    <title>The Journey of DeepSeek · Weiji Xie</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --page: #f9f9f7;
+        --surface: #fcfcfb;
+        --raise: #f2f1ec;
+        --ink: #0b0b0b;
+        --secondary: #52514e;
+        --border: #e1e0d9;
+        --accent: #1c5cab;
+        --warm: #a8571b;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --page: #0d0d0d;
+          --surface: #1a1a19;
+          --raise: #202020;
+          --ink: #f0efec;
+          --secondary: #c3c2b7;
+          --border: #383835;
+          --accent: #86b6ef;
+          --warm: #e0a060;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--ink);
+        font: 16px/1.78 system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+      .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+      .site-header { border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--page); z-index: 10; }
+      .site-header .wrap { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; }
+      .site-name { color: var(--ink); font-weight: 650; }
+      .site-name:hover { text-decoration: none; }
+      .home-link { font-size: 14px; }
+      main.wrap { padding-top: 56px; padding-bottom: 72px; }
+
+      .eyebrow { margin: 0 0 10px; color: var(--accent); font-size: 13px; letter-spacing: .04em; }
+      h1 { margin: 0 0 16px; font-size: clamp(30px, 5.5vw, 42px); line-height: 1.18; letter-spacing: -.03em; }
+      .lede { margin: 0 0 8px; color: var(--secondary); font-size: 17px; }
+      .meta { margin: 20px 0 0; color: var(--secondary); font-size: 13px; }
+
+      h2 {
+        margin: 64px 0 6px; font-size: 13px; font-weight: 600; letter-spacing: .08em;
+        text-transform: uppercase; color: var(--accent);
+      }
+      .h2sub { margin: 0 0 24px; font-size: clamp(22px, 3.6vw, 28px); line-height: 1.3; letter-spacing: -.02em; font-weight: 650; }
+      h3 { margin: 40px 0 10px; font-size: 19px; line-height: 1.45; font-weight: 650; }
+      h4 { margin: 24px 0 6px; font-size: 15px; font-weight: 650; color: var(--secondary); }
+      p { margin: 0 0 16px; }
+      ul, ol { margin: 0 0 16px; padding-left: 22px; }
+      li { margin: 6px 0; }
+      strong { font-weight: 650; }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: .88em; background: var(--raise); padding: 1px 5px; border-radius: 4px;
+      }
+
+      .box {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 10px; padding: 20px 22px; margin: 0 0 24px;
+      }
+      .box p:last-child, .box ul:last-child { margin-bottom: 0; }
+      .thesis { border-left: 3px solid var(--accent); }
+      .aside { font-size: 14.5px; color: var(--secondary); }
+      .aside strong { color: var(--ink); }
+
+      .toc { columns: 2; column-gap: 32px; font-size: 14.5px; }
+      .toc ol { list-style: none; padding: 0; margin: 0; }
+      .toc li { margin: 4px 0; break-inside: avoid; }
+      .toc .num { color: var(--secondary); font-variant-numeric: tabular-nums; margin-right: 8px; }
+
+      table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 0 0 20px; }
+      th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+      th { font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--secondary); font-weight: 600; }
+      td.y { white-space: nowrap; color: var(--secondary); font-variant-numeric: tabular-nums; }
+      .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 20px; }
+      .scroll table { margin: 0; min-width: 560px; }
+
+      .phase { border-top: 1px solid var(--border); padding: 22px 0 4px; }
+      .phase-head { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; }
+      .phase-when { color: var(--accent); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .phase-what { font-size: 18px; font-weight: 650; }
+      .phase p { margin: 8px 0 12px; color: var(--secondary); font-size: 15px; }
+
+      .chain { font-size: 14.5px; color: var(--secondary); margin: 0 0 18px; }
+      .chain b { color: var(--ink); font-weight: 650; }
+      .arrow { color: var(--accent); padding: 0 4px; }
+
+      .tag {
+        display: inline-block; font-size: 11.5px; letter-spacing: .03em; padding: 1px 7px;
+        border: 1px solid var(--border); border-radius: 20px; color: var(--secondary); white-space: nowrap;
+      }
+      .tag.ds { border-color: var(--accent); color: var(--accent); }
+      .tag.ext { border-color: var(--warm); color: var(--warm); }
+
+      .srcnote { font-size: 13.5px; color: var(--secondary); }
+      footer { padding: 28px 0; border-top: 1px solid var(--border); color: var(--secondary); font-size: 13px; }
+
+      @media (max-width: 640px) {
+        .wrap { padding-left: 18px; padding-right: 18px; }
+        main.wrap { padding-top: 36px; padding-bottom: 48px; }
+        h2 { margin-top: 48px; }
+        .toc { columns: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="site-name" href="/">Weiji Xie</a>
+        <a class="home-link" href="/agent/">阅读目录 <span aria-hidden="true">←</span></a>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <p class="eyebrow">技术路线梳理</p>
+      <h1>The Journey of DeepSeek</h1>
+      <p class="lede">从 2023 年 10 月的一个代码模型，到 2026 年支持百万 token 上下文的 V4.1——DeepSeek 公开的每一份技术报告、每一个开源仓库，合起来是一条逻辑相当连贯的路线。</p>
+      <p class="lede">这篇梳理它的全部公开工作：四个阶段、四条技术主线，以及每一步与同期领域内其他工作的关系。</p>
+      <p class="meta">截至 2026-11-01 · 全部结论来自公开论文、技术报告与仓库，编号经 arXiv API 核验 · <span class="tag ds">DeepSeek</span> <span class="tag ext">同期其他工作</span></p>
+
+      <div class="box thesis">
+        <p><strong>一句话主线：</strong>DeepSeek 把“算力受限”当作架构与系统的联合设计问题，而不是只能用钱填的缺口。它反复押注同两个方向——<strong>把参数稀疏化</strong>（MoE → 条件记忆）和<strong>把注意力与 KV 缓存压缩</strong>（MLA → DSA → CSA2/CED）——每一代都把省下来的算力换成更长的上下文、更多的强化学习，以及更低的 API 价格。</p>
+      </div>
+
+      <nav class="box toc" aria-label="目录">
+        <ol>
+          <li><span class="num">01</span><a href="#phases">四个阶段</a></li>
+          <li><span class="num">02</span><a href="#sparsity">主线一 · 稀疏性</a></li>
+          <li><span class="num">03</span><a href="#attention">主线二 · 注意力与 KV</a></li>
+          <li><span class="num">04</span><a href="#systems">主线三 · 训练系统与算力</a></li>
+          <li><span class="num">05</span><a href="#posttrain">主线四 · 后训练与 RL</a></li>
+          <li><span class="num">06</span><a href="#branches">三条支线</a></li>
+          <li><span class="num">07</span><a href="#industry">行业坐标</a></li>
+          <li><span class="num">08</span><a href="#why">为什么是这条路</a></li>
+          <li><span class="num">09</span><a href="#index">完整清单</a></li>
+          <li><span class="num">10</span><a href="#sources">来源与读法</a></li>
+        </ol>
+      </nav>
+
+      <!-- ===================== 阶段 ===================== -->
+      <h2 id="phases">01 · 阶段</h2>
+      <p class="h2sub">四个阶段，每个阶段解决一个不同的瓶颈</p>
+      <p>把三年的发布按“当时最紧的约束是什么”来分，刚好是四段。每一段的终点都是一个把前面积累一次性兑现的旗舰模型。</p>
+
+      <div class="phase">
+        <div class="phase-head"><span class="phase-when">2023-10 → 2024-03</span><span class="phase-what">补齐基本功</span></div>
+        <p>十八个月里把一个大模型团队该有的东西全做了一遍：代码、通用语言、MoE、数学、多模态，每个方向一篇报告加一套开源权重。这一阶段的产出单看都不算领先，价值在于把后面要用的组件都试了一遍——尤其是 <strong>DeepSeekMoE</strong> 的细粒度专家切分和 <strong>DeepSeekMath</strong> 的 GRPO，这两个零件在后面每一代里都还在。</p>
+        <p>同期 <strong>DeepSeek LLM</strong> 那篇还做了一件少见的事：自己重做了一遍 scaling law，并且给出超参数随算力的缩放关系，而不是直接套 Chinchilla 的结论。</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head"><span class="phase-when">2024-05 → 2024-12</span><span class="phase-what">架构定型</span></div>
+        <p>V2 把两个自研零件拼起来——<strong>MLA</strong>（压 KV 缓存）+ <strong>DeepSeekMoE</strong>（压激活参数）——得到一个 236B 总参数、21B 激活的模型，并顺手把 API 价格打到了当时的地板价。V3 把同一套架构放大到 671B/37B，补上无辅助损失的负载均衡、多 token 预测和 FP8 训练，用 2.788M H800 卡时、14.8T token 训完。</p>
+        <p>这一阶段确立了之后不再改的骨架：<strong>MoE 主干 + 压缩过的注意力 + 为自家集群定制的训练栈</strong>。</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head"><span class="phase-when">2025-01 → 2025-12</span><span class="phase-what">推理能力与强化学习</span></div>
+        <p>R1 证明了纯 RL（规则奖励、无过程监督）就能让基座模型自己长出长链推理。这一年剩下的时间 DeepSeek 在两件事上加码：把 RL 规模化（V3.1/V3.2 的后训练算力、智能体任务合成），以及把稀疏注意力从研究推进到生产（<strong>NSA</strong> → <strong>DSA</strong>）。年底的 V3.2-Speciale 拿到 IMO/IOI 金牌水平，<strong>DeepSeekMath-V2</strong> 则换了个思路——不再奖励最终答案，而是训练一个验证器去奖励推理过程本身。</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head"><span class="phase-when">2026-01 → 2026-11</span><span class="phase-what">效率与智能体</span></div>
+        <p>工作重心明显从“答得对”转向“跑得起”。<strong>V4</strong> 用混合注意力把百万上下文的推理成本压到 V3.2 的 27% FLOPs / 10% KV；<strong>V4.1-Flash</strong> 进一步用 CED 架构把 prefill 激活参数降到 8B、KV 压到每 token 890 字节。同时三件新东西补齐了智能体这条线：<strong>DeepSeek Harness</strong>（自己的 agent 框架）、<strong>DSec</strong>（支撑 RL 的沙箱基础设施）、<strong>DeepInfer</strong>（生产推理引擎）。架构侧则新增了两个零件：<strong>mHC</strong> 残差连接和 <strong>Engram</strong> 条件记忆。</p>
+        <p>另一条值得注意的动向：2026 年 9–10 月连续放出 <code>DeepGEMM-Ascend</code>、<code>DeepEP-Ascend</code>、<code>DeepJIT</code>、<code>clangd-ascend</code>，把整套算子与通信栈移植到华为昇腾。</p>
+      </div>
+
+      <!-- ===================== 主线一 ===================== -->
+      <h2 id="sparsity">02 · 主线一</h2>
+      <p class="h2sub">稀疏性：从条件计算到条件记忆</p>
+      <p class="chain">
+        <b>DeepSeekMoE</b><span class="arrow">→</span><b>V2</b><span class="arrow">→</span><b>V3 无辅助损失均衡</b><span class="arrow">→</span><b>EPLB / LPLB</b><span class="arrow">→</span><b>Engram</b>
+      </p>
+
+      <h3>核心问题</h3>
+      <p>给定固定的训练与推理预算，怎么把更多参数塞进模型而不等比例增加计算量。MoE 是标准答案，但 2024 年初的 MoE 有两个公认的毛病：专家容易学得雷同（冗余），以及为了负载均衡要加辅助损失，而辅助损失本身会伤害模型质量。</p>
+
+      <h3>DeepSeek 的两步改动</h3>
+      <p><strong>DeepSeekMoE（2024-01）</strong>做了两件事，都很简单，但后来成了行业默认配置：</p>
+      <ul>
+        <li><strong>细粒度专家切分</strong>——把每个专家切小、同时增加激活个数。组合数变多，每个专家能专精更窄的模式。</li>
+        <li><strong>共享专家隔离</strong>——留一个所有 token 都过的专家，专门吃掉通用知识，让路由专家不必各自重复学一遍。</li>
+      </ul>
+      <p><strong>V3（2024-12）</strong>去掉了辅助损失：改成给每个专家的路由打分上加一个可调偏置项，哪个专家过载就调低它的偏置。均衡由一个旁路的控制量负责，不再污染语言建模的梯度。这个做法现在被大量开源 MoE 沿用。</p>
+
+      <h3>Engram：把稀疏性换一个轴</h3>
+      <p><strong>Engram（2026-01）</strong>是这条线上最新、也是概念上最跳的一步。论文的出发点是：MoE 提供的是<em>条件计算</em>，但 Transformer 根本没有<em>查表</em>这个原语——需要事实性知识时，它只能用计算去模拟检索。Engram 把经典的 N-gram embedding 现代化，做成一个 O(1) 查表模块挂在主干上。</p>
+      <div class="box aside">
+        <p><strong>三个值得记的结果：</strong></p>
+        <ul>
+          <li><strong>U 形 scaling law。</strong>论文把“算力分给 MoE 还是分给静态记忆”形式化为 Sparsity Allocation 问题，发现最优配比是 U 形的——两端都不好，存在一个确定的中间最优点。</li>
+          <li><strong>收益不在预期的地方。</strong>等参数、等 FLOPs 对比下，知识类任务涨幅（MMLU +3.4）反而小于推理类（BBH +5.0）。机制分析给的解释是：查表接管了浅层的静态模式重建，等于把网络的有效深度让给了复杂推理。</li>
+          <li><strong>工程上是免费的。</strong>查表地址是确定性的，于是可以提前从主机内存预取，巨大的 embedding 表不必常驻显存。</li>
+        </ul>
+      </div>
+      <p>到 V4.1-Flash，Engram 已经是 552B 主干之外额外的 196B 参数，按 token 查表稀疏访问。</p>
+
+      <h3>相对领域的位置</h3>
+      <div class="scroll">
+      <table>
+        <thead><tr><th>时间</th><th>工作</th><th>关系</th></tr></thead>
+        <tbody>
+          <tr><td class="y">2017-01</td><td><span class="tag ext">Sparsely-Gated MoE</span></td><td>条件计算的源头，但用于 LSTM</td></tr>
+          <tr><td class="y">2020-06</td><td><span class="tag ext">GShard</span></td><td>MoE 进 Transformer，确立 top-2 路由 + 辅助损失</td></tr>
+          <tr><td class="y">2021-01</td><td><span class="tag ext">Switch Transformer</span></td><td>简化到 top-1，把问题变成工程问题</td></tr>
+          <tr><td class="y">2024-01</td><td><span class="tag ext">Mixtral 8×7B</span></td><td>开源 MoE 的事实标杆，8 个大专家、top-2</td></tr>
+          <tr><td class="y">2024-01</td><td><span class="tag ds">DeepSeekMoE</span></td><td>反向选择：专家更小更多 + 共享专家</td></tr>
+          <tr><td class="y">2024-12</td><td><span class="tag ds">V3</span></td><td>去掉辅助损失，改用偏置项控制均衡</td></tr>
+          <tr><td class="y">2026-01</td><td><span class="tag ds">Engram</span></td><td>提出条件记忆作为与 MoE 互补的第二个稀疏轴</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <!-- ===================== 主线二 ===================== -->
+      <h2 id="attention">03 · 主线二</h2>
+      <p class="h2sub">注意力与 KV 缓存：被压了五代的那个数</p>
+      <p class="chain">
+        <b>MLA</b><span class="arrow">→</span><b>NSA</b><span class="arrow">→</span><b>DSA</b><span class="arrow">→</span><b>CSA + HCA</b><span class="arrow">→</span><b>CSA2 + CED + FP4</b>
+      </p>
+      <p>这是 DeepSeek 最连续、也最能说明其工作方式的一条线。每一代都在同一个指标上推进：<strong>每 token 的 KV 缓存字节数</strong>。V4.1 的报告直接给了累计战绩——相对 V4-Flash 约 1/4，相对第一代 DeepSeek 模型约 <strong>1/437</strong>。</p>
+
+      <h3>第一步：MLA — 压缩，而不是共享</h3>
+      <p>2024 年之前，省 KV 缓存的主流办法是让多个 query head 共享 key/value head（MQA、GQA）。<strong>MLA（V2, 2024-05）</strong>换了个思路：把 key 和 value 一起投影到一个低秩的 latent 向量里，缓存只存这个 latent，用的时候再升维回去。效果上它比 GQA 省得多，而且因为升维矩阵可以吸收进后续权重，推理时并不真的多一次矩阵乘。</p>
+      <p>代价是 RoPE 和低秩压缩不兼容——位置编码要作用在未压缩的维度上。V2 的解法是把位置信息拆出来单独走一路（decoupled RoPE），这个设计一直留到今天。</p>
+
+      <h3>第二步：NSA → DSA — 从“压缩”到“只看一部分”</h3>
+      <p>MLA 压的是每个 token 存多少，稀疏注意力省的是每次要看多少个 token。<strong>NSA（2025-02）</strong>是研究性的一步：三条分支并行——粗粒度压缩、细粒度选择、滑动窗口——且<em>原生可训练</em>，即稀疏模式在预训练阶段就在，而不是训完再剪。论文强调的另一半是硬件对齐，算术强度要平衡，否则理论 FLOPs 的节省换不成真实的加速。</p>
+      <p><strong>DSA（V3.2-Exp, 2025-09）</strong>是把这件事落到生产：一个轻量的 lightning indexer 给所有历史 token 打分，取 top-k 进入真正的注意力计算。上线当天 API 价格下调 50%+，这是 DeepSeek 典型的做法——架构上省下来的钱直接反映到价目表上。<code>DeepSelect</code> 仓库后来单独开源了这个 top-k 算子，因为 <code>torch.topk</code> 在这个形状下慢 2–20 倍。</p>
+
+      <h3>第三步：V4 / V4.1 — 分层与跨层复用</h3>
+      <p><strong>V4（2026-04）</strong>把注意力做成混合的：CSA（Compressed Sparse Attention）配 HCA（Heavily Compressed Attention），不同层用不同强度的压缩。百万 token 下相对 V3.2 只需 27% 的单 token 推理 FLOPs 和 10% 的 KV。</p>
+      <p><strong>V4.1-Flash（2026-09）</strong>这一步最密集，值得拆开看，因为它基本上是把“长上下文智能体负载”这个具体场景逐项优化到底：</p>
+      <ul>
+        <li><strong>CED（Causal Encoder-Decoder）</strong>：40 层拆成 20 层因果编码器 + 20 层解码器，解码器的全局 KV 从编码器<em>最后</em>的隐状态投影得到，而不是每层各自算一份。结果是 prefill 只激活 8B 参数、decode 激活 16B——而智能体负载恰恰是输入远多于输出的。</li>
+        <li><strong>CSA2</strong>：每个注意力层静态指定为 Full / Reindex / Reuse 三种模式之一，跨层共享主 KV 和 indexer 的 K，并复用 top-k 索引。解码器里再加一个分层稀疏 indexer，后面的索引层只在第一个 Full 层给出的候选池里挑，使深层 indexer 的开销不随上下文长度增长。</li>
+        <li><strong>FP4 KV 缓存</strong>：E2M1 格式，每 16 个通道共享一个 E4M3 的 scale。合起来把常驻显存的全局 KV 压到每 token <strong>890 字节</strong>。</li>
+        <li><strong>SWA Bounded Replay</strong>：滑窗部分的 KV 干脆不持久化，需要时只重放最近 n 个 token 重建，持久化占用降到 V4-Flash 的约 1/8。</li>
+      </ul>
+
+      <h3>相对领域的位置</h3>
+      <p>这条线上 DeepSeek 并不孤独，但方向选择有明显区别。KV 压缩的主流路线是<em>共享</em>（MQA/GQA，被 Llama、Mistral 等广泛采用），DeepSeek 选的是<em>低秩压缩</em>；长上下文的主流路线是训后外推或检索增强，DeepSeek 选的是原生可训练的稀疏注意力。CED 的思路与微软 2024 年的 <strong>YOCO</strong>（You Only Cache Once，decoder-decoder，全局 KV 只算一次）同源，但 V4.1 把它和稀疏注意力、FP4 量化、投机解码叠在了一起。</p>
+      <div class="scroll">
+      <table>
+        <thead><tr><th>时间</th><th>工作</th><th>路线</th></tr></thead>
+        <tbody>
+          <tr><td class="y">2019-11</td><td><span class="tag ext">MQA</span></td><td>共享：所有 head 共用一组 KV</td></tr>
+          <tr><td class="y">2022-05</td><td><span class="tag ext">FlashAttention</span></td><td>IO 感知，把注意力做成访存问题</td></tr>
+          <tr><td class="y">2023-05</td><td><span class="tag ext">GQA</span></td><td>共享：分组折中，成为开源默认</td></tr>
+          <tr><td class="y">2024-05</td><td><span class="tag ds">MLA</span></td><td>压缩：低秩 latent + 解耦 RoPE</td></tr>
+          <tr><td class="y">2024-05</td><td><span class="tag ext">YOCO</span></td><td>全局 KV 只算一次的 decoder-decoder</td></tr>
+          <tr><td class="y">2025-02</td><td><span class="tag ds">NSA</span></td><td>稀疏：原生可训练、硬件对齐</td></tr>
+          <tr><td class="y">2025-09</td><td><span class="tag ds">DSA</span></td><td>稀疏：lightning indexer 上生产</td></tr>
+          <tr><td class="y">2026-09</td><td><span class="tag ds">CSA2 + CED</span></td><td>跨层复用 + 编码器-解码器 + FP4</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <!-- ===================== 主线三 ===================== -->
+      <h2 id="systems">04 · 主线三</h2>
+      <p class="h2sub">训练系统：被约束逼出来的那部分</p>
+      <p class="chain">
+        <b>Fire-Flyer / HAI-LLM</b><span class="arrow">→</span><b>FP8 + DualPipe</b><span class="arrow">→</span><b>开源周</b><span class="arrow">→</span><b>ISCA 硬件反思</b><span class="arrow">→</span><b>昇腾移植</b>
+      </p>
+      <p>这条线是理解其他三条的前提。DeepSeek 的论文里系统工作占的比重远高于同体量的实验室，而且几乎每一个架构选择都能在系统层面找到理由。</p>
+
+      <h3>自建集群与训练栈</h3>
+      <p><strong>Fire-Flyer AI-HPC（2024-08）</strong>讲的是在万卡 A100 集群上做软硬件协同设计：自研的 HFReduce 通信库、3FS 分布式文件系统、以及一整套围绕成本和功耗的取舍。模型训练用的是自研的 HAI-LLM 框架，不是 Megatron 或 DeepSpeed。</p>
+      <p><strong>V3（2024-12）</strong>把这套能力推到极限：</p>
+      <ul>
+        <li><strong>FP8 混合精度训练</strong>，在当时是最大规模的 FP8 训练实践之一，附带细粒度量化与高精度累加的一整套配方。</li>
+        <li><strong>DualPipe</strong>：双向流水线，让前向与反向的计算和通信互相掩盖，把流水线气泡压到很低。</li>
+        <li>跨节点的 all-to-all 专家通信定制内核，把 MoE 的通信开销压到能和计算重叠。</li>
+      </ul>
+      <p>报告给出的数字是 2.664M H800 卡时预训练 + 119K 上下文扩展 + 5K 后训练 = 2.788M 卡时，按 $2/卡时折合 $5.576M。需要注意这是<em>最终那一次训练</em>的成本，报告自己写明不含前期研究与架构消融——传播中这个限定经常被丢掉。</p>
+
+      <h3>开源周：把生产组件原样放出来</h3>
+      <p>2025 年 2 月 24–28 日，一天一个仓库，全是线上服务在用的东西：<code>FlashMLA</code>（MLA 解码内核）、<code>DeepEP</code>（首个开源的 MoE 专家并行通信库）、<code>DeepGEMM</code>（FP8 GEMM，核心逻辑约 300 行）、<code>DualPipe</code>/<code>EPLB</code>/<code>profile-data</code>、<code>3FS</code>/<code>smallpond</code>。这批东西的影响不在论文引用上，而在于 vLLM、SGLang 等推理框架直接把它们接了进去。</p>
+
+      <h3>反过来对硬件提要求</h3>
+      <p><strong>Insights into DeepSeek-V3（ISCA'25, 2025-05）</strong>是一篇方向相反的论文：不是讲怎么适配现有硬件，而是从 V3 的实践出发对未来 AI 硬件架构提需求。它把 MoE 通信、FP8 精度、互联拓扑上遇到的墙逐条列出来。这篇发在计算机体系结构的顶会上，受众是硬件设计者。</p>
+
+      <h3>2026：向第二种硬件迁移</h3>
+      <p>2026 年 9–10 月的一批仓库——<code>DeepGEMM-Ascend</code>（API 完全兼容，支持 BF16/FP8/FP4 GEMM）、<code>DeepEP-Ascend</code>（昇腾 950DT 上 EP8 dispatch 达 373–375 GB/s）、<code>DeepJIT</code>（CUDA 与昇腾共用的 JIT 运行时）、<code>clangd-ascend</code>（AscendC 的语言服务）——指向一件很清楚的事：把整套训练与推理栈做成可以跑在两种加速器上。<code>DeepInfer</code> 同时支持 NVIDIA SM100 与昇腾 950，是这件事的汇合点。</p>
+
+      <!-- ===================== 主线四 ===================== -->
+      <h2 id="posttrain">05 · 主线四</h2>
+      <p class="h2sub">后训练：从 GRPO 到自验证</p>
+      <p class="chain">
+        <b>GRPO</b><span class="arrow">→</span><b>R1-Zero / R1</b><span class="arrow">→</span><b>奖励建模</b><span class="arrow">→</span><b>Math-V2 自验证</b><span class="arrow">→</span><b>智能体任务合成</b><span class="arrow">→</span><b>在策略蒸馏</b>
+      </p>
+
+      <h3>GRPO：先把 RL 做便宜</h3>
+      <p><strong>DeepSeekMath（2024-02）</strong>提出 GRPO，动机非常实际：PPO 要同时在显存里放策略网络和价值网络，价值网络和策略一样大，RL 阶段的显存开销因此翻倍。GRPO 的做法是干脆不要价值网络——对同一个 prompt 采样一组输出，用组内奖励的均值和标准差来估计优势。</p>
+      <p>这个简化的后果超出了省显存：它让 RL 微调在学术预算下变得可行，于是 2025 年几乎所有开源的推理 RL 工作都是从 GRPO 起步的。</p>
+
+      <h3>R1：纯 RL 能长出推理</h3>
+      <p><strong>R1（2025-01）</strong>真正的贡献是 <strong>R1-Zero</strong> 这个消融：直接从基座模型做 RL，奖励只有规则判定的答案正确性和格式，没有任何过程监督、没有 SFT 冷启动。模型自己学会了延长思维链、自我检查、回溯。这件事之所以重要，是因为在此之前主流假设是推理能力需要过程奖励模型（见 OpenAI 2023 年的 <em>Let's Verify Step by Step</em>）或者搜索来引导。</p>
+      <p>R1-Zero 的问题是可读性差、中英混杂。完整的 <strong>R1</strong> 因此是四阶段流水线：少量冷启动 SFT → 推理 RL → 拒绝采样生成 SFT 数据 → 全场景 RL。同时发布的还有蒸馏到 Qwen/Llama 1.5B–70B 的六个小模型，这批小模型是 R1 影响力扩散最快的途径。</p>
+      <div class="box aside">
+        <p><strong>一个值得记的后续：</strong>R1 于 2025 年 9 月以 <em>DeepSeek-R1 incentivizes reasoning in LLMs through reinforcement learning</em> 发表在 Nature，据报道是首个经过同行评审的主流大语言模型。评审意见促使作者减少了拟人化表述、补充了训练数据类型与安全性的细节。补充材料给出的 R1 阶段训练成本约 $294K（不含基座模型）。</p>
+      </div>
+
+      <h3>答案对不等于推理对</h3>
+      <p><strong>DeepSeekMath-V2（2025-11）</strong>正面处理 R1 范式的内在局限。论文的论点很直接：奖励最终答案这件事有天花板——答案对不保证推理对，而且定理证明这类任务根本没有可判定的数值答案。</p>
+      <p>它的做法是训练一个 LLM 验证器来判断证明的完整性与严谨性，再用这个验证器当奖励模型去训练生成器，并激励生成器在交卷前自己找出并修掉问题。关键的一招是保持“生成-验证差距”：生成器变强以后，就投入更多验证算力去标注那些难验证的证明，产出新数据继续增强验证器。结果是 IMO 2025 与 CMO 2024 金牌水平、Putnam 2024 拿到 118/120。</p>
+
+      <h3>2026：数据流水线取代算法创新</h3>
+      <p>一个有意思的转折。<strong>V4.1-Flash</strong> 的报告明确写道，后训练沿用标准的 SFT → RL → 在策略蒸馏（OPD）范式，<em>算法上没有改动</em>；全部实质变化都在数据流水线——大规模自动合成智能体任务与环境，并渐进扩大数据、任务和 rollout 的规模。</p>
+      <p>这也解释了 <strong>DSec（2026-09）</strong>为什么要单独写一篇：智能体 RL 需要海量有状态的隔离执行环境，一个生产规模单元约 160 个节点，每天服务约 300 万个沙箱、支撑 38 万并发、每秒创建 5000+ 个。论文还提到它与 RL 框架协同设计，把有状态的 rollout 执行与可抢占的 GPU 训练解耦，并要处理奖励投机（reward hacking）这类智能体的不良行为。</p>
+      <p>V4 的后训练还引入了另一个结构：先<em>分别</em>培养各领域的专家模型（各自 SFT + GRPO），再通过在策略蒸馏把它们合并成一个模型。这是规避多任务 RL 互相干扰的一种工程解法。</p>
+
+      <h3>相对领域的位置</h3>
+      <div class="scroll">
+      <table>
+        <thead><tr><th>时间</th><th>工作</th><th>关系</th></tr></thead>
+        <tbody>
+          <tr><td class="y">2022-03</td><td><span class="tag ext">InstructGPT</span></td><td>确立 RLHF + PPO 的后训练范式</td></tr>
+          <tr><td class="y">2022-03</td><td><span class="tag ext">STaR</span></td><td>用自己生成的推理过程自举</td></tr>
+          <tr><td class="y">2023-05</td><td><span class="tag ext">DPO</span></td><td>去掉 RL 循环，直接优化偏好</td></tr>
+          <tr><td class="y">2023-05</td><td><span class="tag ext">Let's Verify Step by Step</span></td><td>主张过程奖励优于结果奖励</td></tr>
+          <tr><td class="y">2024-02</td><td><span class="tag ds">GRPO</span></td><td>去掉价值网络，RL 成本减半</td></tr>
+          <tr><td class="y">2024-11</td><td><span class="tag ext">Tülu 3</span></td><td>开源后训练配方，含可验证奖励 RL</td></tr>
+          <tr><td class="y">2025-01</td><td><span class="tag ds">R1</span></td><td>纯结果奖励 RL 即可长出长链推理</td></tr>
+          <tr><td class="y">2025-01</td><td><span class="tag ext">Kimi k1.5</span></td><td>同期独立得到相近结论</td></tr>
+          <tr><td class="y">2025-11</td><td><span class="tag ds">Math-V2</span></td><td>回到过程验证，但验证器本身是学出来的</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="srcnote">R1 与 Kimi k1.5 在同一周放出、结论高度一致，是 2025 年初那个“推理 RL 时刻”的两个独立证据。此后一年里开源社区的推理工作几乎都建立在这条线上。</p>
+
+      <!-- ===================== 支线 ===================== -->
+      <h2 id="branches">06 · 支线</h2>
+      <p class="h2sub">三条分支：多模态、形式化数学、推理部署</p>
+      <p>这三条线产出可观，但都不在主干演进的关键路径上——它们更像是对主线的补充或试探。</p>
+
+      <h3>多模态与“光学压缩”</h3>
+      <p class="chain"><b>DeepSeek-VL</b><span class="arrow">→</span><b>Janus / JanusFlow</b><span class="arrow">→</span><b>VL2</b><span class="arrow">→</span><b>OCR</b><span class="arrow">→</span><b>OCR-2</b></p>
+      <p>2024 年的 VL 和 Janus 系列是常规跟进：Janus 的想法是把视觉<em>理解</em>和<em>生成</em>的编码解耦（两者对表征的要求不同），JanusFlow 则换成整流流。这批工作本身没有改变主干。</p>
+      <p>真正有意思的是 2025 年 10 月的 <strong>DeepSeek-OCR</strong>，它表面是个 OCR 模型，实际在问一个关于长上下文的问题：<em>能不能把文本渲染成图片来压缩上下文？</em>结论是压缩比在 10 倍以内时解码精度约 97%，20 倍时仍有约 60%。论文明确把这个结果指向“历史长上下文压缩”和“LLM 的记忆遗忘机制”——也就是说，这是用视觉手段攻击主线二那个问题。<strong>OCR-2（2026-01）</strong>继续推进，让编码器按图像语义动态<em>重排</em>视觉 token，而不是固定的从左上到右下光栅顺序。</p>
+      <p>到 V4.1-Flash，多模态终于并回主干：视觉编码器（DeepSeek-ViT，从零训练，2D-RoPE + 3×3 pixel unshuffle 下采样）从语言模型预训练一开始就在，不再是事后接上去的。</p>
+
+      <h3>形式化数学</h3>
+      <p class="chain"><b>Prover</b><span class="arrow">→</span><b>Prover-V1.5</b><span class="arrow">→</span><b>Prover-V2</b></p>
+      <p>三代 Lean 定理证明器：V1 靠大规模合成数据，V1.5 加入证明助手反馈与蒙特卡洛树搜索，V2（2025-04）转向用 RL 做子目标分解。这条线和 Math-V2 的关系值得注意——前者在形式化系统里求可判定的正确性，后者在自然语言里训练一个验证器，两种思路对同一个问题（怎么奖励推理过程）给出了不同答案，最后 Math-V2 的路线进了主干。</p>
+
+      <h3>推理部署与智能体基础设施</h3>
+      <p class="chain"><b>开源周内核</b><span class="arrow">→</span><b>DSpark / DeepSpec</b><span class="arrow">→</span><b>DeepInfer</b><span class="arrow">→</span><b>Harness / superagent</b></p>
+      <p>2026 年这条线扩张得最快，也最能说明重心转移：</p>
+      <ul>
+        <li><strong>DSpark（2026-07）</strong>——置信度调度的投机解码，半自回归草稿生成。配套的 <code>DeepSpec</code> 是完整的训练与评测代码库，同时实现了 DSpark、DFlash 和 Eagle3 三种算法并给出同一套设置下的对比，这种“把竞品一起实现好方便公平比较”的做法在该领域不多见。从 V4-Flash-0731 开始，投机解码模块直接挂在发布的权重里。</li>
+        <li><strong>DeepInfer（2026-10）</strong>——支撑线上服务的推理框架，开源了离线推理部分。附带一个坦率的清单，列出完整服务还缺什么：KV 缓存系统、VE/Prefill/Decode 分离、数据并行副本间的负载均衡。</li>
+        <li><strong>DeepSeek Harness（2026-08）</strong>——自己的 agent 框架，"everything is a plugin"，建在 Cordis 之上。V4 系列之后的模型卡都用它的 minimal 模式跑代码智能体评测。<code>dsh-superagent-prototype</code>（2026-10）是一个更进一步的研究原型，其设计哲学写得很明确：<em>尽可能少占用人的注意力，尽可能多产生价值</em>。</li>
+        <li><strong>TileKernels / DeepSelect / DeepJIT</strong>——新架构零件对应的算子：MoE 路由、Engram 门控、mHC 的 Sinkhorn 归一化、DSA 的 top-k。架构创新到了这个阶段，必须自带内核才能真正跑起来。</li>
+      </ul>
+
+      <!-- ===================== 行业坐标 ===================== -->
+      <h2 id="industry">07 · 行业坐标</h2>
+      <p class="h2sub">同一时间，领域里在发生什么</p>
+
+      <h3>三个真正的节点</h3>
+      <div class="phase">
+        <div class="phase-head"><span class="phase-when">2024-05</span><span class="phase-what">V2 与价格战</span></div>
+        <p>V2 以远低于同级模型的价格开放 API，直接触发了中国市场那一轮降价。这确立了之后反复出现的模式：架构效率 → 价格 → 份额。V3.2-Exp 上线当天再降 50%+ 是同一套逻辑。</p>
+      </div>
+      <div class="phase">
+        <div class="phase-head"><span class="phase-when">2025-01</span><span class="phase-what">R1 与那次重定价</span></div>
+        <p>R1 发布一周后（1 月 27 日），Nvidia 单日下跌约 17%，市值蒸发约 5890 亿美元，为当时美股单日最大跌幅。市场反应的其实不是 R1 的能力，而是 V3 报告里那个约 550 万美元的训练成本数字——即使它只涵盖最终训练。事后看，这次事件对行业叙事的改变大于对技术的改变：它让“前沿能力需要多少算力”重新成为一个开放问题。</p>
+      </div>
+      <div class="phase">
+        <div class="phase-head"><span class="phase-when">2025-09</span><span class="phase-what">进入同行评审</span></div>
+        <p>R1 登上 Nature，是主流大模型第一次走完同行评审流程。在一个技术报告普遍不接受外部审查的领域里，这是个制度性的先例。</p>
+      </div>
+
+      <h3>和同期开源权重模型的分工</h3>
+      <p>2024–2026 这三年，开源权重阵营大致形成了几条不同的路线，DeepSeek 的位置相当清楚：</p>
+      <ul>
+        <li><strong>Llama 系列</strong>走稠密模型 + 广泛生态，架构上保守（GQA、标准 Transformer），优势在部署与微调生态。</li>
+        <li><strong>Qwen 系列</strong>走全尺寸覆盖 + 多语言，从 0.5B 到数百 B 都有，是下游微调最常用的起点——R1 的蒸馏模型也建在它上面。</li>
+        <li><strong>Kimi</strong>（k1.5、K2）与 DeepSeek 的路线最接近，几次在推理 RL 和智能体能力上几乎同步，2026 年的 K3 在 V4 的基准表里是常客。</li>
+        <li><strong>DeepSeek</strong> 的特征是：架构激进（每代都换注意力机制）、系统工作占比高、发布节奏与 API 价格强绑定、且把生产用的基础设施原样开源。</li>
+      </ul>
+
+      <h3>被采纳与被改进</h3>
+      <p>衡量影响力的一个实际办法是看哪些东西被别人接着做下去：</p>
+      <ul>
+        <li><strong>GRPO</strong> 成了开源推理 RL 的默认起点，衍生改法（去偏、长度归一、裁剪策略）本身已是一个子领域。</li>
+        <li><strong>无辅助损失负载均衡</strong>被后续开源 MoE 广泛采用。</li>
+        <li><strong>DeepEP / DeepGEMM / FlashMLA</strong> 被 vLLM、SGLang 直接集成。</li>
+        <li><strong>mHC</strong> 是个反向的例子：它本身是对 2024 年 <a href="https://arxiv.org/abs/2409.19606">Hyper-Connections</a> 的改进（把残差空间投影到流形上以恢复恒等映射），而发表后不到一年，arXiv 上已经出现十几篇 mHC 的后续工作（参数高效微调、图网络、状态空间模型、投影加速）。</li>
+        <li><strong>Muon 优化器</strong>则是反过来被 DeepSeek 采纳：起源于社区博客，经 Moonshot 验证可扩展（2025-02），到 V4（2026）成为 DeepSeek 的训练优化器。</li>
+      </ul>
+
+      <!-- ===================== 为什么 ===================== -->
+      <h2 id="why">08 · 为什么是这条路</h2>
+      <p class="h2sub">四个贯穿始终的选择</p>
+
+      <h4>一、把约束当设计输入，而不是障碍</h4>
+      <p>H800 的互联带宽低于 H100，这个事实在 V3 的技术报告里到处留下痕迹：DualPipe 要掩盖通信、FP8 要减少传输量、专家并行要定制 all-to-all 内核。ISCA'25 那篇则把这个过程反过来——从被约束的经验里总结出对硬件的要求。同样的逻辑在 2026 年延伸成昇腾移植。</p>
+
+      <h4>二、每一代只押注能被下一代继承的东西</h4>
+      <p>MLA 从 V2 活到今天，GRPO 从 DeepSeekMath 活到 V4，DeepSeekMoE 的共享专家结构三年没变。相对地，Janus 这类分支没有继承下来就停了。这种“组件复用”的纪律让每代模型的新增复杂度维持在可控范围。</p>
+
+      <h4>三、效率收益直接兑现成价格和上下文</h4>
+      <p>这是最容易被忽略、但贯穿最彻底的一条。V2 省下的 KV 缓存变成了低价 API；DSA 省下的计算当天变成 50% 降价；V4 省下的 FLOPs 变成“可以常规支持百万 token 上下文”——报告原话是这让长周期任务和进一步的测试时扩展<em>变得可行</em>。效率在这里不是指标，是解锁条件。</p>
+
+      <h4>四、开源的是生产件，不是演示件</h4>
+      <p>开源周放出的是线上服务正在用的内核；TileKernels 的说明里写着全部算子已用于内部训练与推理；DeepInfer 开源的是支撑生产服务的框架，并且诚实列出缺哪些组件。这种“把 battle-tested 的东西原样放出来”的做法，和只放权重或只放参考实现是两回事，也是其基础设施被下游框架快速采纳的原因。</p>
+
+      <div class="box thesis">
+        <p><strong>当前的开放问题。</strong>读完全部报告，有三件事是 DeepSeek 自己也还没给出答案的：(1) Engram 的 U 形 scaling law 在更大规模下的最优点在哪，以及条件记忆能不能替代更多的 MoE 容量；(2) V4.1 的后训练已经退化成纯数据工程，那么智能体能力的瓶颈究竟在模型还是在环境合成；(3) 混合注意力（Full/Reindex/Reuse 的静态分配）目前是手工指定的，这套配置能否自动搜索。</p>
+      </div>
+
+      <!-- ===================== 清单 ===================== -->
+      <h2 id="index">09 · 完整清单</h2>
+      <p class="h2sub">全部技术报告与论文</p>
+      <p class="srcnote">按论文或报告的公开时间排序（部分模型权重的发布早于论文，如 DeepSeek-Coder 与 DeepSeek LLM 的权重在 2023 年 10–11 月即已放出）。arXiv 编号与标题经 arXiv API 核验；少数报告只以 PDF 形式随仓库发布，已注明。</p>
+      <div class="scroll">
+      <table>
+        <thead><tr><th>时间</th><th>标题</th><th>主线</th></tr></thead>
+        <tbody>
+          <tr><td class="y">2024-01</td><td><a href="https://arxiv.org/abs/2401.02954">DeepSeek LLM: Scaling Open-Source Language Models with Longtermism</a></td><td>基础 · 自研 scaling law</td></tr>
+          <tr><td class="y">2024-01</td><td><a href="https://arxiv.org/abs/2401.06066">DeepSeekMoE: Towards Ultimate Expert Specialization</a></td><td>稀疏性</td></tr>
+          <tr><td class="y">2024-01</td><td><a href="https://arxiv.org/abs/2401.14196">DeepSeek-Coder: When the Large Language Model Meets Programming</a></td><td>基础 · 代码</td></tr>
+          <tr><td class="y">2024-02</td><td><a href="https://arxiv.org/abs/2402.03300">DeepSeekMath: Pushing the Limits of Mathematical Reasoning</a></td><td>后训练 · GRPO</td></tr>
+          <tr><td class="y">2024-03</td><td><a href="https://arxiv.org/abs/2403.05525">DeepSeek-VL: Towards Real-World Vision-Language Understanding</a></td><td>多模态</td></tr>
+          <tr><td class="y">2024-05</td><td><a href="https://arxiv.org/abs/2405.04434">DeepSeek-V2: A Strong, Economical, and Efficient MoE Language Model</a></td><td>注意力 · MLA</td></tr>
+          <tr><td class="y">2024-05</td><td><a href="https://arxiv.org/abs/2405.14333">DeepSeek-Prover: Advancing Theorem Proving through Synthetic Data</a></td><td>形式化数学</td></tr>
+          <tr><td class="y">2024-06</td><td><a href="https://arxiv.org/abs/2406.11931">DeepSeek-Coder-V2: Breaking the Barrier of Closed-Source Models</a></td><td>基础 · 代码</td></tr>
+          <tr><td class="y">2024-07</td><td><a href="https://arxiv.org/abs/2407.01906">Let the Expert Stick to His Last: Expert-Specialized Fine-Tuning (ESFT)</a></td><td>稀疏性</td></tr>
+          <tr><td class="y">2024-08</td><td><a href="https://arxiv.org/abs/2408.08152">DeepSeek-Prover-V1.5: Proof Assistant Feedback, RL and MCTS</a></td><td>形式化数学</td></tr>
+          <tr><td class="y">2024-08</td><td><a href="https://arxiv.org/abs/2408.14158">Fire-Flyer AI-HPC: A Cost-Effective Software-Hardware Co-Design</a></td><td>系统</td></tr>
+          <tr><td class="y">2024-10</td><td><a href="https://arxiv.org/abs/2410.13848">Janus: Decoupling Visual Encoding for Understanding and Generation</a></td><td>多模态</td></tr>
+          <tr><td class="y">2024-11</td><td><a href="https://arxiv.org/abs/2411.07975">JanusFlow: Harmonizing Autoregression and Rectified Flow</a></td><td>多模态</td></tr>
+          <tr><td class="y">2024-12</td><td><a href="https://arxiv.org/abs/2412.10302">DeepSeek-VL2: MoE Vision-Language Models</a></td><td>多模态</td></tr>
+          <tr><td class="y">2024-12</td><td><a href="https://arxiv.org/abs/2412.19437">DeepSeek-V3 Technical Report</a></td><td>稀疏性 + 系统</td></tr>
+          <tr><td class="y">2025-01</td><td><a href="https://arxiv.org/abs/2501.12948">DeepSeek-R1: Incentivizing Reasoning Capability via RL</a> · <a href="https://www.nature.com/articles/s41586-025-09422-z">Nature 版</a></td><td>后训练</td></tr>
+          <tr><td class="y">2025-01</td><td><a href="https://arxiv.org/abs/2501.17811">Janus-Pro: Unified Multimodal Understanding and Generation</a></td><td>多模态</td></tr>
+          <tr><td class="y">2025-02</td><td><a href="https://arxiv.org/abs/2502.07316">CodeI/O: Condensing Reasoning Patterns via Code Input-Output Prediction</a></td><td>后训练 · 数据</td></tr>
+          <tr><td class="y">2025-02</td><td><a href="https://arxiv.org/abs/2502.11089">Native Sparse Attention: Hardware-Aligned and Natively Trainable</a></td><td>注意力</td></tr>
+          <tr><td class="y">2025-04</td><td><a href="https://arxiv.org/abs/2504.02495">Inference-Time Scaling for Generalist Reward Modeling</a></td><td>后训练 · 奖励</td></tr>
+          <tr><td class="y">2025-04</td><td><a href="https://arxiv.org/abs/2504.21801">DeepSeek-Prover-V2: RL for Subgoal Decomposition</a></td><td>形式化数学</td></tr>
+          <tr><td class="y">2025-05</td><td><a href="https://arxiv.org/abs/2505.09343">Insights into DeepSeek-V3: Reflections on Hardware for AI Architectures</a></td><td>系统 · ISCA'25</td></tr>
+          <tr><td class="y">2025-09</td><td>DeepSeek-V3.2-Exp（DSA 首次上线，报告随仓库发布）</td><td>注意力 · DSA</td></tr>
+          <tr><td class="y">2025-10</td><td><a href="https://arxiv.org/abs/2510.18234">DeepSeek-OCR: Contexts Optical Compression</a></td><td>多模态 · 上下文压缩</td></tr>
+          <tr><td class="y">2025-11</td><td><a href="https://arxiv.org/abs/2511.22570">DeepSeekMath-V2: Towards Self-Verifiable Mathematical Reasoning</a></td><td>后训练 · 自验证</td></tr>
+          <tr><td class="y">2025-12</td><td><a href="https://arxiv.org/abs/2512.02556">DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models</a></td><td>注意力 + 后训练</td></tr>
+          <tr><td class="y">2025-12</td><td><a href="https://arxiv.org/abs/2512.24880">mHC: Manifold-Constrained Hyper-Connections</a></td><td>架构 · 残差</td></tr>
+          <tr><td class="y">2026-01</td><td><a href="https://arxiv.org/abs/2601.07372">Conditional Memory via Scalable Lookup (Engram)</a></td><td>稀疏性 · 新轴</td></tr>
+          <tr><td class="y">2026-01</td><td><a href="https://arxiv.org/abs/2601.20552">DeepSeek-OCR 2: Visual Causal Flow</a></td><td>多模态</td></tr>
+          <tr><td class="y">2026-04</td><td><a href="https://arxiv.org/abs/2606.19348">DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence</a></td><td>注意力 + 架构</td></tr>
+          <tr><td class="y">2026-07</td><td><a href="https://arxiv.org/abs/2607.05147">DSpark: Confidence-Scheduled Speculative Decoding</a></td><td>推理部署</td></tr>
+          <tr><td class="y">2026-08</td><td><a href="https://arxiv.org/abs/2608.25512">A Programming Paradigm for Spatiotemporal Composability</a></td><td>智能体 · Harness 基础</td></tr>
+          <tr><td class="y">2026-09</td><td><a href="https://arxiv.org/abs/2609.19969">DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression</a></td><td>注意力 · CED</td></tr>
+          <tr><td class="y">2026-09</td><td><a href="https://arxiv.org/abs/2609.22978">DeepSeek Elastic Compute (DSec): Sandbox Infrastructure for Agentic Training</a></td><td>系统 · 智能体 RL</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p class="h2sub" style="margin-top:40px">开源仓库</p>
+      <p class="srcnote">只列有独立技术内容的仓库，省略集成指南与 awesome 列表。按首次发布时间排序。</p>
+      <div class="scroll">
+      <table>
+        <thead><tr><th>时间</th><th>仓库</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td class="y">2024-07</td><td><a href="https://github.com/deepseek-ai/ESFT">ESFT</a></td><td>专家特化微调</td></tr>
+          <tr><td class="y">2025-02</td><td><a href="https://github.com/deepseek-ai/FlashMLA">FlashMLA</a></td><td>MLA 解码内核（开源周 Day 1）</td></tr>
+          <tr><td class="y">2025-02</td><td><a href="https://github.com/deepseek-ai/DeepEP">DeepEP</a></td><td>首个开源 MoE 专家并行通信库（Day 2）</td></tr>
+          <tr><td class="y">2025-02</td><td><a href="https://github.com/deepseek-ai/DeepGEMM">DeepGEMM</a></td><td>FP8 GEMM，核心约 300 行（Day 3）</td></tr>
+          <tr><td class="y">2025-02</td><td><a href="https://github.com/deepseek-ai/DualPipe">DualPipe</a> · <a href="https://github.com/deepseek-ai/EPLB">EPLB</a> · <a href="https://github.com/deepseek-ai/profile-data">profile-data</a></td><td>双向流水线、专家负载均衡、通信重叠分析（Day 4）</td></tr>
+          <tr><td class="y">2025-02</td><td><a href="https://github.com/deepseek-ai/3FS">3FS</a> · <a href="https://github.com/deepseek-ai/smallpond">smallpond</a></td><td>分布式文件系统与数据处理框架（Day 5）</td></tr>
+          <tr><td class="y">2025-11</td><td><a href="https://github.com/deepseek-ai/LPLB">LPLB</a></td><td>线性规划的动态专家负载均衡（研究阶段）</td></tr>
+          <tr><td class="y">2026-01</td><td><a href="https://github.com/deepseek-ai/Engram">Engram</a></td><td>条件记忆模块参考实现</td></tr>
+          <tr><td class="y">2026-04</td><td><a href="https://github.com/deepseek-ai/TileKernels">TileKernels</a></td><td>TileLang 算子库：MoE 路由、Engram、量化、mHC</td></tr>
+          <tr><td class="y">2026-06</td><td><a href="https://github.com/deepseek-ai/DeepSpec">DeepSpec</a></td><td>投机解码全栈代码库（DSpark / DFlash / Eagle3）</td></tr>
+          <tr><td class="y">2026-08</td><td><a href="https://github.com/deepseek-ai/deepseek-harness">deepseek-harness</a></td><td>agent 框架，everything-is-a-plugin</td></tr>
+          <tr><td class="y">2026-09</td><td><a href="https://github.com/deepseek-ai/DeepJIT">DeepJIT</a> · <a href="https://github.com/deepseek-ai/DeepSelect">DeepSelect</a></td><td>JIT 编译运行时；DSA 与采样器的 top-k 算子</td></tr>
+          <tr><td class="y">2026-09</td><td><a href="https://github.com/deepseek-ai/deepseek-recipe">deepseek-recipe</a></td><td>Rust 实现的提示编码与协议转换</td></tr>
+          <tr><td class="y">2026-09</td><td><a href="https://github.com/deepseek-ai/DeepGEMM-Ascend">DeepGEMM-Ascend</a> · <a href="https://github.com/deepseek-ai/DeepEP-Ascend">DeepEP-Ascend</a> · <a href="https://github.com/deepseek-ai/clangd-ascend">clangd-ascend</a></td><td>昇腾平台移植</td></tr>
+          <tr><td class="y">2026-10</td><td><a href="https://github.com/deepseek-ai/DeepInfer">DeepInfer</a></td><td>生产推理框架（NVIDIA SM100 + 昇腾 950）</td></tr>
+          <tr><td class="y">2026-10</td><td><a href="https://github.com/deepseek-ai/dsh-superagent-prototype">dsh-superagent-prototype</a></td><td>主动式编码智能体研究原型</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p class="h2sub" style="margin-top:40px">旗舰模型的架构参数</p>
+      <div class="scroll">
+      <table>
+        <thead><tr><th>模型</th><th>总参数 / 激活</th><th>上下文</th><th>预训练 token</th><th>关键架构</th></tr></thead>
+        <tbody>
+          <tr><td>V2 <span class="y">2024-05</span></td><td>236B / 21B</td><td>128K</td><td>8.1T</td><td>MLA + DeepSeekMoE</td></tr>
+          <tr><td>V3 <span class="y">2024-12</span></td><td>671B / 37B</td><td>128K</td><td>14.8T</td><td>+ 无辅助损失均衡、MTP、FP8</td></tr>
+          <tr><td>V3.2 <span class="y">2025-12</span></td><td>671B / 37B</td><td>128K</td><td>—</td><td>+ DSA</td></tr>
+          <tr><td>V4-Flash <span class="y">2026-04</span></td><td>284B / 13B</td><td>1M</td><td>32T+</td><td>CSA + HCA、mHC、Muon</td></tr>
+          <tr><td>V4-Pro <span class="y">2026-04</span></td><td>1.6T / 49B</td><td>1M</td><td>32T+</td><td>同上</td></tr>
+          <tr><td>V4.1-Flash <span class="y">2026-09</span></td><td>552B 主干 + 196B Engram / 8B prefill · 16B decode</td><td>1M</td><td>45T（多模态）</td><td>CED、CSA2、FP4 KV、Engram、DSpark</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="srcnote">数字取自各自的技术报告与模型卡。V4.1-Flash 的 890 字节/token 全局 KV 占用约为 V4-Flash 的 1/4、第一代 DeepSeek 模型的 1/437。</p>
+
+      <!-- ===================== 来源 ===================== -->
+      <h2 id="sources">10 · 来源与读法</h2>
+      <p class="h2sub">这篇是怎么写的</p>
+      <p>材料全部来自一手公开内容：<a href="https://huggingface.co/deepseek-ai">Hugging Face 上的模型卡</a>（106 个模型）、<a href="https://github.com/deepseek-ai">GitHub 上的全部仓库说明</a>、以及上表中的论文与技术报告。所有 arXiv 编号与标题都经 arXiv API 核验过，没有凭记忆写的引用。</p>
+      <p>两处需要读者自行判断的地方：<strong>（一）基准分数几乎都是自报的。</strong>模型卡里与前沿闭源模型的对比表由 DeepSeek 自己测得，评测脚手架、推理预算和采样参数都会显著影响结果——V4.1-Flash 的报告自己就给出了同一模型在 8 种 agent 脚手架下的差异（DeepSWE 从 65.5 到 74.2）。<strong>（二）成本数字的口径。</strong>V3 的 $5.576M 只含最终训练，R1 的 $294K 不含基座模型，报告本身都写明了，但传播中常被省略。</p>
+      <p>如果只读三篇：<a href="https://arxiv.org/abs/2405.04434">V2</a>（看 MLA 怎么想出来的）、<a href="https://arxiv.org/abs/2501.12948">R1</a>（看 R1-Zero 那个消融）、<a href="https://arxiv.org/abs/2609.19969">V4.1-Flash</a>（看一个架构被逼到极限是什么样）。想理解这家公司为什么这么做事，加一篇 <a href="https://arxiv.org/abs/2505.09343">ISCA'25</a>。</p>
+    </main>
+
+    <footer><div class="wrap">Weiji Xie · 阅读与研究 · 本页为个人梳理，非 DeepSeek 官方材料</div></footer>
+  </body>
+</html>
