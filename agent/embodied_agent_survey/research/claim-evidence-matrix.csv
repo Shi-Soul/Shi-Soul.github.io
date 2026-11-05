@@ -1,0 +1,6 @@
+claim_id,section,claim,source_ids,evidence_location,status,notes
+GA-01,2.2;2.6,RGB-D 持续更新三维几何；策略用部件符号和文本反馈；位姿随观测更新，遮挡时将误差标为不可获取,ga-paper;ga-project;ga-code,Section 3.1–3.4; Method; Overview,reported,RGB-D 指彩色与深度图像
+GA-02,2.2;2.6,离线策略执行不调用语言模型；在线决策在同一场景连续执行，每次执行限时 200 秒，每项任务 50 组配对布局,ga-paper;ga-code,Sections 4.1–4.2; Appendix B,reported,在线套环从共享抓取提升动作后开始；模型等待计入总时长
+GA-03,2.6;timeline;paper-library,在线桥上堆塔 12/50 对 28/50，套环 49/50 对 50/50，塔搬移 15/50 对 42/50；用时与词元数见正文表格,ga-paper;ga-project;ga-code,Appendix B Table 3; project online outcomes table; README Results,reported,顺序为图像推理对照、几何组；超时按 200 秒计；套环词元数减少 52.8%，桥上堆塔增加 15.1%
+GA-04,2.6,实验使用仿真 SO-100 和规则刚体；真机噪声、严重遮挡与标定漂移列为后续实验,ga-paper;ga-project,Section 5; Limitations and discussion,reported,按作者说明记录
+GA-05,timeline;metadata,首发 2026-11-03；作者 Yihang Liu、Yiming Chen、Mingzhe Zheng；CoRL 2026 Agentic Robotics 研讨会海报,ga-api;ga-project,Atom entry; project header and Citation,reported,arXiv v1

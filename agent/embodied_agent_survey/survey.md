@@ -1,6 +1,6 @@
 # 具身智能 / 机器人 × Agent（LLM · GPT · Claude · Gemini）调研综述
 
-> 截至 **2026-10-23**。面向机器人方向的研究者，重点是 2025–2026 年的工作。
+> 全领域检索截至 **2026-10-23**；**2026-11-05** 增补 Geometric Abstraction。面向机器人方向的研究者，重点是 2025–2026 年的工作。
 > 配套技术教程（按核心问题讲清机制、公式与设计取舍）：[机器人 × Agent 技术教程](../embodied_agent_tutorial/)。
 > 配套交互页面：`index.html`（同目录，浏览器直接打开）。页面里有术语入门、技术栈图、时间线、图表，以及可检索的论文库。
 > arXiv 编号与标题都用 export.arxiv.org API 逐条核验过；产业信息优先引用官方博客，二手来源会注明。
@@ -126,6 +126,7 @@
   - **Agent as Policy (AGP)**：Codex CLI + GPT-6 Astra 直接驱动真实 YAM 机械臂完成装配、抛掷、叠毛巾等任务。
   - **OpenRUA**：只给 Claude Code 一个 ROS 2 终端（"零抽象"）。CaP-Bench 99%、LIBERO-PRO 87%；96.8% 的 episode 里 agent 自发写出感知处理程序。
   - **RobotUse**：agent 只做视觉选择，后端负责几何与控制。RoboLab 45%，比 CaP-X 高 6.7pp。
+  - **[Geometric Abstraction](https://geometric-abstraction.github.io/)**（2026-11）：本地感知持续更新物体部件的三维几何，模型用符号引用编写策略或选择下一步动作。离线编写出的策略在执行中无需调用语言模型；在线执行则在每次动作后接收文本状态，按需查看图像。方法与结果见第 2.6 节。
   - **EmbodiedSWE**：编码 agent 解半小时级灵巧任务，再把解扩增为 VLA 训练数据。
   - **RACaP**：编码移到进化期，部署时调用冻结的 Policy API，解决延迟问题。
 - **要点**：代码可检查、可验证、可复用，天然适合"写一次、跑多次"；最大的瓶颈在感知和原语质量。Kuroki & Tang 的实验里，同样的 agent 在仿真特权状态下成功率 65%，只用 RGB 时降到 22.5%。
@@ -205,6 +206,20 @@
 - Anthropic 的 Model Hardware Standard（2026-08，研究预览）：读/写命令 + 安全参数参考文件，经 MCP/CLI/API 控制机械臂、显微镜等设备，对其他模型同样开放；
 - OpenAI 的 Decisions API（2026-10，gpt-6-luna）这类"决策模型"开始被用作 harness 里的快速决策层：代码给出合法候选，模型带概率挑一个；
 - 推理优化：vla.cpp（统一推理运行时）、OxyGen（VLA 推理的 KV Cache 管理）、VLASH（未来状态感知的异步推理）、RTC（实时动作分块）、VLA-Perf（性能评测工具）。
+
+<a id="geometric-abstraction"></a>
+
+**Geometric Abstraction：把当前几何状态交给语言模型。** 这项工作研究机器人是否需要在每一步决策时都把图像发给模型。系统从已标定的彩色与深度图像（RGB-D）估计物体几何，让策略通过 `red.bottom_face`（红色物体的底面）等名称引用部件，并调用对齐和支撑关系检查。物体移动后，系统用新观测重新估计位姿；每个几何量标明它来自直接观测、推断，还是当前不可获取。动作后的文本反馈给出当前状态和距目标的误差，遮挡导致位置不可获取时，系统将误差标为不可获取。[论文第 3 节](https://arxiv.org/html/2611.05058v1#S3)
+
+作者在 SO-100 机械臂仿真中使用同一套接口完成两种实验：离线由模型修改 Python 策略，策略运行期间只调用本地感知与控制；在线由模型在同一场景中连续选择动作，失败后继续恢复。在线实验每项任务使用 50 组配对布局，每次执行限时 200 秒，模型等待与物理执行共用这段时间。两组共享传感器、初始技能和动作接口，几何组额外获得部件引用与文本反馈。[论文第 4 节](https://arxiv.org/html/2611.05058v1#S4)
+
+| 在线任务 | 图像推理对照成功次数 | 几何组成功次数 | 对照 / 几何组平均用时 |
+|---|---|---|---|
+| 桥上堆塔 | 12/50 | 28/50 | 198.0 / 185.3 秒 |
+| 将预先提起的环套到柱上 | 49/50 | 50/50 | 115.8 / 77.2 秒 |
+| 将塔上两块积木搬到新底座 | 15/50 | 42/50 | 186.4 / 139.2 秒 |
+
+用时统计将超时计为 200 秒。套环任务中，每次执行发送给模型的图像数从 10.94 张降至 2.72 张，记录的输入输出词元数减少 52.8%；桥上堆塔任务的成功次数增加，但词元数增加 15.1%。实验对象是仿真中的规则刚体；真机传感噪声、严重遮挡和标定漂移留待后续实验。[论文附录 B、表 3](https://arxiv.org/html/2611.05058v1#A2) · [项目页面](https://geometric-abstraction.github.io/) · [代码](https://github.com/Spectraorder/geometric-abstraction)
 
 ### 2.7 编码智能体自动化机器人研发与自我改进（2026）
 
@@ -286,6 +301,7 @@
 | 2026-08 | Thea、ETA、AgenticRobotics loop；Anthropic MHS（8/27）；DYNA-2；Skild S1 |
 | 2026-09 | GPT-6 Astra（9/3）引发"LLM 即策略"研究潮；HomeBody；SimEX；OpenAI 表态做人形 |
 | 2026-10 | Pi API beta、Gemini 4 Argon for Robotics（10/13）；RobotWorld、RoboQuest、OpenRUA；综述 *Towards Agentic Robots*（10/14）；AgenticRoboRL |
+| 2026-11 | [Geometric Abstraction](https://geometric-abstraction.github.io/)（11/3）：持续更新三维几何，以符号和文本支持机器人策略编写与在线执行；CoRL 2026 Agentic Robotics 研讨会海报 |
 
 ### 2.9 多机器人协作与专项领域（2023–2026）
 
@@ -521,7 +537,7 @@
 
 ## 10. 方法与可信度说明
 
-- 检索时间 2026-10-23。arXiv 条目（283 条）全部用 export.arxiv.org API 按编号核验了标题与首发日期。网页/产业条目以官方博客为主，第三方报道已在文中注明（如 Tesla Optimus、Figure 与 BMW 的合作、部分 ER 1.6 指标）。
+- 全领域检索时间为 2026-10-23；2026-11-05 按用户提供的项目页面增补 Geometric Abstraction，核对 arXiv v1 正文、官方元数据与代码仓库。arXiv 条目（284 条）全部用 export.arxiv.org API 按编号核验了标题与首发日期。网页/产业条目以官方博客为主，第三方报道已在文中注明（如 Tesla Optimus、Figure 与 BMW 的合作、部分 ER 1.6 指标）。
 - 文中数值均摘自对应论文摘要、官方博客或其直接转述；跨论文的数字设置不同，不可直接横向比较。
 - 2026 年的大量工作仍是预印本，没经过同行评审，部分演示没有公开成功率（如 HomeBody）。
 - 有意从略的方向：纯自动驾驶（只列了 Alpamayo、MindVLA-U1 等少量条目）、纯数字 GUI agent、纯视觉导航方法细节。
@@ -538,7 +554,7 @@
 
 ---
 
-## 附录 A：论文与资源总表（315 条，按主类别分组，组内按时间倒序）
+## 附录 A：论文与资源总表（316 条，按主类别分组，组内按时间倒序）
 
 > arXiv 条目的标题与日期由 export.arxiv.org API 校验；★ 为入门推荐。
 
@@ -563,10 +579,11 @@
 | 2022-04 | ★ [SayCan](https://arxiv.org/abs/2204.01691) `arXiv:2204.01691` | Google | LLM 给技能打"是否有用"分，价值函数给"是否可行"分，两者相乘选出下一步预训练技能 |
 | 2022-04 | [Socratic Models](https://arxiv.org/abs/2204.00598) `arXiv:2204.00598` | Google | 多个基础模型以自然语言为接口零样本组合推理 |
 
-### 代码即策略（24）
+### 代码即策略（25）
 
 | 日期 | 工作 | 机构 | 一句话 |
 |---|---|---|---|
+| 2026-11 | [Geometric Abstraction](https://geometric-abstraction.github.io/) `arXiv:2611.05058` | 独立研究者 / 佐治亚理工 / 香港科技大学 | 用彩色与深度图像更新物体部件的三维几何，通过符号引用和动作后文本反馈支持策略编写与在线执行；SO-100 仿真桥上堆塔成功率 56%，图像推理对照为 24% |
 | 2026-10 | ★ [OpenRUA](https://github.com/terminalworld/OpenRUA) `arXiv:2610.02459` | UCL/CMU | "零抽象" harness：Claude Code（Opus 5）只拿到 ROS 2 终端和文档，CaP-Bench 99%、LIBERO-PRO 87% |
 | 2026-09 | [RAPID](https://arxiv.org/abs/2609.30249) `arXiv:2609.30249` | MIT/NUS | 从单次人类视觉演示自动生成、验证、精炼机器人程序 |
 | 2026-09 | [RACaP](https://arxiv.org/abs/2609.29394) `arXiv:2609.29394` |  | 把"写代码"挪到进化阶段，部署时用 ReAct 调用冻结的类型化 Policy API，降低延迟 |
