@@ -82,7 +82,7 @@
     <div class="container">
         <h1>具身智能 / 机器人 × Agent（LLM · GPT · Claude · Gemini）调研综述</h1>
 <blockquote>
-<p>截至 <strong>2026-10-23</strong>。面向机器人方向的研究者，重点是 2025–2026 年的工作。
+<p>全领域检索截至 <strong>2026-10-23</strong>；<strong>2026-11-05</strong> 增补 Geometric Abstraction。面向机器人方向的研究者，重点是 2025–2026 年的工作。
 配套技术教程（按核心问题讲清机制、公式与设计取舍）：<a href="../embodied_agent_tutorial/">机器人 × Agent 技术教程</a>。
 配套交互页面：<code>index.html</code>（同目录，浏览器直接打开）。页面里有术语入门、技术栈图、时间线、图表，以及可检索的论文库。
 arXiv 编号与标题都用 export.arxiv.org API 逐条核验过；产业信息优先引用官方博客，二手来源会注明。</p>
@@ -331,6 +331,7 @@ arXiv 编号与标题都用 export.arxiv.org API 逐条核验过；产业信息�
 <li><strong>Agent as Policy (AGP)</strong>：Codex CLI + GPT-6 Astra 直接驱动真实 YAM 机械臂完成装配、抛掷、叠毛巾等任务。</li>
 <li><strong>OpenRUA</strong>：只给 Claude Code 一个 ROS 2 终端（"零抽象"）。CaP-Bench 99%、LIBERO-PRO 87%；96.8% 的 episode 里 agent 自发写出感知处理程序。</li>
 <li><strong>RobotUse</strong>：agent 只做视觉选择，后端负责几何与控制。RoboLab 45%，比 CaP-X 高 6.7pp。</li>
+<li><strong><a href="https://geometric-abstraction.github.io/">Geometric Abstraction</a></strong>（2026-11）：本地感知持续更新物体部件的三维几何，模型用符号引用编写策略或选择下一步动作。离线编写出的策略在执行中无需调用语言模型；在线执行则在每次动作后接收文本状态，按需查看图像。方法与结果见第 2.6 节。</li>
 <li><strong>EmbodiedSWE</strong>：编码 agent 解半小时级灵巧任务，再把解扩增为 VLA 训练数据。</li>
 <li><strong>RACaP</strong>：编码移到进化期，部署时调用冻结的 Policy API，解决延迟问题。</li>
 <li><strong>要点</strong>：代码可检查、可验证、可复用，天然适合"写一次、跑多次"；最大的瓶颈在感知和原语质量。Kuroki &amp; Tang 的实验里，同样的 agent 在仿真特权状态下成功率 65%，只用 RGB 时降到 22.5%。</li>
@@ -403,17 +404,17 @@ arXiv 编号与标题都用 export.arxiv.org API 逐条核验过；产业信息�
 <tr>
 <td>记忆 Memory</td>
 <td>写什么、何时更新、检索什么</td>
-<td>MessyMem、HiMe、Mimir、SafeMem、NavMCP、BATON、HoloAgent-0、MeCo</td>
+<td>MessyMem（边做边学记忆）、HiMe（分层具身记忆，ICML'26）、Mimir（神经符号动态接地记忆）、SafeMem（长期图记忆安全规划）、NavMCP（导航记忆）、BATON（子任务探索与转换感知记忆）、HoloAgent-0（3D 空间记忆）、MeCo（多机协作相似任务记忆化）、HAM-VLN（分层 agentic 记忆）、MEMORA（自我中心视频动作记忆，EMNLP'26）、Robo-Cortex（双粒度认知记忆自进化）、2AM（agent 侧记忆引导可操控动作模型）、Skills in Weights Memory in Code（权重技能 vs 代码记忆的混合学习）、World Action Agent（世界行动预演记忆）</td>
 </tr>
 <tr>
 <td>监控与恢复</td>
 <td>执行前、中、后的检查与修复</td>
-<td>DoReMi、Code-as-Monitor、REFLECT、AHA、LIBERO-RECOVER、PhyAgentOS、FLARE</td>
+<td>DoReMi、Code-as-Monitor、REFLECT、AHA、LIBERO-RECOVER（失败恢复评测）、PhyAgentOS（自进化 OS）、FLARE（失败感知框架，CVPR'26）、VLA-Corrector（阶段感知闭环恢复）、ACE（零样本工作流推理）、DynaHarness（动态物理 harness）、ReCoVLA（VLM 引导的奖励编译用于失败恢复）、UniIntervene（高效真机 RL 的 agentic 介入，CoRL'26）、AgentChord（主动失败预防）</td>
 </tr>
 <tr>
 <td>技能 Skills</td>
 <td>可复用行为如何进入、演化、退出</td>
-<td>Voyager、DROC、Uni-Skill、ASPIRE、RATs、RoboRSI、SkillOpt、Zetta</td>
+<td>Voyager、DROC、Uni-Skill（自进化技能库，ICRA'26）、ASPIRE、RATs（玩耍式学习）、RoboRSI、SkillOpt、Zetta、VASO（形式可验证的自进化技能）、Act-Observe-Rewrite（多模态编码 agent 作为 in-context 策略学习器）、Agentic Skill Discovery、Lifelong Robot Library Learning、RoboCodeX（多模态代码生成机器人行为）</td>
 </tr>
 <tr>
 <td>基础设施</td>
@@ -439,6 +440,40 @@ arXiv 编号与标题都用 export.arxiv.org API 逐条核验过；产业信息�
 - Anthropic 的 Model Hardware Standard（2026-08，研究预览）：读/写命令 + 安全参数参考文件，经 MCP/CLI/API 控制机械臂、显微镜等设备，对其他模型同样开放；
 - OpenAI 的 Decisions API（2026-10，gpt-6-luna）这类"决策模型"开始被用作 harness 里的快速决策层：代码给出合法候选，模型带概率挑一个；
 - 推理优化：vla.cpp（统一推理运行时）、OxyGen（VLA 推理的 KV Cache 管理）、VLASH（未来状态感知的异步推理）、RTC（实时动作分块）、VLA-Perf（性能评测工具）。</p>
+<p><a id="geometric-abstraction"></a></p>
+<p><strong>Geometric Abstraction：把当前几何状态交给语言模型。</strong> 这项工作研究机器人是否需要在每一步决策时都把图像发给模型。系统从已标定的彩色与深度图像（RGB-D）估计物体几何，让策略通过 <code>red.bottom_face</code>（红色物体的底面）等名称引用部件，并调用对齐和支撑关系检查。物体移动后，系统用新观测重新估计位姿；每个几何量标明它来自直接观测、推断，还是当前不可获取。动作后的文本反馈给出当前状态和距目标的误差，遮挡导致位置不可获取时，系统将误差标为不可获取。<a href="https://arxiv.org/html/2611.05058v1#S3">论文第 3 节</a></p>
+<p>作者在 SO-100 机械臂仿真中使用同一套接口完成两种实验：离线由模型修改 Python 策略，策略运行期间只调用本地感知与控制；在线由模型在同一场景中连续选择动作，失败后继续恢复。在线实验每项任务使用 50 组配对布局，每次执行限时 200 秒，模型等待与物理执行共用这段时间。两组共享传感器、初始技能和动作接口，几何组额外获得部件引用与文本反馈。<a href="https://arxiv.org/html/2611.05058v1#S4">论文第 4 节</a></p>
+<table>
+<thead>
+<tr>
+<th>在线任务</th>
+<th>图像推理对照成功次数</th>
+<th>几何组成功次数</th>
+<th>对照 / 几何组平均用时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>桥上堆塔</td>
+<td>12/50</td>
+<td>28/50</td>
+<td>198.0 / 185.3 秒</td>
+</tr>
+<tr>
+<td>将预先提起的环套到柱上</td>
+<td>49/50</td>
+<td>50/50</td>
+<td>115.8 / 77.2 秒</td>
+</tr>
+<tr>
+<td>将塔上两块积木搬到新底座</td>
+<td>15/50</td>
+<td>42/50</td>
+<td>186.4 / 139.2 秒</td>
+</tr>
+</tbody>
+</table>
+<p>用时统计将超时计为 200 秒。套环任务中，每次执行发送给模型的图像数从 10.94 张降至 2.72 张，记录的输入输出词元数减少 52.8%；桥上堆塔任务的成功次数增加，但词元数增加 15.1%。实验对象是仿真中的规则刚体；真机传感噪声、严重遮挡和标定漂移留待后续实验。<a href="https://arxiv.org/html/2611.05058v1#A2">论文附录 B、表 3</a> · <a href="https://geometric-abstraction.github.io/">项目页面</a> · <a href="https://github.com/Spectraorder/geometric-abstraction">代码</a></p>
 <h3>2.7 编码智能体自动化机器人研发与自我改进（2026）</h3>
 <ul>
 <li><strong>Anthropic Project Fetch</strong>：</li>
@@ -665,6 +700,10 @@ arXiv 编号与标题都用 export.arxiv.org API 逐条核验过；产业信息�
 <tr>
 <td>2026-10</td>
 <td>Pi API beta、Gemini 4 Argon for Robotics（10/13）；RobotWorld、RoboQuest、OpenRUA；综述 <em>Towards Agentic Robots</em>（10/14）；AgenticRoboRL</td>
+</tr>
+<tr>
+<td>2026-11</td>
+<td><a href="https://geometric-abstraction.github.io/">Geometric Abstraction</a>（11/3）：持续更新三维几何，以符号和文本支持机器人策略编写与在线执行；CoRL 2026 Agentic Robotics 研讨会海报</td>
 </tr>
 </tbody>
 </table>
@@ -992,7 +1031,7 @@ arXiv 编号与标题都用 export.arxiv.org API 逐条核验过；产业信息�
 <hr />
 <h2>10. 方法与可信度说明</h2>
 <ul>
-<li>检索时间 2026-10-23。arXiv 条目（283 条）全部用 export.arxiv.org API 按编号核验了标题与首发日期。网页/产业条目以官方博客为主，第三方报道已在文中注明（如 Tesla Optimus、Figure 与 BMW 的合作、部分 ER 1.6 指标）。</li>
+<li>全领域检索时间为 2026-10-23；2026-11-05 按用户提供的项目页面增补 Geometric Abstraction，核对 arXiv v1 正文、官方元数据与代码仓库。arXiv 条目（284 条）全部用 export.arxiv.org API 按编号核验了标题与首发日期。网页/产业条目以官方博客为主，第三方报道已在文中注明（如 Tesla Optimus、Figure 与 BMW 的合作、部分 ER 1.6 指标）。</li>
 <li>文中数值均摘自对应论文摘要、官方博客或其直接转述；跨论文的数字设置不同，不可直接横向比较。</li>
 <li>2026 年的大量工作仍是预印本，没经过同行评审，部分演示没有公开成功率（如 HomeBody）。</li>
 <li>有意从略的方向：纯自动驾驶（只列了 Alpamayo、MindVLA-U1 等少量条目）、纯数字 GUI agent、纯视觉导航方法细节。</li>
@@ -1008,7 +1047,7 @@ arXiv 编号与标题都用 export.arxiv.org API 逐条核验过；产业信息�
 <li>其他：<a href="https://andonlabs.com/evals/butter-bench">Butter-Bench</a> · <a href="https://robo-arena.github.io/">RoboArena</a> · <a href="https://behavior.stanford.edu/challenge/leaderboard.html">BEHAVIOR 2025 榜单</a> · <a href="https://asimov-benchmark.github.io/v2">ASIMOV-2.0</a> · <a href="https://www.figure.ai/news/helix">Helix</a> · <a href="https://www.therobotreport.com/generalist-introduces-gen-1-general-purpose-model-for-physical-ai/">GEN-1</a> · <a href="https://www.therobotreport.com/microsoft-research-reveals-rho-alpha-vision-language-action-model-for-robots/">Rho-alpha</a> · <a href="https://www.therobotreport.com/skild-ai-unveils-s1-flagship-robot-foundation-model/">Skild S1</a> · <a href="https://www.therobotreport.com/agibot-releases-go-2-foundation-model-embodied-ai/">AgiBot GO-2</a> · <a href="https://the-decoder.com/researchers-plug-gpt-6-astra-directly-into-a-robot-and-let-it-clean-up-an-unfamiliar-kitchen/">HomeBody（The Decoder）</a></li>
 </ul>
 <hr />
-<h2>附录 A：论文与资源总表（315 条，按主类别分组，组内按时间倒序）</h2>
+<h2>附录 A：论文与资源总表（316 条，按主类别分组，组内按时间倒序）</h2>
 <blockquote>
 <p>arXiv 条目的标题与日期由 export.arxiv.org API 校验；★ 为入门推荐。</p>
 </blockquote>
@@ -1121,7 +1160,7 @@ arXiv 编号与标题都用 export.arxiv.org API 逐条核验过；产业信息�
 </tr>
 </tbody>
 </table>
-<h3>代码即策略（24）</h3>
+<h3>代码即策略（25）</h3>
 <table>
 <thead>
 <tr>
@@ -1132,6 +1171,12 @@ arXiv 编号与标题都用 export.arxiv.org API 逐条核验过；产业信息�
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>2026-11</td>
+<td><a href="https://geometric-abstraction.github.io/">Geometric Abstraction</a> <code>arXiv:2611.05058</code></td>
+<td>独立研究者 / 佐治亚理工 / 香港科技大学</td>
+<td>用彩色与深度图像更新物体部件的三维几何，通过符号引用和动作后文本反馈支持策略编写与在线执行；SO-100 仿真桥上堆塔成功率 56%，图像推理对照为 24%</td>
+</tr>
 <tr>
 <td>2026-10</td>
 <td>★ <a href="https://github.com/terminalworld/OpenRUA">OpenRUA</a> <code>arXiv:2610.02459</code></td>
