@@ -14,8 +14,8 @@ fs.mkdirSync(output);
 for (const file of ["index.html", "cv.html", "data.js", "site.js", "site.css", "style.css", "robots.txt", ".nojekyll", "404.html"]) {
   fs.copyFileSync(path.join(root, file), path.join(output, file));
 }
-// cv-corl27/ is the target of the QR code on the printed CoRL 2026 poster note: keep that URL alive.
-for (const dir of ["media", "cv", "cv-corl27", "publications", "agent"]) {
+// cv-corl26/ is the target of the QR code on the printed CoRL 2026 poster note: keep that URL alive.
+for (const dir of ["media", "cv", "cv-corl26", "publications", "agent"]) {
   fs.cpSync(path.join(root, dir), path.join(output, dir), {
     recursive: true,
     filter: (source) => !/\.(?:py|cjs)$/i.test(source),
